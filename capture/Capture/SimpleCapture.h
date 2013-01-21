@@ -1,0 +1,113 @@
+#ifndef SimpleCapture_h__
+#define SimpleCapture_h__
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <string.h>
+#include <conio.h>
+
+#include <midlib2.h>
+
+#define NUM_WORKER_THREADS      2 
+#define DEFAULT_NUM_FRAMES      1
+#define PIXELBITS               16
+#define MAX_BADFRAME_TRIES      10
+
+#define MAX_CAMS 2
+
+/*
+ *	Captures images. 
+ *	Pass captureFunction to a win32 thread for greatest happiness.
+ *	
+ *	Modified from the SimpleCapture example provided by Aptina.
+ */
+class SimpleCapture
+{
+public:
+
+  /************************************************************************/
+  /* PUBLIC STATIC MEMBERS                                                */
+  /************************************************************************/ 
+    static mi_s32 num_cameras;
+    static bool isMidLibInit;
+
+    // Init all cams, and make sure at least nCamsReq cameras 
+    // were initialized.
+    static int initMidLib2(int nCamsReq);
+    static DWORD WINAPI captureFunction(LPVOID args);
+
+  /************************************************************************/
+  /* PUBLIC MEMBERS                                                       */
+  /************************************************************************/ 
+    //mi_s32          num_cameras;                           //number of cameras found
+    //mi_camera_t     *cameras[MI_MAX_CAMERAS];              //cameras found
+    mi_camera_t     *pCamera; //=NULL;                   //current camera
+    unsigned long   frameSize;                             //size of the frames we want to save
+    unsigned char   *pCameraBuff;                          //memory buffer for all the sensor images
+    unsigned char   *pGrabframeBuff;                       //grabFrame buffer
+    unsigned int    num_frames;// = DEFAULT_NUM_FRAMES;    //number of frames to capture
+    unsigned long   nWidth;//  = 0;                        //width of image (taken from command line or set to default below)
+    unsigned long   nHeight;// = 0;                        //height of image (taken from command line or set to default below)
+    FILE            *imfile;                               //capture file
+    unsigned int    frame;
+    mi_u32          nSwizzleNeeded;
+    mi_string       errorFileName;
+    char            imagetypestr[32];
+
+  /************************************************************************/
+  /* PUBLIC METHODS                                                       */
+  /************************************************************************/ 
+
+    SimpleCapture();
+    ~SimpleCapture();
+
+    /**
+     *	\brief Open the midlib2 transport for the given camera index.
+     *	
+     *	initMidLib2() must be called prior to calling openTransport(). The
+     *	value passed into camidx sets the index value for this camera.
+     *	
+     *	\param camidx The camera index to open transport for. Must be <= to the number
+     *	of cameras that midlib2 found.
+     *
+     *  \return 1 on error, 0 on success.
+     *  
+     */
+    int  openTransport(int camidx); 
+
+    /** \brief Called from captureFunction. */
+    void doCapture();
+
+    /** \brief Stop the transport for this SimpleCapture's camera. */
+    void stopTransport();
+
+  /************************************************************************/
+  /* PRIVATE members                                                      */
+  /************************************************************************/ 
+private:
+
+    int m_cameraIdx;
+    int m_nextFrameIdx;
+    int m_camNM;
+
+    int mallocate();
+    void printShit();
+};
+
+static void 
+str_replace(char* strOut, char* strIn, char* oldStr, char* newStr)
+{
+    int total_len = (int)strlen(strIn);
+    char* pChar;
+    int lenBeg;
+
+    pChar= strstr(strIn,oldStr);
+    lenBeg = total_len-(int)strlen(pChar);
+    strncpy(strOut, strIn,lenBeg);
+    strOut[lenBeg] = 0;
+    strcat(strOut,newStr);
+    strcat(strOut,&strIn[lenBeg+strlen(oldStr)]);
+}
+
+#endif // SimpleCapture_h__
