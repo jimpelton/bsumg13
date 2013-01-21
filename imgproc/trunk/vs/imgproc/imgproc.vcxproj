@@ -84,7 +84,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractImageProcessor.cpp" />
-    <ClCompile Include="BufferPool.cpp" />
     <ClCompile Include="ImageProcessor405.cpp" />
     <ClCompile Include="ImageProcessor485.cpp" />
     <ClCompile Include="InlineBufferPool.cpp" />

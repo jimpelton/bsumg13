@@ -104,9 +104,6 @@
     <ClCompile Include="ImageProcessor485.cpp">
       <Filter>Source Files\ImageProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="BufferPool.cpp">
-      <Filter>Source Files\Buffer</Filter>
-    </ClCompile>
     <ClCompile Include="InlineBufferPool.cpp">
       <Filter>Source Files\Buffer</Filter>
     </ClCompile>
