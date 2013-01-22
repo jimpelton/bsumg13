@@ -13,7 +13,7 @@ namespace uG
         friend class ImageProcessorFactory;
 
     protected:
-        virtual long long accumulate(int starty, int startx, int centerx, int centery, 
+        virtual long long accumulate(int startx, int starty, int centerx, int centery, 
             int endx, int endy);
 
         //TODO:change constructor to protected...force factory usage.

@@ -17,13 +17,15 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QFile>
 #include <QtCore/QList>
-#include <QtCore/QStringBuilder>
+#include <QtCore/QRegExp>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QGraphicsItem>
 
 
 #define qstrnum(_inttype) QString::number(_inttype) 
+
+const int CIRCLESFILE_NUMLINES = 96+3;
 
 ugip::ugip(QWidget *parent)
     : QMainWindow(parent)
@@ -214,3 +216,72 @@ void ugip::on_renderGreenCirclesCheckbox_toggled( bool checked )
 {
     //TODO: implement ugip::on_renderGreenCirclesCheckbox_toggled( bool checked )
 }
+
+void ugip::parseCirclesFile( QString fileName )
+{
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly|QIODevice::Text);
+    QTextStream circles(&file);
+    int line=0;
+    QRegExp regex("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
+
+    while (!circles.atEnd() && line < CIRCLESFILE_NUMLINES)
+    {
+        QString s = circles.readLine();
+        //qDebug() << line <<" String: " << s;
+        if (regex.indexIn(s)!=0) {
+            qDebug() << "Couldn't match with regex!"; 
+            break;
+        }
+        QString key = regex.cap(1);
+        QString val = regex.cap(2);
+        QString val2 = regex.cap(3);
+        bool ok;
+        if (val2.isEmpty())
+        {
+
+            if (key == "imgx") {
+                m_imgWidth = val.toInt(&ok);
+                if (!ok) { qDebug() << "Couldn't convert val to m_imgWidth."; break; }
+            } else if (key == "imgy") {
+                m_imgHeight = val.toInt(&ok);
+                if (!ok) { qDebug() << "Couldn't convert val to m_imgHeight."; break; }
+            } else if (key == "crad") { 
+                m_radius = val.toInt(&ok);
+                if (!ok) { qDebug() << "Couldn't convert val to m_radius."; break; }
+            }
+            //qDebug() << "val2 was empty so I set something else.";
+        }
+        else
+        {
+
+            int x,y,k,row,col;
+
+            x = val.toInt(&ok);
+            //qDebug() << "x=" << x;
+            if (!ok) { qDebug() << "Couldn't convert val."; break; }
+
+            y = val2.toInt(&ok);
+            //qDebug() << "y=" << y;
+            if (!ok) { qDebug() << "Couldn't convert val2."; break; }
+
+            k=key.toInt(&ok); 
+            //qDebug() << "k=" << k;
+            if (!ok) { qDebug() << "Couldn't convert key."; break; }
+
+
+            row=  k/CENTERS_COL_COUNT;
+            col=  k%CENTERS_COL_COUNT;
+            //std::cout << "About to set: " << row << "," << col << "," << x << "," << y << std::endl;
+            center405x[row][col]=x;
+            center405y[row][col]=y;
+        }
+        ++line;
+    }
+    //std::cout << "Returning..." << std::endl;
+    return line;
+
+}
+
+
+

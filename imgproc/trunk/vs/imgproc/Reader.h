@@ -14,7 +14,9 @@
 
 namespace uG 
 {
-
+    /**
+      *	\brief Reads any file from disc and places the data into a buffer pool of char.
+      */
 class Reader
 {
 public:
@@ -34,9 +36,6 @@ public:
 
 private:
     Reader(){}
-
-    //! *rawData must point to NULL for new memory to be allocated, else it
-    //! overwrites existing data.
 
     std::vector<std::string> m_rawFile;
     ImageBufferPool *m_imagePool;

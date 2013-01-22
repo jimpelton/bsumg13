@@ -1,3 +1,6 @@
+
+
+
 #ifndef BUFFERPOOL_H
 #define BUFFERPOOL_H
 
@@ -11,7 +14,24 @@
 
 namespace uG
 {
-
+/**
+  *	\brief Monitor that supports multiple producers and consumers of
+  *	any number of recyclable buffers. Full buffers are recycled back to the empty pool.
+  *	
+  *	On request, hands out an empty buffer to a producer. The consumer may
+  *	then post the full buffer back to the BufferPool object upon which
+  *	the buffer pool will hand out the full buffer to a waiting consumer.
+  *	If there are no waiting consumers the pool will queue the full buffers
+  *	until they are requested. An empty buffer is recycled and given to
+  *	the next producer that requests an empty buffer.
+  *
+  * Note that while the BufferPool may easily receive and hand out buffers
+  * from many producers and consumers, it can not handle the case where multiple
+  * consumers must process the same buffer. That functionality must be handled
+  * by something external to the BufferPool.
+  * 
+  * //  [1/21/2013 jim]
+  */
 template <  class _Ty > 
 class BufferPool
 {
@@ -64,7 +84,9 @@ private:
     BufQueue m_FullBufferPool; /// full buffs.
     BufPool m_BufferPool;      /// empty buffs.
 };
-
+/************************************************************************/
+/*    BufferPool Implementation                                        */
+/************************************************************************/
 template < class _Ty >
 BufferPool< _Ty >::BufferPool(size_t nbufs, size_t bufsize, float loadfactor)
     : m_nbufs(nbufs)

@@ -54,12 +54,17 @@ private:
     
     int m_currentDisplayedFile;
 
+    int m_imgWidth, m_imgHeight, m_radius;
+    double **m_centersX, **m_centersY;
+
     void displaySingleImage(QString fileName);
 
     //error dialogs
     void fileNotOpened( QString fileName);
     void fileNotRead( QString fileName);
     void numberOfCirclesNot96();
+
+    void parseCirclesFile(QString fileName);
 
     private slots:
         void on_browseButton_clicked();

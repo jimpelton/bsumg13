@@ -9,6 +9,12 @@
 
 namespace uG
 {
+    /**
+      *	\brief Sets a processed pixel to 0 after it has been processed.
+      *	\see ImageProcessor485
+      *	
+      *	Note: modifies original data!
+      */
     class CircleDrawingImageProcessor485 : public ImageProcessor485
     {
     public:

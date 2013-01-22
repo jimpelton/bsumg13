@@ -12,6 +12,9 @@
 
 namespace uG
 {
+    /**
+      *	\brief Writes data to disc.
+      */
     class Writer
     {
 

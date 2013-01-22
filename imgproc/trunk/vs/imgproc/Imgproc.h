@@ -9,13 +9,16 @@
 
 #ifndef Imgproc_h__
 #define Imgproc_h__
+
+#include 
+
 /**
  *	\brief Provides an interface to the Imgproc system for client applications.
  */
 class Imgproc
 {
     //TODO: write me!
-
+    
 
 };
 

@@ -27,16 +27,11 @@ public:
     }
 
     ~QSelectableEllipse() { }
-    
- /*   void setColor(QColor c) { m_color = c; }
-    QColor getColor() const { return m_color; }*/
 
     int type() const { return Type; }
 
 private:
     enum { Type = UserType + 1 };
-    //QColor m_color;
-
 };
 
 /**
@@ -62,7 +57,7 @@ private:
     /// Which color to make the currently selected shape
     QColor m_color; 
 
-    ///A temp item.
+    /// The current graphics item.
     QGraphicsItem *m_item;
 
 

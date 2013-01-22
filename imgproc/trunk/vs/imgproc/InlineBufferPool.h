@@ -1,3 +1,14 @@
+
+
+/**
+ *	\brief The inlinebufferpool represents a simple thread-safe bufferpool
+ *	designed for one producer, and only one consumer.
+ *	
+ *	//  [1/21/2013 jim]
+ */
+
+
+
 //#ifndef BUFFERPOOL_H
 //#define BUFFERPOOL_H
 //

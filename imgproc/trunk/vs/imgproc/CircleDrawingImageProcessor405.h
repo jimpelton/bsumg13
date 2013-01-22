@@ -7,6 +7,12 @@
     
 namespace uG
 {
+    /**
+      *	\brief Sets a processed pixel to 0 after it has been processed.
+      *	\see ImageProcessor405
+      *	
+      *	Note: modifies original data!
+      */
 	class CircleDrawingImageProcessor405 : public ImageProcessor405
 	{
 

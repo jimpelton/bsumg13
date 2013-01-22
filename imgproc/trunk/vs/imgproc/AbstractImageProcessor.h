@@ -10,8 +10,7 @@ namespace uG
     typedef unsigned short raw_val_t;
 
     /**
-      *	\class AbstractImageProcessor
-      *	\brief Abstract base class for all image processors.
+      *	\brief Abstract base class for all ImageProcessor types.
       *	\see ImageProcessorFactory
       *	
       *	Used by Processor classes to reduce large image data to smaller 

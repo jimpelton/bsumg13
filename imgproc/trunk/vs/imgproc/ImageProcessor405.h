@@ -12,7 +12,7 @@ namespace uG
 	    friend class ImageProcessorFactory;
 	
 	protected:
-        /** Accumulate the pixel values between start and end parameters.*/
+        /** \brief Accumulate the pixel values between start and end parameters.*/
 	    virtual long long accumulate(int startx, int starty, int centerx, int centery, 
 	            int endx, int endy);
 	
@@ -24,7 +24,7 @@ namespace uG
 	    virtual ~ImageProcessor405();
 
         /**
-          * This version of process() also flips the 405 images because 
+          * \brief This version of process() also flips the 405 images because 
           * they are upside down and backwards!!!
           * Aieeeee!!!
           */
