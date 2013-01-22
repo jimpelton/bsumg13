@@ -37,6 +37,12 @@
     <Filter Include="Header Files\Global">
       <UniqueIdentifier>{bf834b71-45f7-4622-b02f-adbdadf18569}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Global">
+      <UniqueIdentifier>{0044236b-c612-46ff-b0f7-6515d9597889}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Public">
+      <UniqueIdentifier>{31f985c4-fc52-499d-b7b0-6865a6e34289}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImageProcessor405.h">
@@ -115,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="Writer.cpp">
       <Filter>Source Files\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgproc.cpp">
+      <Filter>Source Files\Public</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

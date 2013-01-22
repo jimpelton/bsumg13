@@ -10,7 +10,9 @@
 #ifndef Imgproc_h__
 #define Imgproc_h__
 
-#include 
+namespace uG
+{
+
 
 /**
  *	\brief Provides an interface to the Imgproc system for client applications.
@@ -19,7 +21,10 @@ class Imgproc
 {
     //TODO: write me!
     
+    Imgproc();
+    ~Imgproc();
 
 };
 
+}
 #endif // Imgproc_h__

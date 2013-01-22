@@ -27,8 +27,9 @@ namespace uG
             {
                 //pixel start/end
                 int wellIdx = (row * CENTERS_COL_COUNT)+col;
-                int centerx = static_cast<int>(center485x[row][col]);
-                int centery = static_cast<int>(center485y[row][col]);
+                uGCenter center = g_center485[wellIdx]; //485 wells
+                int centerx = center.x;
+                int centery = center.y;
 
                 int startx = centerx - RADIUS;
                 int starty = centery - RADIUS;

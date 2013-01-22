@@ -86,6 +86,7 @@
     <ClCompile Include="AbstractImageProcessor.cpp" />
     <ClCompile Include="ImageProcessor405.cpp" />
     <ClCompile Include="ImageProcessor485.cpp" />
+    <ClCompile Include="Imgproc.cpp" />
     <ClCompile Include="InlineBufferPool.cpp" />
     <ClCompile Include="Processor.cpp" />
     <ClCompile Include="Reader.cpp" />

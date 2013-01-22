@@ -29,8 +29,9 @@ namespace uG
                 //pixel start/end
                 //reversed wellIdx's
                 int wellIdx = 96 - ((row * CENTERS_COL_COUNT)+col);
-                int centerx = static_cast<int>(center405x[row][col]);
-                int centery = static_cast<int>(center405y[row][col]);
+                uGCenter center = g_center405[wellIdx]; //405 wells
+                int centerx = center.x;
+                int centery = center.y;
 
                 int startx = centerx - RADIUS;
                 int starty = centery - RADIUS;
