@@ -347,7 +347,7 @@ void ugip::on_circlesFileBrowseButton_clicked()
         ui.beginProcessingButton->setEnabled(true);
         ui.renderGreenCirclesCheckbox->setEnabled(true);
     } else {
-        fileNotOpened(file.first());
+        fileNotOpened("");
     }
 }
 
