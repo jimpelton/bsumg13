@@ -9,6 +9,7 @@
 class QSelectableEllipse : public QGraphicsEllipseItem
 {
 public:
+    enum { Type = UserType + 1 };
 
     explicit QSelectableEllipse(QGraphicsItem *parent=0)
         : QGraphicsEllipseItem(parent) 
@@ -29,9 +30,6 @@ public:
     ~QSelectableEllipse() { }
 
     int type() const { return Type; }
-
-private:
-    enum { Type = UserType + 1 };
 };
 
 /**

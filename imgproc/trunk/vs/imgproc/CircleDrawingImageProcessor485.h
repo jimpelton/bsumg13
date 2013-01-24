@@ -34,11 +34,11 @@ namespace uG
             {
                 for (int x = startx; x < endx; x++)
                 {
-                    int pixelIdx = (y * IMAGE_WIDTH)+x;
+                    int pixelIdx = (y * uG_IMAGE_WIDTH)+x;
                     int curx = x-centerx;
                     int cury = y-centery;
                     int dr = static_cast<int>(sqrtf( curx*curx + cury*cury ));
-                    if (dr<RADIUS) {
+                    if (dr<uG_RADIUS) {
                         rval += rawdata[pixelIdx];
                         rawdata[pixelIdx]=0;
                     }

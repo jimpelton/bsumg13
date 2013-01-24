@@ -3,7 +3,6 @@
 #define _IMAGEPROCESSOR405_H
 
 #include "AbstractImageProcessor.h"
-#include "Export.h"
 
 namespace uG
 {

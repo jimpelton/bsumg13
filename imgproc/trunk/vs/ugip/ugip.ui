@@ -100,7 +100,7 @@
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="outputDirButton">
           <property name="text">
            <string>Output Dir</string>
           </property>
@@ -199,7 +199,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="beginProcessingButton">
           <property name="enabled">
            <bool>false</bool>
           </property>

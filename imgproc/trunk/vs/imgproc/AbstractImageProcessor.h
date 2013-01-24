@@ -2,7 +2,6 @@
 #ifndef _ABSTRACTIMAGEPROCESSOR_H
 #define _ABSTRACTIMAGEPROCESSOR_H
 
-#include "Export.h"
 
 namespace uG
 {
@@ -41,11 +40,12 @@ namespace uG
           */
         virtual void process() = 0;
 
-        void setData(const unsigned char *d) { m_data = d; }
+        void setInput(const unsigned char *d) { m_data = d; }
 
         void setOutput(long long *outdat) { m_wellValues = outdat; }
 
     };
+
 } /* namespace uG */
 
 

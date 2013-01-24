@@ -2,6 +2,8 @@
 
 #include "Centers.h"
 
+using namespace uG;
+
 QSelectableCircleScene::QSelectableCircleScene(QObject *parent)
     : QGraphicsScene(parent)
 {
@@ -32,12 +34,12 @@ void QSelectableCircleScene::mousePressEvent( QGraphicsSceneMouseEvent *event )
     switch (m_mode)
     {
     case InsertCircle:
-        circle = new QSelectableEllipse(0,0,RADIUS*2.0, RADIUS*2.0);
+        circle = new QSelectableEllipse(0,0,uG_RADIUS*2.0, uG_RADIUS*2.0);
         circle->setPen(QPen(m_color));
         circle->setZValue(100);
         circle->setVisible(true);
         addItem(circle);
-        circle->setPos(pf.x()-RADIUS, pf.y()-RADIUS);
+        circle->setPos(pf.x()-uG_RADIUS, pf.y()-uG_RADIUS);
         emit insertedNewCircle(circle);
     	break;
     case AdjustCircle:

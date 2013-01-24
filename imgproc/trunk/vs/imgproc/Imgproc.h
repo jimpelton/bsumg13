@@ -16,15 +16,21 @@ namespace uG
 
 /**
  *	\brief Provides an interface to the Imgproc system for client applications.
+ *	
  */
-class Imgproc
-{
-    //TODO: write me!
-    
-    Imgproc();
-    ~Imgproc();
+    //template < class _ImgTy< int _nWellCnt >, class _ProcTy >
+    class Imgproc 
+    {
+    public:
+        //_ImgTy< _nWellCnt > *image;
+        //_ProcTy *processor;
 
-};
+        Imgproc();
+        ~Imgproc();
+
+        ///add center to the centers collection.
+        //uGCenter addCenter(double x, double y, double r);
+    };
 
 }
 #endif // Imgproc_h__

@@ -5,7 +5,6 @@
 
 #include "ImageProcessor405.h"
 #include "ImageProcessor485.h"
-#include "Export.h"
 
 namespace uG
 {

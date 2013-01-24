@@ -21,20 +21,20 @@ namespace uG
 
     void ImageProcessor485::process()
     {
-        for(int row = 0; row<CENTERS_ROW_COUNT; row++)
+        for(int row = 0; row<uG_CENTERS_ROW_COUNT; row++)
         {
-            for (int col = 0; col<CENTERS_COL_COUNT; col++)
+            for (int col = 0; col<uG_CENTERS_COL_COUNT; col++)
             {
                 //pixel start/end
-                int wellIdx = (row * CENTERS_COL_COUNT)+col;
-                uGCenter center = g_center485[wellIdx]; //485 wells
+                int wellIdx = (row * uG_CENTERS_COL_COUNT)+col;
+                uGCenter center = uGcenter485[wellIdx]; //485 wells
                 int centerx = center.x;
                 int centery = center.y;
 
-                int startx = centerx - RADIUS;
-                int starty = centery - RADIUS;
-                int endx   = centerx + RADIUS;
-                int endy   = centery + RADIUS;
+                int startx = centerx - uG_RADIUS;
+                int starty = centery - uG_RADIUS;
+                int endx   = centerx + uG_RADIUS;
+                int endy   = centery + uG_RADIUS;
 
                 // if (startx<0) startx=0;
                 // if (starty<0) starty=0;
@@ -57,11 +57,11 @@ namespace uG
         {
             for (int x = startx; x < endx; x++)
             {
-                int pixelIdx = (y * IMAGE_WIDTH)+x;
+                int pixelIdx = (y * uG_IMAGE_WIDTH)+x;
                 int curx = x-centerx;
                 int cury = y-centery;
                 int dr = static_cast<int>(sqrtf( (float)(curx*curx + cury*cury) ));
-                if (dr<RADIUS) rval += rawdata[pixelIdx];
+                if (dr<uG_RADIUS) rval += rawdata[pixelIdx];
             }
         }
         return rval;
