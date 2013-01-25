@@ -41,7 +41,10 @@ namespace uG
         ofstream ofile(outfile, std::ios::out);
 
         if (!ofile.is_open())
+        {
             cerr << outfile << " never opened for output! Can't write output file!" << endl;
+            return;
+        }
 
         stringstream filetext;
         for(int i = 0; i < 96; i++)

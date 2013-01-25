@@ -1,6 +1,6 @@
 
 #include "Util.h"
-#include "ugip.h"
+#include "uigp2.h"
 
 #include "Reader.h"
 #include "Processor.h"
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
             return doCL(argc, argv);
     }
     QApplication app(argc, argv);
-    ugip mw;
+    uigp2 mw;
     mw.show();
     return app.exec();
 }

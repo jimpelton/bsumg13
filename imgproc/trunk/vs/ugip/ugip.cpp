@@ -5,7 +5,7 @@
 #include "Reader.h"
 #include "Writer.h"
 #include "Centers.h"
-#include "ImageProcessorFactory.h"
+#include "WorkerThread.h"
 #include "AbstractImageProcessor.h"
 #include "ImageProcessor405.h"
 #include "ImageProcessor485.h"
@@ -21,18 +21,56 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QString>
 #include <QtCore/QStringBuilder>
+#include <QtCore/QVector>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QGraphicsItem>
 
+//just wouldn't be complete w/o these stl classics!
+#include <vector>
+#include <string>
+
 /************************************************************************/
 /*                    //TOTAL HACK JOB\\                                */
+/*    Note that this is experimental code to learn Qt and help          */
+/*    develop the imgproc interface into something that is at least     */ 
+/*    somewhat gui-friendly. //  [1/24/2013 jim]                        */  
 /************************************************************************/
 
 #define qstrnum(_inttype) QString::number(_inttype) 
 
+using uG::BufferPool;
+using uG::Processor;
+using uG::Writer;
+using uG::Reader;
+using uG::WorkerThread;
+
+using std::string;
+using std::vector;
+
+/************************************************************************/
+/*   CONST DEFINITIONS                                                  */
+/************************************************************************/
+
+const int NUM_READERS = 4;
+const int NUM_PROCS   = 2;
+const int NUM_WRITE   = 2;
 const int CIRCLESFILE_NUMLINES = 96+3;
-using namespace uG;
+
+bool sortCenterByX(const uG::uGCenter &lhs, const uG::uGCenter &rhs)
+{
+    return lhs.x < rhs.x;
+}
+
+bool sortCenterByY(const uG::uGCenter &lhs, const uG::uGCenter &rhs)
+{
+    return lhs.y < rhs.y;
+}
+
+
+/************************************************************************/
+/*        CLASS IMPLEMENTATION                                          */
+/************************************************************************/
 
 ugip::ugip(QWidget *parent)
     : QMainWindow(parent)
@@ -56,11 +94,11 @@ ugip::ugip(QWidget *parent)
 
 ugip::~ugip() { }
 
-// public SLOT
+// public SLOT // callback from the graphics scene.
 void ugip::circleAdded(QSelectableEllipse *el)
 {   
     QPointF pf = el->scenePos();
-    qDebug() << "added this circle: (x,y,r)=(" << pf.x() << "," << pf.y() << "," << uG_RADIUS << ")"  ;
+    qDebug() << "added this circle: (x,y,r)=(" << pf.x() << "," << pf.y() << "," << uG::uG_RADIUS << ")"  ;
     ui.graphicsView->update();
     
     ++m_circleCount;
@@ -113,7 +151,7 @@ void ugip::displaySingleData(unsigned char *_16bitData, size_t szData)
         data8bit[i] = (unsigned char) (dsauce[i]>>8);
     }
     
-    image = QImage(data8bit, uG_IMAGE_WIDTH, uG_IMAGE_HEIGHT, QImage::Format_Indexed8);
+    image = QImage(data8bit, uG::uG_IMAGE_WIDTH, uG::uG_IMAGE_HEIGHT, QImage::Format_Indexed8);
     scene->setSceneRect(image.rect());
     ui.graphicsView->setBackgroundBrush(QPixmap::fromImage(image));
 
@@ -143,7 +181,9 @@ void ugip::processCurrentImage(bool is405, long long *data)
     aip->process();
 }
 
-
+/************************************************************************/
+/*   PRIVATE SLOTS                                                      */
+/************************************************************************/
 
 void ugip::on_browseButton_clicked()
 {
@@ -160,11 +200,6 @@ void ugip::on_browseButton_clicked()
         ui.fileDirectoryLineEdit->setText(m_inputDirName);
         ui.scanFilesButton->setEnabled(true);
     }
-}
-
-void ugip::scanFiles()
-{
-
 }
 
 void ugip::on_scanFilesButton_clicked()
@@ -240,7 +275,7 @@ void ugip::on_saveGreenCirclesButton_clicked()
 
         fileText << "[imgx]:" << scene->width()  << "\n" <<    //image x dim
                     "[imgy]:" << scene->height() << "\n" <<    //image y dim
-                    "[crad]:" << uG_RADIUS << "\n";            //circle radius
+                    "[crad]:" << uG::uG_RADIUS << "\n";            //circle radius
 
         int i=0;
         foreach(QGraphicsItem *item, circles) 
@@ -248,7 +283,7 @@ void ugip::on_saveGreenCirclesButton_clicked()
             QPointF pf = item->pos();
             qDebug()<<pf;
             fileText << "[" % qstrnum(i) % "]:" 
-                % qstrnum(pf.x()+uG_RADIUS) % ',' % qstrnum(pf.y()+uG_RADIUS) % '\n';
+                % qstrnum(pf.x()+uG::uG_RADIUS) % ',' % qstrnum(pf.y()+uG::uG_RADIUS) % '\n';
             i+=1;
         }
     } else { fileNotOpened( fileName ); return; }
@@ -257,8 +292,49 @@ void ugip::on_saveGreenCirclesButton_clicked()
 
 void ugip::on_renderGreenCirclesCheckbox_toggled( bool checked )
 {
-    //TODO: implement ugip::on_renderGreenCirclesCheckbox_toggled( bool checked )
+    throw std::exception("on_renderGreenCirclesCheckbox_toggled not implemented.");
 }
+
+void ugip::on_circlesFileBrowseButton_clicked()
+{
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    QStringList file;
+    if (dialog.exec())
+        file = dialog.selectedFiles();
+
+    if (file.size()>0) {
+        m_circlesFile = file.front();
+        int lines = parseCirclesFile(m_circlesFile);
+        qDebug() << "Parsed " << lines << "lines, " << m_circleCount << " circles.";
+        ui.circlesFileLineEdit->setText(m_circlesFile);
+        processCurrentImage(m_currentIs405);
+        ui.renderDebugCirclesCheckbox->setEnabled(true);
+        ui.beginProcessingButton->setEnabled(true);
+        ui.renderGreenCirclesCheckbox->setEnabled(true);
+    } else {
+        fileNotOpened("");
+    }
+}
+
+void ugip::on_beginProcessingButton_clicked()
+{
+    createPipeline();
+}
+
+void ugip::on_outputDirButton_clicked()
+{
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    QStringList fileName;
+    if (dialog.exec())
+        fileName = dialog.selectedFiles();
+    m_outputDirName = fileName.first();
+}
+
+/************************************************************************/
+/*   PRIVATE HELPERS                                                   */
+/************************************************************************/
 
 int ugip::parseCirclesFile( QString fileName )
 {
@@ -266,9 +342,10 @@ int ugip::parseCirclesFile( QString fileName )
     file.open(QIODevice::ReadOnly|QIODevice::Text);
     QTextStream circles(&file);
     int line = m_circleCount = 0;
-
+    vcent centers;
     //[xx]|[abcd]:[xxxx],[xxxx]
     QRegExp regex("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
+
 
     while (!circles.atEnd() && line < CIRCLESFILE_NUMLINES)
     {
@@ -315,50 +392,60 @@ int ugip::parseCirclesFile( QString fileName )
             if (!ok) { qDebug() << "Couldn't convert key."; break; }
 
 
-            //row=  k/uG::uG_CENTERS_COL_COUNT;
-            //col=  k%uG::uG_CENTERS_COL_COUNT;
             uG::uGCenter c = { (double)x, (double)y, (double)m_radius };
-            uG::uGcenter405[k] = c;
+            centers.push_back(c);
+            //centers[k].x = c.x;
+            //centers[k].y = c.y;
+            //centers[k].r = c.r;
+
             ++m_circleCount;
             //std::cout << "About to set: " << row << "," << col << "," << x << "," << y << std::endl;
         }
         ++line;
     }
+
+    //sort and copy to imgproc system.
+    vvcent rows;
+    findRows(centers, rows, 45);
+    int idx=0;
+    foreach(vcent r, rows)
+    {
+        foreach(uG::uGCenter c, r)
+        {
+            uG::uGcenter405[idx] = c;
+            idx++;
+        }
+    }
     //std::cout << "Returning..." << std::endl;
     return line;
-
 }
 
-void ugip::on_circlesFileBrowseButton_clicked()
+void ugip::findRows( QVector<uG::uGCenter> &centers, 
+    QVector< QVector< uG::uGCenter > > &rows, 
+    int dist_thresh)
 {
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    QStringList file;
-    if (dialog.exec())
-        file = dialog.selectedFiles();
+    if (rows.size() < 8) { rows.reserve(8); }
 
-    if (file.size()>0) {
-        m_circlesFile = file.front();
-        int lines = parseCirclesFile(m_circlesFile);
-        qDebug() << "Parsed " << lines << "lines, " << m_circleCount << " circles.";
-        ui.circlesFileLineEdit->setText(m_circlesFile);
-        processCurrentImage(m_currentIs405);
-        ui.renderDebugCirclesCheckbox->setEnabled(true);
-        ui.beginProcessingButton->setEnabled(true);
-        ui.renderGreenCirclesCheckbox->setEnabled(true);
-    } else {
-        fileNotOpened("");
-    }
-}
+    qSort(centers.begin(), centers.end(), sortCenterByY);
 
-void ugip::on_beginProcessingButton_clicked()
-{
+	vcent::iterator centerIt = centers.begin();
+	vcent::iterator centerIt_end = centers.end()-1;
 
-}
-
-void ugip::on_outputDirButton_clicked()
-{
-
+    int curRow = 0;	
+	while (centerIt != centerIt_end) 
+	{
+        //check for y diff that is large enough to be on a new row        
+		if ( qAbs( (*centerIt).y - (*(centerIt+1)).y ) > dist_thresh) 
+        {
+            vcent aRow = rows[curRow];
+            qSort(aRow.begin(), aRow.end(), sortCenterByX);
+			aRow.push_back(*centerIt);
+            curRow+=1;
+            if (curRow == rows.size()) break; //on last row.
+		}
+		else { rows[curRow].push_back(*centerIt); }
+        ++centerIt;
+	}
 }
 
 /************************************************************************/
@@ -381,3 +468,74 @@ void ugip::numberOfCirclesNot96()
         "You have chosen to save a circles file that contains"\
         " more or less than 96 circles. Just sayin...");
 }
+
+
+/************************************************************************/
+/*        CREATE PIPELINE                                               */
+/************************************************************************/
+
+void ugip::createPipeline()
+{
+    typedef vector<string> stringVector; 
+    //vector madness!
+    vector<stringVector> readerFilesVec(NUM_READERS);
+    vector<Reader*> readers;
+    vector<Processor*> procs;
+    vector<Writer*> writers;
+    vector<WorkerThread*> workers;    
+
+    uG::ImageBufferPool imgbp(60, m_currentDataSize);
+    uG::DataBufferPool  datbp(20, 96);
+
+    //partition file names for Readers
+    int i = 0;
+    QStringList::iterator it = m_fileNames.begin();
+    while ( it != m_fileNames.end() ) {
+        QString f = m_inputDirName % '/' % *it;
+        readerFilesVec.at(i%NUM_READERS).push_back(f.toStdString());
+        ++it; ++i;
+    }
+    
+    for (int i = 0; i < NUM_READERS; ++i)
+    {
+        Reader *r = new Reader(readerFilesVec[i], &imgbp);
+        readers.push_back(r);
+        workers.push_back(new WorkerThread(r->do_work, (void*)r));
+    }
+
+    for (int i = 0; i < NUM_PROCS; ++i)
+    {
+        Processor *p = new Processor(&imgbp, &datbp);
+        procs.push_back(p);
+        workers.push_back(new WorkerThread(p->do_work, (void*)p));
+    }
+
+    string outpath = m_outputDirName.toStdString() + "/";
+    for (int i = 0; i < NUM_WRITE; ++i)
+    {
+        Writer *w = new Writer(outpath, &datbp);
+        writers.push_back(w);
+        workers.push_back(new WorkerThread(w->do_work, (void*)w));
+    }
+
+     
+    std::cout << "Created: " << readers.size() << " reader threads.\n";
+    std::cout << "Created: " << procs.size() << " processor threads.\n";
+    std::cout << "Created: " << writers.size() << " writer threads.\n";
+    std::cout << "Starting threads..." << std::endl;
+
+    vector<WorkerThread*>::iterator worker_iter = workers.begin();
+    for (; worker_iter != workers.end(); ++worker_iter)
+    {
+        (*worker_iter)->go();
+    }
+
+    worker_iter = workers.begin();
+    for(; worker_iter != workers.end(); ++worker_iter)
+    {
+        (*worker_iter)->join();
+    }
+}
+
+
+

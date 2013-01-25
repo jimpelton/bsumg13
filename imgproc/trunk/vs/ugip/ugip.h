@@ -3,7 +3,10 @@
 
 #include "QSelectableCircleScene.h"
 
+#include "Centers.h"
+
 #include <QtCore/QString>
+#include <QtCore/QVector>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QGraphicsScene>
 #include <QtGui/QImage>
@@ -23,6 +26,9 @@ class ugip : public QMainWindow
     Q_OBJECT
 
 public:
+    typedef QVector< uG::uGCenter > vcent;
+    typedef QVector< vcent > vvcent;
+
     ugip(QWidget *parent = 0);
     
     ~ugip();
@@ -72,8 +78,11 @@ private:
 
     unsigned char * openImage(QString fileName, size_t &szAlloc);
 
-    void scanFiles();
+    void createPipeline();
 
+    void findRows( QVector<uG::uGCenter> &centers, 
+        QVector< QVector< uG::uGCenter > > &rows, 
+        int dist_thresh);
 
     //error dialogs
     void fileNotOpened( QString fileName);
@@ -91,7 +100,7 @@ private:
         void on_saveGreenCirclesButton_clicked();
         void on_renderGreenCirclesCheckbox_toggled(bool checked);
         void on_circlesFileBrowseButton_clicked();
-       
+
 
 };
 

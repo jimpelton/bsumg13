@@ -42,7 +42,7 @@ DWORD WINAPI Reader::do_work(LPVOID aReader)
         
         ImageBuffer *imgbuf = me->m_imagePool->getFreeBuffer();
 
-        imgbuf->id = it->substr(it->find_last_of('\\')+1);
+        imgbuf->id = it->substr(it->find_last_of('/')+1);
         if ( !(me->openImage(*it, &imgbuf->data)) ) return 1;
         me->m_imagePool->postFullBuffer(imgbuf);
         std::cout << me->m_tid << ": Reader posted full buffer." << std::endl;
