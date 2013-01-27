@@ -27,11 +27,12 @@ public:
     }
 
 signals:
-    void haveValidImageDir(QString dir);
-    void haveValidOutputDir(QString outDir);
-    void haveCirclesFileName(QString circlesFileName);
-
-    void scannedFileFound(QString filePath, float percent);
+    void imageDir(QString dir);
+    void outputDir(QString outDir);
+    void circlesFileName(QString circlesFileName);
+    void startProcessing();
+    void scannedFile(QString filePath, float percent);
+    void doneScan();
 
 private:
     QString m_imageDir;
@@ -47,8 +48,7 @@ private slots:
     void on_outputDirButton_clicked();
     void on_scanFilesDirectoryButton_clicked();
     void on_circlesFileButton_clicked();
-
-    
+    void on_beginProcessingButton_clicked();
 };
 
 #endif // INPUTFRAME_H

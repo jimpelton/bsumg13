@@ -10,9 +10,18 @@
 class InfoWidget : public QWidget, public Ui::InfoWidget
 {
     Q_OBJECT
+
 public:
     InfoWidget(QWidget *parent=0);
     ~InfoWidget();
+
+    SaveShowFrame *getSaveShowFrame() const {
+        return this->saveShowFrame;
+    }
+
+    InputFrame *getInputFrame() const {
+        return this->inputFrame;
+    }
 
 };
 

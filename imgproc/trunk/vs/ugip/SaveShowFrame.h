@@ -22,9 +22,14 @@ public:
     ~SaveShowFrame();
 
 signals:
+    /// notify gui to show the circles entered with mouse clicks or loaded
+    /// via a circles file.
     void showPickedCircles(bool);
+
+    /// notify gui to draw the debug circles with a debuging image processor.
     void showDebugCircles(bool);
-    /// send the filename of the desired circles.
+
+    /// notify of the filename to save, and possibly save.
     void saveCircles(QString);
 
 private slots:

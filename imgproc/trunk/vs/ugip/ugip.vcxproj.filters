@@ -43,23 +43,11 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ugip.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_ugip.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="Util.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ugip.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ugip.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\debug-gui\moc_ugip.cpp">
-      <Filter>Generated Files\debug-gui</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\debug-gui\moc_QClickableGraphicsView.cpp">
       <Filter>Generated Files\debug-gui</Filter>
@@ -136,14 +124,11 @@
     <ClCompile Include="InfoWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CirclesFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="ugip.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ugip.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="ugip.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
@@ -155,9 +140,6 @@
     </CustomBuild>
     <CustomBuild Include="uigp2.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="uigp2.ui">
-      <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="InputFrame.ui">
       <Filter>Form Files</Filter>
@@ -177,11 +159,11 @@
     <CustomBuild Include="InfoWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="uigp2.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_ugip.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -190,9 +172,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_uigp2.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_InputFrame.h">
       <Filter>Generated Files</Filter>
@@ -203,8 +182,11 @@
     <ClInclude Include="GeneratedFiles\ui_InfoWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="ugip.rc" />
+    <ClInclude Include="GeneratedFiles\ui_uigp2.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CirclesFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

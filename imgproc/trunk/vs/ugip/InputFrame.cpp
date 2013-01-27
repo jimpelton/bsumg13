@@ -19,7 +19,8 @@ InputFrame::InputFrame(QWidget *parent)
 InputFrame::~InputFrame() { }
 
 void InputFrame::on_imageDirButton_clicked()
-{    QFileDialog dialog(this);
+{
+    QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOption(QFileDialog::ShowDirsOnly);
 
@@ -32,12 +33,12 @@ void InputFrame::on_imageDirButton_clicked()
         if (dir.exists()) {
             m_imageDir = dir.absolutePath();
             imageDirLineEdit->setText(m_imageDir);
-            scanFilesDirctoryButton->setEnabled(true);
-            m_haveValidImageDir=true;
-            emit haveValidImageDir(m_imageDir);
+            scanFilesDirectoryButton->setEnabled(true);
+            //m_haveValidImageDir=true;
+            emit imageDir(m_imageDir);
         } else {
-            scanFilesDirctoryButton->setEnabled(false);
-            m_haveValidImageDir=false;
+            scanFilesDirectoryButton->setEnabled(false);
+            //m_haveValidImageDir=false;
             QMessageBox::information(NULL, "Invalid directory.", "The directory doesn't exist.");
         }
     }
@@ -59,7 +60,7 @@ void InputFrame::on_outputDirButton_clicked()
             m_outputDir = dir.absolutePath();
             outputDirLineEdit->setText(m_outputDir);
             m_haveValidOutpuDir=true;
-            emit haveValidOutputDir(m_outputDir);
+            emit outputDir(m_outputDir);
         } else {
             m_haveValidOutpuDir=false;
             QMessageBox::information(NULL, "Invalid directory.", "The directory doesn't exist.");
@@ -81,9 +82,12 @@ void InputFrame::on_scanFilesDirectoryButton_clicked()
     while (iter.hasNext()) {
         iter.next();
         ++found;
-        emit scannedFileFound(iter.filePath(), found/(float)numfiles);
+        //emit absolute path 
+        emit scannedFile(iter.filePath(), found/(float)numfiles);
     }
     qDebug() << "Scanned: " << found << ".raw files.";
+    emit doneScan();
+
 }
 
 void InputFrame::on_circlesFileButton_clicked()
@@ -95,9 +99,14 @@ void InputFrame::on_circlesFileButton_clicked()
     if (dialog.exec())
         file = dialog.selectedFiles();
 
-    if (file.size() > 0){
+    if (file.size() > 0) {
         m_circlesFileName = file.front();
         circlesFileLineEdit->setText(m_circlesFileName);
-        emit haveCirclesFileName(m_circlesFileName);
+        emit circlesFileName(m_circlesFileName);
     }
+}
+
+void InputFrame::on_beginProcessingButton_clicked()
+{
+    emit startProcessing();
 }

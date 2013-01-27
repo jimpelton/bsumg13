@@ -30,6 +30,7 @@ public:
     ~QSelectableEllipse() { }
 
     int type() const { return Type; }
+    float radius() const { return rect().x()/2.f; }
 };
 
 /**

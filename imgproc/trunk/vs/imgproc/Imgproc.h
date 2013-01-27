@@ -6,6 +6,7 @@
 	purpose:	The main Imgproc interface for client applications.
 *********************************************************************/
 
+#include "Centers.h"
 
 #ifndef Imgproc_h__
 #define Imgproc_h__
@@ -29,7 +30,12 @@ namespace uG
         ~Imgproc();
 
         ///add center to the centers collection.
-        //uGCenter addCenter(double x, double y, double r);
+        static void addCenter(int idx, double x, double y, double r)
+        {
+            uGcenter405[idx].x = x;
+            uGcenter405[idx].y = y;
+            uGcenter405[idx].r = r;
+        }
     };
 
 }

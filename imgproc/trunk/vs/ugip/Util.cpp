@@ -1,9 +1,15 @@
 #include "Util.h"
 #include "CLParser.h"
+#include "Imgproc.h"
 
 #include <iostream>
+#include <fstream>
+#include <string>
 
 #define cltest(_arg, _test) strcmp(_arg, _test)==0
+
+using std::vector;
+using std::string;
 
 const char *EXTENSION = ".raw";
 
@@ -17,9 +23,12 @@ bool parseArgs( int argc, char **argv )
 
     if (CLParser::ParseCL_flag("text"))
     {
-        CLParser::ParseCL_s("-c", &circlesFile);
-        CLParser::ParseCL_s("-i", &infile);
-        CLParser::ParseCL_s("-o", &outfile);
+        if (CLParser::ParseCL_s("-c", &circlesFile))
+            std::cout << "Circles File: " << circlesFile << std::endl;
+        if (CLParser::ParseCL_s("-i", &infile))
+            std::cout << "Input dir: " << infile << std::endl;
+        if (CLParser::ParseCL_s("-o", &outfile))
+            std::cout << "Output dir: " << outfile << std::endl;
     }
 
     if (argc < 8)
@@ -74,5 +83,4 @@ void getDirEntries( const std::string &dir_path,
         std::cerr << ex.what() << '\n';
     }
 }
-
 
