@@ -35,7 +35,7 @@ int writeCirclesFile(const string filename,
   *	\brief Sort centers into rows, then rows into columns.
   */
 void findRows(vector<CenterInfo> &centers, 
-              vector< vector< CenterInfo > > &rows, 
+              vector<vector<CenterInfo > > &rows, 
               int dist_thresh);
 
 /** 

@@ -87,7 +87,6 @@ void InputFrame::on_scanFilesDirectoryButton_clicked()
     }
     qDebug() << "Scanned: " << found << ".raw files.";
     emit doneScan();
-
 }
 
 void InputFrame::on_circlesFileButton_clicked()

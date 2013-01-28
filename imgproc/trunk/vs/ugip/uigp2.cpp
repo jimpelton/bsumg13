@@ -56,6 +56,9 @@ uigp2::uigp2(QWidget *parent)
 
 uigp2::~uigp2() { }
 
+/************************************************************************/
+/*    PUBLIC SLOTS                                                      */
+/************************************************************************/
 void uigp2::addSelectedCircle( QSelectableEllipse* eee ) 
 {
     CenterInfo c;
@@ -135,6 +138,7 @@ void uigp2::saveCirclesFile(QString fname)
         if (item->type() == QSelectableEllipse::Type) {
 
             QSelectableEllipse *eee = qgraphicsitem_cast<QSelectableEllipse*>(item);
+            //TODO: this radius is not correct (always ==0?).
             int rad = eee->radius();
             CenterInfo c = 
             {

@@ -10,9 +10,11 @@
 #include <fstream>
 #include <math.h>
 #include <algorithm>
+#include <regex>
 
 using namespace std;
 
+typedef std::vector<CenterInfo > centerVector;
 
 bool sortCenterByX(CenterInfo &lhs, CenterInfo &rhs)
 {
@@ -24,12 +26,10 @@ bool sortCenterByY(CenterInfo &lhs, CenterInfo &rhs)
     return rhs.y < lhs.y;
 }
 
-void findRows(vector<CenterInfo> &centers, 
-              vector<vector<CenterInfo > > &rows, 
+void findRows(centerVector &centers, 
+              std::vector<centerVector > &rows, 
               int dist_thresh)
 {
-    typedef vector<CenterInfo> centerVector;
-
 
     std::sort(centers.begin(), centers.end(), sortCenterByY);
 
@@ -41,9 +41,9 @@ void findRows(vector<CenterInfo> &centers,
         // split into rows, and sort each row by X coord.       
 		if ( std::abs( (*centerIt).y - (*(centerIt+1)).y ) > dist_thresh) 
         {
-            centerVector aRow = rows[curRow];
-            std::sort(aRow.begin(), aRow.end(), sortCenterByX);
-			aRow.push_back(*centerIt);
+            centerVector *aRow = &rows[curRow];
+			aRow->push_back(*centerIt);
+            std::sort(aRow->begin(), aRow->end(), sortCenterByX);
             curRow+=1;
             if ( curRow == rows.size() ) break; //on last row.
 		}
@@ -73,12 +73,16 @@ int writeCirclesFile(const string filename,
     findRows(centers, rows, 60);
 
     int i=0;
-    vector<CenterInfo>::const_iterator end = centers.end();
-    for (vector<CenterInfo>::const_iterator c = centers.begin(); c!=end; ++c)
+    vector<centerVector >::const_iterator rowsEnd = rows.cend();
+    for (vector<centerVector >::const_iterator row = rows.cbegin(); row!=rowsEnd; ++row)
     {
-        fileText << "[" << i << "]:" <<
-             c->x+c->r << ',' << c->y+c->r << '\n';
-        i+=1;
+        centerVector::const_iterator rowend = row->cend();
+        for (centerVector::const_iterator c = row->cbegin(); c != rowend; ++c )
+        {
+            fileText << "[" << i << "]:" <<
+                c->x + c->r << ',' << c->y + c->r << '\n';
+            i+=1;
+        }
     }
 
     file << fileText.str();
@@ -91,41 +95,36 @@ int writeCirclesFile(const string filename,
 int parseCirclesFile( string fileName )
 {
     ifstream file(fileName, std::ios::in);
-    int nLines = 0, nCirc = 0;
     if (!file.is_open()) {
         std::cerr << "Couldn't open give circles file: " << fileName << std::endl;
         return -1;
     }
 
-    //[xx]|[abcd]:[xxxx],[xxxx]
-    //QRegExp regex("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
+    int nLines = 0, nCirc = 0;
 
+    //[xx]|[abcd]:[xxxx],[xxxx]
+    regex reg("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
+    cmatch cm;
     char line[50];
     while (!file.eof() && nLines < 500) //500 chosen just for sanity.
     {
         file.getline(line, 50);
-        //if (regex.indexIn(s)!=0) {
-        //    std::cerr << "Couldn't match with regex!" << std::endl;
-        //    break;
-        //}
-        string key = "";//  regex.cap(1);
-        string val = "";//  regex.cap(2);
-        string val2 ="";//  regex.cap(3);
-
+        regex_match(line, cm, reg);
+        string key(cm[1]);
+        string val(cm[2]);
+        string val2(cm[3]);
+                  
         int imgWidth=0, imgHeight=0, radius=1;
         if (val2.empty()) //hmm... seems a bit sketchy...
         {
             try
             {
-                if (key == "imgx") {
-                    imgWidth = std::stoi(val) ;
-                    //if (!ok) { std::cerr << "Couldn't convert val to m_imgWidth." << std::endl; break; }
+                if (key == "imgx") {  //possible use of std::map in future? --JP
+                    imgWidth = std::stoi(val);
                 } else if (key == "imgy") {
                     imgHeight = std::stoi(val);
-                    //if (!ok) { std::cerr  << "Couldn't convert val to m_imgHeight." << std::endl; break; }
                 } else if (key == "crad") { 
                     radius = std::stoi(val);
-                    //if (!ok) { std::cerr << "Couldn't convert val to m_radius." << std::endl; break; }
                 }
             }
             catch (std::exception &eek)
@@ -161,7 +160,6 @@ int parseCirclesFile( string fileName )
                 return -1;
             }
 
-            //TODO: specify 485/405 array somehow.
             uG::Imgproc::addCenter(k,x,y,radius);
             ++nCirc;
         }
