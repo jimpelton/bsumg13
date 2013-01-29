@@ -16,14 +16,16 @@ using namespace std;
 
 typedef std::vector<CenterInfo > centerVector;
 
+//sort ascending by X
 bool sortCenterByX(CenterInfo &lhs, CenterInfo &rhs)
 {
-    return  rhs.x < lhs.x;
+    return  lhs.x < rhs.x;
 }
 
+//sort ascending by Y
 bool sortCenterByY(CenterInfo &lhs, CenterInfo &rhs)
 {
-    return rhs.y < lhs.y;
+    return lhs.y < rhs.y;
 }
 
 void findRows(centerVector &centers, 
@@ -37,27 +39,31 @@ void findRows(centerVector &centers,
 	centerVector::iterator centerIt_end = centers.end()-1;
 
     int curRow = 0;	
+    centerVector *aRow;
 	while (centerIt != centerIt_end) {
         // split into rows, and sort each row by X coord.       
-		if ( std::abs( (*centerIt).y - (*(centerIt+1)).y ) > dist_thresh) 
-        {
-            centerVector *aRow = &rows[curRow];
+		if ( std::abs( (*centerIt).y - (*(centerIt+1)).y ) > dist_thresh) {
+            aRow = &rows[curRow];
 			aRow->push_back(*centerIt);
             std::sort(aRow->begin(), aRow->end(), sortCenterByX);
             curRow+=1;
-            if ( curRow == rows.size() ) break; //on last row.
+            if ( curRow == rows.size() ) break; //on last row. //never true?
 		}
 		else { rows[curRow].push_back(*centerIt); }
         ++centerIt;
 	}
+    rows[curRow].push_back(*centerIt);
+    //rows[curRow].push_back(*(centerIt+1));
+    aRow = &rows[curRow]; 
+    std::sort(aRow->begin(), aRow->end(), sortCenterByX);
+    
 }
 
 int writeCirclesFile(const string filename, 
     vector<CenterInfo> centers, ImageInfo img)
 {
     ofstream file(filename, std::ios::out);
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         std::cerr << filename << " never opened for output! Can't write circles file." << std::endl;
         return -1;
     }
@@ -113,7 +119,7 @@ int parseCirclesFile( string fileName )
         string key(cm[1]);
         string val(cm[2]);
         string val2(cm[3]);
-                  
+         
         int imgWidth=0, imgHeight=0, radius=1;
         if (val2.empty()) //hmm... seems a bit sketchy...
         {
@@ -163,7 +169,6 @@ int parseCirclesFile( string fileName )
             uG::Imgproc::addCenter(k,x,y,radius);
             ++nCirc;
         }
-        return nCirc;
     } // while (!file.eof...
-    return nLines;
+    return nCirc;
 }

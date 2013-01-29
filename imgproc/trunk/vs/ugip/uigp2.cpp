@@ -86,7 +86,10 @@ void uigp2::setCirclesFileName( QString fname )
 {
     m_circlesFileName = fname;
     qDebug() << "setCirclesFileName: " << fname;
-    parseCirclesFile(fname.toStdString());
+    int errnum = parseCirclesFile(fname.toStdString());
+    if (errnum < 0){
+        qDebug() << "parseCirclesFile() returned -1.";
+    }
 }
 
 void uigp2::addScannedFile( QString fname, float percentDone )
@@ -106,11 +109,8 @@ void uigp2::startProcessing()
         qDebug() << "Ahnooo...No circles in the list.";
         QMessageBox::information(NULL, "No circles.", "Please select an input circles file.");
     }
-    
-    //put circles into imgproc system.
-
-    //setup imgproc pipeline.
-    
+    //TODO: put circles into imgproc system.
+    //TODO: setup imgproc pipeline.
 }
 
 void uigp2::saveCirclesFile(QString fname)
@@ -138,6 +138,7 @@ void uigp2::saveCirclesFile(QString fname)
         if (item->type() == QSelectableEllipse::Type) {
 
             QSelectableEllipse *eee = qgraphicsitem_cast<QSelectableEllipse*>(item);
+
             //TODO: this radius is not correct (always ==0?).
             int rad = eee->radius();
             CenterInfo c = 
@@ -151,8 +152,9 @@ void uigp2::saveCirclesFile(QString fname)
         }  
     } // for 
     
-    std::string filename = fname.toStdString();
-    int rval = writeCirclesFile(filename, vsauce.toStdVector(), img);
+    int rval = writeCirclesFile(fname.toStdString(),
+                                vsauce.toStdVector(), img);
+
     qDebug() << "Wrote " << rval << " circles";
 }
 

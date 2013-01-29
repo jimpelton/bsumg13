@@ -4,17 +4,17 @@ from math import sqrt
 #######################################################
 #  input                                              #
 #######################################################
-basedir485='E://data/microgravity/out_test_485/'
-basedir405='E://data/microgravity/out_test_405/'
-gravitydir='E://data/microgravity/datapackets_test/'
+basedir485='E://data/microgravity/test_output/14_06_2012_08_41_56_334/Camera485/'
+basedir405='E://data/microgravity/test_output/14_06_2012_08_41_56_334/Camera405/'
+gravitydir='E://data/microgravity/test_output/datapackets_test/'
 
 
 #######################################################
 #  output                                             #
 #######################################################
-values485_csv='E://data/microgravity/wellValues_485.dat'
-values405_csv='E://data/microgravity/wellValues_405.dat'
-ratios_csv='E://data/microgravity/ratios.dat'
+values485_csv='E://data/microgravity/test_output/wellValues_485.dat'
+values405_csv='E://data/microgravity/test_output/wellValues_405.dat'
+ratios_csv='E://data/microgravity/test_output/ratios.dat'
 
 files485_list = [f for f in os.listdir(basedir485)]
 files405_list = [f for f in os.listdir(basedir405)]

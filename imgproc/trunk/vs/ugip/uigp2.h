@@ -60,9 +60,6 @@ private:
     QVector<CenterInfo> m_circlesList;
 
     QImage m_currentImage;
-
-    bool is405;
-
 };
 
 #endif // UIGP2_H

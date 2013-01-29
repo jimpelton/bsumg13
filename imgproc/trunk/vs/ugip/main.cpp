@@ -30,16 +30,16 @@ const int    NUM_WRITE         = 2;
 
 const string file_extension    = ".raw";
 
-extern char *circlesFile;
-extern char *infile;
-extern char *outfile;
+extern string circlesFile;
+extern string infile;
+extern string outfile;
 
 int doCL(int, char**);
 
 int main(int argc, char *argv[])
 {
     if (argc>1){
-        if (strcmp(argv[1], "-text")==0)
+        if (strcmp(argv[1], "--text")==0)
             std::cout << "Going into command line mode...\n";
             return doCL(argc, argv);
     }
@@ -53,10 +53,17 @@ int doCL(int argc, char *argv[])
 {
     if (!parseArgs(argc, argv)) return 0;
         
-    string inpath = string(argv[2]);
-    string outpath  = string(argv[3]);
-    std::cout << "Input directory: " << inpath.c_str() << std::endl;
+    string inpath(infile); // = string(argv[2]);
+    string outpath(outfile);//  = string(argv[3]);
+
+    std::cout << "Input directory: "  << inpath.c_str()  << std::endl;
     std::cout << "Output directory: " << outpath.c_str() << std::endl;
+    std::cout << "Circles file: "     << circlesFile << std::endl;
+
+    if (parseCirclesFile(circlesFile) < 1) {
+        std::cout << "No circles found in the file, or it couldn't be opened.\n";
+        return 0;
+    }
 
     //read every .raw file into fileVec
     stringVector fileVec;
@@ -125,7 +132,7 @@ int doCL(int argc, char *argv[])
     }
 
 
-    //TODO: cleanup!! whaaattt?!? I cleanup for no one! sheeit@!
+    //TODO: cleanup!! whaaattt?!? I cleanup for no one!  
 
     return 0;
 }

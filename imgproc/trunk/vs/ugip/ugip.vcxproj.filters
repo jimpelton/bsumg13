@@ -49,21 +49,6 @@
     <ClCompile Include="Util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\debug-gui\moc_QClickableGraphicsView.cpp">
-      <Filter>Generated Files\debug-gui</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QClickableGraphicsView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QClickableGraphicsView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="QClickableGraphicsView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CLParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QSelectableCircleScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -132,9 +117,6 @@
     <CustomBuild Include="ugip.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="QClickableGraphicsView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="QSelectableCircleScene.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -165,9 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CLParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

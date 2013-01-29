@@ -16,7 +16,7 @@ class CLParser {
 private:
 	static CLParser *myself;
 
-	std::map<std::string, std::string> args;
+	std::map<char*, char*> argsmap;
 
 	void parse();
 
@@ -24,7 +24,7 @@ private:
 	CLParser();
 	~CLParser();
 
-	typedef std::map<std::string, std::string>::iterator ArgIter;
+	typedef std::map<char*, char*>::iterator ArgIter;
 
 public:
 	static int Init(int, char**);

@@ -27,7 +27,7 @@ namespace uG
             {
                 //pixel start/end
                 int wellIdx = (row * uG_CENTERS_COL_COUNT)+col;
-                uGCenter center = uGcenter485[wellIdx]; //485 wells
+                uGCenter center = uGcenter485[wellIdx]; 
                 int centerx = center.x;
                 int centery = center.y;
 

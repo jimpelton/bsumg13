@@ -35,6 +35,10 @@ namespace uG
             uGcenter405[idx].x = x;
             uGcenter405[idx].y = y;
             uGcenter405[idx].r = r;
+
+            uGcenter485[idx].x = x;
+            uGcenter485[idx].y = y;
+            uGcenter485[idx].r = r;
         }
     };
 

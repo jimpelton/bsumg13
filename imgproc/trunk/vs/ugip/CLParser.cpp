@@ -14,7 +14,7 @@
 
 CLParser *CLParser::myself = NULL;
 
-CLParser::CLParser() : args()
+CLParser::CLParser() : argsmap()
 {
 
 }
@@ -44,46 +44,47 @@ int CLParser::Init(int argc, char *argv[])
 	}
 
 	int i = 1;
-	while (i < argc)
-	{
-		std::string title = argv[i];
-		if (title.substr(0,2).compare("--") == 0)  //long option
-		{
-			std::string next;
-			if (i+1 < argc){
-				i+=1;
-				next = argv[i];
-				if (next.substr(0,2).compare("--") == 0 || next.substr(0,1).compare("-") == 0) {  //we have an option-less argument
-					next = "FLAG";
-					i--;
-				}
-				myself->args[title.substr(2)] = next;
-			}else{
-				next = "FLAG";
-				myself->args[title.substr(2)] = next;
-				return i;
-			}
-			i+=1;
-		}
-		else if (title.substr(0,1).compare("-") == 0) //short option
-		{
-			std::string next;
-			if (i+1 < argc)
-			{
-				i+=1;
-				next = argv[i];
-				if (next.substr(0,2).compare("--") == 0 || next.substr(0,1).compare("-") == 0) {  //we have an option-less argument
-					next = "FLAG";
-					i--;
-				}
-				myself->args[title.substr(1)] = next;
-			}else{
-				next = "FLAG";
-				myself->args[title.substr(1)] = next;
-				return i;
-			}
-			i+=1;
-		}
+	while (i < argc) {
+		std::string arg(argv[i]); 
+        if (arg[0] == '-') {
+            //arg starts with at least one "-"
+            char *argval;
+            if (arg[1] == '-') {  
+                //arg starts with "--"
+                if (i+1 < argc) {
+                    //get the next arg.
+                    i+=1;
+                    argval = argv[i];
+                    if (argv[i][0] == '-') {  
+                        //we have an option-less argument
+                        argval = "FLAG";
+                        i-=1;
+                    }
+                    myself->argsmap[arg[2]] = argval;
+                } else {
+                    next = "FLAG";
+                    myself->argsmap[title.substr(2)] = next;
+                    return i;
+                }
+                i+=1;
+		    } else { //short option
+                std::string next;
+                if (i+1 < argc)
+                {
+                    i+=1;
+                    next = argv[i];
+                    if (next.substr(0,2).compare("--") == 0 || next.substr(0,1).compare("-") == 0) {  //we have an option-less argument
+                        next = "FLAG";
+                        i--;
+                    }
+                    myself->argsmap[title.substr(1)] = next;
+                }else{
+                    next = "FLAG";
+                    myself->argsmap[title.substr(1)] = next;
+                    return i;
+                }
+                i+=1;
+        }
 
 	}//while
 	return i;
@@ -97,8 +98,8 @@ int CLParser::Init(int argc, char *argv[])
  */
 bool CLParser::ParseCL_n(const char * src, int * dst)
 {
-	ArgIter iter = myself->args.find(src);
-	if (iter == myself->args.end())
+	ArgIter iter = myself->argsmap.find(src);
+	if (iter == myself->argsmap.end())
 	{
 		return false;
 	}
@@ -116,8 +117,8 @@ bool CLParser::ParseCL_n(const char * src, int * dst)
  */
 bool CLParser::ParseCL_s(const char *src, char ** dst)
 {
-	ArgIter iter = myself->args.find(src);
-	if (iter == myself->args.end())
+	ArgIter iter = myself->argsmap.find(src);
+	if (iter == myself->argsmap.end())
 	{
 		return false;
 	}
@@ -142,8 +143,8 @@ bool CLParser::ParseCL_s(const char *src, char ** dst)
  */
 bool CLParser::ParseCL_flag(const char *src)
 {
-	ArgIter iter = myself->args.find(src);
-	if (iter == myself->args.end())
+	ArgIter iter = myself->argsmap.find(src);
+	if (iter == myself->argsmap.end())
 	{
 		return false;
 	}
