@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\ImageProcessor">
+      <UniqueIdentifier>{1a43beab-e3ff-4a55-a05b-a2d9c41fd53a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageProcessor">
+      <UniqueIdentifier>{64750edf-5758-44c9-8460-b10f825bec78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Buffer">
+      <UniqueIdentifier>{fa4b5b6b-f22c-46d9-96e5-3e020b52eaa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Buffer">
+      <UniqueIdentifier>{1dc6e4cb-b7e3-42df-a37f-4e1842a05190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Worker">
+      <UniqueIdentifier>{0ea5b1dd-6ec2-4c9a-ad68-2f326f230910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Worker">
+      <UniqueIdentifier>{57e55861-0b66-48f2-b320-9585bd02bfe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Public">
+      <UniqueIdentifier>{055d5f0f-e433-48b1-9424-9e651bb677e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Global">
+      <UniqueIdentifier>{bf834b71-45f7-4622-b02f-adbdadf18569}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Global">
+      <UniqueIdentifier>{0044236b-c612-46ff-b0f7-6515d9597889}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Public">
+      <UniqueIdentifier>{31f985c4-fc52-499d-b7b0-6865a6e34289}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ImageProcessor405.h">
+      <Filter>Header Files\ImageProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageProcessor485.h">
+      <Filter>Header Files\ImageProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageProcessorFactory.h">
+      <Filter>Header Files\ImageProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractImageProcessor.h">
+      <Filter>Header Files\ImageProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>Header Files\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferPool.h">
+      <Filter>Header Files\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="InlineBufferPool.h">
+      <Filter>Header Files\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Processor.h">
+      <Filter>Header Files\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="Reader.h">
+      <Filter>Header Files\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkerThread.h">
+      <Filter>Header Files\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="Writer.h">
+      <Filter>Header Files\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleDrawingImageProcessor405.h">
+      <Filter>Header Files\ImageProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleDrawingImageProcessor485.h">
+      <Filter>Header Files\ImageProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="Imgproc.h">
+      <Filter>Header Files\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Centers.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="ugTypes.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="dbg_print.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Export.h">
+      <Filter>Header Files\Global</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AbstractImageProcessor.cpp">
+      <Filter>Source Files\ImageProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageProcessor405.cpp">
+      <Filter>Source Files\ImageProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageProcessor485.cpp">
+      <Filter>Source Files\ImageProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="InlineBufferPool.cpp">
+      <Filter>Source Files\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Processor.cpp">
+      <Filter>Source Files\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="Reader.cpp">
+      <Filter>Source Files\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="Writer.cpp">
+      <Filter>Source Files\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="Imgproc.cpp">
+      <Filter>Source Files\Public</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+</Project>
