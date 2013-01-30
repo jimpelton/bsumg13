@@ -40,15 +40,13 @@ namespace uG
         string outfile = ss.str();
         ofstream ofile(outfile, std::ios::out);
 
-        if (!ofile.is_open())
-        {
+        if (!ofile.is_open()) {
             cerr << outfile << " never opened for output! Can't write output file!" << endl;
             return;
         }
 
         stringstream filetext;
-        for(int i = 0; i < 96; i++)
-        {
+        for(int i = 0; i < 96; i++) {
             filetext << i << ":" << buf->data[i] << '\n';
         }
         ofile << filetext.str();
@@ -60,8 +58,7 @@ namespace uG
         Writer *me = (Writer *) pargs;
         me->m_tid = GetCurrentThreadId();
 
-        while (true)
-        {
+        while (true) {
             EnterCriticalSection(&(me->m_criticalSection));
                 if (me->m_stopRequested) break;
             LeaveCriticalSection(&(me->m_criticalSection));

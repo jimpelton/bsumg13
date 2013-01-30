@@ -8,6 +8,8 @@
 
 #include "Centers.h"
 
+#include <string>
+
 #ifndef Imgproc_h__
 #define Imgproc_h__
 
@@ -27,20 +29,16 @@ namespace uG
         //_ProcTy *processor;
 
         Imgproc();
+        Imgproc(std::string const &imgType);
         ~Imgproc();
 
         ///add center to the centers collection.
-        static void addCenter(int idx, double x, double y, double r)
-        {
-            uGcenter405[idx].x = x;
-            uGcenter405[idx].y = y;
-            uGcenter405[idx].r = r;
-
-            uGcenter485[idx].x = x;
-            uGcenter485[idx].y = y;
-            uGcenter485[idx].r = r;
-        }
+        static void addCenter(int idx, double x, double y, double r);
+        
+        template < class _TyMod >
+        static void addModule();
     };
-
+template < class _TyMod >
+void Imgproc::addModule()
 }
 #endif // Imgproc_h__

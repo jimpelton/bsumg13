@@ -10,7 +10,6 @@
 
 namespace uG
 {
-
     int uG_CENTERS_ROW_COUNT=8;
     int uG_CENTERS_COL_COUNT=12;
     int uG_NUM_WELLS = uG_CENTERS_ROW_COUNT * uG_CENTERS_COL_COUNT;
@@ -19,17 +18,26 @@ namespace uG
     int uG_IMAGE_HEIGHT=1944;
     int uG_RADIUS=45;
 
-    uGCenter uGcenter405[96] = { {0.,0.,0.} };
-    uGCenter uGcenter485[96] = { {0.,0.,0.} };
-
+    uGCenter centers[96] = { {0.,0.,0.} };
     
+    Imgproc::Imgproc()
+    {
+        uG_IMAGEPROC_TYPE = "";
+    }
 
-    /************************************************************************/
-    /* CLASS IMPLEMENTATION                                                 */
-    /************************************************************************/
+    Imgproc::Imgproc(std::string const &_type) 
+    {
+        uG_IMAGEPROC_TYPE = _type;
+    }
 
-    Imgproc::Imgproc() {}
     Imgproc::~Imgproc(){}
+
+    void Imgproc::addCenter( int idx, double x, double y, double r )
+    {
+        centers[idx].x = x;
+        centers[idx].y = y;
+        centers[idx].r = r;
+    }
 
 
 }

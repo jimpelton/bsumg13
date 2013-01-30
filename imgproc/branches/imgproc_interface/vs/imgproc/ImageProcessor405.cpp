@@ -29,7 +29,7 @@ namespace uG
                 //pixel start/end
                 //reversed wellIdx's
                 int wellIdx = 95 - ((row * uG_CENTERS_COL_COUNT)+col);
-                uGCenter center = uGcenter405[wellIdx]; //405 wells
+                uGCenter center = centers[wellIdx]; //405 wells
                 int centerx = center.x;
                 int centery = center.y;
 

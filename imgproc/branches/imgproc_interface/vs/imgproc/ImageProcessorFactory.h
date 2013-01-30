@@ -3,8 +3,11 @@
 #ifndef _IMAGEPROCESSORFACTORY_H
 #define _IMAGEPROCESSORFACTORY_H
 
-#include "ImageProcessor405.h"
-#include "ImageProcessor485.h"
+//#include "ImageProcessor405.h"
+//#include "ImageProcessor485.h"
+#include "Centers.h"
+#include "WellIndexImageProcessor.h"
+#include "CircleDrawingImageProcessor.h"
 
 namespace uG
 {
@@ -29,14 +32,13 @@ namespace uG
             return myself;
         }
 
-        AbstractImageProcessor* newProc(const std::string &bufId, 
-            unsigned char *data, long long *buf)
+        AbstractImageProcessor* newProc()
         {
-            size_t at = bufId.find("Camera405");
+            size_t at = uG_IMAGEPROC_TYPE.find("DEBUG");
             if (at != std::string::npos)
-                return new ImageProcessor405(data, buf);
+                return new CircleDrawingImageProcessor();
             else
-                return new ImageProcessor485(data, buf);
+                return new WellIndexImageProcessor();
         }
 
     private:

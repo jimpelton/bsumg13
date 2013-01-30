@@ -25,6 +25,7 @@ namespace uG
         , m_stopRequested(false)
     { 
         InitializeCriticalSection(&m_criticalSection);
+        m_imgproc = ImageProcessorFactory::getInstance()->newProc();
     }
 
 
@@ -51,14 +52,15 @@ namespace uG
             Buffer<unsigned char> *imgbuf = me->m_imagePool->getFullBuffer();
             Buffer<long long> *longbuf = me->m_dataPool->getFreeBuffer();
             longbuf->id = imgbuf->id; //copy file name.
-            AbstractImageProcessor *aip = ImageProcessorFactory::
-                getInstance()->newProc(imgbuf->id, imgbuf->data, longbuf->data);
-            aip->process();
+            //AbstractImageProcessor *aip = ImageProcessorFactory::
+            //    getInstance()->newProc(imgbuf->id, imgbuf->data, longbuf->data);
+
+            me->m_imgproc->process();
 
             me->m_imagePool->returnEmptyBuffer(imgbuf);
             me->m_dataPool->postFullBuffer(longbuf);
             std::cout << me->m_tid << " Processor posted full buffer.\n";
-            delete [] aip;
+            //delete [] aip;
         }
         return 0;
     }

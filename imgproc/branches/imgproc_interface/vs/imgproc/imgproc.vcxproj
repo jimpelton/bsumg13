@@ -67,12 +67,10 @@
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="BufferPool.h" />
     <ClInclude Include="Centers.h" />
-    <ClInclude Include="CircleDrawingImageProcessor405.h" />
-    <ClInclude Include="CircleDrawingImageProcessor485.h" />
+    <ClInclude Include="CircleDrawingImageProcessor.h" />
     <ClInclude Include="dbg_print.h" />
     <ClInclude Include="Export.h" />
-    <ClInclude Include="ImageProcessor405.h" />
-    <ClInclude Include="ImageProcessor485.h" />
+    <ClInclude Include="WellIndexImageProcessor.h" />
     <ClInclude Include="ImageProcessorFactory.h" />
     <ClInclude Include="Imgproc.h" />
     <ClInclude Include="InlineBufferPool.h" />
@@ -84,8 +82,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractImageProcessor.cpp" />
-    <ClCompile Include="ImageProcessor405.cpp" />
-    <ClCompile Include="ImageProcessor485.cpp" />
+    <ClCompile Include="CircleDrawingImageProcessor.cpp" />
+    <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="Imgproc.cpp" />
     <ClCompile Include="InlineBufferPool.cpp" />
     <ClCompile Include="Processor.cpp" />
@@ -94,6 +92,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
+    <None Include="ClassDiagram3.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
