@@ -2,30 +2,34 @@
 #ifndef Centers_h__
 #define Centers_h__
 
-#include <string>
-
 namespace uG
 {
 
 struct uGCenter
 {
     double x, y, r;
-
     //explicit uGCenter(double x=0.0, double y=0.0) : x(x), y(y) {}
 };
 
-extern std::string uG_IMAGEPROC_TYPE;
+struct uGVars {
+    int uG_NUM_WELLS;
+    int uG_IMAGE_WIDTH;
+    int uG_IMAGE_HEIGHT;
+    int uG_RADIUS;
+    uGCenter *centers;
+};
 
-//All arrays are 8 row x 12 col arrays
-extern int uG_CENTERS_ROW_COUNT;
-extern int uG_CENTERS_COL_COUNT;
-extern int uG_NUM_WELLS;
+struct uGProcVars {
+    int radius;
+    int numWells;
+    int imgw;
+    int imgh;
+    uGCenter *centers;
+};
 
-extern int uG_IMAGE_WIDTH;
-extern int uG_IMAGE_HEIGHT;
-extern int uG_RADIUS;
+extern int uG_DEBUG;
 
-extern uGCenter centers[96];
+
 
 } /* namespace uG */
 #endif /* Centers_h__ */

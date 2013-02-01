@@ -1,20 +1,39 @@
 import os
+import argparse
+
 from math import sqrt
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-d485", "--Directory485", help="485 Images Directory" )
+parser.add_argument("-d405", "--Directory405", help="405 Images Directory" )
+parser.add_argument("-rf", "--RatiosFile", help="Ratios File")
+parser.add_argument("-wv485", "--WellValues485", help="485 Well Values File")
+parser.add_argument("-wv405", "--WellValues405", help="405 Well Values File")
+parser.add_argument("-gd", "--DirectoryGrav", help="Gravity files directory")
+
+args = parser.parse_args()
+
+
 
 #######################################################
 #  input                                              #
 #######################################################
-basedir485='E://data/microgravity/test_output/14_06_2012_08_41_56_334/Camera485/'
-basedir405='E://data/microgravity/test_output/14_06_2012_08_41_56_334/Camera405/'
-gravitydir='E://data/microgravity/test_output/datapackets_test/'
 
+print( "405 Images Directory {} \n 485 Images Directory {} \n Ratios File {} \n"
+       "405 Well Values File {} \n 485 Well Values File {} \n Gravity Directory {} \n".format(
+    args.Directory405, args.Directory485, args.RatiosFile,
+    args.WellValues405, args.WellValues485, args.DirectoryGrav )
+)
 
-#######################################################
-#  output                                             #
-#######################################################
-values485_csv='E://data/microgravity/test_output/wellValues_485.dat'
-values405_csv='E://data/microgravity/test_output/wellValues_405.dat'
-ratios_csv='E://data/microgravity/test_output/ratios.dat'
+basedir485=args.Directory485
+basedir405=args.Directory405
+gravitydir=args.DirectoryGrav
+
+values485_csv=args.WellValues485
+values405_csv=args.WellValues405
+ratios_csv=args.RatiosFile
+
 
 files485_list = [f for f in os.listdir(basedir485)]
 files405_list = [f for f in os.listdir(basedir405)]

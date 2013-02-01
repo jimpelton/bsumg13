@@ -113,10 +113,10 @@
     <ClCompile Include="Imgproc.cpp">
       <Filter>Source Files\Public</Filter>
     </ClCompile>
-    <ClCompile Include="ImageProcessor.cpp">
+    <ClCompile Include="CircleDrawingImageProcessor.cpp">
       <Filter>Source Files\ImageProcessor</Filter>
     </ClCompile>
-    <ClCompile Include="CircleDrawingImageProcessor.cpp">
+    <ClCompile Include="WellIndexImageProcessor.cpp">
       <Filter>Source Files\ImageProcessor</Filter>
     </ClCompile>
   </ItemGroup>

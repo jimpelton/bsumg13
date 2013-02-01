@@ -62,7 +62,7 @@ uigp2::~uigp2() { }
 void uigp2::addSelectedCircle( QSelectableEllipse* eee ) 
 {
     CenterInfo c;
-    c.r = eee->radius();
+    c.r = eee->rad();
     c.x = eee->x()+c.r;
     c.y = eee->y()+c.r;
 
@@ -86,10 +86,10 @@ void uigp2::setCirclesFileName( QString fname )
 {
     m_circlesFileName = fname;
     qDebug() << "setCirclesFileName: " << fname;
-    int errnum = parseCirclesFile(fname.toStdString());
-    if (errnum < 0){
-        qDebug() << "parseCirclesFile() returned -1.";
-    }
+    //int errnum = parseCirclesFile(fname.toStdString());
+    //if (errnum < 0){
+    //    qDebug() << "parseCirclesFile() returned -1.";
+    //}
 }
 
 void uigp2::addScannedFile( QString fname, float percentDone )
@@ -121,6 +121,8 @@ void uigp2::saveCirclesFile(QString fname)
         return;
     }
 
+    m_circlesFile = CirclesFile(fname.toStdString());
+
     ImageInfo img = 
     { 
         m_currentImage.byteCount(), 
@@ -129,7 +131,7 @@ void uigp2::saveCirclesFile(QString fname)
     };
 
     //get all items, remove non-ellipse items.
-    QVector<CenterInfo> vsauce(96);
+    QVector<CenterInfo> vsauce;
     QList<QGraphicsItem*> thangs = m_scene->items();
 
     for (int i=0; i < thangs.size(); ++i) {
@@ -140,7 +142,7 @@ void uigp2::saveCirclesFile(QString fname)
             QSelectableEllipse *eee = qgraphicsitem_cast<QSelectableEllipse*>(item);
 
             //TODO: this radius is not correct (always ==0?).
-            int rad = eee->radius();
+            int rad = eee->rad();
             CenterInfo c = 
             {
                 eee->x()+rad,
@@ -148,20 +150,33 @@ void uigp2::saveCirclesFile(QString fname)
                 rad
             };
 
-            vsauce[i]=c;
+            vsauce.push_back(c);
         }  
     } // for 
     
-    int rval = writeCirclesFile(fname.toStdString(),
-                                vsauce.toStdVector(), img);
+    int rval = m_circlesFile.writeCirclesFile(vsauce.toStdVector(), img );
 
     qDebug() << "Wrote " << rval << " circles";
 }
 
 void uigp2::openCirclesFile()
 {
-    if (!m_circlesFileName.isEmpty())
-        parseCirclesFile(m_circlesFileName.toStdString());
+    if (m_circlesFileName.isEmpty()) {
+        qDebug() << "No filename for circles file.";
+        return;
+    } 
+
+    m_circlesFile = CirclesFile(m_circlesFileName.toStdString());
+
+    if ( m_circlesList.size() < m_circlesFile.parseCirclesFile()) {
+        m_circlesList.resize(m_circlesFile.getNumCircles());
+    }
+
+    for (int i = 0; i < m_circlesFile.getNumCircles(); ++i) {
+        m_circlesList.replace(i, m_circlesFile.getCenter(i));
+    }
+
+    //TODO: draw circles?
 }
 
 void uigp2::displayImage( int idx )

@@ -19,7 +19,7 @@ using std::string;
 
 const char *EXTENSION = ".raw";
 
-string circlesFile;
+string circlesFileName;
 string infile;
 string outfile;
 
@@ -46,7 +46,7 @@ bool parseArgs( int argc, char **argv )
         }
 
         if (vm.count("circles-file")) {
-            circlesFile = vm["circles-file"].as<std::string>();
+            circlesFileName = vm["circles-file"].as<std::string>();
         } else {
             std::cout << "No circles file given.\n";
         }

@@ -2,6 +2,7 @@
 #ifndef _ABSTRACTIMAGEPROCESSOR_H
 #define _ABSTRACTIMAGEPROCESSOR_H
 
+#include "Centers.h"
 
 namespace uG
 {
@@ -25,13 +26,21 @@ namespace uG
         *  Typically data and buf_values come from a BufferPool Buffer object.
         */
         AbstractImageProcessor();
-        //AbstractImageProcessor(unsigned char *data, long long *buf_values);
 
         ///Ptr to source data
         const unsigned char *m_data; 
 
         ///Ptr to output data.
         long long *m_wellValues;
+
+        /// Array of centers, length = m_wellValues.
+        const uGCenter *m_centers;
+
+        int m_numWells;
+        int m_wellRadius;
+        int m_imageWidth; 
+        int m_imageHeight;
+
 
     public:
         virtual ~AbstractImageProcessor();
@@ -41,8 +50,22 @@ namespace uG
         */
         virtual void process() = 0;
 
-        void setInput(const unsigned char *d) { m_data = d; }
-        void setOutput(long long *outdat) { m_wellValues = outdat; }
+        void setInput(const unsigned char *d)    { m_data = d; }
+        void setOutput(long long *outdat)        { m_wellValues = outdat; }
+        void setCenters(const uGCenter *centers) { m_centers = centers; }
+        void setWellRadius(int r)                { m_wellRadius = r; }
+        void setNumWells(int nWells)             { m_numWells = nWells; }
+        void setImageWidth(int imgw)             { m_imageWidth = imgw; }
+        void setImageHeight(int imgh)            { m_imageHeight = imgh; }
+
+        void setVars(uGProcVars *vars)
+        {
+            this->setCenters(vars->centers);
+            this->setWellRadius(vars->radius);
+            this->setNumWells(vars->numWells);
+            this->setImageWidth(vars->imgw);
+            this->setImageHeight(vars->imgh);
+        }
 
     };
 

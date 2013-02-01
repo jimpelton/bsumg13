@@ -13,6 +13,7 @@ public:
 
     explicit QSelectableEllipse(QGraphicsItem *parent=0)
         : QGraphicsEllipseItem(parent) 
+        , m_radius(0)
     {
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -21,6 +22,7 @@ public:
 
     QSelectableEllipse(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent=0) 
         : QGraphicsEllipseItem(x, y, w, h, parent) 
+        , m_radius(w/2)
     {
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -30,7 +32,10 @@ public:
     ~QSelectableEllipse() { }
 
     int type() const { return Type; }
-    float radius() const { return rect().x()/2.f; }
+    int rad() const { return m_radius; }
+
+private:
+    int m_radius;
 };
 
 /**
@@ -46,18 +51,22 @@ public:
     explicit QSelectableCircleScene(QObject *parent=0);
     ~QSelectableCircleScene();
 
-    void setMode(Mode m) { m_mode = m; }
-    Mode getMode() const { return m_mode; }
+    void setMode(Mode m)  { m_mode = m; }
+    Mode getMode() const  { return m_mode; }
+    int getRadius() const { return m_radius; }
+    void setRadius(int r) { m_radius = r; }
 
 private:
 
     Mode m_mode;    
 
-    /// Which color to make the currently selected shape
+    /// Which color to make the currently selected shape.
     QColor m_color; 
 
     /// The current graphics item.
     QGraphicsItem *m_item;
+
+    int m_radius;
 
 
     void setCircleColor(QColor c);

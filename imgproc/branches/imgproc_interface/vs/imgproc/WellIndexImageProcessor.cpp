@@ -6,65 +6,45 @@
 
 namespace uG {
 
-//WellIndexImageProcessor::WellIndexImageProcessor(unsigned char *data, long long *buf) 
-//    : AbstractImageProcessor(data,buf)
-//{
-//
-//}
-
 WellIndexImageProcessor::WellIndexImageProcessor() 
-    : AbstractImageProcessor()
-{
+    : AbstractImageProcessor() { }
 
-}
-
-
-WellIndexImageProcessor::~WellIndexImageProcessor(void)
-{
-}
+WellIndexImageProcessor::~WellIndexImageProcessor(void) { }
 
 void WellIndexImageProcessor::process()
 {
-    for(int row = 0; row<uG_CENTERS_ROW_COUNT; row++)
-    {
-        for (int col = 0; col<uG_CENTERS_COL_COUNT; col++)
-        {
-            //pixel start/end
-            int wellIdx = (row * uG_CENTERS_COL_COUNT)+col;
-            uGCenter center = centers[wellIdx]; 
-            int centerx = center.x;
-            int centery = center.y;
+    for (int well=0; well<m_numWells; ++well) {
+        uGCenter center = m_centers[well];
+        //m_wellRadius = center.r;
+        int startx = center.x - m_wellRadius;
+        int starty = center.y - m_wellRadius;
+        int endx   = center.x + m_wellRadius;
+        int endy   = center.y + m_wellRadius;
 
-            int startx = centerx - uG_RADIUS;
-            int starty = centery - uG_RADIUS;
-            int endx   = centerx + uG_RADIUS;
-            int endy   = centery + uG_RADIUS;
+        // if (startx<0) startx=0;
+        // if (starty<0) starty=0;
+        // if (endx>IMAGE_WIDTH)  endx = IMAGE_WIDTH;
+        // if (endy>IMAGE_HEIGHT) endy = IMAGE_HEIGHT;
 
-            // if (startx<0) startx=0;
-            // if (starty<0) starty=0;
-            // if (endx>IMAGE_WIDTH)  endx = IMAGE_WIDTH;
-            // if (endy>IMAGE_HEIGHT) endy = IMAGE_HEIGHT;
-
-            m_wellValues[wellIdx] = 
-                accumulate(startx, starty, centerx, centery, endx, endy);          
-        }
-    }    
-}
+        m_wellValues[well] = 
+            accumulate(startx, starty, center.x, center.y, endx, endy);          
+    }
+}    
 
 long long WellIndexImageProcessor::accumulate( int startx, int starty, 
     int centerx, int centery, int endx, int endy )
 {
     long long rval = 0;
-    const raw_val_t *rawdata = (const raw_val_t*) m_data;
-    for (int y = starty; y < endy; y++)
-    {
-        for (int x = startx; x < endx; x++)
-        {
-            int pixelIdx = (y * uG_IMAGE_WIDTH)+x;
+    const unsigned short *rawdata = (const unsigned short*) m_data;
+    for (int y = starty; y < endy; y++) {
+        for (int x = startx; x < endx; x++) {
+            int pixelIdx = (y * m_imageWidth)+x;
             int curx = x-centerx;
             int cury = y-centery;
             int dr = static_cast<int>(sqrtf( (float)(curx*curx + cury*cury) ));
-            if (dr<uG_RADIUS) rval += rawdata[pixelIdx];
+            if (dr < m_wellRadius) {
+                rval += rawdata[pixelIdx];
+            }
         }
     }
     return rval;

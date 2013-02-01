@@ -83,11 +83,11 @@
   <ItemGroup>
     <ClCompile Include="AbstractImageProcessor.cpp" />
     <ClCompile Include="CircleDrawingImageProcessor.cpp" />
-    <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="Imgproc.cpp" />
     <ClCompile Include="InlineBufferPool.cpp" />
     <ClCompile Include="Processor.cpp" />
     <ClCompile Include="Reader.cpp" />
+    <ClCompile Include="WellIndexImageProcessor.cpp" />
     <ClCompile Include="Writer.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -3,11 +3,15 @@
 #ifndef _IMAGEPROCESSORFACTORY_H
 #define _IMAGEPROCESSORFACTORY_H
 
-//#include "ImageProcessor405.h"
-//#include "ImageProcessor485.h"
 #include "Centers.h"
+#include "AbstractImageProcessor.h"
 #include "WellIndexImageProcessor.h"
 #include "CircleDrawingImageProcessor.h"
+
+#include <string>
+
+//class WellIndexImageProcessor;
+//class CircleDrawingImageProcessor;
 
 namespace uG
 {
@@ -32,13 +36,17 @@ namespace uG
             return myself;
         }
 
-        AbstractImageProcessor* newProc()
+        AbstractImageProcessor* newProc(uGProcVars *vars)
         {
-            size_t at = uG_IMAGEPROC_TYPE.find("DEBUG");
-            if (at != std::string::npos)
-                return new CircleDrawingImageProcessor();
-            else
-                return new WellIndexImageProcessor();
+            AbstractImageProcessor *rval = NULL;
+            if (uG_DEBUG){
+                rval = new CircleDrawingImageProcessor();
+            } else {
+                rval = new WellIndexImageProcessor();
+            }
+
+            rval->setVars(vars);
+            return rval;
         }
 
     private:
