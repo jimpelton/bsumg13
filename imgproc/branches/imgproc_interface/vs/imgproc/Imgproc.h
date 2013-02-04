@@ -31,7 +31,8 @@ public:
 
     ///add center to the centers collection.
     void addCenter(int idx, double x, double y, double r);
-    void setVars(const uGVars *);    
+    void setVars(const uGVars *);    
+
 private:
     void initVars();
 

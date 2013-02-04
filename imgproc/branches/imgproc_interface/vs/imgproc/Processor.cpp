@@ -19,19 +19,20 @@ using std::vector;
 namespace uG
 {
     Processor::Processor(ImageBufferPool *imagePool, DataBufferPool *dataPool, uGProcVars *vars ) 
-        : m_imgproc(NULL)
-        , m_imagePool(imagePool)
+        : m_imagePool(imagePool)
         , m_dataPool(dataPool)
-        , m_stopRequested(false)
     { 
         InitializeCriticalSection(&m_criticalSection);
+
+        m_tid = 0;
+        m_stopRequested = false;
         m_imgproc = ImageProcessorFactory::getInstance()->newProc(vars);
     }
 
 
     Processor::~Processor()
     {
-        if (NULL != m_imgproc)    delete m_imgproc;
+        if (NULL != m_imgproc)   delete m_imgproc;
         DeleteCriticalSection(&m_criticalSection);
     }
 
@@ -42,8 +43,7 @@ namespace uG
         Processor *me = static_cast<Processor*>(pArgs);
         me->m_tid = GetCurrentThreadId();
 
-        while (true) 
-        {
+        while (true) {
             EnterCriticalSection(&(me->m_criticalSection));
                 if (me->m_stopRequested) break;
             LeaveCriticalSection(&(me->m_criticalSection));

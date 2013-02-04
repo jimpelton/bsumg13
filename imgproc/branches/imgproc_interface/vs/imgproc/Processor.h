@@ -20,7 +20,6 @@ namespace uG
     */
     class Processor
     {
-
     public:
         Processor(ImageBufferPool *imagePool, DataBufferPool *dataPool, uGProcVars *vars);
         virtual ~Processor();
@@ -35,7 +34,7 @@ namespace uG
         }
 
     private:
-        AbstractImageProcessor *m_imgproc;  //TODO: use this instead of creating a new AIP for each image.
+        AbstractImageProcessor *m_imgproc;  
 
         /// Pool of image (read) buffers. 
         ImageBufferPool *m_imagePool;

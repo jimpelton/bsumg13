@@ -36,6 +36,7 @@ long long WellIndexImageProcessor::accumulate( int startx, int starty,
 {
     long long rval = 0;
     const unsigned short *rawdata = (const unsigned short*) m_data;
+    int nPixels = 1;
     for (int y = starty; y < endy; y++) {
         for (int x = startx; x < endx; x++) {
             int pixelIdx = (y * m_imageWidth)+x;
@@ -44,10 +45,11 @@ long long WellIndexImageProcessor::accumulate( int startx, int starty,
             int dr = static_cast<int>(sqrtf( (float)(curx*curx + cury*cury) ));
             if (dr < m_wellRadius) {
                 rval += rawdata[pixelIdx];
+                nPixels+=1;
             }
         }
     }
-    return rval;
+    return rval/nPixels;
 }
 
 

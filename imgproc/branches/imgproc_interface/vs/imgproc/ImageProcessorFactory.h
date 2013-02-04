@@ -18,10 +18,7 @@ namespace uG
     /**
       *	\brief Creates concrete specializations AbstractImageProcessor.
       *	
-      *	A possible change in the future needs to address the string::find usage,
-      *	and eliminate it for something else...but this part is still evolving.
       *	
-      *	//  [1/21/2013 jim]
       */
     class ImageProcessorFactory
     {
@@ -29,8 +26,7 @@ namespace uG
         static ImageProcessorFactory* getInstance()
         {
             static ImageProcessorFactory *myself = NULL;
-            if (myself == NULL)
-            {
+            if (myself == NULL) {
                 myself = new ImageProcessorFactory();
             }
             return myself;

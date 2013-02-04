@@ -26,15 +26,14 @@ using uG::WorkerThread;
 using std::string;
 using std::vector;
 
-const int    NUM_READERS       = 4;
-const int    NUM_PROCS         = 2;
-const int    NUM_WRITE         = 2;
+const   int    NUM_READERS       = 4;
+const   int    NUM_PROCS         = 2;
+const   int    NUM_WRITE         = 2;
+const  string  file_extension    = ".raw";
 
-const string file_extension    = ".raw";
-
-extern string circlesFileName;
-extern string infile;
-extern string outfile;
+extern string  circlesFileName;
+extern string  infile;
+extern string  outfile;
 
 int doCL(int, char**);
 
@@ -98,8 +97,7 @@ int doCL(int argc, char *argv[])
         ++it; ++i;
     }
    
-    for (int i = 0; i < NUM_READERS; ++i)
-    {
+    for (int i = 0; i < NUM_READERS; ++i) {
         Reader *r = new Reader(readerFilesVec[i], &imgbp);
         readers.push_back(r);
         workers.push_back(new WorkerThread(r->do_work, (void*)r));

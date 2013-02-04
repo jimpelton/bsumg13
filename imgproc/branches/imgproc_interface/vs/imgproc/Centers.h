@@ -5,13 +5,17 @@
 namespace uG
 {
 
-struct uGCenter
+/// Represents an x,y point and radius around that point.
+/// Used in imgproc to represent the well plate circles.
+struct uGCenter 
 {
     double x, y, r;
-    //explicit uGCenter(double x=0.0, double y=0.0) : x(x), y(y) {}
 };
 
-struct uGVars {
+//TODO: remove uGVars struct.
+/// Unused.
+struct uGVars 
+{
     int uG_NUM_WELLS;
     int uG_IMAGE_WIDTH;
     int uG_IMAGE_HEIGHT;
@@ -19,7 +23,9 @@ struct uGVars {
     uGCenter *centers;
 };
 
-struct uGProcVars {
+/// Contains information needed by an AbstractImageProcessor
+struct uGProcVars 
+{
     int radius;
     int numWells;
     int imgw;
@@ -27,6 +33,7 @@ struct uGProcVars {
     uGCenter *centers;
 };
 
+/// 1 if we will draw DEBUG circles, 0 otherwise.
 extern int uG_DEBUG;
 
 

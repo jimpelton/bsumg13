@@ -31,22 +31,24 @@ CirclesFile::~CirclesFile() {}
 
 
 void CirclesFile::findRows(centerVector &centers, std::vector<centerVector > &rows, 
-              int dist_thresh)
+    int dist_thresh)
 {
-
     std::sort(centers.begin(), centers.end(), sortCenterByY);
-
 	centerVector::iterator centerIt = centers.begin();
 	centerVector::iterator centerIt_end = centers.end()-1;
-
     int curRow = 0;	
     centerVector *aRow;
+    centerVector emptyRow;
+
+    if (rows.size() == 0){ rows.push_back(emptyRow); }
 	while (centerIt != centerIt_end) {
         // split into rows, and sort each row by X coord.       
 		if ( std::abs( (*centerIt).y - (*(centerIt+1)).y ) > dist_thresh) {
             aRow = &rows[curRow];
 			aRow->push_back(*centerIt);
             std::sort(aRow->begin(), aRow->end(), sortCenterByX);
+
+            rows.push_back(emptyRow);
             curRow+=1;
             if ( curRow == rows.size() ) break; //on last row. //never true?
 		}
@@ -57,7 +59,6 @@ void CirclesFile::findRows(centerVector &centers, std::vector<centerVector > &ro
     //rows[curRow].push_back(*(centerIt+1));
     aRow = &rows[curRow]; 
     std::sort(aRow->begin(), aRow->end(), sortCenterByX);
-    
 }
 
 int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
@@ -75,7 +76,7 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
         "[crad]:" << centers.front().r << "\n";      //circle radius
 
     //sort circles file.
-    vector<vector<CenterInfo> > rows(12);
+    vector<vector<CenterInfo> > rows;
     findRows(centers, rows, 60);
 
     int i=0;
