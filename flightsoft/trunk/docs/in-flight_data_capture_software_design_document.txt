@@ -1,0 +1,113 @@
++-----------------------------------------------------------------------------+
+|                                                                             |
+|      Boise State University Microgravity Research Team 2013                 |
+|        In-flight Data Capture Software Design Document                      |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+The In-flight Data Capture Software will consist of two individual programs:
+ 1. a gui frontend to provide an easy to use in-flight user interface, and 
+ 2. a robust C++ backend which will interface with all hardwawre devices and
+    record data frome each device. The backend will perform logging of events.
+
+
+
++-----------------------------------------------------------------------------------+
+|   GUI Software                                                                    |
++-----------------------------------------------------------------------------------+
+
+Class Descriptions
+
++-----------------------------------------------------------------------------------+
+|   Capture Software                                                                |
++-----------------------------------------------------------------------------------+
+
+Class Descriptions
+
+SocketServer
+-------------------------------------------------------------------------------
+Hrm... serves sockets!
+
+EventManager
+-------------------------------------------------------------------------------
+Queue events and dispatch them when a Manager requests an event.
+
+Accessor
+-------------------------------------------------------------------------------
+Interface to any object designed to access some kind of hardware. Objects which
+access any 3rd party hardware API's should implement this interface so that a
+Manager object may control the Accessor.
+
+AccessorManager
+-------------------------------------------------------------------------------
+Manages a group of Accessors. Schedules jobs according to priority and then
+dispatches a thread to execute each of those jobs. Jobs should be defined in
+the Accessor objects being managed. 
+
+See also WriterManager, which might be merged into AccessorManager.
+
+PhidgetsAccessor
+-------------------------------------------------------------------------------
+Specialization for the Phidgets API. Possibly this class will be extended to handle
+specific types of Phidgets hardware.
+
+NIAccessor
+-------------------------------------------------------------------------------
+Specialization for the National Instruments API. Specifically, this class will need
+to handle interfacing with the National Instruments ADC 6008 (check 6008 is correct.)
+
+AptinaAccessor
+-------------------------------------------------------------------------------
+Specialization for the Aptina hardware. Specifically, this class will need to handle
+interfacing with the DEMO2X boards via Micron's MIDLIB2 API.
+
+DebugAccessor
+-------------------------------------------------------------------------------
+Specialization of Accessor for generating debug and test data. Demonstration data
+could also be generated in this class. A further specialization of this class could
+also read from a file to generate the data, or perhaps this could be a special
+"mode" for this particular specialization.
+
+SocketAccessor
+-------------------------------------------------------------------------------
+
+MessageFactory
+-------------------------------------------------------------------------------
+Recieves a message type from the SocketServer and generates the appropriate Event
+type to be Queued by the EventManager.
+
+WriterManager
+-------------------------------------------------------------------------------
+Manages the Writer specializations much like the AccessorManager. Recieves events
+from an EventManager. Perhaps this class will be merged with the AccessorManager for
+a more general class that can manage any type of object which contains some sort of
+worker logic.
+
+Writer
+-------------------------------------------------------------------------------
+The interface for Writer objects which are managed by a WriterManager. This interface
+should be specialized for the particular data type and destination--but this may
+lead to possible class explosion, so a compact and succinct method for writing any
+data to any destination needs to be investigated.
+
+Possible destinations include: disk, socket and SQLite database.
+
+BinaryWriter
+-------------------------------------------------------------------------------
+Writes binary data to some destination.
+
+TextWriter
+-------------------------------------------------------------------------------
+Writes ASCII text data to some destination.
+
+SQLiteWriter
+------------------------------------------------------------------------------
+Writes data to an SQLite destination.
+
+SocketWriter
+-------------------------------------------------------------------------------
+Writes data to a socket destination.
+
+
+
+
