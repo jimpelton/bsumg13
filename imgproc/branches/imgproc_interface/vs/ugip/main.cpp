@@ -26,7 +26,7 @@ using uG::WorkerThread;
 using std::string;
 using std::vector;
 
-const   int    NUM_READERS       = 4;
+const   int    NUM_READERS       = 2;
 const   int    NUM_PROCS         = 2;
 const   int    NUM_WRITE         = 2;
 const  string  file_extension    = ".raw";

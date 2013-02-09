@@ -39,12 +39,16 @@ def read405Files(files405_list):
         lines=thisfile.readlines()
         thisfile.close()
         values405_list.append([])
+
         for s in lines:
             strs=s.split(':')
             #idx=int(strs[0].strip())
             val=int(strs[1].strip())
             values405_list[count].append(val)
+
+        values405_list[count].reverse()
         count += 1
+
     print('{}'.format(count))
     return values405_list
 
@@ -72,7 +76,7 @@ def read485Files(files485_list):
 #######################################################
 #  readGravityFiles: read in gravity text files
 #
-#  returns: a list of gravity vectory magnitudes for every
+#  returns: a list of gravity vector magnitudes for every
 #  sample in the filesGravity_list
 #
 def readGravityFiles(filesGravity_list):
