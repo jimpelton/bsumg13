@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgproc", "imgproc\imgproc.vcxproj", "{433C4414-F092-434C-B426-F08CE3566FF7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ugip", "ugip\ugip.vcxproj", "{869A4F7D-4D1C-47EF-B1E8-A3419E6C502B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AA5B867A-4306-4B45-9604-F32E8453254C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{433C4414-F092-434C-B426-F08CE3566FF7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{433C4414-F092-434C-B426-F08CE3566FF7}.Debug|Win32.Build.0 = Debug|Win32
+		{433C4414-F092-434C-B426-F08CE3566FF7}.Release|Win32.ActiveCfg = Release|Win32
+		{433C4414-F092-434C-B426-F08CE3566FF7}.Release|Win32.Build.0 = Release|Win32
+		{869A4F7D-4D1C-47EF-B1E8-A3419E6C502B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{869A4F7D-4D1C-47EF-B1E8-A3419E6C502B}.Debug|Win32.Build.0 = Debug|Win32
+		{869A4F7D-4D1C-47EF-B1E8-A3419E6C502B}.Release|Win32.ActiveCfg = Release|Win32
+		{869A4F7D-4D1C-47EF-B1E8-A3419E6C502B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
