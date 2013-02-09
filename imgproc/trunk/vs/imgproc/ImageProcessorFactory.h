@@ -3,18 +3,22 @@
 #ifndef _IMAGEPROCESSORFACTORY_H
 #define _IMAGEPROCESSORFACTORY_H
 
-#include "ImageProcessor405.h"
-#include "ImageProcessor485.h"
+#include "Centers.h"
+#include "AbstractImageProcessor.h"
+#include "WellIndexImageProcessor.h"
+#include "CircleDrawingImageProcessor.h"
+
+#include <string>
+
+//class WellIndexImageProcessor;
+//class CircleDrawingImageProcessor;
 
 namespace uG
 {
     /**
       *	\brief Creates concrete specializations AbstractImageProcessor.
       *	
-      *	A possible change in the future needs to address the string::find usage,
-      *	and eliminate it for something else...but this part is still evolving.
       *	
-      *	//  [1/21/2013 jim]
       */
     class ImageProcessorFactory
     {
@@ -22,21 +26,23 @@ namespace uG
         static ImageProcessorFactory* getInstance()
         {
             static ImageProcessorFactory *myself = NULL;
-            if (myself == NULL)
-            {
+            if (myself == NULL) {
                 myself = new ImageProcessorFactory();
             }
             return myself;
         }
 
-        AbstractImageProcessor* newProc(const std::string &bufId, 
-            unsigned char *data, long long *buf)
+        AbstractImageProcessor* newProc(uGProcVars *vars)
         {
-            size_t at = bufId.find("Camera405");
-            if (at != std::string::npos)
-                return new ImageProcessor405(data, buf);
-            else
-                return new ImageProcessor485(data, buf);
+            AbstractImageProcessor *rval = NULL;
+            if (uG_DEBUG){
+                rval = new CircleDrawingImageProcessor();
+            } else {
+                rval = new WellIndexImageProcessor();
+            }
+
+            rval->setVars(vars);
+            return rval;
         }
 
     private:

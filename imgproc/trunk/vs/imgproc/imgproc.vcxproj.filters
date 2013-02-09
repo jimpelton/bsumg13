@@ -45,12 +45,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ImageProcessor405.h">
-      <Filter>Header Files\ImageProcessor</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageProcessor485.h">
-      <Filter>Header Files\ImageProcessor</Filter>
-    </ClInclude>
     <ClInclude Include="ImageProcessorFactory.h">
       <Filter>Header Files\ImageProcessor</Filter>
     </ClInclude>
@@ -78,12 +72,6 @@
     <ClInclude Include="Writer.h">
       <Filter>Header Files\Worker</Filter>
     </ClInclude>
-    <ClInclude Include="CircleDrawingImageProcessor405.h">
-      <Filter>Header Files\ImageProcessor</Filter>
-    </ClInclude>
-    <ClInclude Include="CircleDrawingImageProcessor485.h">
-      <Filter>Header Files\ImageProcessor</Filter>
-    </ClInclude>
     <ClInclude Include="Imgproc.h">
       <Filter>Header Files\Public</Filter>
     </ClInclude>
@@ -99,15 +87,15 @@
     <ClInclude Include="Export.h">
       <Filter>Header Files\Global</Filter>
     </ClInclude>
+    <ClInclude Include="WellIndexImageProcessor.h">
+      <Filter>Header Files\ImageProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleDrawingImageProcessor.h">
+      <Filter>Header Files\ImageProcessor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractImageProcessor.cpp">
-      <Filter>Source Files\ImageProcessor</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageProcessor405.cpp">
-      <Filter>Source Files\ImageProcessor</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageProcessor485.cpp">
       <Filter>Source Files\ImageProcessor</Filter>
     </ClCompile>
     <ClCompile Include="InlineBufferPool.cpp">
@@ -125,8 +113,11 @@
     <ClCompile Include="Imgproc.cpp">
       <Filter>Source Files\Public</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <ClCompile Include="CircleDrawingImageProcessor.cpp">
+      <Filter>Source Files\ImageProcessor</Filter>
+    </ClCompile>
+    <ClCompile Include="WellIndexImageProcessor.cpp">
+      <Filter>Source Files\ImageProcessor</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

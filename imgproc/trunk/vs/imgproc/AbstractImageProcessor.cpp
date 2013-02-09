@@ -4,16 +4,18 @@
 
 namespace uG
 {
-    AbstractImageProcessor::AbstractImageProcessor(unsigned char *data, long long *buf_values)
-        : m_data(data)
-        , m_wellValues(buf_values)
-    {
-        //nothing
-    }
 
-    AbstractImageProcessor::~AbstractImageProcessor()
-    {
-        //nothing
-    }
+AbstractImageProcessor::AbstractImageProcessor() 
+    : m_data(0)
+    , m_wellValues(0)
+    , m_centers(0)
+{
+    m_numWells=0;
+    m_wellValues=0;
+    m_imageHeight=0;
+    m_imageWidth=0;
+}
+
+AbstractImageProcessor::~AbstractImageProcessor() { /*nothing*/ }
 
 }  /* namespace uG */

@@ -12,7 +12,6 @@ namespace uG
     *	 \class Buffer
     *	 \brief A piece of data that is passed around by BufferPool users.
     *	 
-    *	 //  [1/18/2013 jim]
     */
     template <class _Ty> class Buffer 
     {

@@ -34,8 +34,7 @@ DWORD WINAPI Reader::do_work(LPVOID aReader)
     vector<string>::iterator it = me->m_rawFile.begin();
     vector<string>::iterator itEnd = me->m_rawFile.end();
 
-    while (it != itEnd)
-    {
+    while (it != itEnd) {
         EnterCriticalSection(&(me->m_criticalSection)); 
             if (me->m_stopRequested) break;
         LeaveCriticalSection(&(me->m_criticalSection));

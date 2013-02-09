@@ -6,6 +6,7 @@
 #include "BufferPool.h"
 #include "Export.h"
 #include "ugTypes.h"
+#include "Centers.h"
 
 #include <Windows.h>
 #include <string>
@@ -19,9 +20,8 @@ namespace uG
     */
     class Processor
     {
-
     public:
-        Processor(ImageBufferPool *imagePool, DataBufferPool *dataPool);
+        Processor(ImageBufferPool *imagePool, DataBufferPool *dataPool, uGProcVars *vars);
         virtual ~Processor();
 
         static DWORD WINAPI do_work(LPVOID aProcessor);
@@ -29,19 +29,20 @@ namespace uG
         void requestStop()
         {
             EnterCriticalSection(&m_criticalSection);
-            m_stopRequested=true;
+                m_stopRequested=true;
             LeaveCriticalSection(&m_criticalSection);
         }
 
     private:
-        AbstractImageProcessor *m_imgproc;  //TODO: use this instead of creating a new AIP for each image.
+        AbstractImageProcessor *m_imgproc;  
 
-        /** pool of image (read) buffers. */
+        /// Pool of image (read) buffers. 
         ImageBufferPool *m_imagePool;
-        /** pool of data (write) buffers. */
+
+        /// Pool of data (write) buffers. 
         DataBufferPool *m_dataPool;
 
-        /** this thread id. */
+        /// This thread id.
         DWORD m_tid;
         CRITICAL_SECTION m_criticalSection;
         bool m_stopRequested;

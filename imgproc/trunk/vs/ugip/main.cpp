@@ -1,7 +1,9 @@
 
 #include "Util.h"
 #include "uigp2.h"
+#include "CirclesFile.h"
 
+#include "Centers.h"
 #include "Reader.h"
 #include "Processor.h"
 #include "Writer.h"
@@ -24,15 +26,14 @@ using uG::WorkerThread;
 using std::string;
 using std::vector;
 
-const int    NUM_READERS       = 4;
-const int    NUM_PROCS         = 2;
-const int    NUM_WRITE         = 2;
+const   int    NUM_READERS       = 2;
+const   int    NUM_PROCS         = 2;
+const   int    NUM_WRITE         = 2;
+const  string  file_extension    = ".raw";
 
-const string file_extension    = ".raw";
-
-extern string circlesFile;
-extern string infile;
-extern string outfile;
+extern string  circlesFileName;
+extern string  infile;
+extern string  outfile;
 
 int doCL(int, char**);
 
@@ -58,9 +59,12 @@ int doCL(int argc, char *argv[])
 
     std::cout << "Input directory: "  << inpath.c_str()  << std::endl;
     std::cout << "Output directory: " << outpath.c_str() << std::endl;
-    std::cout << "Circles file: "     << circlesFile << std::endl;
+    std::cout << "Circles file: "     << circlesFileName << std::endl;
 
-    if (parseCirclesFile(circlesFile) < 1) {
+    CirclesFile circlesFile(circlesFileName);
+    int numcirc = circlesFile.parseCirclesFile();
+    
+    if (numcirc < 1) {
         std::cout << "No circles found in the file, or it couldn't be opened.\n";
         return 0;
     }
@@ -84,31 +88,40 @@ int doCL(int argc, char *argv[])
 
     uG::ImageBufferPool imgbp(60, szfile);
     uG::DataBufferPool  datbp(20, 96);
-
+    
     //partition file names for Readers
     int i = 0;
     stringVector::iterator it(fileVec.begin());
     while ( it != fileVec.end() ) {
-            readerFilesVec.at(i%NUM_READERS).push_back(*it);
-            ++it; ++i;
+        readerFilesVec.at(i%NUM_READERS).push_back(*it);
+        ++it; ++i;
     }
    
-    for (int i = 0; i < NUM_READERS; ++i)
-    {
+    for (int i = 0; i < NUM_READERS; ++i) {
         Reader *r = new Reader(readerFilesVec[i], &imgbp);
         readers.push_back(r);
         workers.push_back(new WorkerThread(r->do_work, (void*)r));
     }
 
-    for (int i = 0; i < NUM_PROCS; ++i)
-    {
-        Processor *p = new Processor(&imgbp, &datbp);
-        procs.push_back(p);
-        workers.push_back(new WorkerThread(p->do_work, (void*)p));
+    uG::uGProcVars vars;    
+    vars.imgh = 1944;
+    vars.imgw = 2592;
+    vars.radius = 45;
+    vars.numWells = 96;
+    vars.centers = new uG::uGCenter[96];
+    for (int i = 0; i < circlesFile.getNumCircles(); ++i) {
+        CenterInfo ci = circlesFile.getCenter(i);
+        uG::uGCenter ugc = {ci.x, ci.y, ci.r};
+        vars.centers[i] = ugc;
     }
 
-    for (int i = 0; i < NUM_WRITE; ++i)
-    {
+    for (int i = 0; i < NUM_PROCS; ++i) {
+        Processor *p = new Processor(&imgbp, &datbp, &vars);
+        procs.push_back(p);
+        workers.push_back( new WorkerThread(p->do_work, (void*)p) );
+    }
+
+    for (int i = 0; i < NUM_WRITE; ++i) {
         Writer *w = new Writer(outpath, &datbp);
         writers.push_back(w);
         workers.push_back(new WorkerThread(w->do_work, (void*)w));
@@ -120,17 +133,14 @@ int doCL(int argc, char *argv[])
     std::cout << "Starting threads..." << std::endl;
 
     vector<WorkerThread*>::iterator worker_iter = workers.begin();
-    for (; worker_iter != workers.end(); ++worker_iter)
-    {
+    for (; worker_iter != workers.end(); ++worker_iter) {
         (*worker_iter)->go();
     }
 
     worker_iter = workers.begin();
-    for(; worker_iter != workers.end(); ++worker_iter)
-    {
+    for(; worker_iter != workers.end(); ++worker_iter) {
         (*worker_iter)->join();
     }
-
 
     //TODO: cleanup!! whaaattt?!? I cleanup for no one!  
 

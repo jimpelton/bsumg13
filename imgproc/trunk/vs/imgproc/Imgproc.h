@@ -8,6 +8,8 @@
 
 #include "Centers.h"
 
+#include <string>
+
 #ifndef Imgproc_h__
 #define Imgproc_h__
 
@@ -15,32 +17,27 @@ namespace uG
 {
 
 
+
 /**
  *	\brief Provides an interface to the Imgproc system for client applications.
  *	
  */
-    //template < class _ImgTy< int _nWellCnt >, class _ProcTy >
-    class Imgproc 
-    {
-    public:
-        //_ImgTy< _nWellCnt > *image;
-        //_ProcTy *processor;
+class Imgproc 
+{
+public:
 
-        Imgproc();
-        ~Imgproc();
+    Imgproc();
+    ~Imgproc();
 
-        ///add center to the centers collection.
-        static void addCenter(int idx, double x, double y, double r)
-        {
-            uGcenter405[idx].x = x;
-            uGcenter405[idx].y = y;
-            uGcenter405[idx].r = r;
+    ///add center to the centers collection.
+    void addCenter(int idx, double x, double y, double r);
+    void setVars(const uGVars *);    
 
-            uGcenter485[idx].x = x;
-            uGcenter485[idx].y = y;
-            uGcenter485[idx].r = r;
-        }
-    };
+private:
+    void initVars();
 
-}
+     uGVars m_uGVars;
+};
+
+} //namespace uG
 #endif // Imgproc_h__
