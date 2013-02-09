@@ -13,7 +13,6 @@ struct uGCenter
 };
 
 //TODO: remove uGVars struct.
-/// Unused.
 struct uGVars 
 {
     int uG_NUM_WELLS;
@@ -30,6 +29,7 @@ struct uGProcVars
     int numWells;
     int imgw;
     int imgh;
+    size_t nElements;
     uGCenter *centers;
 };
 

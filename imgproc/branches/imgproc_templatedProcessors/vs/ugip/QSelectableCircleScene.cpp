@@ -31,7 +31,7 @@ void QSelectableCircleScene::mousePressEvent( QGraphicsSceneMouseEvent *event )
 
     switch (m_mode) {
     case InsertCircle:
-        circle = new QSelectableEllipse(0, 0, 2*m_radius, 2*m_radius);
+        circle = new QSelectableEllipse(0, 0, 2*m_radius);
         circle->setPen(QPen(m_color));
         circle->setZValue(100);
         circle->setVisible(true);

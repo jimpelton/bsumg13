@@ -37,6 +37,23 @@ extern string  outfile;
 
 int doCL(int, char**);
 
+void makeVars(uG::uGProcVars &vars, const CirclesFile &circlesFile, size_t szfile)
+{
+    vars.imgh = 1944;
+    vars.imgw = 2592;
+    vars.radius = 45;
+    vars.numWells = 96;
+    vars.nElements = szfile;
+    vars.centers = new uG::uGCenter[96];
+    for (int i = 0; i < circlesFile.getNumCircles(); ++i) {
+        CenterInfo ci = circlesFile.getCenter(i);
+        uG::uGCenter ugc = {ci.x, ci.y, ci.r};
+        vars.centers[i] = ugc;
+    }
+}
+
+
+
 int main(int argc, char *argv[])
 {
     if (argc>1){
@@ -80,11 +97,11 @@ int doCL(int argc, char *argv[])
     std::cout << "Assuming size of: " << szfile << " bytes.\n";
 
     //vector madness!
-    vector<stringVector> readerFilesVec(NUM_READERS);
-    vector<Reader*> readers;
+    vector<stringVector> readerFilesVec(NUM_READERS); //file names for each reader
+    vector<Reader*> readers;   
     vector<Processor*> procs;
     vector<Writer*> writers;
-    vector<WorkerThread*> workers;    
+    vector<WorkerThread*> workers;  //workers encapsulate readers, procs, and writers.    
 
     uG::ImageBufferPool imgbp(60, szfile);
     uG::DataBufferPool  datbp(20, 96);
@@ -104,16 +121,7 @@ int doCL(int argc, char *argv[])
     }
 
     uG::uGProcVars vars;    
-    vars.imgh = 1944;
-    vars.imgw = 2592;
-    vars.radius = 45;
-    vars.numWells = 96;
-    vars.centers = new uG::uGCenter[96];
-    for (int i = 0; i < circlesFile.getNumCircles(); ++i) {
-        CenterInfo ci = circlesFile.getCenter(i);
-        uG::uGCenter ugc = {ci.x, ci.y, ci.r};
-        vars.centers[i] = ugc;
-    }
+    makeVars(vars, circlesFile, szfile);
 
     for (int i = 0; i < NUM_PROCS; ++i) {
         Processor *p = new Processor(&imgbp, &datbp, &vars);
@@ -142,7 +150,7 @@ int doCL(int argc, char *argv[])
         (*worker_iter)->join();
     }
 
-    //TODO: cleanup!! whaaattt?!? I cleanup for no one!  
+    //TODO: cleanup!! whaaattt?!? I cleanup for no one!  j/k.
 
     return 0;
 }

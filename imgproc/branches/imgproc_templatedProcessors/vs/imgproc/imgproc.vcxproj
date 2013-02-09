@@ -70,6 +70,7 @@
     <ClInclude Include="CircleDrawingImageProcessor.h" />
     <ClInclude Include="dbg_print.h" />
     <ClInclude Include="Export.h" />
+    <ClInclude Include="FlippingImageProcessor.h" />
     <ClInclude Include="WellIndexImageProcessor.h" />
     <ClInclude Include="ImageProcessorFactory.h" />
     <ClInclude Include="Imgproc.h" />
@@ -83,6 +84,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractImageProcessor.cpp" />
     <ClCompile Include="CircleDrawingImageProcessor.cpp" />
+    <ClCompile Include="FlippingImageProcessor.cpp" />
     <ClCompile Include="Imgproc.cpp" />
     <ClCompile Include="InlineBufferPool.cpp" />
     <ClCompile Include="Processor.cpp" />

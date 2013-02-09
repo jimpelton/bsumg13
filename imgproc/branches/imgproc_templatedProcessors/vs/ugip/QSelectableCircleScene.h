@@ -20,9 +20,9 @@ public:
         setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
     }
 
-    QSelectableEllipse(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent=0) 
-        : QGraphicsEllipseItem(x, y, w, h, parent) 
-        , m_radius(w/2)
+    QSelectableEllipse(qreal x, qreal y, qreal r, QGraphicsItem *parent=0) 
+        : QGraphicsEllipseItem(x, y, r, r, parent) 
+        , m_radius(r/2)
     {
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);

@@ -27,8 +27,7 @@ namespace uG
   *
   * Note that while the BufferPool may easily receive and hand out buffers
   * from many producers and consumers, it can not handle the case where multiple
-  * consumers must process the same buffer. That functionality must be handled
-  * by something external to the BufferPool.
+  * consumers must process the same buffer. Dissapointing, I know.
   * 
   * //  [1/21/2013 jim]
   */

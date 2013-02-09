@@ -34,9 +34,10 @@ public:
     void setVars(const uGVars *);    
 
 private:
+    uGVars m_uGVars;
+
     void initVars();
 
-     uGVars m_uGVars;
 };
 
 } //namespace uG
