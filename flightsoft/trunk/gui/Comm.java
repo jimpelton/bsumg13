@@ -10,4 +10,10 @@ public class Comm {
 		Control.Out("Socket Client Thread Created.");
 		t.start();
 	}
+	
+	public static void DoUnitTest()
+	{
+		Control.Out("Starting Comm Unit Test");
+		sock.DoUnitTest();
+	}
 }

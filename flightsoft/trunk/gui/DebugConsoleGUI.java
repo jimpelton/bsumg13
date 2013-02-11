@@ -29,6 +29,11 @@ public class DebugConsoleGUI extends Panel
 		textArea.setEditable(false);
 		add(l, BorderLayout.NORTH);
 		add(scrollPane, BorderLayout.CENTER);
+		BITEHUD hud = Control.getBITEHUD();
+		if(hud!=null)
+		{
+			add(hud,BorderLayout.SOUTH);
+		}
 	}
 	
 }

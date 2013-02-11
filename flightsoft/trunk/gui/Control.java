@@ -2,6 +2,8 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Date;
@@ -30,7 +32,7 @@ public class Control extends java.awt.Frame
 	//some defines
 	public static final int FRAME_WIDTH = 1200;
 	public static final int FRAME_HEIGHT = 700;
-	public static final int TEST_PORT = 2560;
+	public static final int TEST_PORT = 25600;
 	public static final int CAPTURE_PORT = 2561;
 	
 	
@@ -45,6 +47,8 @@ public class Control extends java.awt.Frame
 	private static WellStatusGUI gWellStatusGUI = null;
 	private static DebugConsoleGUI gDebugConsoleGUI = null;
 	private static GraphRenderingGUI gGraphRenderingGUI = null;
+	
+	private static BITEHUD gBITEHUD = null;
 
 	private JPanel centerPanel = null;
 	private JPanel topPanel = null;
@@ -89,7 +93,7 @@ public class Control extends java.awt.Frame
 		
 		//create our objects.
 		
-		
+		gBITEHUD = new BITEHUD();
 		
 		gBITEGUI = new BITEGUI();
 		gCaptureGUI = new CaptureGUI();
@@ -103,6 +107,12 @@ public class Control extends java.awt.Frame
 		
 		//initialize our communications interface.
 		gComm = new Comm();
+		
+		
+		
+		
+		//Run BITE
+		gBITE = new BITE();
 		
 		
 	}
@@ -140,11 +150,46 @@ public class Control extends java.awt.Frame
 				
 		topPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		centerPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		
+		
+		
 		topPanel.add(BITEGUIButton);
 		topPanel.add(CaptureGUIButton);
 		topPanel.add(WellStatusGUIButton);
 		topPanel.add(DebugConsoleGUIButton);
 		topPanel.add(GraphRenderingGUIButton);
+		
+		BITEGUIButton.addActionListener(new ActionListener()
+		{@Override public void actionPerformed(ActionEvent arg0) {
+				centerPanel.removeAll();
+				centerPanel.add(gBITEGUI);
+				validate();
+		}});
+		
+		CaptureGUIButton.addActionListener(new ActionListener()
+		{@Override public void actionPerformed(ActionEvent arg0) {
+				centerPanel.removeAll();
+				centerPanel.add(gCaptureGUI);
+				validate();
+		}});
+		WellStatusGUIButton.addActionListener(new ActionListener()
+		{@Override public void actionPerformed(ActionEvent arg0) {
+				centerPanel.removeAll();
+				centerPanel.add(gWellStatusGUI);
+				validate();
+		}});
+		DebugConsoleGUIButton.addActionListener(new ActionListener()
+		{@Override public void actionPerformed(ActionEvent arg0) {
+				centerPanel.removeAll();
+				centerPanel.add(gDebugConsoleGUI);
+				validate();
+		}});
+		GraphRenderingGUIButton.addActionListener(new ActionListener()
+		{@Override public void actionPerformed(ActionEvent arg0) {
+				centerPanel.removeAll();
+				centerPanel.add(gGraphRenderingGUI);
+				validate();
+		}});
 		
 	}
 
@@ -153,5 +198,17 @@ public class Control extends java.awt.Frame
 	{
 		if(gDebugConsoleGUI!=null)
 			gDebugConsoleGUI.appendMessage(s);
+	}
+	
+	//sets our bite system codes 
+	public synchronized static void SetBITECodes(int[] codes)
+	{
+		if(gBITE!=null)
+		gBITE.SetBITECodes(codes);
+	}
+	
+	public static BITEHUD getBITEHUD()
+	{
+		return gBITEHUD;
 	}
 }
