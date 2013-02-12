@@ -41,6 +41,7 @@ def read405Files(dir405):
     """
     print('Reading 405 files...'),
     files405_list = [f for f in os.listdir(dir405)]
+    files405_list.sort()
     values405_list = []
     timeIdx = 0
     for f in files405_list:
@@ -72,6 +73,7 @@ def read485Files(dir485):
     """
     print('Reading 485 files...'),
     files485_list = [f for f in os.listdir(dir485)]
+    files485_list.sort()
     values485_list = []
     timeIdx = 0
     for f in files485_list:
@@ -93,13 +95,13 @@ def read485Files(dir485):
 
 def readGravityFiles(gravDir):
     """
-
     :rtype : list
     :param gravDir:
     :return:
     """
-    print('Reading and calculating gravity vectors...'),
+    print('Reading and calculating gravity vectors...')
     gravityFiles = [f for f in os.listdir(gravDir)]
+    gravityFiles.sort()
     gravity_list = []
     for f in gravityFiles:
         thisfile = open(gravDir + f)
@@ -137,15 +139,13 @@ def calculateRatios(smaller, values405, values485):
     return ratios_list
 
 
-
-
 def calculateConcentrations(ratios, val405, val485):
     """
     Calculate Ca+2 concentrations from calibration equation:
                  (R-Rmin)
       (Kd * Q) * --------
                  (Rmax-R)
-    :rtype : list
+
     :param ratios: the well ratios on t=[0..tmax]
     :param val405: 405 well values on t=[0..tmax]
     :param val485: 485 well values on t=[0..tmax]
@@ -154,13 +154,24 @@ def calculateConcentrations(ratios, val405, val485):
     egtaWells = [ x[72:76] for x in val405 ]
     ionoWells = [ x[60:64] for x in val485 ]
     Kd        = 0.23
-
+    concs = []
     for i in range(shortest):
-        F405min = min(egtaWells[i][:])
-        F485min = max(ionoWells[i][:])
-        R = ratios[i]
-        Q = min(ionoWells[i])/max(ionoWells[i])
+        F405min = min(egtaWells[i])
+        F405max = max(egtaWells[i])
 
+        F485min = min(ionoWells[i])
+        F485max = max(ionoWells[i])
+
+        Q = F485min / F485max
+        Rmin = F405min/F485min
+        Rmax = F405max/F485max
+        Ca2_t = []
+        for r in ratios[i]:
+            Ca2_t.append(Kd * Q * ((r-Rmin)/(Rmax-r)))
+
+        concs.append(Ca2_t)
+
+    return concs
 
 
 def writeValues(fileName, valuesList):
@@ -188,18 +199,19 @@ def writeGravity(filename, gravList):
         f.write('\n')
     f.close()
 
-
-
-if __name__ == '__main__':
+def main():
     args = getArgs()
+
     basedir485 = args.Directory485
     basedir405 = args.Directory405
     gravDir = args.DirectoryGrav
+    outDir = args.DirectoryOut
 
     wv485Name = 'wv485.dat'
     wv405Name = 'wv405.dat'
     ratName = 'rat.dat'
     gravName = 'grav.dat'
+    concName = 'conc.dat'
 
     #list of 96-element lists
     gravities = readGravityFiles(gravDir)
@@ -215,7 +227,15 @@ if __name__ == '__main__':
     writeValues(wv405Name, values405)
     writeValues(wv485Name, values485)
     writeValues(ratName, ratios)
+    writeValues(concName, concs)
     writeGravity(gravName, gravities)
+
+
+if __name__ == '__main__':
+    main()
+
+
+
 
 
 
