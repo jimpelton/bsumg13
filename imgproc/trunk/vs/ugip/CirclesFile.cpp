@@ -116,6 +116,7 @@ int CirclesFile::parseCirclesFile()
     char line[50];
     while (!file.eof() && nLines < 500) { //500 chosen just for sanity.
         file.getline(line, 50);
+        ++nLines;
         regex_match(line, cm, reg);
         string key(cm[1]);
         string val(cm[2]);
