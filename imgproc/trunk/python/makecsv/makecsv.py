@@ -15,14 +15,17 @@ def getArgs():
 
 
     args = parser.parse_args()
+    # if  < 4:
+    #     parser.print_usage()
+    #     exit(0)
 
     print(
         "405 Data Files Directory {} \n 485 Data Files Directory {} \n"
          "Gravity Directory {} \n Output Directory {} \n"
-        .format(
-            args.Directory405, args.Directory485, args.RatiosFile,
-            args.WellValues405, args.WellValues485, args.DirectoryGrav,
-            args.DirectoryOut
+        .format
+        (
+            args.Directory405, args.Directory485,
+            args.DirectoryGrav, args.DirectoryOut
         )
     )
 
@@ -32,14 +35,14 @@ def getArgs():
 
 def read405Files(dir405):
     """
-
-    :param dir405:
+    Read 405 files. Each file contains lines formated as: "well#:val".
+    :param dir405: Path to 405 data files
     :rtype : list
     """
     print('Reading 405 files...'),
     files405_list = [f for f in os.listdir(dir405)]
     values405_list = []
-    count = 0
+    timeIdx = 0
     for f in files405_list:
         thisfile = open(dir405 + f)
         lines = thisfile.readlines()
@@ -49,28 +52,28 @@ def read405Files(dir405):
         for s in lines:
             strs = s.split(':')
             val = int(strs[1].strip())
-            values405_list[count].append(val)
+            values405_list[timeIdx].append(val)
 
         #reverse to match the 485 well order
-        values405_list[count].reverse()
-        count += 1
+        values405_list[timeIdx].reverse()
+        timeIdx += 1
 
-    print('{}'.format(count))
+    print('{}'.format(timeIdx))
     return values405_list
 
 
 def read485Files(dir485):
     """
-
-
+    Read in them 485 data files.
+    Each file contains lines formatted as: "well#:val".
     :rtype : list
     :param dir485:
-    :return:
+    :return: list of lists of wells for each file.
     """
     print('Reading 485 files...'),
     files485_list = [f for f in os.listdir(dir485)]
     values485_list = []
-    count = 0
+    timeIdx = 0
     for f in files485_list:
         thisfile = open(dir485 + f)
         lines = thisfile.readlines()
@@ -80,17 +83,16 @@ def read485Files(dir485):
         for s in lines:
             strs = s.split(':')
             val = int(strs[1].strip())
-            values485_list[count].append(val)
+            values485_list[timeIdx].append(val)
 
-        count += 1
+        timeIdx += 1
 
-    print('{}'.format(count))
+    print('{}'.format(timeIdx))
     return values485_list
 
 
 def readGravityFiles(gravDir):
     """
-
 
     :rtype : list
     :param gravDir:
@@ -135,36 +137,30 @@ def calculateRatios(smaller, values405, values485):
     return ratios_list
 
 
-def calculateRatioAveragesPerWell(ratios):
-    """
 
-    :rtype : list
-    :param ratios: list of ratios
-    :return: list of ratio averages across all time
-    """
-    ratioAvgs_list = []
-    for wellIdx in range(len(ratios)):
-        wellSum = 0
-        for smpl in range(len(ratios[wellIdx])):
-            wellSum = wellSum + ratios[wellIdx][smpl]
-
-        wellSum = wellSum / len(ratios[wellIdx])
-        ratioAvgs_list.append(wellSum)
-    return ratioAvgs_list
 
 def calculateConcentrations(ratios, val405, val485):
     """
-
+    Calculate Ca+2 concentrations from calibration equation:
+                 (R-Rmin)
+      (Kd * Q) * --------
+                 (Rmax-R)
     :rtype : list
     :param ratios: the well ratios on t=[0..tmax]
     :param val405: 405 well values on t=[0..tmax]
     :param val485: 485 well values on t=[0..tmax]
     """
-    egtaWells = [72,73,74,75]
-    ionoWells = [60,61,62,63]
-    Kd = 0.23
-    Rmin = min( )
-    concs = []
+    shortest  = min( len(ratios), len(val405), len(val485) )
+    egtaWells = [ x[72:76] for x in val405 ]
+    ionoWells = [ x[60:64] for x in val485 ]
+    Kd        = 0.23
+
+    for i in range(shortest):
+        F405min = min(egtaWells[i][:])
+        F485min = max(ionoWells[i][:])
+        R = ratios[i]
+        Q = min(ionoWells[i])/max(ionoWells[i])
+
 
 
 def writeValues(fileName, valuesList):
@@ -174,12 +170,24 @@ def writeValues(fileName, valuesList):
     :param valuesList: the values to write.
     """
     print('Writing values: {0}'.format(fileName))
+
     f = open(fileName, 'w')
     for i in range(len(valuesList)):
         f.write('{0} '.format(str(i)))
         f.write(' '.join(str(x) for x in valuesList[i]))
         f.write('\n')
     f.close()
+
+def writeGravity(filename, gravList):
+    print('Writing gravity values: {}'.format(filename))
+    f = open(filename, 'w')
+
+    for i in range(len(gravList)):
+        f.write('{0} {1}'.format(str(i), gravList[i]))
+        # f.write(' '.join(str(x) for x in gravList[i]))
+        f.write('\n')
+    f.close()
+
 
 
 if __name__ == '__main__':
@@ -198,14 +206,7 @@ if __name__ == '__main__':
     values405 = read405Files(basedir405)
     values485 = read485Files(basedir485)
 
-    if len(values485) < len(values405):
-        smaller = len(values485)
-        if len(gravities) < smaller:
-            smaller = len(gravities)
-    else:
-        smaller = len(values405)
-        if len(gravities) < smaller:
-            smaller = len(gravities)
+    smaller = min(len(values485), len(values405), len(gravities))
 
     ratios = calculateRatios(smaller, values405, values485)
 
@@ -214,11 +215,25 @@ if __name__ == '__main__':
     writeValues(wv405Name, values405)
     writeValues(wv485Name, values485)
     writeValues(ratName, ratios)
-    writeValues(gravName, gravities)
+    writeGravity(gravName, gravities)
 
 
 
-
+# def calculateRatioAveragesPerWell(ratios):
+#     """
+#     :rtype : list
+#     :param ratios: list of ratios
+#     :return: list of ratio averages across all time
+#     """
+#     ratioAvgs_list = []
+#     for wellIdx in range(len(ratios)):
+#         wellSum = 0
+#         for smpl in range(len(ratios[wellIdx])):
+#             wellSum = wellSum + ratios[wellIdx][smpl]
+#
+#         wellSum = wellSum / len(ratios[wellIdx])
+#         ratioAvgs_list.append(wellSum)
+#     return ratioAvgs_list
 
 
     #######################################################
