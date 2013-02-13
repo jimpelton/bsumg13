@@ -26,19 +26,41 @@ Class Descriptions
 
 SocketServer
 -------------------------------------------------------------------------------
-Hrm... serves sockets!
+Based on Boost.Asio. Listens on a socket for client commands and requests and
+sends replys back to the client.
 
-EventManager
+MessageFactory
 -------------------------------------------------------------------------------
-Queue events and dispatch them when a Manager requests an event.
+Recieves a message type from the SocketServer and generates the appropriate Event
+type to be Queued by the EventManager.
 
-Accessor
+EventQueue
 -------------------------------------------------------------------------------
-Interface to any object designed to access some kind of hardware. Objects which
-access any 3rd party hardware API's should implement this interface so that a
-Manager object may control the Accessor.
+Queue events and dispatch them when a Manager requests an event. Only the manager
+knows if it should act on the event or not.
 
-AccessorManager
+Event
+-------------------------------------------------------------------------------
+
+
+MANAGERS
+
+Manager <<abstract>>
+-------------------------------------------------------------------------------
+Interface to a manager. These should have a queue of events to be dispatched to
+the objects being managed. The managed objects should have a queue that holds
+the events until it is ready to be used. The managed item should be able to tell
+if it wants to act on the event.
+
+
+WriterManager (Manager)
+-------------------------------------------------------------------------------
+Manages the Writer specializations much like the AccessorManager. Recieves events
+from an EventManager. Perhaps this class will be merged with the AccessorManager for
+a more general class that can manage any type of object which contains some sort of
+worker logic.
+
+AccessorManager (Manager)
 -------------------------------------------------------------------------------
 Manages a group of Accessors. Schedules jobs according to priority and then
 dispatches a thread to execute each of those jobs. Jobs should be defined in
@@ -46,22 +68,30 @@ the Accessor objects being managed.
 
 See also WriterManager, which might be merged into AccessorManager.
 
-PhidgetsAccessor
+ACCESSORS
+
+Accessor <<abstract>>
+-------------------------------------------------------------------------------
+Interface to any object designed to access some kind of hardware. Objects which
+access any 3rd party hardware API's should implement this interface so that a
+Manager object may control the Accessor.
+
+PhidgetsAccessor (Accessor)
 -------------------------------------------------------------------------------
 Specialization for the Phidgets API. Possibly this class will be extended to handle
 specific types of Phidgets hardware.
 
-NIAccessor
+NIAccessor (Accessor)
 -------------------------------------------------------------------------------
 Specialization for the National Instruments API. Specifically, this class will need
 to handle interfacing with the National Instruments ADC 6008 (check 6008 is correct.)
 
-AptinaAccessor
+AptinaAccessor (Accessor)
 -------------------------------------------------------------------------------
 Specialization for the Aptina hardware. Specifically, this class will need to handle
 interfacing with the DEMO2X boards via Micron's MIDLIB2 API.
 
-DebugAccessor
+DebugAccessor (Accessor)
 -------------------------------------------------------------------------------
 Specialization of Accessor for generating debug and test data. Demonstration data
 could also be generated in this class. A further specialization of this class could
@@ -71,19 +101,11 @@ also read from a file to generate the data, or perhaps this could be a special
 SocketAccessor
 -------------------------------------------------------------------------------
 
-MessageFactory
--------------------------------------------------------------------------------
-Recieves a message type from the SocketServer and generates the appropriate Event
-type to be Queued by the EventManager.
 
-WriterManager
--------------------------------------------------------------------------------
-Manages the Writer specializations much like the AccessorManager. Recieves events
-from an EventManager. Perhaps this class will be merged with the AccessorManager for
-a more general class that can manage any type of object which contains some sort of
-worker logic.
 
-Writer
+WRITERS
+
+Writer <<abstract>>
 -------------------------------------------------------------------------------
 The interface for Writer objects which are managed by a WriterManager. This interface
 should be specialized for the particular data type and destination--but this may
@@ -94,7 +116,8 @@ Possible destinations include: disk, socket and SQLite database.
 
 BinaryWriter
 -------------------------------------------------------------------------------
-Writes binary data to some destination.
+Writes binary data to some destination. This can probably include the TextWriter
+functionality, or no distinction between the two may need to be made.
 
 TextWriter
 -------------------------------------------------------------------------------
