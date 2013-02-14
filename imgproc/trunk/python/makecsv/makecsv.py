@@ -116,7 +116,7 @@ def readGravityFiles(gravDir):
     return gravity_list
 
 
-def calculateRatios(smaller, values405, values485):
+def calculateRatios(values405, values485):
     """
 
     :rtype : list
@@ -125,8 +125,9 @@ def calculateRatios(smaller, values405, values485):
     :param values485:
     :return:
     """
+    shortest = min(len(values405), len(values485))
     ratios_list = []
-    for sampNum in range(smaller):
+    for sampNum in range(shortest):
         samples405 = values405[sampNum]
         samples485 = values485[sampNum]
         if not (len(samples405) == 96 and len(samples485) == 96):
@@ -220,7 +221,7 @@ def main():
 
     smaller = min(len(values485), len(values405), len(gravities))
 
-    ratios = calculateRatios(smaller, values405, values485)
+    ratios = calculateRatios(values405, values485)
 
     concs = calculateConcentrations(ratios, values405, values485)
 
