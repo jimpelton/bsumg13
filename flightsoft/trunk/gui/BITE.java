@@ -9,7 +9,6 @@ public class BITE
 	public BITE()
 	{
 		BITECodes = new int[9];
-		
 		StartTest();
 	}
 	

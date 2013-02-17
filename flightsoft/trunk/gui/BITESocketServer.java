@@ -17,7 +17,7 @@ public class BITESocketServer implements Runnable, PacketDefines{
 	private OutputStream ostream = null;	
 	private DataInputStream in = null;
 	private DataOutputStream out = null;
-	
+	private static int testcounter = 0;
 	
 	@Override
 	public void run() {
@@ -101,7 +101,8 @@ public class BITESocketServer implements Runnable, PacketDefines{
 							out.writeInt(PACKET_TYPE_BITE);
 							out.writeLong(System.currentTimeMillis());
 							for(int i=0;i<9;i++)
-								out.writeInt(1);
+								out.writeInt((++testcounter)%3);
+							testcounter++;
 						}						
 						if(req==PACKET_TYPE_WELLDATA)//Well Data Request
 						{

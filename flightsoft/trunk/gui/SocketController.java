@@ -35,7 +35,7 @@ public class SocketController implements Runnable, PacketDefines {
 				e.printStackTrace();
 			} catch (IOException e) {
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(1000);
 					Control.Out("Waiting for sockets connection.");
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();

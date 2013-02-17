@@ -53,6 +53,7 @@ public class BITEHUD extends JPanel
 		add(bCam405);
 		add(bCam485);
 		
+		/*
 		bNI.setEnabled(false);
 		bPhidgets.setEnabled(false);
 		bAccelVib.setEnabled(false);
@@ -62,6 +63,7 @@ public class BITEHUD extends JPanel
 		bTemp.setEnabled(false);
 		bCam405.setEnabled(false);
 		bCam485.setEnabled(false);
+		*/
 		
 		bNI.setSize(200, 40);
 		bPhidgets.setSize(200, 40);
@@ -78,4 +80,128 @@ public class BITEHUD extends JPanel
 		this.setSize(HUDWIDTH, HUDHEIGHT);
 	}
 	
+	public void updateColoration(int[] warns, boolean critical)
+	{
+		if(warns.length==9)
+		{
+			if(!critical)//If we are not in a critical section then the coloration isn't all reds.
+			{
+				if(warns[0]==0)
+					bNI.setBackground(Color.LIGHT_GRAY);
+				else if(warns[0]==1)
+					bNI.setBackground(Color.YELLOW);
+				else 
+					bNI.setBackground(Color.RED);
+				
+				if(warns[1]==0)
+					bPhidgets.setBackground(Color.LIGHT_GRAY);
+				else if(warns[1]==1)
+					bPhidgets.setBackground(Color.YELLOW);
+				else 
+					bPhidgets.setBackground(Color.RED);
+				
+				if(warns[2]==0)
+					bAccelVib.setBackground(Color.LIGHT_GRAY);
+				else if(warns[2]==1)
+					bAccelVib.setBackground(Color.YELLOW);
+				else 
+					bAccelVib.setBackground(Color.RED);
+				
+				if(warns[3]==0)
+					bAccelCap.setBackground(Color.LIGHT_GRAY);
+				else if(warns[3]==1)
+					bAccelCap.setBackground(Color.YELLOW);
+				else 
+					bAccelCap.setBackground(Color.RED);
+				
+				if(warns[4]==0)
+					bWeather.setBackground(Color.LIGHT_GRAY);
+				else if(warns[4]==1)
+					bWeather.setBackground(Color.YELLOW);
+				else 
+					bWeather.setBackground(Color.RED);
+							
+				if(warns[5]==0)
+					bPower.setBackground(Color.LIGHT_GRAY);
+				else if(warns[5]==1)
+					bPower.setBackground(Color.YELLOW);
+				else 
+					bPower.setBackground(Color.RED);
+				
+				
+				if(warns[6]==0)
+					bTemp.setBackground(Color.LIGHT_GRAY);
+				else if(warns[6]==1)
+					bTemp.setBackground(Color.YELLOW);
+				else 
+					bTemp.setBackground(Color.RED);
+				
+				
+				if(warns[7]==0)
+					bCam405.setBackground(Color.LIGHT_GRAY);
+				else if(warns[7]==1)
+					bCam405.setBackground(Color.YELLOW);
+				else 
+					bCam405.setBackground(Color.RED);
+				
+				
+				if(warns[8]==0)
+					bCam485.setBackground(Color.LIGHT_GRAY);
+				else if(warns[8]==1)
+					bCam485.setBackground(Color.YELLOW);
+				else 
+					bCam485.setBackground(Color.RED);
+			}
+			else
+			{
+				if(warns[0]==0)
+					bNI.setBackground(Color.GRAY);
+				else 
+					bNI.setBackground(Color.RED);
+				
+				if(warns[1]==0)
+					bPhidgets.setBackground(Color.GRAY);
+				else 
+					bPhidgets.setBackground(Color.RED);
+				
+				if(warns[2]==0)
+					bAccelVib.setBackground(Color.GRAY);
+				else 
+					bAccelVib.setBackground(Color.RED);
+				
+				if(warns[3]==0)
+					bAccelCap.setBackground(Color.GRAY);
+				else 
+					bAccelCap.setBackground(Color.RED);
+				
+				if(warns[4]==0)
+					bWeather.setBackground(Color.GRAY);
+				else 
+					bWeather.setBackground(Color.RED);
+							
+				if(warns[5]==0)
+					bPower.setBackground(Color.GRAY);
+				else 
+					bPower.setBackground(Color.RED);
+				
+				
+				if(warns[6]==0)
+					bTemp.setBackground(Color.GRAY);
+				else 
+					bTemp.setBackground(Color.RED);
+				
+				
+				if(warns[7]==0)
+					bCam405.setBackground(Color.GRAY);
+				else 
+					bCam405.setBackground(Color.RED);
+				
+				
+				if(warns[8]==0)
+					bCam485.setBackground(Color.GRAY);
+				else 
+					bCam485.setBackground(Color.RED);
+			}
+		}
+	}
 }

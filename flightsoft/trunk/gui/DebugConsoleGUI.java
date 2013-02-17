@@ -23,17 +23,13 @@ public class DebugConsoleGUI extends Panel
 	
 		this.setLayout(new BorderLayout(4, 4));
 		JLabel l = new JLabel("Debug Console");
-		textArea = new JTextArea(39,80);
+		textArea = new JTextArea(38,80);
 		textArea.setLineWrap(false);
 		JScrollPane scrollPane = new JScrollPane(textArea); 
 		textArea.setEditable(false);
 		add(l, BorderLayout.NORTH);
 		add(scrollPane, BorderLayout.CENTER);
-		BITEHUD hud = Control.getBITEHUD();
-		if(hud!=null)
-		{
-			add(hud,BorderLayout.SOUTH);
-		}
+		scrollPane.setAutoscrolls(true);
 	}
 	
 }

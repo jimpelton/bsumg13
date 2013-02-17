@@ -204,7 +204,9 @@ public class Control extends java.awt.Frame
 	public synchronized static void SetBITECodes(int[] codes)
 	{
 		if(gBITE!=null)
-		gBITE.SetBITECodes(codes);
+			gBITE.SetBITECodes(codes);
+		if(gBITEHUD!=null)
+			gBITEHUD.updateColoration(codes, false);
 	}
 	
 	public static BITEHUD getBITEHUD()
