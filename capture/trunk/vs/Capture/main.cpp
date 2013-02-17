@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-
+//defined in SimpleCapture.h
 extern bool gDone ; //= FALSE;						// Set to cause all workers to exit
 extern HANDLE gBarrierSemaphore;				// Synchronization object for all threads
 extern volatile unsigned int gWaitingCount;	// Number of waiters, start next loop when this reaches 4
@@ -21,36 +21,35 @@ int main(int argc, char *argv[])
 
     //parse command line for the number of frames to capture and 
     //the width and height (if not default)
-    switch (argc)
-    {
+    switch (argc) {
     case 4: 
-        nWidth     = atoi(argv[2]);
-        nHeight    = atoi(argv[3]);
+        numFramesRequested = atoi(argv[4]);
+    case 3: 
+        nWidth             = atoi(argv[2]);
+        nHeight            = atoi(argv[3]);
     case 2: 
-        numFramesRequested = atoi(argv[1]);
-        break;
-    case 1:
+        camsRequested      = atoi(argv[1]);
         break;
     default:    
         printf("usage:\n");
         printf("    SimpleCapture\n");
-        printf("    SimpleCapture <num_frames>\n");
-        printf("    SimpleCapture <num_frames> <width> <height>\n");
+        printf("    SimpleCapture <camsRequested>\n");
+        printf("    SimpleCapture <camsRequested> <num_frames>\n");
+        printf("    SimpleCapture <camsRequested> <width> <height> <num_frames>\n");
         return 0;
     }
-    if (1 == SimpleCapture::initMidLib2(camsRequested))
-    {
+
+    if (SimpleCapture::initMidLib2(camsRequested) != 0) {
         printf("Aieeee! Couldn't initialize midlib2!!\n");
         return 0;
     }
     
-    if (0 != sc[0].openTransport(0))
-    {
+    if (sc[0].openTransport(0) != 0) {
         printf("openTransport failed on Camera 0. Exiting...\n");
         return 0;
     }
-    if (0 != sc[1].openTransport(1))
-    {
+
+    if (sc[1].openTransport(1) != 0) {
         printf("openTransport() failed on Camera 1. Exiting...\n");
         return 0;
     }
@@ -60,8 +59,7 @@ int main(int argc, char *argv[])
     pdwThreadIds[0] = NULL;
     pdwThreadIds[1] = NULL;
 
-	for (int i=0; i<2; ++i)
-	{
+	for (int i=0; i<2; ++i) {
         lpThreads[i] = CreateThread(
             NULL, 
             0, 
@@ -71,8 +69,7 @@ int main(int argc, char *argv[])
             pdwThreadIds[i]
         );
 
-        if (!lpThreads[i])
-        {
+        if (!lpThreads[i]) {
             std::cerr << "Unable to create thread " << i << std::endl;
             ExitProcess(1);
         }

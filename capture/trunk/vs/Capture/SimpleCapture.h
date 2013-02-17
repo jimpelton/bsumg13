@@ -32,9 +32,16 @@ public:
     static mi_s32 num_cameras;
     static bool isMidLibInit;
 
-    // Init all cams, and make sure at least nCamsReq cameras 
-    // were initialized.
+    /** 
+     * \brief Init all cams, make sure at least nCamsReq 
+     * cameras were initialized.
+     * \return 1 on failure, 0 otherwise.
+     */
     static int initMidLib2(int nCamsReq);
+
+    /**
+     * \brief Pass to worker thread for performing the capture.
+     */
     static DWORD WINAPI captureFunction(LPVOID args);
 
   /************************************************************************/
@@ -42,7 +49,7 @@ public:
   /************************************************************************/ 
     //mi_s32          num_cameras;                           //number of cameras found
     //mi_camera_t     *cameras[MI_MAX_CAMERAS];              //cameras found
-    mi_camera_t     *pCamera; //=NULL;                   //current camera
+    mi_camera_t     *pCamera; //=NULL;                     //current camera
     unsigned long   frameSize;                             //size of the frames we want to save
     unsigned char   *pCameraBuff;                          //memory buffer for all the sensor images
     unsigned char   *pGrabframeBuff;                       //grabFrame buffer
@@ -76,10 +83,9 @@ public:
      */
     int  openTransport(int camidx); 
 
-    /** \brief Called from captureFunction. */
-    void doCapture();
-
-    /** \brief Stop the transport for this SimpleCapture's camera. */
+    /** 
+     *  \brief Stop the transport for this SimpleCapture's camera. 
+     */
     void stopTransport();
 
   /************************************************************************/
@@ -90,6 +96,9 @@ private:
     int m_cameraIdx;
     int m_nextFrameIdx;
     int m_camNM;
+    
+    /** \brief Called from captureFunction to perform the capture. */
+    void _doCapture();
 
     int mallocate();
     void printShit();

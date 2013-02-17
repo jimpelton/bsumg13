@@ -14,14 +14,14 @@ int SimpleCapture::num_cameras=0;
 bool SimpleCapture::isMidLibInit=false;
 
 
-DWORD WINAPI SimpleCapture::captureFunction(LPVOID param)
+DWORD WINAPI 
+SimpleCapture::captureFunction(LPVOID param)
 {
 	DWORD rv;
     SimpleCapture *me = (SimpleCapture*)param;
 	unsigned int currValue;
 
-	while (1) 
-    {
+	while (1) {
 		currValue = InterlockedIncrement(&gWaitingCount);		// Atomic increment
 		if (currValue == NUM_WORKER_THREADS) {
 			// I'm the last thread here so I don't need to sleep, just wake up others and go
@@ -36,11 +36,10 @@ DWORD WINAPI SimpleCapture::captureFunction(LPVOID param)
 			}
 		}
 
-        me->doCapture();
+        me->_doCapture();
 
 		// if gDone was set by the main thread, then exit
-		if (gDone)
-        {
+		if (gDone) {
 			return 0;
 		}
 		
@@ -50,14 +49,12 @@ DWORD WINAPI SimpleCapture::captureFunction(LPVOID param)
     return 0;
 }
 
-
 SimpleCapture::SimpleCapture()
     : m_cameraIdx(-1)
     , m_nextFrameIdx(0) 
     , num_frames(1)
     , nWidth(0)
-    , nHeight(0)
-{ }
+    , nHeight(0) { }
 
 SimpleCapture::~SimpleCapture(void) { }
 
@@ -70,8 +67,7 @@ SimpleCapture::initMidLib2(int nCamsReq)
 	gBarrierSemaphore = CreateSemaphore(NULL, 0, 1024, TEXT("Barrier Semaphore"));
     gWaitingCount=0;
     
-    if (nCamsReq <= 0)
-    {
+    if (nCamsReq <= 0) {
         printf("You requested %d cams!" \
             "That is not a good amount of cams to request!\n", 
             nCamsReq);
@@ -80,8 +76,7 @@ SimpleCapture::initMidLib2(int nCamsReq)
 
     mi_OpenCameras(gCameras, &SimpleCapture::num_cameras, mi_SensorData());
     
-    if (num_cameras < nCamsReq)
-    {
+    if (num_cameras < nCamsReq) {
         printf("Could not initialize %d camera(s). Found %d. \n",
             nCamsReq, num_cameras);
         mi_CloseCameras();
@@ -100,11 +95,9 @@ SimpleCapture::initMidLib2(int nCamsReq)
 }
 
 //return: 1 error, 0 success
-int
-SimpleCapture::openTransport(int camIdx)
+int SimpleCapture::openTransport(int camIdx)
 {
-    if (!isMidLibInit) 
-    {
+    if (!isMidLibInit) {
         printf("openTransport() called before initMidLib2().\n");
         return 1;
     }
@@ -112,8 +105,7 @@ SimpleCapture::openTransport(int camIdx)
     m_cameraIdx=camIdx;
     pCamera = 0==m_cameraIdx ? gCameras[0] : gCameras[1];
 
-    if( pCamera->startTransport(pCamera) != MI_CAMERA_SUCCESS )
-    {
+    if( pCamera->startTransport(pCamera) != MI_CAMERA_SUCCESS ) {
         printf("Start Transport Unsuccessful.\n");
         mi_CloseCameras();
 #ifdef _DEBUG
@@ -136,8 +128,7 @@ SimpleCapture::openTransport(int camIdx)
 	const char* presetNamePtr = "Demo Initialization Mono";
     
     mi_s32 errnum = mi_LoadINIPreset(pCamera, iniDir.c_str(), presetNamePtr);
-    switch(errnum)
-    {
+    switch(errnum) {
     case MI_INI_KEY_NOT_SUPPORTED:
         printf("%d: MI_INI_KEY_NOT_SUPPORTED\n", MI_INI_KEY_NOT_SUPPORTED);
         return 1;
@@ -151,15 +142,15 @@ SimpleCapture::openTransport(int camIdx)
     //switch logging OFF for some reason...
     pCamera->setMode(pCamera, MI_ERROR_LOG_TYPE, MI_NO_ERROR_LOG);
 
-    if (nWidth < 1 || nHeight < 1)
-    {
+    if (nWidth < 1 || nHeight < 1) {
         nWidth     = pCamera->sensor->width;
         nHeight    = pCamera->sensor->height;
     }
 
+    pCamera->sensor->imageType = MI_PNG;
     pCamera->updateFrameSize(pCamera, nWidth, nHeight, PIXELBITS,0);
      
-    printShit();
+    printShit(); //unprofessional, but accurate. 
 
     frameSize = pCamera->sensor->width * pCamera->sensor->height
               * pCamera->sensor->pixelBytes;
@@ -176,8 +167,7 @@ SimpleCapture::openTransport(int camIdx)
     mi_u32  fuse1 = 0;
 	pCamera->readRegister(pCamera,pCamera->sensor->shipAddr, 0x00FA, &fuse1);
 
-    if (0 != fuse1) 
-    {
+    if (0 != fuse1) {
         m_camNM = (fuse1==0xb8ce) ? 405 : 485;
     }else{
         printf("couldn't get Camera Fuse Register for camera: %d\n", m_cameraIdx);
@@ -189,7 +179,7 @@ SimpleCapture::openTransport(int camIdx)
 
 
 void 
-SimpleCapture::doCapture()
+SimpleCapture::_doCapture()
 {
     char fname[30];
     sprintf(fname, "Camera%d_%d.raw", m_camNM, m_nextFrameIdx++);
@@ -198,21 +188,16 @@ SimpleCapture::doCapture()
     // 
     //grabFrame 
     printf("Grabbing frame: %s\n", fname);
-    for (frame = 0; frame < num_frames; frame++)
-    {
+    for (frame = 0; frame < num_frames; frame++) {
         int    nRet;
-        mi_u8  tempByte;
-        int    i;
+        //mi_u8  tempByte;
+        //int    i;
 
-        /**
-         * skip frames until a good frame is found.
-         */
+        /* Skip frames until a good frame is found.  */
         int count=0;
-        do
-        {
+        do {
             nRet = pCamera->grabFrame(pCamera, pGrabframeBuff, pCamera->sensor->bufferSize);
-            if (nRet != MI_CAMERA_SUCCESS)
-            {
+            if (nRet != MI_CAMERA_SUCCESS) {
                 printf("b");
             }
         } while (nRet != MI_CAMERA_SUCCESS && count++ < MAX_BADFRAME_TRIES);
@@ -234,10 +219,9 @@ SimpleCapture::doCapture()
         //else
         memcpy(pCameraBuff, pGrabframeBuff, frameSize);
 
-        if (nRet != MI_CAMERA_SUCCESS)
+        if (nRet != MI_CAMERA_SUCCESS) {
             printf("B (error code: %d)", nRet);
-        else
-        {
+        } else {
             fwrite(pCameraBuff, frameSize, 1, imfile);
             printf(".");
         }
@@ -263,8 +247,7 @@ SimpleCapture::mallocate()
 {
     //Allocate a buffer to store the images
     pCameraBuff  = (unsigned char *)malloc(frameSize);
-    if (pCameraBuff==NULL)
-    {
+    if (pCameraBuff==NULL) {
         printf("Error trying to create a buffer of size %d to capture %d frames.\n", 
                frameSize, num_frames);
         mi_CloseCameras();
@@ -277,8 +260,7 @@ SimpleCapture::mallocate()
     }
     //Allocate a buffer to store the images
     pGrabframeBuff  = (unsigned char *)malloc(pCamera->sensor->bufferSize);
-    if (pGrabframeBuff==NULL)
-    {
+    if (pGrabframeBuff==NULL) {
         printf("Error trying to create a buffer of size %d to grab the frames.\n", 
             pCamera->sensor->bufferSize);
         mi_CloseCameras();
@@ -296,6 +278,8 @@ SimpleCapture::mallocate()
 void 
 SimpleCapture::printShit()
 {
+    printf("======================\n");
+    printf("Camera: %d Wavelength: %d info\n", m_cameraIdx, m_camNM);
     mi_GetImageTypeStr(pCamera->sensor->imageType, imagetypestr);
     printf("sensorName = %s \n", pCamera->sensor->sensorName);
     printf("sensorType = %d \n", pCamera->sensor->sensorType);
