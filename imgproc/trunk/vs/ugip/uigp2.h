@@ -29,15 +29,34 @@ public:
     ~uigp2();
 
 public slots:
+    /// 
     void addSelectedCircle(QSelectableEllipse* eee);
+    
+    /// 
     void setImageDir(QString dir);
+
+    /// set the output directory to dir
     void setOutputDir(QString dir);
+    
+    /// set the circles file to the given filename.
     void setCirclesFileName(QString fname);
+    
+    /// adds the file name to the list of image files.
     void addScannedFile(QString fname, float percentDone);
+    
+    /// start processing (un-implemented)
     void startProcessing();
+    
+    /// save the existing circles to the specified file.
     void saveCirclesFile(QString);
+
+    /// open circles file, replaces existing CirclesFile object.
     void openCirclesFile();
+    
+    /// display image 0, called after scanning image directory.
     void doneScan();
+
+    /// display image idx in the list of image files.
     void displayImage(int idx);
 
 private:

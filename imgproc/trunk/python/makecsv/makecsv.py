@@ -1,35 +1,51 @@
 import os
 import argparse
-
 from math import sqrt
 
-#######################################################
-# getArgs: get CL arguments
-#
+
 def getArgs():
-    parser = argparse.ArgumentParser()
+    """
+    Get command line arguments.
+    :return: list of arguments, or None if user says no.
+    """
+    parser = argparse.ArgumentParser(description="Calculate calcium concentrations from ratiometric dye intensisties.")
     parser.add_argument("-d485", "--Directory485", help="485 Data Files Directory")
     parser.add_argument("-d405", "--Directory405", help="405 Data Files Directory")
     parser.add_argument("-gd", "--DirectoryGrav", help="Gravity files directory")
     parser.add_argument("-dout", "--DirectoryOut", help="Output Directory")
-
+    parser.add_argument("-s", "--Start", type=str, help="Starting index")
+    parser.add_argument("-e", "--End", type=str, help="Ending index")
 
     args = parser.parse_args()
-    # if  < 4:
-    #     parser.print_usage()
-    #     exit(0)
 
+    if args.Start is None:
+        args.Start = 0
+
+    if args.End is None:
+        args.End = 0
+
+    print ("\n ***Check to make sure the following is correct!***\n")
     print(
-        "405 Data Files Directory {} \n 485 Data Files Directory {} \n"
-         "Gravity Directory {} \n Output Directory {} \n"
+        "405 Data Files Directory: {}\n"
+        "485 Data Files Directory: {}\n"
+        "Gravity Directory:        {}\n"
+        "Output Directory:         {}\n"
+        "Starting Index:           {}\n"
+        "Ending Index:             {}"
         .format
         (
             args.Directory405, args.Directory485,
-            args.DirectoryGrav, args.DirectoryOut
+            args.DirectoryGrav, args.DirectoryOut,
+            args.Start, args.End
         )
     )
 
-    return args
+    #Wait for user to check dirs
+    yesno = input("Is the above information correct? [y/N]")
+    if yesno == 'y':
+        return args
+    else:
+        return None
 
 
 
@@ -118,7 +134,7 @@ def readGravityFiles(gravDir):
 
 def calculateRatios(values405, values485):
     """
-
+    :param start405:
     :rtype : list
     :param smaller:
     :param values405:
@@ -200,44 +216,92 @@ def writeGravity(filename, gravList):
         f.write('\n')
     f.close()
 
+def sanitize(args):
+    """
+    Check the user given directories for existy-ness.
+    :param args: The args from a argparser
+    :return: true if all input checks out, false otherwise.
+    """
+    rval=True
+
+    try:
+        args.Directory485 = os.path.normpath(args.Directory485)+os.sep
+        args.Directory405 = os.path.normpath(args.Directory405)+os.sep
+        args.DirectoryGrav = os.path.normpath(args.DirectoryGrav)+os.sep
+        args.DirectoryOut = os.path.normpath(args.DirectoryOut)+os.sep
+    except:
+        return False
+
+    if not os.path.isdir(args.Directory485):
+        rval=False
+        print ("{} is not a directory (given for Directory485).", args.Directory485)
+    if not os.path.isdir(args.Directory405):
+        rval=False
+        print ("{} is not a directory (given for Directory405).", args.Directory405)
+    if not os.path.isdir(args.DirectoryGrav):
+        rval=False
+        print ("{} is not a directory (given for DirectoryGrav).", args.DirectoryGrav)
+    if not os.path.isdir(args.DirectoryOut):
+        rval=False
+        print ("{} is not a directory (given for DirectoryOut).", args.DirectoryOut)
+
+    return rval
+
+
+
 def main():
     args = getArgs()
+    if not args:
+        exit()
+
+    if not sanitize(args):
+        exit()
 
     basedir485 = args.Directory485
     basedir405 = args.Directory405
     gravDir = args.DirectoryGrav
     outDir = args.DirectoryOut
+    start = str(args.Start).zfill(5)
+    end = str(args.End).zfill(5)
 
-    wv485Name = 'wv485.dat'
-    wv405Name = 'wv405.dat'
-    ratName = 'rat.dat'
-    gravName = 'grav.dat'
-    concName = 'conc.dat'
+    wv485Name = outDir+'wv485.dat'
+    wv405Name = outDir+'wv405.dat'
+    ratName = outDir+'rat.dat'
+    gravName = outDir+'grav.dat'
+    concName = outDir+'conc.dat'
 
-    #list of 96-element lists
+    #long list of 96-element lists
     gravities = readGravityFiles(gravDir)
     values405 = read405Files(basedir405)
     values485 = read485Files(basedir485)
 
-    smaller = min(len(values485), len(values405), len(gravities))
+    gSt=os.listdir(gravDir).index('DataPacket'+start+'.txt')
+    st405=os.listdir(basedir405).index('DataCamera405nm'+start+'.raw.txt')
+    st485=os.listdir(basedir485).index('DataCamera485nm'+start+'.raw.txt')
 
-    ratios = calculateRatios(values405, values485)
+    end=int(end)
+    start=int(start)
+    if (end<=start):
+        end = min(len(gravities), len(values405), len(values485))
 
-    concs = calculateConcentrations(ratios, values405, values485)
+    nFiles = end-start
 
-    writeValues(wv405Name, values405)
-    writeValues(wv485Name, values485)
+    slice405=values405[st405:st405+nFiles]
+    slice485=values485[st485:st485+nFiles]
+    slicegrav=gravities[gSt:gSt+nFiles]
+
+    ratios = calculateRatios(slice405, slice485)
+    concs = calculateConcentrations(ratios, slice405, slice485)
+
+    writeValues(wv405Name, slice405)
+    writeValues(wv485Name, slice485)
     writeValues(ratName, ratios)
     writeValues(concName, concs)
-    writeGravity(gravName, gravities)
+    writeGravity(gravName, slicegrav)
 
 
 if __name__ == '__main__':
     main()
-
-
-
-
 
 
 # def calculateRatioAveragesPerWell(ratios):
