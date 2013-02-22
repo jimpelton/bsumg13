@@ -15,7 +15,7 @@
 
 #include <string>
 #include <vector>
-
+#include <boost/thread.hpp>
 
 namespace uG
 {
@@ -28,7 +28,9 @@ namespace uG
         Processor(ImageBufferPool *imagePool, DataBufferPool *dataPool, uGProcVars *vars);
         virtual ~Processor();
 
-        static DWORD WINAPI do_work(LPVOID aProcessor);
+        void operator()();
+
+        //static void do_work(void *aProcessor);
 
         void requestStop()
         {
@@ -47,8 +49,8 @@ namespace uG
         DataBufferPool *m_dataPool;
 
         /// This thread id.
-        DWORD m_tid;
-        CRITICAL_SECTION m_criticalSection;
+        boost::thread::id m_tid;
+        //CRITICAL_SECTION m_criticalSection;
         bool m_stopRequested;
     };
 } /* namespace uG */
