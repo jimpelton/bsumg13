@@ -4,9 +4,13 @@
 #ifndef BUFFERPOOL_H
 #define BUFFERPOOL_H
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+
 #include "Export.h"
 #include "Buffer.h"
-#include <Windows.h>
 
 #include <queue>
 #include <stack>

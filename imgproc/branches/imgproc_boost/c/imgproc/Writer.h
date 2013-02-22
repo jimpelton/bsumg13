@@ -2,7 +2,9 @@
 #ifndef _WRITER_H
 #define _WRITER_H
 
+#ifdef _WIN32
 #include <Windows.h>
+#endif
 
 #include "BufferPool.h"
 #include "ugTypes.h"

@@ -2,10 +2,17 @@
 #ifndef _WORKERTHREAD_H
 #define _WORKERTHREAD_H
 
-#include <Windows.h>
-#include "Export.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+#include "Export.h"
 #include <assert.h>
+#include <boost/thread.hpp>
+
+
+
 
 namespace uG
 {
@@ -85,6 +92,9 @@ namespace uG
     protected:
         bool m_stoprequested;
         bool m_running;
+        boost::thread m_thread;
+
+        
         LPDWORD m_tid;
         HANDLE m_thread;
         CRITICAL_SECTION m_criticalSection;

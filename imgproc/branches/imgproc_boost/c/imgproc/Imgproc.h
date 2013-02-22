@@ -6,6 +6,10 @@
 	purpose:	The main Imgproc interface for client applications.
 *********************************************************************/
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 #include "Centers.h"
 
 #include <string>

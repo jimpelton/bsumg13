@@ -2,7 +2,9 @@
 #ifndef Reader_h__
 #define Reader_h__
 
+#ifdef _WIN32
 #include <Windows.h>
+#endif
 
 #include "BufferPool.h"
 #include "Buffer.h"
@@ -12,8 +14,7 @@
 #include <vector>
 
 
-namespace uG 
-{
+namespace uG {
     /**
       *	\brief Reads any file from disc and places the data into a buffer pool of char.
       */

@@ -2,13 +2,17 @@
 #ifndef _PROCESSOR_H
 #define _PROCESSOR_H
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+
 #include "AbstractImageProcessor.h"
 #include "BufferPool.h"
 #include "Export.h"
 #include "ugTypes.h"
 #include "Centers.h"
 
-#include <Windows.h>
 #include <string>
 #include <vector>
 
