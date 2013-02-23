@@ -12,6 +12,10 @@
 #include "Export.h"
 #include "Buffer.h"
 
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition_variable.hpp>
+
 #include <queue>
 #include <stack>
 #include <iostream>
@@ -32,7 +36,8 @@ namespace uG
   * Note that while the BufferPool may easily receive and hand out buffers
   * from many producers and consumers, it can not handle the case where multiple
   * consumers must process the same buffer. That functionality must be handled
-  * by something external to the BufferPool.
+  * by something external to the BufferPool (perhaps a staging area?). Maybe
+  * soon I will know how to do this the right way.
   * 
   * //  [1/21/2013 jim]
   */
@@ -78,12 +83,12 @@ private:
     size_t m_bufsize;       /// Number of elements in each buffer.
     bool m_stopRequested;   /// True if the buffer should stop before the next exec.
 
-    CRITICAL_SECTION m_FullBufferPoolLock;
-    CRITICAL_SECTION m_BufferPoolLock;
+    boost::mutex m_FullBufferPoolLock;
+    boost::mutex m_BufferPoolLock;
 
-    CONDITION_VARIABLE m_FreeBuffersAvailable;
-    CONDITION_VARIABLE m_FullBuffersAvailable;
-    CONDITION_VARIABLE m_FullBufferPoolOpen;
+    boost::condition_variable_any m_FreeBuffersAvailable;
+    boost::condition_variable_any m_FullBuffersAvailable;
+    boost::condition_variable_any m_FullBufferPoolOpen;
 
     BufQueue m_FullBufferPool; /// full buffs.
     BufPool m_BufferPool;      /// empty buffs.
@@ -97,11 +102,11 @@ BufferPool< _Ty >::BufferPool(size_t nbufs, size_t bufsize, float loadfactor)
     , m_bufsize(bufsize)
     , m_stopRequested(false)
 {
-    InitializeCriticalSection(&m_BufferPoolLock);
-    InitializeCriticalSection(&m_FullBufferPoolLock);
-    InitializeConditionVariable(&m_FreeBuffersAvailable);
-    InitializeConditionVariable(&m_FullBuffersAvailable);
-    InitializeConditionVariable(&m_FullBufferPoolOpen);
+    //InitializeCriticalSection(&m_BufferPoolLock);
+    //InitializeCriticalSection(&m_FullBufferPoolLock);
+    //InitializeConditionVariable(&m_FreeBuffersAvailable);
+    //InitializeConditionVariable(&m_FullBuffersAvailable);
+    //InitializeConditionVariable(&m_FullBufferPoolOpen);
     
     if (loadfactor < 0.f || loadfactor > 1.f) { loadfactor=1.f; }
     m_nMinFillCount = loadfactor * m_nbufs;
@@ -117,8 +122,6 @@ BufferPool< _Ty >::BufferPool(size_t nbufs, size_t bufsize, float loadfactor)
 template < class _Ty >
 BufferPool< _Ty >::~BufferPool()
 {
-    DeleteCriticalSection(&m_FullBufferPoolLock);
-    DeleteCriticalSection(&m_BufferPoolLock);    
     //TODO: clean up buffers arrays.
 };
 
@@ -126,17 +129,16 @@ template < class _Ty >
 Buffer< _Ty >* 
 BufferPool< _Ty >::getFreeBuffer()
 {
-    EnterCriticalSection(&m_BufferPoolLock);
+    m_BufferPoolLock.lock();
     while(m_BufferPool.size() == 0)
     {
-        SleepConditionVariableCS(&m_FreeBuffersAvailable, &m_BufferPoolLock, INFINITE);
+        m_FreeBuffersAvailable.wait(m_BufferPoolLock);
     }
 
     Buffer< _Ty > *baaahhh = m_BufferPool.top();
     m_BufferPool.pop();
-    DWORD tid = GetCurrentThreadId();
-    std::cout << tid << ": Checking out free buffer." << std::endl;
-    LeaveCriticalSection(&m_BufferPoolLock);
+    //std::cout << tid << ": Checking out free buffer." << std::endl;
+    m_BufferPoolLock.unlock();
     return baaahhh;
 };
 
@@ -144,48 +146,45 @@ template < class _Ty >
 void 
 BufferPool< _Ty >::returnEmptyBuffer(Buffer< _Ty > *b)
 {
-    EnterCriticalSection(&m_BufferPoolLock);
+    m_BufferPoolLock().lock();
+
     m_BufferPool.push(b);
-    WakeConditionVariable(&m_FreeBuffersAvailable);
-    DWORD tid = GetCurrentThreadId();
-    std::cout << tid << ": Checking in empty buffer." << std::endl;
-    LeaveCriticalSection(&m_BufferPoolLock);
+    m_FreeBuffersAvailable.notify_all();
+    //std::cout << tid << ": Checking in empty buffer." << std::endl;
+    m_BufferPoolLock.unlock();
 };
 
 template < class _Ty >
 void 
 BufferPool< _Ty >::postFullBuffer(Buffer< _Ty > *b)
 {
-    EnterCriticalSection(&m_FullBufferPoolLock);
+    m_FullBufferPoolLock.lock();
     while (m_FullBufferPool.size() == m_nbufs ||
            m_FullBufferPool.size() >  m_nMinFillCount) 
     {
-        SleepConditionVariableCS(&m_FullBufferPoolOpen, &m_FullBufferPoolLock, INFINITE);
+        m_FullBufferPoolOpen.wait(m_FullBufferPoolLock);
     }
 
     m_FullBufferPool.push(b);
-    WakeConditionVariable(&m_FullBuffersAvailable);
-    DWORD tid = GetCurrentThreadId();
-    std::cout << tid << ": Checking in full buffer." << std::endl;
-    LeaveCriticalSection(&m_FullBufferPoolLock);
-
+    m_FullBuffersAvailable.notify_all();
+    //std::cout << tid << ": Checking in full buffer." << std::endl;
+    m_FullBufferPoolLock.unlock();
 };
 
 template < class _Ty >
 Buffer< _Ty >* 
 BufferPool< _Ty >::getFullBuffer()
 {
-    EnterCriticalSection(&m_FullBufferPoolLock);
+    m_FullBufferPoolLock.lock();
     while (m_FullBufferPool.size() == 0)
     {
-        SleepConditionVariableCS(&m_FullBuffersAvailable, &m_FullBufferPoolLock, INFINITE);
+        m_FullBuffersAvailable.wait(m_FullBufferPoolLock);
     }
     Buffer< _Ty > *front = m_FullBufferPool.front();
     m_FullBufferPool.pop();
-    DWORD tid = GetCurrentThreadId();
-    std::cout << tid << ": Checking out full buffer." << std::endl;
-    WakeConditionVariable(&m_FullBufferPoolOpen);
-    LeaveCriticalSection(&m_FullBufferPoolLock);
+    //std::cout << tid << ": Checking out full buffer." << std::endl;
+    m_FullBufferPoolOpen.notify_all();
+    m_FullBufferPoolLock.unlock();
 
     return front;
 };

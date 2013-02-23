@@ -5,9 +5,11 @@
 # author: jim pelton                   #
 ########################################
 
+SVN_V:=-D'SVNVER="$(shell svnversion -n .)"'
+
 CC=g++
 INCDIR=-Iboost
-CFLAGS=-g -Wall -O0 -I$(INCDIR)
+CFLAGS=-g -Wall -shared -fPIC -O0 -I$(INCDIR)
 
 LIBS=-lboost_filesystem -lboost_program_options
 LFLAGS=-L$(LIBDIR) $(LIBS)
@@ -19,6 +21,10 @@ all: imgproc
 imgproc: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $? $(LFLAGS)
 
+
+clean: 
+	/bin/rm -f *.o
+	
 
 
 

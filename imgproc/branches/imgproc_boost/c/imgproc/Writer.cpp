@@ -2,7 +2,8 @@
 
 #include "Writer.h"
 #include "ugTypes.h"
- 
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -22,13 +23,23 @@ namespace uG
         : m_outPath(outPath)
         , m_pool(pool)  
         , m_stopRequested(false)
-    {
-        InitializeCriticalSection(&m_criticalSection);
-    }
+    { }
 
     Writer::~Writer()
+    { }
+
+    void Writer::operator()()
     {
-        DeleteCriticalSection(&m_criticalSection);
+        while (true) {
+            m_mutex.lock();
+                if (m_stopRequested) break;
+            m_mutex.unlock();
+
+            DataBuffer *buf = m_pool->getFullBuffer();
+            writeFile(buf);
+            m_pool->returnEmptyBuffer(buf);
+            //cout << m_tid << " " << buf->id << " Writer returned empty buffer.\n";
+        }
     }
 
     void Writer::writeFile(DataBuffer *buf)
@@ -52,25 +63,6 @@ namespace uG
         ofile << filetext.str();
         ofile.close();
     }
-
-    DWORD WINAPI Writer::do_work(LPVOID pargs)
-    {
-        Writer *me = (Writer *) pargs;
-        me->m_tid = GetCurrentThreadId();
-
-        while (true) {
-            EnterCriticalSection(&(me->m_criticalSection));
-                if (me->m_stopRequested) break;
-            LeaveCriticalSection(&(me->m_criticalSection));
-
-            DataBuffer *buf = me->m_pool->getFullBuffer();
-            me->writeFile(buf);
-            me->m_pool->returnEmptyBuffer(buf);
-            cout << me->m_tid << " " << buf->id << " Writer returned empty buffer.\n";
-        }
-        return 0;
-    }
-
 }
 
 

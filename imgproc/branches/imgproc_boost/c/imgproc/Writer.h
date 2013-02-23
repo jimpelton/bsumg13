@@ -9,7 +9,8 @@
 #include "BufferPool.h"
 #include "ugTypes.h"
 #include "Export.h"
-
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 #include <string>
 
 namespace uG
@@ -24,22 +25,21 @@ namespace uG
         Writer(const std::string &outPath, DataBufferPool *pool);
         virtual ~Writer();
 
-        static DWORD WINAPI do_work(LPVOID pArgs);
+        void operator()();
 
         void writeFile(Buffer<long long> *);
 
         void requestStop()
         {
-            EnterCriticalSection(&m_criticalSection);
+
             m_stopRequested=true;
-            LeaveCriticalSection(&m_criticalSection);
+
         }
 
     private:
         std::string m_outPath;
         DataBufferPool *m_pool;
-        DWORD m_tid;
-        CRITICAL_SECTION m_criticalSection;
+        boost::mutex m_mutex;
         bool m_stopRequested;
     };
 

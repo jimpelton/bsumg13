@@ -2,6 +2,8 @@
 #include "Reader.h"
 #include "ugTypes.h"
 
+
+
 #include <fstream>
 #include <string>
 #include <vector>
@@ -16,38 +18,36 @@ Reader::Reader(const vector<string> &fileNames, ImageBufferPool *imagePool)
     : m_rawFile(fileNames)
     , m_imagePool(imagePool) 
     , m_stopRequested(false)
-{ 
-    InitializeCriticalSection(&m_criticalSection);
-}
+{ }
 
 Reader::~Reader(void) 
-{
-    DeleteCriticalSection(&m_criticalSection);
-}
+{ }
 
-DWORD WINAPI Reader::do_work(LPVOID aReader)
+void Reader::operator()() 
 {
     std::cout << "Enter reader work method." << std::endl;
-    Reader *me = static_cast<Reader*>(aReader);
-    me->m_tid = GetCurrentThreadId();
-
-    vector<string>::iterator it = me->m_rawFile.begin();
-    vector<string>::iterator itEnd = me->m_rawFile.end();
+    //Reader *me = static_cast<Reader*>(aReader);
+    
+    vector<string>::iterator it = m_rawFile.begin();
+    vector<string>::iterator itEnd = m_rawFile.end();
 
     while (it != itEnd) {
-        EnterCriticalSection(&(me->m_criticalSection)); 
-            if (me->m_stopRequested) break;
-        LeaveCriticalSection(&(me->m_criticalSection));
-        
-        ImageBuffer *imgbuf = me->m_imagePool->getFreeBuffer();
+        m_mutex.lock();
+            if (m_stopRequested) break;
+        m_mutex.unlock();
+
+        ImageBuffer *imgbuf = m_imagePool->getFreeBuffer();
 
         imgbuf->id = it->substr(it->find_last_of('/')+1);
-        if ( !(me->openImage(*it, &imgbuf->data)) ) return 1;
-        me->m_imagePool->postFullBuffer(imgbuf);
-        std::cout << me->m_tid << ": Reader posted full buffer." << std::endl;
+
+        if ( !(openImage(*it, &imgbuf->data)) ) {
+            return; //TODO: deliver error?
+        }
+
+        m_imagePool->postFullBuffer(imgbuf);
+   //     std::cout << me->m_tid << ": Reader posted full buffer." << std::endl;
         ++it;
     }
-    return 0;
 }
 
 //It is a bug that offset could be greater than the ImageBuffer's 
@@ -72,7 +72,8 @@ size_t Reader::openImage( const string &fname, unsigned char **rawData )
     {
         *rawData = new unsigned char[offset];
     }
-    ZeroMemory(*rawData, offset); 
+    //ZeroMemory(*rawData, offset); 
+    memset(*rawData, 0, offset);
 
     inf.read((char*)*rawData, offset);
 

@@ -30,27 +30,25 @@ namespace uG
 
         void operator()();
 
-        //static void do_work(void *aProcessor);
-
         void requestStop()
         {
-            EnterCriticalSection(&m_criticalSection);
+            lock(m_mutex);
                 m_stopRequested=true;
-            LeaveCriticalSection(&m_criticalSection);
+            unlock(m_mutex);
         }
 
     private:
         AbstractImageProcessor *m_imgproc;  
 
-        /// Pool of image (read) buffers. 
+        /// Pool of image (input) buffers. 
         ImageBufferPool *m_imagePool;
 
-        /// Pool of data (write) buffers. 
+        /// Pool of data (output) buffers. 
         DataBufferPool *m_dataPool;
 
         /// This thread id.
         boost::thread::id m_tid;
-        //CRITICAL_SECTION m_criticalSection;
+        boost::mutex m_mutex;
         bool m_stopRequested;
     };
 } /* namespace uG */

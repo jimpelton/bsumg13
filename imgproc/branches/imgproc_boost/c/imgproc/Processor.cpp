@@ -21,7 +21,6 @@ namespace uG
         : m_imagePool(imagePool)
         , m_dataPool(dataPool)
     { 
-        InitializeCriticalSection(&m_criticalSection);
 
         m_tid = 0;
         m_stopRequested = false;
@@ -31,8 +30,7 @@ namespace uG
 
     Processor::~Processor()
     {
-        if (NULL != m_imgproc)   delete m_imgproc;
-        //DeleteCriticalSection(&m_criticalSection);
+        if (m_imgproc != NULL)   delete m_imgproc;
     }
 
     void operator() ()

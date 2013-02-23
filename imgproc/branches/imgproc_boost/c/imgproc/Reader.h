@@ -10,6 +10,9 @@
 #include "Buffer.h"
 #include "ugTypes.h"
 
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+
 #include <string>
 #include <vector>
 
@@ -23,16 +26,16 @@ class Reader
 public:
     Reader(const std::vector<std::string> &fileNames, ImageBufferPool *imagePool);
     ~Reader(void);
+    
+    void operator()(); 
 
-    static DWORD WINAPI do_work(LPVOID aReader);
-    //static size_t openSingleImage(const std::string &fname, unsigned char **rawData);
     static size_t openImage(const std::string &fname, unsigned char **rawData);
 
     void requestStop()
     {
-        EnterCriticalSection(&m_criticalSection);
+        m_mutex.lock();
         m_stopRequested=true;
-        LeaveCriticalSection(&m_criticalSection);
+        m_mutex.unlock();
     }
 
 private:
@@ -41,13 +44,9 @@ private:
     std::vector<std::string> m_rawFile;
     ImageBufferPool *m_imagePool;
 
-    DWORD m_tid;
-    CRITICAL_SECTION m_criticalSection;
     bool m_stopRequested;
-    bool m_noThread;
-
-
-
+    //bool m_noThread;
+    boost::mutex m_mutex;
 };
 
 } /* namespace uG */
