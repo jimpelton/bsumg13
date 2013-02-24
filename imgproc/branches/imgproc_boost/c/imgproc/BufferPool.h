@@ -146,7 +146,7 @@ template < class _Ty >
 void 
 BufferPool< _Ty >::returnEmptyBuffer(Buffer< _Ty > *b)
 {
-    m_BufferPoolLock().lock();
+    m_BufferPoolLock.lock();
 
     m_BufferPool.push(b);
     m_FreeBuffersAvailable.notify_all();

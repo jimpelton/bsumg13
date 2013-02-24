@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 namespace uG
 {
@@ -32,9 +33,9 @@ namespace uG
 
         void requestStop()
         {
-            lock(m_mutex);
-                m_stopRequested=true;
-            unlock(m_mutex);
+            m_mutex.lock();
+            m_stopRequested=true;
+            m_mutex.unlock();
         }
 
     private:
@@ -46,8 +47,6 @@ namespace uG
         /// Pool of data (output) buffers. 
         DataBufferPool *m_dataPool;
 
-        /// This thread id.
-        boost::thread::id m_tid;
         boost::mutex m_mutex;
         bool m_stopRequested;
     };

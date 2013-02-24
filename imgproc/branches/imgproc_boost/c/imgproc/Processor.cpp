@@ -22,7 +22,6 @@ namespace uG
         , m_dataPool(dataPool)
     { 
 
-        m_tid = 0;
         m_stopRequested = false;
         m_imgproc = ImageProcessorFactory::getInstance()->newProc(vars);
     }
@@ -33,53 +32,26 @@ namespace uG
         if (m_imgproc != NULL)   delete m_imgproc;
     }
 
-    void operator() ()
+    void Processor::operator() ()
     {
         while (true) {
             //EnterCriticalSection(&(me->m_criticalSection));
             //    if (me->m_stopRequested) break;
             //LeaveCriticalSection(&(me->m_criticalSection));
     
-            Buffer<unsigned char> *imgbuf = me->m_imagePool->getFullBuffer();
-            Buffer<long long> *longbuf = me->m_dataPool->getFreeBuffer();
+            Buffer<unsigned char> *imgbuf = m_imagePool->getFullBuffer();
+            Buffer<long long> *longbuf = m_dataPool->getFreeBuffer();
             longbuf->id = imgbuf->id; //copy file name.
-            me->m_imgproc->setInput(imgbuf->data);
-            me->m_imgproc->setOutput(longbuf->data);
-            me->m_imgproc->process();
+            m_imgproc->setInput(imgbuf->data);
+            m_imgproc->setOutput(longbuf->data);
+            m_imgproc->process();
 
-            me->m_imagePool->returnEmptyBuffer(imgbuf);
-            me->m_dataPool->postFullBuffer(longbuf);
-            std::cout << me->m_tid << " Processor posted full buffer.\n";
+            m_imagePool->returnEmptyBuffer(imgbuf);
+            m_dataPool->postFullBuffer(longbuf);
             //delete [] aip;
         }
-        return 0;
     }
 
-    //void Processor::do_work(void* pArgs)
-    //{
-
-    //    Processor *me = static_cast<Processor*>(pArgs);
-    //    me->m_tid = GetCurrentThreadId();
-
-    //    while (true) {
-    //        EnterCriticalSection(&(me->m_criticalSection));
-    //            if (me->m_stopRequested) break;
-    //        LeaveCriticalSection(&(me->m_criticalSection));
-    //
-    //        Buffer<unsigned char> *imgbuf = me->m_imagePool->getFullBuffer();
-    //        Buffer<long long> *longbuf = me->m_dataPool->getFreeBuffer();
-    //        longbuf->id = imgbuf->id; //copy file name.
-    //        me->m_imgproc->setInput(imgbuf->data);
-    //        me->m_imgproc->setOutput(longbuf->data);
-    //        me->m_imgproc->process();
-
-    //        me->m_imagePool->returnEmptyBuffer(imgbuf);
-    //        me->m_dataPool->postFullBuffer(longbuf);
-    //        std::cout << me->m_tid << " Processor posted full buffer.\n";
-    //        //delete [] aip;
-    //    }
-    //    return 0;
-    //}
 
 } /* namespace uG */
 
