@@ -24,7 +24,7 @@ def getArgs():
     if args.End is None:
         args.End = 0
 
-    print ("\n ***Check to make sure the following is correct!***\n")
+    print("\n ***Check to make sure the following is correct!***\n")
     print(
         "405 Data Files Directory: {}\n"
         "485 Data Files Directory: {}\n"
@@ -33,7 +33,7 @@ def getArgs():
         "Starting Index:           {}\n"
         "Ending Index:             {}"
         .format
-        (
+            (
             args.Directory405, args.Directory485,
             args.DirectoryGrav, args.DirectoryOut,
             args.Start, args.End
@@ -48,16 +48,15 @@ def getArgs():
         return None
 
 
-
-def read405Files(dir405):
+def read405Files(dir405, files405_list):
     """
     Read 405 files. Each file contains lines formated as: "well#:val".
     :param dir405: Path to 405 data files
     :rtype : list
     """
     print('Reading 405 files...'),
-    files405_list = [f for f in os.listdir(dir405)]
-    files405_list.sort()
+    #files405_list = [f for f in os.listdir(dir405)]
+    #files405_list.sort()
     values405_list = []
     timeIdx = 0
     for f in files405_list:
@@ -79,7 +78,7 @@ def read405Files(dir405):
     return values405_list
 
 
-def read485Files(dir485):
+def read485Files(dir485, files485_list):
     """
     Read in them 485 data files.
     Each file contains lines formatted as: "well#:val".
@@ -88,8 +87,8 @@ def read485Files(dir485):
     :return: list of lists of wells for each file.
     """
     print('Reading 485 files...'),
-    files485_list = [f for f in os.listdir(dir485)]
-    files485_list.sort()
+    #files485_list = [f for f in os.listdir(dir485)]
+    #files485_list.sort()
     values485_list = []
     timeIdx = 0
     for f in files485_list:
@@ -167,10 +166,10 @@ def calculateConcentrations(ratios, val405, val485):
     :param val405: 405 well values on t=[0..tmax]
     :param val485: 485 well values on t=[0..tmax]
     """
-    shortest  = min( len(ratios), len(val405), len(val485) )
-    egtaWells = [ x[72:76] for x in val405 ]
-    ionoWells = [ x[60:64] for x in val485 ]
-    Kd        = 0.23
+    shortest = min(len(ratios), len(val405), len(val485))
+    egtaWells = [x[72:76] for x in val405]
+    ionoWells = [x[60:64] for x in val485]
+    Kd = 0.23
     concs = []
     for i in range(shortest):
         F405min = min(egtaWells[i])
@@ -180,11 +179,11 @@ def calculateConcentrations(ratios, val405, val485):
         F485max = max(ionoWells[i])
 
         Q = F485min / F485max
-        Rmin = F405min/F485min
-        Rmax = F405max/F485max
+        Rmin = F405min / F485min
+        Rmax = F405max / F485max
         Ca2_t = []
         for r in ratios[i]:
-            Ca2_t.append(Kd * Q * ((r-Rmin)/(Rmax-r)))
+            Ca2_t.append(Kd * Q * ((r - Rmin) / (Rmax - r)))
 
         concs.append(Ca2_t)
 
@@ -206,6 +205,7 @@ def writeValues(fileName, valuesList):
         f.write('\n')
     f.close()
 
+
 def writeGravity(filename, gravList):
     print('Writing gravity values: {}'.format(filename))
     f = open(filename, 'w')
@@ -216,37 +216,37 @@ def writeGravity(filename, gravList):
         f.write('\n')
     f.close()
 
+
 def sanitize(args):
     """
     Check the user given directories for existy-ness.
     :param args: The args from a argparser
     :return: true if all input checks out, false otherwise.
     """
-    rval=True
+    rval = True
 
     try:
-        args.Directory485 = os.path.normpath(args.Directory485)+os.sep
-        args.Directory405 = os.path.normpath(args.Directory405)+os.sep
-        args.DirectoryGrav = os.path.normpath(args.DirectoryGrav)+os.sep
-        args.DirectoryOut = os.path.normpath(args.DirectoryOut)+os.sep
+        args.Directory485 = os.path.normpath(args.Directory485) + os.sep
+        args.Directory405 = os.path.normpath(args.Directory405) + os.sep
+        args.DirectoryGrav = os.path.normpath(args.DirectoryGrav) + os.sep
+        args.DirectoryOut = os.path.normpath(args.DirectoryOut) + os.sep
     except:
         return False
 
     if not os.path.isdir(args.Directory485):
-        rval=False
-        print ("{} is not a directory (given for Directory485).", args.Directory485)
+        rval = False
+        print("{} is not a directory (given for Directory485).", args.Directory485)
     if not os.path.isdir(args.Directory405):
-        rval=False
-        print ("{} is not a directory (given for Directory405).", args.Directory405)
+        rval = False
+        print("{} is not a directory (given for Directory405).", args.Directory405)
     if not os.path.isdir(args.DirectoryGrav):
-        rval=False
-        print ("{} is not a directory (given for DirectoryGrav).", args.DirectoryGrav)
+        rval = False
+        print("{} is not a directory (given for DirectoryGrav).", args.DirectoryGrav)
     if not os.path.isdir(args.DirectoryOut):
-        rval=False
-        print ("{} is not a directory (given for DirectoryOut).", args.DirectoryOut)
+        rval = False
+        print("{} is not a directory (given for DirectoryOut).", args.DirectoryOut)
 
     return rval
-
 
 
 def main():
@@ -264,31 +264,47 @@ def main():
     start = str(args.Start).zfill(5)
     end = str(args.End).zfill(5)
 
-    wv485Name = outDir+'wv485.dat'
-    wv405Name = outDir+'wv405.dat'
-    ratName = outDir+'rat.dat'
-    gravName = outDir+'grav.dat'
-    concName = outDir+'conc.dat'
+    wv485Name = outDir + 'wv485.dat'
+    wv405Name = outDir + 'wv405.dat'
+    ratName = outDir + 'rat.dat'
+    gravName = outDir + 'grav.dat'
+    concName = outDir + 'conc.dat'
 
-    #long list of 96-element lists
+    dataPakStartName = 'DataPacket' + start + '.txt'
+    cam405StartName = 'DataCamera405nm' + start + '.raw.txt'
+    cam485StartName = 'DataCamera485nm' + start + '.raw.txt'
+
+    filesGravity = os.listdir(gravDir)
+    filesGravity.sort()
+
+    files405 = os.listdir(basedir405)
+    files405.sort()
+
+    files485 = os.listdir(basedir485)
+    files485.sort()
+
+    #find the starting file index.
+    gSt   = filesGravity.index(dataPakStartName)
+    st405 = files405.index(cam405StartName)
+    st485 = files485.index(cam485StartName)
+
+    #long list of 96-element lists (one line per data file)
     gravities = readGravityFiles(gravDir)
-    values405 = read405Files(basedir405)
-    values485 = read485Files(basedir485)
+    values405 = read405Files(basedir405, files405)
+    values485 = read485Files(basedir485, files485)
 
-    gSt=os.listdir(gravDir).index('DataPacket'+start+'.txt')
-    st405=os.listdir(basedir405).index('DataCamera405nm'+start+'.raw.txt')
-    st485=os.listdir(basedir485).index('DataCamera485nm'+start+'.raw.txt')
+    #make sure end is appropriate.
+    endint     = int(end)
+    startint   = int(start)
 
-    end=int(end)
-    start=int(start)
-    if (end<=start):
-        end = min(len(gravities), len(values405), len(values485))
+    if endint <= startint:
+        endint = min(len(gravities), len(values405), len(values485))
+    nFiles = endint - startint
 
-    nFiles = end-start
-
-    slice405=values405[st405:st405+nFiles]
-    slice485=values485[st485:st485+nFiles]
-    slicegrav=gravities[gSt:gSt+nFiles]
+    #slice out the values we want to calculate.
+    slice405 = values405[st405:st405 + nFiles]
+    slice485 = values485[st485:st485 + nFiles]
+    slicegrav = gravities[gSt:gSt + nFiles]
 
     ratios = calculateRatios(slice405, slice485)
     concs = calculateConcentrations(ratios, slice405, slice485)
@@ -321,43 +337,43 @@ if __name__ == '__main__':
 #     return ratioAvgs_list
 
 
-    #######################################################
-    #  write405Values
-    #
-    # def write405Values(values405_filename, values405_list, gravity_list):
-    #     print('Writing 405 values to {0}'.format(values405_filename))
-    #     values405_file = open(values405_filename, 'w')
-    #     for i in range(len(values405_list)):
-    #         row = values405_list[i]
-    #         values405_file.write("{0} ".format(str(i)))
-    #         values405_file.write("{0} ".format(str(gravity_list[i])))
-    #         values405_file.write(' '.join(str(x) for x in values405_list[i]))
-    #         values405_file.write('\n')
-    #     values405_file.close()
+#######################################################
+#  write405Values
+#
+# def write405Values(values405_filename, values405_list, gravity_list):
+#     print('Writing 405 values to {0}'.format(values405_filename))
+#     values405_file = open(values405_filename, 'w')
+#     for i in range(len(values405_list)):
+#         row = values405_list[i]
+#         values405_file.write("{0} ".format(str(i)))
+#         values405_file.write("{0} ".format(str(gravity_list[i])))
+#         values405_file.write(' '.join(str(x) for x in values405_list[i]))
+#         values405_file.write('\n')
+#     values405_file.close()
 
-    #######################################################
-    #  write485Values
-    #
-    # def write485Values(values485_filename, values485_list, gravity_list):
-    #     print('Writing 485 values to {0}'.format(values485_filename))
-    #     values485_file = open(values485_filename, 'w')
-    #     for i in range(len(values485_list)):
-    #         values485_file.write("{0} ".format(str(i)))
-    #         values485_file.write("{0} ".format(str(gravity_list[i])))
-    #         values485_file.write(' '.join(str(x) for x in values485_list[i]))
-    #         values485_file.write('\n')
-    #     values485_file.close()
+#######################################################
+#  write485Values
+#
+# def write485Values(values485_filename, values485_list, gravity_list):
+#     print('Writing 485 values to {0}'.format(values485_filename))
+#     values485_file = open(values485_filename, 'w')
+#     for i in range(len(values485_list)):
+#         values485_file.write("{0} ".format(str(i)))
+#         values485_file.write("{0} ".format(str(gravity_list[i])))
+#         values485_file.write(' '.join(str(x) for x in values485_list[i]))
+#         values485_file.write('\n')
+#     values485_file.close()
 
-    #######################################################
-    #  writeRatioValues
-    #
-    # def writeRatioValues(ratios_filename, ratios_list, gravity_list):
-    #     print('Writing ratio values to {0}'.format(ratios_filename))
-    #     ratios_file = open(ratios_filename, 'w')
-    #     for i in range(len(ratios_list)):
-    #         ratios_file.write("{0} ".format(str(i)))
-    #         if gravity_list != None:
-    #             ratios_file.write("{0} ".format(str(gravity_list[i])))
-    #         ratios_file.write(' '.join(str(x) for x in ratios_list[i]))
-    #         ratios_file.write('\n')
-    #     ratios_file.close()
+#######################################################
+#  writeRatioValues
+#
+# def writeRatioValues(ratios_filename, ratios_list, gravity_list):
+#     print('Writing ratio values to {0}'.format(ratios_filename))
+#     ratios_file = open(ratios_filename, 'w')
+#     for i in range(len(ratios_list)):
+#         ratios_file.write("{0} ".format(str(i)))
+#         if gravity_list != None:
+#             ratios_file.write("{0} ".format(str(gravity_list[i])))
+#         ratios_file.write(' '.join(str(x) for x in ratios_list[i]))
+#         ratios_file.write('\n')
+#     ratios_file.close()
