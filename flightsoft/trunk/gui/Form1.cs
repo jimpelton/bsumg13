@@ -29,7 +29,7 @@ namespace gui
             RichTextBox box = DebugBox;
             box.SelectionStart = box.TextLength;
             box.SelectionLength = 0;
-            if (severity > 0)
+            if (severity > 0 && severity < severityColors.Length)
             {
                 box.SelectionColor = severityColors[severity];
             }
@@ -47,7 +47,7 @@ namespace gui
             //        box.SelectionColor = Color.OrangeRed;
             //}
             box.AppendText(s2);
-            box.SelectionColor = box.ForeColor;
+            box.SelectionColor = box.ForeColor; //Overwrite the severity color just assigned? --JP
         }
 
         public static String GetTimestamp()
