@@ -6,13 +6,13 @@ using Phidgets;
 using Phidgets.Events;
 
 
-namespace capture
+namespace uGCapture
 {
     public class CaptureClass
     {
         PhidgetsController phidgey = null;
 
-        CaptureClass()
+        public CaptureClass()
         {
             phidgey = new PhidgetsController();
 

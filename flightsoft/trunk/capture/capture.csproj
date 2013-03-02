@@ -8,7 +8,7 @@
     <ProjectGuid>{16C569C2-A76B-47B0-A4DF-7B39B505943E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>capture</RootNamespace>
+    <RootNamespace>uGCapture</RootNamespace>
     <AssemblyName>capture</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

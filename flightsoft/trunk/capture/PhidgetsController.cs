@@ -5,7 +5,7 @@ using System.Text;
 using Phidgets;
 using Phidgets.Events;
 
-namespace capture
+namespace uGCapture
 {
     public class PhidgetsController
     {

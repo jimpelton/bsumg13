@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-
+using uGCapture;
 
 namespace gui
 {
     class Program
     {
         public static Program prg = null;
-        public static capture.CaptureClass Bottom = null;
+        public static CaptureClass Bottom = null;
         public static bool boolCapturing = false;
        /// <summary>
        /// The main entry point for the application.
@@ -38,7 +38,7 @@ namespace gui
            if (Bottom==null)
            {
                DebugOutput("Creating Capture Class");
-               Bottom = new capture.CaptureClass();
+               Bottom = new CaptureClass();
            }
        }
 
