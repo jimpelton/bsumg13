@@ -33,6 +33,9 @@ namespace gui
             {
                 box.SelectionColor = severityColors[severity];
             }
+            box.AppendText(s2);
+            box.SelectionColor = box.ForeColor; //Overwrite the severity color just assigned? --JP
+
             //if (severity > 0)
             //{
             //    if(severity==1)
@@ -46,8 +49,6 @@ namespace gui
             //    else if (severity > 4)
             //        box.SelectionColor = Color.OrangeRed;
             //}
-            box.AppendText(s2);
-            box.SelectionColor = box.ForeColor; //Overwrite the severity color just assigned? --JP
         }
 
         public static String GetTimestamp()

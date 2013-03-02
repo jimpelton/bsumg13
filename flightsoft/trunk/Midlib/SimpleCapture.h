@@ -114,27 +114,46 @@ public:
         : native_sc(new SimpleCapture()) {}
     ~ManagedSimpleCapture() { delete native_sc; }
 
-    int managed_openTransport(int camidx)
+    /**
+     *	\brief CLR Wrapper function around openTransport
+	 * 
+     *	\param camidx The camera index to open transport for. Must be <= to the number
+     *	of cameras that midlib2 found.
+	 * 
+     *  \return 1 on error, 0 on success.
+     */
+    int managed_OpenTransport(int camidx)
     {
         return native_sc->openTransport(camidx);
     }
 
-    unsigned long managed_sensorBufferSize()
+	/**
+	  *	\brief CLR wrapper around sensorBufferSize().
+	  */
+    unsigned long managed_SensorBufferSize()
     {
         return native_sc->sensorBufferSize();
     }
 
-    void managed_stopTransport()
+	/**
+	  *	\brief CLR wrapper around stopTransport.
+	  */
+    void managed_StopTransport()
     {
         native_sc->stopTransport();
     }
 
-    unsigned char* managed_doCapture()
+	/**-
+	  *  \brief CLR wrapper around _doCapture.
+	  *  Note: _doCapture writes the captured file to disk, so
+	  *  if you are planning on doing that yourself
+	  */
+    unsigned char* managed_DoCapture()
     {
         return native_sc->_doCapture();
     }
 
-    static int managed_initMidLib(int nCamsReqd)
+    static int managed_InitMidLib(int nCamsReqd)
     {
         return SimpleCapture::initMidLib2(nCamsReqd);
     }

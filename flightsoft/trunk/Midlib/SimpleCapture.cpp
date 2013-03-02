@@ -81,11 +81,11 @@ SimpleCapture::initMidLib2(int nCamsReq)
         printf("Could not initialize %d camera(s). Found %d. \n",
             nCamsReq, num_cameras);
         mi_CloseCameras();
-#ifdef _DEBUG
-        printf("<press a key>");
-        _getch();
-        printf("\n");
-#endif
+//#ifdef _DEBUG
+//        printf("<press a key>");
+//        _getch();
+//        printf("\n");
+//#endif
         return 1;
     } 
 
@@ -110,11 +110,11 @@ SimpleCapture::openTransport(int camIdx)
     if( pCamera->startTransport(pCamera) != MI_CAMERA_SUCCESS ) {
         printf("Start Transport Unsuccessful.\n");
         mi_CloseCameras();
-#ifdef _DEBUG
-        printf("<press a key>");
-        _getch();
-        printf("\n");
-#endif
+//#ifdef _DEBUG
+//        printf("<press a key>");
+//        _getch();
+//        printf("\n");
+//#endif
         return 1;
     }    
 

@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffer.cs" />
+    <Compile Include="BufferPool.cs" />
     <Compile Include="Capture.cs" />
     <Compile Include="NIController.cs" />
     <Compile Include="PhidgetsController.cs" />
