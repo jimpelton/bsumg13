@@ -54,7 +54,8 @@ SimpleCapture::SimpleCapture()
     , m_nextFrameIdx(0) 
     , num_frames(1)
     , nWidth(0)
-    , nHeight(0) { }
+    , nHeight(0)
+    , m_camNM(0) { }
 
 SimpleCapture::~SimpleCapture(void) { }
 
@@ -95,7 +96,8 @@ SimpleCapture::initMidLib2(int nCamsReq)
 }
 
 //return: 1 error, 0 success
-int SimpleCapture::openTransport(int camIdx)
+int 
+SimpleCapture::openTransport(int camIdx)
 {
     if (!isMidLibInit) {
         printf("openTransport() called before initMidLib2().\n");
@@ -150,19 +152,10 @@ int SimpleCapture::openTransport(int camIdx)
     pCamera->sensor->imageType = MI_PNG;
     pCamera->updateFrameSize(pCamera, nWidth, nHeight, PIXELBITS,0);
      
-    printShit(); //unprofessional, but accurate. 
-
     frameSize = pCamera->sensor->width * pCamera->sensor->height
               * pCamera->sensor->pixelBytes;
 
-
     mallocate();
-
-    //pCamera->getMode(pCamera, MI_SWIZZLE_MODE, &nSwizzleNeeded);
-
-    //For better performance on Demo1 and Demo1A do the swizzle in application
-   // if (nSwizzleNeeded)
-   //     pCamera->setMode(pCamera, MI_SWIZZLE_MODE, 0);
 
     mi_u32  fuse1 = 0;
 	pCamera->readRegister(pCamera,pCamera->sensor->shipAddr, 0x00FA, &fuse1);
@@ -174,11 +167,13 @@ int SimpleCapture::openTransport(int camIdx)
         m_camNM=m_cameraIdx;
     }
 
+    printShit(); //unprofessional, but accurate. 
+
     return 0;
 }
 
 
-void 
+unsigned char * 
 SimpleCapture::_doCapture()
 {
     char fname[30];
@@ -195,40 +190,16 @@ SimpleCapture::_doCapture()
 
         /* Skip frames until a good frame is found.  */
         int count=0;
-        do {
-            nRet = pCamera->grabFrame(pCamera, pGrabframeBuff, pCamera->sensor->bufferSize);
-            if (nRet != MI_CAMERA_SUCCESS) {
-                printf("b");
-            }
-        } while (nRet != MI_CAMERA_SUCCESS && count++ < MAX_BADFRAME_TRIES);
-
-        //The data for 10 bpp needs to be swizzled on the Demo1 & Demo1A boards
-        //if (pCamera->sensor->imageType == MI_BAYER_10 && nSwizzleNeeded)
-        //{
-        //    //We go through data 2 Bytes at a time
-        //    for (i = 0; i < (int)frameSize; i += 2)
-        //    {
-        //        //data comes in as         and is changed to
-        //        // Byte 1   Byte 0         Byte 1   Byte0
-        //        //xxxxxx10 98765432       xxxxxx98 76543210 
-        //        tempByte = pGrabframeBuff[i+0];
-        //        pCameraBuff[i+0]  = (pGrabframeBuff[i+0] << 2) | (pGrabframeBuff[i+1]&0x03); 
-        //        pCameraBuff[i+1]  = (tempByte >> 6); 
-        //    }
-        //}
-        //else
-        memcpy(pCameraBuff, pGrabframeBuff, frameSize);
-
+        nRet = pCamera->grabFrame(pCamera, pGrabframeBuff, pCamera->sensor->bufferSize);
         if (nRet != MI_CAMERA_SUCCESS) {
-            printf("B (error code: %d)", nRet);
-        } else {
-            fwrite(pCameraBuff, frameSize, 1, imfile);
-            printf(".");
+            return NULL;
         }
+        memcpy(pCameraBuff, pGrabframeBuff, frameSize);
+        fwrite(pCameraBuff, frameSize, 1, imfile);
     }
     printf("[done]\n");
-
     fclose(imfile); 
+    return pCameraBuff;
 }
 
 void
@@ -242,6 +213,12 @@ SimpleCapture::stopTransport()
     mi_CloseErrorLog();
 }
 
+unsigned long
+SimpleCapture::sensorBufferSize()
+{
+    return pCamera->sensor->bufferSize;
+}
+
 int 
 SimpleCapture::mallocate()
 {
@@ -251,11 +228,7 @@ SimpleCapture::mallocate()
         printf("Error trying to create a buffer of size %d to capture %d frames.\n", 
                frameSize, num_frames);
         mi_CloseCameras();
-#ifdef _DEBUG
-        printf("<press a key>");
-        _getch();
-        printf("\n");
-#endif
+
         return 1;
     }
     //Allocate a buffer to store the images
@@ -264,11 +237,6 @@ SimpleCapture::mallocate()
         printf("Error trying to create a buffer of size %d to grab the frames.\n", 
             pCamera->sensor->bufferSize);
         mi_CloseCameras();
-#ifdef _DEBUG
-        printf("<press a key>");
-        _getch();
-        printf("\n");
-#endif
         return 1;
     }
     return 0;

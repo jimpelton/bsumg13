@@ -22,7 +22,7 @@
  *	
  *	Modified from the SimpleCapture example provided by Aptina.
  */
-class SimpleCapture
+class __declspec(dllexport)  SimpleCapture
 {
 public:
 
@@ -88,6 +88,9 @@ public:
      */
     void stopTransport();
 
+    unsigned long sensorBufferSize();
+    unsigned char* _doCapture();
+
   /************************************************************************/
   /* PRIVATE members                                                      */
   /************************************************************************/ 
@@ -98,10 +101,45 @@ private:
     int m_camNM;
     
     /** \brief Called from captureFunction to perform the capture. */
-    void _doCapture();
 
     int mallocate();
     void printShit();
+};
+
+public ref class ManagedSimpleCapture{
+    SimpleCapture *native_sc;
+
+public:
+    ManagedSimpleCapture() 
+        : native_sc(new SimpleCapture()) {}
+    ~ManagedSimpleCapture() { delete native_sc; }
+
+    int managed_openTransport(int camidx)
+    {
+        return native_sc->openTransport(camidx);
+    }
+
+    unsigned long managed_sensorBufferSize()
+    {
+        return native_sc->sensorBufferSize();
+    }
+
+    void managed_stopTransport()
+    {
+        native_sc->stopTransport();
+    }
+
+    unsigned char* managed_doCapture()
+    {
+        return native_sc->_doCapture();
+    }
+
+    static int managed_initMidLib(int nCamsReqd)
+    {
+        return SimpleCapture::initMidLib2(nCamsReqd);
+    }
+
+
 };
 
 static void 
