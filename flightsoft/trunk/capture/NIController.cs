@@ -5,7 +5,7 @@ using System.Text;
 
 namespace capture
 {
-    public class Class1
+    class NIController
     {
     }
 }

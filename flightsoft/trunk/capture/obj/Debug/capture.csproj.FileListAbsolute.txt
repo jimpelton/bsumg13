@@ -1,0 +1,6 @@
+C:\Code\flightsoft\trunk\capture\bin\Debug\capture.dll
+C:\Code\flightsoft\trunk\capture\bin\Debug\capture.pdb
+C:\Code\flightsoft\trunk\capture\obj\Debug\capture.csprojResolveAssemblyReference.cache
+C:\Code\flightsoft\trunk\capture\obj\Debug\capture.dll
+C:\Code\flightsoft\trunk\capture\obj\Debug\capture.pdb
+C:\Code\flightsoft\trunk\capture\bin\Debug\Phidget21.NET.dll

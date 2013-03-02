@@ -34,8 +34,8 @@
             this.TabPage_BITE = new System.Windows.Forms.TabPage();
             this.TabPage_Wells = new System.Windows.Forms.TabPage();
             this.TabPage_Capture = new System.Windows.Forms.TabPage();
-            this.btn_Go = new System.Windows.Forms.Button();
             this.Tab_Control_Main = new System.Windows.Forms.TabControl();
+            this.btn_Go = new System.Windows.Forms.Button();
             this.TabPage_Debug.SuspendLayout();
             this.TabPage_Capture.SuspendLayout();
             this.Tab_Control_Main.SuspendLayout();
@@ -102,16 +102,6 @@
             this.TabPage_Capture.Text = "Capture Control";
             this.TabPage_Capture.UseVisualStyleBackColor = true;
             // 
-            // btn_Go
-            // 
-            this.btn_Go.Location = new System.Drawing.Point(420, 157);
-            this.btn_Go.Name = "btn_Go";
-            this.btn_Go.Size = new System.Drawing.Size(159, 80);
-            this.btn_Go.TabIndex = 0;
-            this.btn_Go.Text = "Start Capture";
-            this.btn_Go.UseVisualStyleBackColor = true;
-            this.btn_Go.Click += new System.EventHandler(this.btn_Go_Click);
-            // 
             // Tab_Control_Main
             // 
             this.Tab_Control_Main.Controls.Add(this.TabPage_Capture);
@@ -126,13 +116,22 @@
             this.Tab_Control_Main.Size = new System.Drawing.Size(1162, 721);
             this.Tab_Control_Main.TabIndex = 0;
             // 
+            // btn_Go
+            // 
+            this.btn_Go.Location = new System.Drawing.Point(420, 157);
+            this.btn_Go.Name = "btn_Go";
+            this.btn_Go.Size = new System.Drawing.Size(159, 80);
+            this.btn_Go.TabIndex = 0;
+            this.btn_Go.Text = "Start Capture";
+            this.btn_Go.UseVisualStyleBackColor = true;
+            this.btn_Go.Click += new System.EventHandler(this.btn_Go_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1186, 745);
             this.Controls.Add(this.Tab_Control_Main);
-            this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Boise State Microgravity Experiment Control";
             this.Load += new System.EventHandler(this.Form1_Load);

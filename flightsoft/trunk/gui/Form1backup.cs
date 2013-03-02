@@ -15,7 +15,7 @@ namespace gui
 
         public static void DebugOutput(String s, int severity)
         {
-            String s2 = GetTimestamp() + s + "\n";
+            s += "\n";
             RichTextBox box = DebugBox;
             box.SelectionStart = box.TextLength;
             box.SelectionLength = 0;       
@@ -31,24 +31,20 @@ namespace gui
                     box.SelectionColor = Color.Red;
                 else if (severity > 4)
                     box.SelectionColor = Color.OrangeRed;
-            }
-            box.AppendText(s2);
-            box.SelectionColor = box.ForeColor;
-        }
 
-        public static String GetTimestamp()
-        {
-            return DateTime.Now.ToString("dd:HH:mm:ss ");
+                box.AppendText(s);
+                box.SelectionColor = box.ForeColor;
+            }
         }
 
         public static void DebugOutput(String s, Color col)
         {
-            String s2 = GetTimestamp() + s + "\n";
+            s += "\n";
             RichTextBox box = DebugBox;
             box.SelectionStart = box.TextLength;
             box.SelectionLength = 0;
             box.SelectionColor = col;
-            box.AppendText(s2);
+            box.AppendText(s);
             box.SelectionColor = box.ForeColor;           
         }
 
@@ -57,7 +53,6 @@ namespace gui
             InitializeComponent();
             DebugBox = rTB_Debug_Output;
             Tab_Control_Main.SelectedIndex=4;
-            Program.prg = new Program();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -72,7 +67,7 @@ namespace gui
 
         private void btn_Go_Click(object sender, EventArgs e)
         {
-            
+
         }
 
     }
