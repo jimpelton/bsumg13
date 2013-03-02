@@ -19,10 +19,11 @@ namespace CaptureCallTest
         ManagedSimpleCapture msc;
         public AptinaController(ManagedSimpleCapture msc)
         {
-            this.msc = msc;
             size = msc.managed_sensorBufferSize();
             dest = new byte[size];
             mutex = new Mutex();
+
+            this.msc = msc;
         }
 
         public void stop()
@@ -58,7 +59,7 @@ namespace CaptureCallTest
                     byte* data = me.msc.managed_doCapture();
                     if (data != null) { continue; }
                     Marshal.Copy(new IntPtr(data), me.dest, 0, (int)me.size);
-                    Console.WriteLine("datadatadata");
+                    Console.WriteLine("Wrote some datums.");
                 };
                 File.WriteAllBytes(
                     String.Format("data%d.raw", me.nextIdx++), me.dest);
