@@ -13,25 +13,39 @@ namespace gui
     {
         private static RichTextBox DebugBox = null;
 
+        private static Color[] severityColors = 
+        {
+            Color.Black,      /* no severity */
+            Color.Blue,        
+            Color.BlueViolet, /* somewhat severe */
+            Color.Yellow, 
+            Color.Red, 
+            Color.OrangeRed   /* hair on fire */
+        };
+
         public static void DebugOutput(String s, int severity)
         {
             String s2 = GetTimestamp() + s + "\n";
             RichTextBox box = DebugBox;
             box.SelectionStart = box.TextLength;
-            box.SelectionLength = 0;       
+            box.SelectionLength = 0;
             if (severity > 0)
             {
-                if(severity==1)
-                    box.SelectionColor = Color.Blue;
-                else if (severity == 2) 
-                    box.SelectionColor = Color.BlueViolet;
-                else if (severity == 3) 
-                    box.SelectionColor = Color.Yellow;
-                else if (severity == 4) 
-                    box.SelectionColor = Color.Red;
-                else if (severity > 4)
-                    box.SelectionColor = Color.OrangeRed;
+                box.SelectionColor = severityColors[severity];
             }
+            //if (severity > 0)
+            //{
+            //    if(severity==1)
+            //        box.SelectionColor = Color.Blue;
+            //    else if (severity == 2) 
+            //        box.SelectionColor = Color.BlueViolet;
+            //    else if (severity == 3) 
+            //        box.SelectionColor = Color.Yellow;
+            //    else if (severity == 4) 
+            //        box.SelectionColor = Color.Red;
+            //    else if (severity > 4)
+            //        box.SelectionColor = Color.OrangeRed;
+            //}
             box.AppendText(s2);
             box.SelectionColor = box.ForeColor;
         }
