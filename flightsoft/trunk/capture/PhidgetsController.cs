@@ -37,15 +37,18 @@ namespace uGCapture
             {
 
                 accelFiltered = new Accelerometer();
+                accelFiltered.open();
+                CaptureClass.LogDebugMessage("Waiting for accelerometer 1 to be found", 0);
+                accelFiltered.waitForAttachment();
+                CaptureClass.LogDebugMessage("Accelerometer 1 found", 0);
                 accelFiltered.Attach += new AttachEventHandler(accel_Attach);
                 accelFiltered.Detach += new DetachEventHandler(Sensor_Detach);
                 accelFiltered.Error += new ErrorEventHandler(Sensor_Error);
                 accelFiltered.AccelerationChange += new AccelerationChangeEventHandler(accel_AccelerationChangeAcc);
-                CaptureClass.LogDebugMessage("Waiting for accelerometer 1 to be found", 0);
-                accelFiltered.waitForAttachment(100000);
-                CaptureClass.LogDebugMessage("Accelerometer 1 found", 0);
+
                 
                 //accelCapture = new Accelerometer();
+                //accelCapture.open();
                 //accelCapture.Attach += new AttachEventHandler(accel_Attach);
                 //accelCapture.Detach += new DetachEventHandler(Sensor_Detach);
                 //accelCapture.Error += new ErrorEventHandler(Sensor_Error);
@@ -55,17 +58,19 @@ namespace uGCapture
                 //CaptureClass.LogDebugMessage("Accelerometer 2 found", 0);
 
                 phidgetTemperature = new TemperatureSensor();
+                phidgetTemperature.open();
+                CaptureClass.LogDebugMessage("Waiting for Temperature Sensor to be found", 0);
+                phidgetTemperature.waitForAttachment();
+                CaptureClass.LogDebugMessage("Temperature Sensor found", 0);
                 phidgetTemperature.Attach += new AttachEventHandler(tempSensor_Attach);
                 phidgetTemperature.Detach += new DetachEventHandler(Sensor_Detach);
                 phidgetTemperature.Error += new ErrorEventHandler(Sensor_Error);
                 phidgetTemperature.TemperatureChange += new TemperatureChangeEventHandler(tempSensor_TemperatureChange);
-                CaptureClass.LogDebugMessage("Waiting for Temperature Sensor to be found", 0);
-                phidgetTemperature.waitForAttachment(100000);
-                CaptureClass.LogDebugMessage("Temperature Sensor found", 0);
+
                 phidgetTemperature.thermocouples[0].Sensitivity = 0.02;
 
                 phidgets1018 = new InterfaceKit();
-
+                phidgets1018.open();
                 phidgets1018.Attach += new AttachEventHandler(ifKit_Attach);
                 phidgets1018.Detach += new DetachEventHandler(Sensor_Detach);
                 phidgets1018.Error += new ErrorEventHandler(Sensor_Error);
@@ -83,7 +88,7 @@ namespace uGCapture
             }
             catch (PhidgetException ex)
             {
-                CaptureClass.LogDebugMessage("Error" + ex.Description, 6);             
+                CaptureClass.LogDebugMessage("Error (startup catch) " + ex.Description, 6);             
             }
         }
 
