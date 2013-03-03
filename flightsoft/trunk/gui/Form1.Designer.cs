@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.TabPage_Debug = new System.Windows.Forms.TabPage();
             this.rTB_Debug_Output = new System.Windows.Forms.RichTextBox();
             this.TabPage_Graphs = new System.Windows.Forms.TabPage();
@@ -36,6 +37,7 @@
             this.TabPage_Capture = new System.Windows.Forms.TabPage();
             this.btn_Go = new System.Windows.Forms.Button();
             this.Tab_Control_Main = new System.Windows.Forms.TabControl();
+            this.DebugUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.TabPage_Debug.SuspendLayout();
             this.TabPage_Capture.SuspendLayout();
             this.Tab_Control_Main.SuspendLayout();
@@ -126,6 +128,11 @@
             this.Tab_Control_Main.Size = new System.Drawing.Size(1162, 721);
             this.Tab_Control_Main.TabIndex = 0;
             // 
+            // DebugUpdateTimer
+            // 
+            this.DebugUpdateTimer.Enabled = true;
+            this.DebugUpdateTimer.Interval = 1000;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -153,6 +160,7 @@
         private System.Windows.Forms.TabControl Tab_Control_Main;
         private System.Windows.Forms.RichTextBox rTB_Debug_Output;
         private System.Windows.Forms.Button btn_Go;
+        private System.Windows.Forms.Timer DebugUpdateTimer;
 
     }
 }

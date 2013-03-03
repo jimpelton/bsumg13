@@ -73,6 +73,7 @@ namespace gui
             DebugBox = rTB_Debug_Output;
             Tab_Control_Main.SelectedIndex=4;
             Program.prg = new Program();
+            DebugUpdateTimer.Tick += new EventHandler(grabCaptureDebugMessages);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -90,5 +91,13 @@ namespace gui
             
         }
 
+        private void grabCaptureDebugMessages(object sender, EventArgs e)
+        {
+            if (uGCapture.CaptureClass.DebugMessages.Count > 0)
+            {
+                uGCapture.LogMessage l = uGCapture.CaptureClass.DebugMessages.Dequeue();
+                Program.DebugOutput(l.message, l.severity);
+            }
+        }
     }
 }
