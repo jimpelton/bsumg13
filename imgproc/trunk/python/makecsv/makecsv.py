@@ -1,7 +1,7 @@
 import os
 import argparse
 from math import sqrt
-
+import re
 
 def getArgs():
     """
@@ -155,6 +155,37 @@ def calculateRatios(values405, values485):
     return ratios_list
 
 
+
+def getEgta(wellIdx):
+    cc = '0[0-3]|1[2-5]|2[4-7]|3[6-9]|4[8-9]|5[0-1]'  #co cul
+    mc = '0[4-7]|1[6-9]|2[8-9]|3[0-1]|4[0-3]|5[2-5]'  #mc-3t3
+    ml = '0[8-9]|1[0-1]|2[0-3]|3[2-5]|4[4-7]|5[6-9]'  #mlo-y4
+
+    wellIdx = str(wellIdx).zfill(2)
+    if re.match(cc, wellIdx):
+        return slice(72,76,1)
+    elif re.match(mc, wellIdx):
+        return slice(76,80,1)
+    elif re.match(ml, wellIdx):
+        return slice(80,84,1)
+    else:
+        return None
+
+def getIono(wellIdx):
+    cc = '^0[0-3]|1[2-5]|2[4-7]|3[6-9]|4[8-9]|5[0-1]$'  #co cul
+    mc = '^0[4-7]|1[6-9]|2[8-9]|3[0-1]|4[0-3]|5[2-5]$'  #mc-3t3
+    ml = '^0[8-9]|1[0-1]|2[0-3]|3[2-5]|4[4-7]|5[6-9]$'  #mlo-y4
+
+    wellIdx = str(wellIdx).zfill(2)
+    if re.match(cc, wellIdx):
+        return slice(60,64,1)
+    elif re.match(mc, wellIdx):
+        return slice(64,68,1)
+    elif re.match(ml, wellIdx):
+        return slice(68,72,1)
+    else:
+        return None
+
 def calculateConcentrations(ratios, val405, val485):
     """
     Calculate Ca+2 concentrations from calibration equation:
@@ -167,16 +198,25 @@ def calculateConcentrations(ratios, val405, val485):
     :param val485: 485 well values on t=[0..tmax]
     """
     shortest = min(len(ratios), len(val405), len(val485))
-    egtaWells = [x[72:76] for x in val405]
-    ionoWells = [x[60:64] for x in val485]
+    #egtaWells = [x[72:76] for x in val405]
+    #ionoWells = [x[60:64] for x in val485]
     Kd = 0.23
     concs = []
-    for i in range(shortest):
-        F405min = min(egtaWells[i])
-        F405max = max(egtaWells[i])
+    for i in range(60):
 
-        F485min = min(ionoWells[i])
-        F485max = max(ionoWells[i])
+        # F405min = min(egtaWells[i])
+        egtaWells = getEgta(i)
+        ionoWells = getIono(i)
+        F405min = min(val405[i][egtaWells])
+        F405max = max(val405[i][egtaWells])
+        # F405max = max(egtaWells[i])
+
+        # F485min = min(ionoWells[i])
+        F485min = min(val485[i][ionoWells])
+        F485max = max(val485[i][ionoWells])
+        # F485max = max(ionoWells[i])
+
+
 
         Q = F485min / F485max
         Rmin = F405min / F485min
@@ -296,15 +336,14 @@ def main():
     #make sure end is appropriate.
     endint     = int(end)
     startint   = int(start)
-
     if endint <= startint:
         endint = min(len(gravities), len(values405), len(values485))
     nFiles = endint - startint
 
     #slice out the values we want to calculate.
-    slice405 = values405[st405:st405 + nFiles]
-    slice485 = values485[st485:st485 + nFiles]
-    slicegrav = gravities[gSt:gSt + nFiles]
+    slice405 = values405[st405:st405+nFiles]
+    slice485 = values485[st485:st485+nFiles]
+    slicegrav = gravities[gSt:gSt+nFiles]
 
     ratios = calculateRatios(slice405, slice485)
     concs = calculateConcentrations(ratios, slice405, slice485)
@@ -315,6 +354,12 @@ def main():
     writeValues(concName, concs)
     writeGravity(gravName, slicegrav)
 
+# class MJR:
+#     CO_CUL, MC_3T3, MLO_Y4,\
+#         EMPTY, AGAR, CYTO_WO, CYTO_WI = range(0,6)
+#
+# class CTL:
+#     NONE, IO, EG = range(0,2)
 
 if __name__ == '__main__':
     main()
