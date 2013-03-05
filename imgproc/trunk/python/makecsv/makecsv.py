@@ -198,32 +198,24 @@ def calculateConcentrations(ratios, val405, val485):
     :param val485: 485 well values on t=[0..tmax]
     """
     shortest = min(len(ratios), len(val405), len(val485))
-    #egtaWells = [x[72:76] for x in val405]
-    #ionoWells = [x[60:64] for x in val485]
     Kd = 0.23
     concs = []
-    for i in range(60):
-
-        # F405min = min(egtaWells[i])
-        egtaWells = getEgta(i)
-        ionoWells = getIono(i)
-        F405min = min(val405[i][egtaWells])
-        F405max = max(val405[i][egtaWells])
-        # F405max = max(egtaWells[i])
-
-        # F485min = min(ionoWells[i])
-        F485min = min(val485[i][ionoWells])
-        F485max = max(val485[i][ionoWells])
-        # F485max = max(ionoWells[i])
-
-
-
-        Q = F485min / F485max
-        Rmin = F405min / F485min
-        Rmax = F405max / F485max
+    for time in range(shortest):
         Ca2_t = []
-        for r in ratios[i]:
+        for r in ratios[time]:
+            well=0
+            egtaSlice = getEgta(well)
+            ionoSlice = getIono(well)
+            F405min = min(val405[time][egtaSlice])
+            F405max = max(val405[time][egtaSlice])
+            F485min = min(val485[time][ionoSlice])
+            F485max = max(val485[time][ionoSlice])
+            Q = F485min / F485max
+            Rmin = F405min / F485min
+            Rmax = F405max / F485max
+
             Ca2_t.append(Kd * Q * ((r - Rmin) / (Rmax - r)))
+            well+=1
 
         concs.append(Ca2_t)
 
