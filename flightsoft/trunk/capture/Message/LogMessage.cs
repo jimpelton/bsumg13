@@ -5,7 +5,7 @@ using System.Text;
 
 namespace uGCapture
 {
-    public class LogMessage
+    public class LogMessage /*: Message*/
     {
 
         public long time;

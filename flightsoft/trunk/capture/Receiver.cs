@@ -2,10 +2,10 @@
 namespace uGCapture
 {
 
-    class Sender
-    {
-        Sender() { /* empty (for now) */ }
-    }
+    //class Sender
+    //{
+    //    Sender() { /* empty (for now) */ }
+    //}
 
     public abstract class Receiver
     {
@@ -39,47 +39,47 @@ namespace uGCapture
         }
     }
 
-    class PhidgetsAccelAccessor : Receiver
-    {
+    //class PhidgetsAccelAccessor : Receiver
+    //{
 
-        public override void exPhidgetsStatus(Receiver r)
-        {
-            Console.WriteLine("status: " + this);
-            //base.exPhidgetsStatus(r);
-        }
+    //    public override void exPhidgetsStatus(Receiver r)
+    //    {
+    //        Console.WriteLine("status: " + this);
+    //        //base.exPhidgetsStatus(r);
+    //    }
 
-        public override void exBiteTest(Receiver r)
-        {
-            //respond in some way to bite test command.
-            Console.WriteLine("BiteTest: " + this);
-        }
+    //    public override void exBiteTest(Receiver r)
+    //    {
+    //        //respond in some way to bite test command.
+    //        Console.WriteLine("BiteTest: " + this);
+    //    }
 
-        public override string ToString()
-        {
-            return "PhidgetsAccelAccessor";
-        }
+    //    public override string ToString()
+    //    {
+    //        return "PhidgetsAccelAccessor";
+    //    }
 
-    }
+    //}
 
-    class AptinaAccessor : Receiver
-    {
+    //class AptinaAccessor : Receiver
+    //{
 
-        public override void exAptinaStatus(Receiver r)
-        {
-            Console.WriteLine("status: " + this);   
-        }
+    //    public override void exAptinaStatus(Receiver r)
+    //    {
+    //        Console.WriteLine("status: " + this);   
+    //    }
 
-        public override void exBiteTest(Receiver r)
-        {
-            //respond in some way to bite test command.
-            Console.WriteLine("BiteTest: " + this);
-        }
+    //    public override void exBiteTest(Receiver r)
+    //    {
+    //        //respond in some way to bite test command.
+    //        Console.WriteLine("BiteTest: " + this);
+    //    }
 
-        public override string ToString()
-        {
-            return "AptinaAccessor";
-        }
-    }
+    //    public override string ToString()
+    //    {
+    //        return "AptinaAccessor";
+    //    }
+    //}
 
 
 

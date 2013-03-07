@@ -17,13 +17,13 @@ namespace uGCapture
         private Stack<Buffer<T>> emptyBufs;
 
         private readonly int m_bufElem;
-        public readonly int BufElem
+        public int BufElem
         {
             get { return m_bufElem; }
         }
 
         private readonly int m_numBufs;
-        public readonly int NumBufs
+        public int NumBufs
         {
             get { return m_numBufs; }
         }
@@ -36,6 +36,7 @@ namespace uGCapture
             fullBufs  = new Queue<Buffer<T>>();
             emptyBufs = new Stack<Buffer<T>>();
             m_numBufs = 0;
+            m_bufElem = 0;
         }
         
         /// <summary>
@@ -52,7 +53,7 @@ namespace uGCapture
                 emptyBufs = new Stack<Buffer<T>>(nBuffs);
                 for (int i = 0; i < nBuffs; ++i)
                 {
-                    fullBufs.Enqueue(new Buffer<T>(nElem));
+                    emptyBufs.Push(new Buffer<T>(nElem));
                 }
             }
             else 
@@ -61,6 +62,7 @@ namespace uGCapture
                 emptyBufs = new Stack<Buffer<T>>();
             }
             m_numBufs = nBuffs;
+            m_bufElem = nElem;
         }
 
         /// <summary>

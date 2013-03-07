@@ -6,7 +6,6 @@ using System.Collections;
 using Phidgets;
 using Phidgets.Events;
 
-
 namespace uGCapture 
 {
     public class CaptureClass : Receiver
