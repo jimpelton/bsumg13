@@ -1,6 +1,8 @@
+
 import os
 import argparse
-from math import sqrt
+from ugDataFile import ugDataFile
+import ugDataReader
 import re
 
 def getArgs():
@@ -48,87 +50,12 @@ def getArgs():
         return None
 
 
-def read405Files(dir405, files405_list):
-    """
-    Read 405 files. Each file contains lines formated as: "well#:val".
-    :param dir405: Path to 405 data files
-    :rtype : list
-    """
-    print('Reading 405 files...'),
-    #files405_list = [f for f in os.listdir(dir405)]
-    #files405_list.sort()
-    values405_list = []
-    timeIdx = 0
-    for f in files405_list:
-        thisfile = open(dir405 + f)
-        lines = thisfile.readlines()
-        thisfile.close()
-        values405_list.append([])
-
-        for s in lines:
-            strs = s.split(':')
-            val = int(strs[1].strip())
-            values405_list[timeIdx].append(val)
-
-        #reverse to match the 485 well order
-        values405_list[timeIdx].reverse()
-        timeIdx += 1
-
-    print('{}'.format(timeIdx))
-    return values405_list
 
 
-def read485Files(dir485, files485_list):
-    """
-    Read in them 485 data files.
-    Each file contains lines formatted as: "well#:val".
-    :rtype : list
-    :param dir485:
-    :return: list of lists of wells for each file.
-    """
-    print('Reading 485 files...'),
-    #files485_list = [f for f in os.listdir(dir485)]
-    #files485_list.sort()
-    values485_list = []
-    timeIdx = 0
-    for f in files485_list:
-        thisfile = open(dir485 + f)
-        lines = thisfile.readlines()
-        thisfile.close()
-        values485_list.append([])
-
-        for s in lines:
-            strs = s.split(':')
-            val = int(strs[1].strip())
-            values485_list[timeIdx].append(val)
-
-        timeIdx += 1
-
-    print('{}'.format(timeIdx))
-    return values485_list
 
 
-def readGravityFiles(gravDir):
-    """
-    :rtype : list
-    :param gravDir:
-    :return:
-    """
-    print('Reading and calculating gravity vectors...')
-    gravityFiles = [f for f in os.listdir(gravDir)]
-    gravityFiles.sort()
-    gravity_list = []
-    for f in gravityFiles:
-        thisfile = open(gravDir + f)
-        line = thisfile.readlines()[0]
-        thisfile.close()
 
-        xyzt = [float(i) for i in line.split(' ')]
-        gMag = sqrt(xyzt[0] * xyzt[0] + xyzt[1] * xyzt[1] + xyzt[2] * xyzt[2])
-        gravity_list.append(gMag)
 
-    print('{}'.format(len(gravity_list)))
-    return gravity_list
 
 
 def calculateRatios(values405, values485):
@@ -198,7 +125,7 @@ def calculateConcentrations(ratios, val405, val485):
     :param val485: 485 well values on t=[0..tmax]
     """
     shortest = min(len(ratios), len(val405), len(val485))
-    Kd = 0.23
+    Kd = 0.23  #dissosiation constant for indo-1 dye.
     concs = []
     for time in range(shortest):
         Ca2_t = []
@@ -222,31 +149,6 @@ def calculateConcentrations(ratios, val405, val485):
     return concs
 
 
-def writeValues(fileName, valuesList):
-    """
-    Write a list of values to fileName
-    :param fileName: file to write to
-    :param valuesList: the values to write.
-    """
-    print('Writing values: {0}'.format(fileName))
-
-    f = open(fileName, 'w')
-    for i in range(len(valuesList)):
-        f.write('{0} '.format(str(i)))
-        f.write(' '.join(str(x) for x in valuesList[i]))
-        f.write('\n')
-    f.close()
-
-
-def writeGravity(filename, gravList):
-    print('Writing gravity values: {}'.format(filename))
-    f = open(filename, 'w')
-
-    for i in range(len(gravList)):
-        f.write('{0} {1}'.format(str(i), gravList[i]))
-        # f.write(' '.join(str(x) for x in gravList[i]))
-        f.write('\n')
-    f.close()
 
 
 def sanitize(args):
@@ -289,6 +191,7 @@ def main():
     if not sanitize(args):
         exit()
 
+
     basedir485 = args.Directory485
     basedir405 = args.Directory405
     gravDir = args.DirectoryGrav
@@ -296,62 +199,53 @@ def main():
     start = str(args.Start).zfill(5)
     end = str(args.End).zfill(5)
 
+
     wv485Name = outDir + 'wv485.dat'
     wv405Name = outDir + 'wv405.dat'
     ratName = outDir + 'rat.dat'
     gravName = outDir + 'grav.dat'
     concName = outDir + 'conc.dat'
 
-    dataPakStartName = 'DataPacket' + start + '.txt'
-    cam405StartName = 'DataCamera405nm' + start + '.raw.txt'
-    cam485StartName = 'DataCamera485nm' + start + '.raw.txt'
+    # dataPakStartName = 'DataPacket' + start + '.txt'
+    # cam405StartName = 'DataCamera405nm' + start + '.raw.txt'
+    # cam485StartName = 'DataCamera485nm' + start + '.raw.txt'
 
-    filesGravity = os.listdir(gravDir)
-    filesGravity.sort()
+    dataFile = ugDataFile(basedir405,basedir485,gravDir,outDir)
+    dataFile.fromTo(int(start), int(end))
+    dataFile.update()
+    dataReader=ugDataReader.ugDataReader(dataFile)
+    dataReader.update()
 
-    files405 = os.listdir(basedir405)
-    files405.sort()
-
-    files485 = os.listdir(basedir485)
-    files485.sort()
-
-    #find the starting file index.
-    gSt   = filesGravity.index(dataPakStartName)
-    st405 = files405.index(cam405StartName)
-    st485 = files485.index(cam485StartName)
-
-    #long list of 96-element lists (one line per data file)
-    gravities = readGravityFiles(gravDir)
-    values405 = read405Files(basedir405, files405)
-    values485 = read485Files(basedir485, files485)
-
-    #make sure end is appropriate.
-    endint     = int(end)
-    startint   = int(start)
-    if endint <= startint:
-        endint = min(len(gravities), len(values405), len(values485))
-    nFiles = endint - startint
-
-    #slice out the values we want to calculate.
-    slice405 = values405[st405:st405+nFiles]
-    slice485 = values485[st485:st485+nFiles]
-    slicegrav = gravities[gSt:gSt+nFiles]
-
+    slice405 = dataReader.valuesList("405")
+    slice485 = dataReader.valuesList("485")
     ratios = calculateRatios(slice405, slice485)
     concs = calculateConcentrations(ratios, slice405, slice485)
 
-    writeValues(wv405Name, slice405)
-    writeValues(wv485Name, slice485)
-    writeValues(ratName, ratios)
-    writeValues(concName, concs)
-    writeGravity(gravName, slicegrav)
+    #long list of 96-element lists (one line per data file)
+    # gravities = imgproc.readGravityFiles(gravDir)
+    # values405 = imgproc.read405Files(basedir405, files405)
+    # values485 = imgproc.read485Files(basedir485, files485)
 
-# class MJR:
-#     CO_CUL, MC_3T3, MLO_Y4,\
-#         EMPTY, AGAR, CYTO_WO, CYTO_WI = range(0,6)
-#
-# class CTL:
-#     NONE, IO, EG = range(0,2)
+    #make sure end is appropriate.
+    # endint     = int(end)
+    # startint   = int(start)
+    # if endint <= startint:
+    #     endint = min(len(gravities), len(values405), len(values485))
+    # nFiles = dataFile.length()
+
+
+    #slice out the values we want to calculate.
+    # slice405 = values405[st405:st405+nFiles]
+    # slice485 = values485[st485:st485+nFiles]
+    # slicegrav = gravities[gSt:gSt+nFiles]
+
+
+
+    # writeValues(wv405Name, slice405)
+    # writeValues(wv485Name, slice485)
+    # writeValues(ratName, ratios)
+    # writeValues(concName, concs)
+    # writeGravity(gravName, slicegrav)
 
 if __name__ == '__main__':
     main()
