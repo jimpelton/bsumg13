@@ -206,10 +206,10 @@ def calculateConcentrations(ratios, val405, val485):
             well=0
             egtaSlice = getEgta(well)
             ionoSlice = getIono(well)
-            F405min = min(val405[time][egtaSlice])
-            F405max = max(val405[time][egtaSlice])
-            F485min = min(val485[time][ionoSlice])
-            F485max = max(val485[time][ionoSlice])
+            F405min = min(val405[time][egtaSlice]) 
+            F405max = max(val405[time][ionoSlice]) #should be Iono
+            F485min = min(val485[time][ionoSlice]) 
+            F485max = max(val485[time][egtaSlice]) #should be EGTA
             Q = F485min / F485max
             Rmin = F405min / F485min
             Rmax = F405max / F485max
