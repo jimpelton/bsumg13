@@ -3,6 +3,7 @@ import os
 import argparse
 from ugDataFile import ugDataFile
 import ugDataReader
+import ugDataWriter
 import re
 
 def getArgs():
@@ -128,11 +129,15 @@ def calculateConcentrations(ratios, val405, val485):
     Kd = 0.23  #dissosiation constant for indo-1 dye.
     concs = []
     for time in range(shortest):
+        well=0
         Ca2_t = []
         for r in ratios[time]:
-            well=0
+            if well >= 60:
+                break
+
             egtaSlice = getEgta(well)
             ionoSlice = getIono(well)
+
             F405min = min(val405[time][egtaSlice]) 
             F405max = max(val405[time][ionoSlice]) #should be Iono
             F485min = min(val485[time][ionoSlice]) 
@@ -145,42 +150,9 @@ def calculateConcentrations(ratios, val405, val485):
             well+=1
 
         concs.append(Ca2_t)
-
     return concs
 
 
-
-
-def sanitize(args):
-    """
-    Check the user given directories for existy-ness.
-    :param args: The args from a argparser
-    :return: true if all input checks out, false otherwise.
-    """
-    rval = True
-
-    try:
-        args.Directory485 = os.path.normpath(args.Directory485) + os.sep
-        args.Directory405 = os.path.normpath(args.Directory405) + os.sep
-        args.DirectoryGrav = os.path.normpath(args.DirectoryGrav) + os.sep
-        args.DirectoryOut = os.path.normpath(args.DirectoryOut) + os.sep
-    except:
-        return False
-
-    if not os.path.isdir(args.Directory485):
-        rval = False
-        print("{} is not a directory (given for Directory485).", args.Directory485)
-    if not os.path.isdir(args.Directory405):
-        rval = False
-        print("{} is not a directory (given for Directory405).", args.Directory405)
-    if not os.path.isdir(args.DirectoryGrav):
-        rval = False
-        print("{} is not a directory (given for DirectoryGrav).", args.DirectoryGrav)
-    if not os.path.isdir(args.DirectoryOut):
-        rval = False
-        print("{} is not a directory (given for DirectoryOut).", args.DirectoryOut)
-
-    return rval
 
 
 def main():
@@ -188,8 +160,9 @@ def main():
     if not args:
         exit()
 
-    if not sanitize(args):
-        exit()
+    # if not sanitize(args):
+    #     exit()
+
 
 
     basedir485 = args.Directory485
@@ -199,27 +172,33 @@ def main():
     start = str(args.Start).zfill(5)
     end = str(args.End).zfill(5)
 
-
-    wv485Name = outDir + 'wv485.dat'
-    wv405Name = outDir + 'wv405.dat'
-    ratName = outDir + 'rat.dat'
-    gravName = outDir + 'grav.dat'
-    concName = outDir + 'conc.dat'
-
-    # dataPakStartName = 'DataPacket' + start + '.txt'
-    # cam405StartName = 'DataCamera405nm' + start + '.raw.txt'
-    # cam485StartName = 'DataCamera485nm' + start + '.raw.txt'
-
-    dataFile = ugDataFile(basedir405,basedir485,gravDir,outDir)
+    dataFile = ugDataFile(basedir405, basedir485, gravDir, outDir)
     dataFile.fromTo(int(start), int(end))
     dataFile.update()
-    dataReader=ugDataReader.ugDataReader(dataFile)
+    dataReader = ugDataReader.ugDataReader(dataFile)
     dataReader.update()
 
     slice405 = dataReader.valuesList("405")
     slice485 = dataReader.valuesList("485")
     ratios = calculateRatios(slice405, slice485)
     concs = calculateConcentrations(ratios, slice405, slice485)
+
+    dw = ugDataWriter.ugDataWriter(dataFile)
+    dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
+    dw.writeValues(dataFile.dirout() + 'conc.dat', concs)
+
+
+    # wv485Name = outDir + 'wv485.dat'
+    # wv405Name = outDir + 'wv405.dat'
+    # ratName = outDir + 'rat.dat'
+    # gravName = outDir + 'grav.dat'
+    # concName = outDir + 'conc.dat'
+
+    # dataPakStartName = 'DataPacket' + start + '.txt'
+    # cam405StartName = 'DataCamera405nm' + start + '.raw.txt'
+    # cam485StartName = 'DataCamera485nm' + start + '.raw.txt'
+
+
 
     #long list of 96-element lists (one line per data file)
     # gravities = imgproc.readGravityFiles(gravDir)
@@ -251,60 +230,33 @@ if __name__ == '__main__':
     main()
 
 
-# def calculateRatioAveragesPerWell(ratios):
-#     """
-#     :rtype : list
-#     :param ratios: list of ratios
-#     :return: list of ratio averages across all time
-#     """
-#     ratioAvgs_list = []
-#     for wellIdx in range(len(ratios)):
-#         wellSum = 0
-#         for smpl in range(len(ratios[wellIdx])):
-#             wellSum = wellSum + ratios[wellIdx][smpl]
-#
-#         wellSum = wellSum / len(ratios[wellIdx])
-#         ratioAvgs_list.append(wellSum)
-#     return ratioAvgs_list
-
-
-#######################################################
-#  write405Values
-#
-# def write405Values(values405_filename, values405_list, gravity_list):
-#     print('Writing 405 values to {0}'.format(values405_filename))
-#     values405_file = open(values405_filename, 'w')
-#     for i in range(len(values405_list)):
-#         row = values405_list[i]
-#         values405_file.write("{0} ".format(str(i)))
-#         values405_file.write("{0} ".format(str(gravity_list[i])))
-#         values405_file.write(' '.join(str(x) for x in values405_list[i]))
-#         values405_file.write('\n')
-#     values405_file.close()
-
-#######################################################
-#  write485Values
-#
-# def write485Values(values485_filename, values485_list, gravity_list):
-#     print('Writing 485 values to {0}'.format(values485_filename))
-#     values485_file = open(values485_filename, 'w')
-#     for i in range(len(values485_list)):
-#         values485_file.write("{0} ".format(str(i)))
-#         values485_file.write("{0} ".format(str(gravity_list[i])))
-#         values485_file.write(' '.join(str(x) for x in values485_list[i]))
-#         values485_file.write('\n')
-#     values485_file.close()
-
-#######################################################
-#  writeRatioValues
-#
-# def writeRatioValues(ratios_filename, ratios_list, gravity_list):
-#     print('Writing ratio values to {0}'.format(ratios_filename))
-#     ratios_file = open(ratios_filename, 'w')
-#     for i in range(len(ratios_list)):
-#         ratios_file.write("{0} ".format(str(i)))
-#         if gravity_list != None:
-#             ratios_file.write("{0} ".format(str(gravity_list[i])))
-#         ratios_file.write(' '.join(str(x) for x in ratios_list[i]))
-#         ratios_file.write('\n')
-#     ratios_file.close()
+    # def sanitize(args):
+    #     """
+    #     Check the user given directories for existy-ness.
+    #     :param args: The args from a argparser
+    #     :return: true if all input checks out, false otherwise.
+    #     """
+    #     rval = True
+    #
+    #     try:
+    #         args.Directory485 = os.path.normpath(args.Directory485) + os.sep
+    #         args.Directory405 = os.path.normpath(args.Directory405) + os.sep
+    #         args.DirectoryGrav = os.path.normpath(args.DirectoryGrav) + os.sep
+    #         args.DirectoryOut = os.path.normpath(args.DirectoryOut) + os.sep
+    #     except :
+    #         return False
+    #
+    #     if not os.path.isdir(args.Directory485):
+    #         rval = False
+    #         print("{} is not a directory (given for Directory485).", args.Directory485)
+    #     if not os.path.isdir(args.Directory405):
+    #         rval = False
+    #         print("{} is not a directory (given for Directory405).", args.Directory405)
+    #     if not os.path.isdir(args.DirectoryGrav):
+    #         rval = False
+    #         print("{} is not a directory (given for DirectoryGrav).", args.DirectoryGrav)
+    #     if not os.path.isdir(args.DirectoryOut):
+    #         rval = False
+    #         print("{} is not a directory (given for DirectoryOut).", args.DirectoryOut)
+    #
+    #     return rval

@@ -31,6 +31,10 @@ class ugDataFile:
 
     def update(self):
         if self.__needsUpdate:
+
+            if not self.__sanitize():
+                raise Exception("Bad input aieeee!")
+
             print("DataFile doing update.\n")
             self.__files405=[]
             self.__files485=[]
@@ -49,8 +53,8 @@ class ugDataFile:
         self.__files485.sort()
 
         if self.__startingIndex == self.__endingIndex:
-            self.findStartingIndex()
-            self.findEndingIndex()
+            self.__findStartingIndex()
+            self.__findEndingIndex()
         else:
             self.__filesgrav = \
                 self.__filesgrav[self.__startingIndex:self.__endingIndex]
@@ -62,7 +66,7 @@ class ugDataFile:
 
 
 
-    def findStartingIndex(self):
+    def __findStartingIndex(self):
         grex="^DataPacket([0-9]{5}).txt$"
         reg405="^DataCamera405nm([0-9]{5}).raw.txt$"
         reg485="^DataCamera485nm([0-9]{5}).raw.txt$"
@@ -86,7 +90,7 @@ class ugDataFile:
         except Exception as eek:
             print("Exception: ".format(eek))
 
-    def findEndingIndex(self):
+    def __findEndingIndex(self):
         grex="^DataPacket([0-9]{5}).txt$"
         reg405="^DataCamera405nm([0-9]{5}).raw.txt$"
         reg485="^DataCamera485nm([0-9]{5}).raw.txt$"
@@ -114,6 +118,36 @@ class ugDataFile:
         except Exception as eek:
             print("Exception: {0}".format(eek))
 
+    def __sanitize(self):
+        """
+        Check the user given directories for existy-ness.
+        :param args: The args from a argparser
+        :return: true if all input checks out, false otherwise.
+        """
+        rval = True
+    
+        try:
+            self.__dir485 = os.path.normpath(self.__dir485) + os.sep
+            self.__dir405 = os.path.normpath(self.__dir405) + os.sep
+            self.__dirgrav = os.path.normpath(self.__dirgrav) + os.sep
+            self.__dirout = os.path.normpath(self.__dirout) + os.sep
+        except:
+            return False
+    
+        if not os.path.isdir(self.__dir485):
+            rval = False
+            print("{} is not a directory (given for Directory485).", self.Directory485)
+        if not os.path.isdir(self.__dir405):
+            rval = False
+            print("{} is not a directory (given for Directory405).", self.Directory405)
+        if not os.path.isdir(self.__dirgrav):
+            rval = False
+            print("{} is not a directory (given for DirectoryGrav).", self.DirectoryGrav)
+        if not os.path.isdir(self.__dirout):
+            rval = False
+            print("{} is not a directory (given for DirectoryOut).", self.DirectoryOut)
+    
+        return rval
 
     def fileNames(self, type):
         if type == "405":

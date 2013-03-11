@@ -40,6 +40,16 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(len(df.fileNames("grav")), 11)
 
 
+    def test_sanitize(self):
+        dir405="testdat/dir405"
+        dir485="testdat/dir485/"
+        dirgrav="testdat/dirgrav/"
+        dirout="testdat/dir"
+
+        with self.assertRaises(Exception) as eek:
+            print(eek)
+            df=ugDataFile.ugDataFile(dir405,dir485,dirgrav,dirout)
+            df.update()
 
 
 

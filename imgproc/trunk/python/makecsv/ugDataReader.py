@@ -1,11 +1,10 @@
 __author__ = 'jim'
 
 from math import sqrt
-import os
-import ugDataFile
+import numpy as np
+
 
 class ugDataReader:
-
 
     # datafile
     df = None
@@ -14,25 +13,22 @@ class ugDataReader:
     values485=None
     valuesgrav=None
 
-
     def __init__(self, datafile):
         self.df=datafile
         return
 
     def update(self):
         self.df.update()
-        self.values405=[]
-        self.values485=[]
-        self.valuesgrav=[]
         print("DataReader doing update.\n")
         self.readall(self.df)
 
     def readall(self,df):
-        self.read405Files(df.fileNames("405"))
-        self.read485Files(df.fileNames("485"))
-        self.readGravityFiles(df.fileNames("grav"))
+        # len=df.length()
+        self.values405 = self.read405Files_reversed(df.fileNames("405"))
+        self.values485 = self.read485Files(df.fileNames("485"))
+        self.valuesgrav = self.readGravityFiles(df.fileNames("grav"))
 
-    def read405Files(self, files405_list):
+    def read405Files_reversed(self, files405_list):
         """
         Read 405 files. Each file contains lines formated as: "well#:val".
         :param dir405: Path to 405 data files (expected to be sorted).
@@ -95,7 +91,7 @@ class ugDataReader:
     def readGravityFiles(self, gravityFiles):
         """
         :rtype : list
-        :param gravDir:
+        :param gravityFiles: list of files
         :return:
         """
         print('Reading and calculating gravity vectors...')
@@ -105,7 +101,6 @@ class ugDataReader:
             thisfile = open(basedir + f)
             line = thisfile.readlines()[0]
             thisfile.close()
-
             xyzt = [float(i) for i in line.split(' ')]
             gMag = sqrt(xyzt[0] * xyzt[0] + xyzt[1] * xyzt[1] + xyzt[2] * xyzt[2])
             gravity_list.append(gMag)
