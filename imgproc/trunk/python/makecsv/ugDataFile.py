@@ -63,9 +63,6 @@ class ugDataFile:
             self.__files485 = \
                 self.__files485[self.__startingIndex:self.__endingIndex]
 
-
-
-
     def __findStartingIndex(self):
         grex="^DataPacket([0-9]{5}).txt$"
         reg405="^DataCamera405nm([0-9]{5}).raw.txt$"
@@ -94,7 +91,9 @@ class ugDataFile:
         grex="^DataPacket([0-9]{5}).txt$"
         reg405="^DataCamera405nm([0-9]{5}).raw.txt$"
         reg485="^DataCamera485nm([0-9]{5}).raw.txt$"
-        maxidx=min(len(self.__filesgrav), len(self.__files405), len(self.__files485))-1
+        maxidx=min(len(self.__filesgrav),
+                   len(self.__files405),
+                   len(self.__files485))-1
 
         if maxidx < 0:
             raise IndexError("maxidx is too small.")
@@ -136,16 +135,16 @@ class ugDataFile:
     
         if not os.path.isdir(self.__dir485):
             rval = False
-            print("{} is not a directory (given for Directory485).", self.Directory485)
+            print("{} is not a directory (given for Directory485).", self.__dir485)
         if not os.path.isdir(self.__dir405):
             rval = False
-            print("{} is not a directory (given for Directory405).", self.Directory405)
+            print("{} is not a directory (given for Directory405).", self.__dir405)
         if not os.path.isdir(self.__dirgrav):
             rval = False
-            print("{} is not a directory (given for DirectoryGrav).", self.DirectoryGrav)
+            print("{} is not a directory (given for DirectoryGrav).", self.__dirgrav)
         if not os.path.isdir(self.__dirout):
             rval = False
-            print("{} is not a directory (given for DirectoryOut).", self.DirectoryOut)
+            print("{} is not a directory (given for DirectoryOut).", self.__dirout)
     
         return rval
 

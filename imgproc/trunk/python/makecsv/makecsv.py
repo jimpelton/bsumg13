@@ -1,10 +1,11 @@
 
-import os
+# import os
 import argparse
 from ugDataFile import ugDataFile
 import ugDataReader
 import ugDataWriter
 import re
+import numpy as np
 
 def getArgs():
     """
@@ -51,14 +52,6 @@ def getArgs():
         return None
 
 
-
-
-
-
-
-
-
-
 def calculateRatios(values405, values485):
     """
     :param start405:
@@ -68,6 +61,7 @@ def calculateRatios(values405, values485):
     :param values485:
     :return:
     """
+    print("Calculating Ratios...")
     shortest = min(len(values405), len(values485))
     ratios_list = []
     for sampNum in range(shortest):
@@ -84,74 +78,6 @@ def calculateRatios(values405, values485):
 
 
 
-def getEgta(wellIdx):
-    cc = '0[0-3]|1[2-5]|2[4-7]|3[6-9]|4[8-9]|5[0-1]'  #co cul
-    mc = '0[4-7]|1[6-9]|2[8-9]|3[0-1]|4[0-3]|5[2-5]'  #mc-3t3
-    ml = '0[8-9]|1[0-1]|2[0-3]|3[2-5]|4[4-7]|5[6-9]'  #mlo-y4
-
-    wellIdx = str(wellIdx).zfill(2)
-    if re.match(cc, wellIdx):
-        return slice(72,76,1)
-    elif re.match(mc, wellIdx):
-        return slice(76,80,1)
-    elif re.match(ml, wellIdx):
-        return slice(80,84,1)
-    else:
-        return None
-
-def getIono(wellIdx):
-    cc = '^0[0-3]|1[2-5]|2[4-7]|3[6-9]|4[8-9]|5[0-1]$'  #co cul
-    mc = '^0[4-7]|1[6-9]|2[8-9]|3[0-1]|4[0-3]|5[2-5]$'  #mc-3t3
-    ml = '^0[8-9]|1[0-1]|2[0-3]|3[2-5]|4[4-7]|5[6-9]$'  #mlo-y4
-
-    wellIdx = str(wellIdx).zfill(2)
-    if re.match(cc, wellIdx):
-        return slice(60,64,1)
-    elif re.match(mc, wellIdx):
-        return slice(64,68,1)
-    elif re.match(ml, wellIdx):
-        return slice(68,72,1)
-    else:
-        return None
-
-def calculateConcentrations(ratios, val405, val485):
-    """
-    Calculate Ca+2 concentrations from calibration equation:
-                 (R-Rmin)
-      (Kd * Q) * --------
-                 (Rmax-R)
-
-    :param ratios: the well ratios on t=[0..tmax]
-    :param val405: 405 well values on t=[0..tmax]
-    :param val485: 485 well values on t=[0..tmax]
-    """
-    shortest = min(len(ratios), len(val405), len(val485))
-    Kd = 0.23  #dissosiation constant for indo-1 dye.
-    concs = []
-    for time in range(shortest):
-        well=0
-        Ca2_t = []
-        for r in ratios[time]:
-            if well >= 60:
-                break
-
-            egtaSlice = getEgta(well)
-            ionoSlice = getIono(well)
-
-            F405min = min(val405[time][egtaSlice]) 
-            F405max = max(val405[time][ionoSlice]) #should be Iono
-            F485min = min(val485[time][ionoSlice]) 
-            F485max = max(val485[time][egtaSlice]) #should be EGTA
-            Q = F485min / F485max
-            Rmin = F405min / F485min
-            Rmax = F405max / F485max
-
-            Ca2_t.append(Kd * Q * ((r - Rmin) / (Rmax - r)))
-            well+=1
-
-        concs.append(Ca2_t)
-    return concs
-
 
 
 
@@ -159,11 +85,6 @@ def main():
     args = getArgs()
     if not args:
         exit()
-
-    # if not sanitize(args):
-    #     exit()
-
-
 
     basedir485 = args.Directory485
     basedir405 = args.Directory405
@@ -185,7 +106,19 @@ def main():
 
     dw = ugDataWriter.ugDataWriter(dataFile)
     dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
-    dw.writeValues(dataFile.dirout() + 'conc.dat', concs)
+
+    dw.writeValues(dataFile.dirout()  + 'conc.dat', concs)
+
+    dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', F485MaxVals)
+    dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', F405MaxVals)
+    dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', F485MinVals)
+    dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', F405MinVals)
+    dw.writeValues(dataFile.dirout() + 'QVals.dat', QVals)
+    dw.writeValues(dataFile.dirout() + 'RminVals.dat', RminVals)
+    dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', RmaxVals)
+    dw.writeValues(dataFile.dirout() + 'NumVals.dat', NumVals)
+    dw.writeValues(dataFile.dirout() + 'DenVals.dat', DenVals)
+
 
 
     # wv485Name = outDir + 'wv485.dat'

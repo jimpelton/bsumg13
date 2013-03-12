@@ -35,20 +35,19 @@ class ugDataWriter:
 
         for i in range(len(gravList)):
             f.write('{0} {1}'.format(str(i), gravList[i]))
-            # f.write(' '.join(str(x) for x in gravList[i]))
             f.write('\n')
         f.close()
 
-    def writeCSVGravity(self,filename,gravList):
+    def writeCSVGravity(self, filename, gravList):
         print('Writing {} gravity values: {}'.format(len(gravList), filename))
-        with open(filename,'w') as filewriter:
-            cf=csv.writer(filewriter,delimiter=' ')
+        with open(filename, 'w') as filewriter:
+            cf=csv.writer(filewriter, delimiter=' ')
             for row in gravList:
                 cf.writerow(row)
 
     def writeCSVValues(self, filename, valuesList):
         print('Writing {} values: {}'.format(len(valuesList), filename))
-        with open(filename,'w') as filewriter:
+        with open(filename, 'w') as filewriter:
             cf=csv.writer(filewriter, deslimiter=' ')
             for row in valuesList:
                 cf.writerow(row)
