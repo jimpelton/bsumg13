@@ -3,13 +3,11 @@ __author__ = 'jim'
 import csv
 
 
-
-class ugDataWriter:
-
-    df=None
+class ugDataWriter():
+    df = None
 
     def __init__(self, dataFile):
-        df=dataFile
+        df = dataFile
 
         return
 
@@ -41,14 +39,14 @@ class ugDataWriter:
     def writeCSVGravity(self, filename, gravList):
         print('Writing {} gravity values: {}'.format(len(gravList), filename))
         with open(filename, 'w') as filewriter:
-            cf=csv.writer(filewriter, delimiter=' ')
+            cf = csv.writer(filewriter, delimiter=' ')
             for row in gravList:
                 cf.writerow(row)
 
     def writeCSVValues(self, filename, valuesList):
         print('Writing {} values: {}'.format(len(valuesList), filename))
         with open(filename, 'w') as filewriter:
-            cf=csv.writer(filewriter, deslimiter=' ')
+            cf = csv.writer(filewriter, deslimiter=' ')
             for row in valuesList:
                 cf.writerow(row)
 

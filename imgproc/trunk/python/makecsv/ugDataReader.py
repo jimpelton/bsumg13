@@ -1,20 +1,20 @@
 __author__ = 'jim'
 
 from math import sqrt
-import numpy as np
 
 
-class ugDataReader:
 
+
+class ugDataReader():
     # datafile
     df = None
 
-    values405=None
-    values485=None
-    valuesgrav=None
+    values405 = None
+    values485 = None
+    valuesgrav = None
 
     def __init__(self, datafile):
-        self.df=datafile
+        self.df = datafile
         return
 
     def update(self):
@@ -22,7 +22,7 @@ class ugDataReader:
         print("DataReader doing update.\n")
         self.readall(self.df)
 
-    def readall(self,df):
+    def readall(self, df):
         # len=df.length()
         self.values405 = self.read405Files_reversed(df.fileNames("405"))
         self.values485 = self.read485Files(df.fileNames("485"))
@@ -41,7 +41,7 @@ class ugDataReader:
         timeIdx = 0
         basedir = self.df.dir405()
         for f in files405_list:
-            thisfile = open(basedir+f)
+            thisfile = open(basedir + f)
             lines = thisfile.readlines()
             thisfile.close()
             values405_list.append([])

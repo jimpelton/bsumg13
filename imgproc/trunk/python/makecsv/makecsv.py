@@ -1,11 +1,13 @@
+__author__ = 'jim'
 
-# import os
+
 import argparse
-from ugDataFile import ugDataFile
+import conc
 import ugDataReader
 import ugDataWriter
-import re
-import numpy as np
+from ugDataFile import ugDataFile
+# import numpy as np
+
 
 def getArgs():
     """
@@ -77,10 +79,6 @@ def calculateRatios(values405, values485):
     return ratios_list
 
 
-
-
-
-
 def main():
     args = getArgs()
     if not args:
@@ -102,62 +100,22 @@ def main():
     slice405 = dataReader.valuesList("405")
     slice485 = dataReader.valuesList("485")
     ratios = calculateRatios(slice405, slice485)
-    concs = calculateConcentrations(ratios, slice405, slice485)
+    concs = conc.calculateConcentrations(ratios, slice405, slice485)
 
+    # write data files
     dw = ugDataWriter.ugDataWriter(dataFile)
+
     dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
-
-    dw.writeValues(dataFile.dirout()  + 'conc.dat', concs)
-
-    dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', F485MaxVals)
-    dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', F405MaxVals)
-    dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', F485MinVals)
-    dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', F405MinVals)
-    dw.writeValues(dataFile.dirout() + 'QVals.dat', QVals)
-    dw.writeValues(dataFile.dirout() + 'RminVals.dat', RminVals)
-    dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', RmaxVals)
-    dw.writeValues(dataFile.dirout() + 'NumVals.dat', NumVals)
-    dw.writeValues(dataFile.dirout() + 'DenVals.dat', DenVals)
-
-
-
-    # wv485Name = outDir + 'wv485.dat'
-    # wv405Name = outDir + 'wv405.dat'
-    # ratName = outDir + 'rat.dat'
-    # gravName = outDir + 'grav.dat'
-    # concName = outDir + 'conc.dat'
-
-    # dataPakStartName = 'DataPacket' + start + '.txt'
-    # cam405StartName = 'DataCamera405nm' + start + '.raw.txt'
-    # cam485StartName = 'DataCamera485nm' + start + '.raw.txt'
-
-
-
-    #long list of 96-element lists (one line per data file)
-    # gravities = imgproc.readGravityFiles(gravDir)
-    # values405 = imgproc.read405Files(basedir405, files405)
-    # values485 = imgproc.read485Files(basedir485, files485)
-
-    #make sure end is appropriate.
-    # endint     = int(end)
-    # startint   = int(start)
-    # if endint <= startint:
-    #     endint = min(len(gravities), len(values405), len(values485))
-    # nFiles = dataFile.length()
-
-
-    #slice out the values we want to calculate.
-    # slice405 = values405[st405:st405+nFiles]
-    # slice485 = values485[st485:st485+nFiles]
-    # slicegrav = gravities[gSt:gSt+nFiles]
-
-
-
-    # writeValues(wv405Name, slice405)
-    # writeValues(wv485Name, slice485)
-    # writeValues(ratName, ratios)
-    # writeValues(concName, concs)
-    # writeGravity(gravName, slicegrav)
+    dw.writeValues(dataFile.dirout() + 'conc.dat', concs)
+    dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', conc.F485MaxVals)
+    dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', conc.F405MaxVals)
+    dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', conc.F485MinVals)
+    dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', conc.F405MinVals)
+    dw.writeValues(dataFile.dirout() + 'QVals.dat', conc.QVals)
+    dw.writeValues(dataFile.dirout() + 'RminVals.dat', conc.RminVals)
+    dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', conc.RmaxVals)
+    dw.writeValues(dataFile.dirout() + 'NumVals.dat', conc.NumVals)
+    dw.writeValues(dataFile.dirout() + 'DenVals.dat', conc.DenVals)
 
 if __name__ == '__main__':
     main()
