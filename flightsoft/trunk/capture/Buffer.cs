@@ -8,7 +8,7 @@ namespace uGCapture
     /// <summary>
     /// Simple generically typed buffer.
     /// </summary>
-    class Buffer<T>
+    public class Buffer<T>
     {
 
         public int NumElements
@@ -22,7 +22,6 @@ namespace uGCapture
             get { return m_data; }
         }
 
-        private  Buffer() { }
         /// <summary>
         /// Makes a buffer of nElements elements.
         /// Number of bytes of this buffer = nElements*sizeof(T).
@@ -35,7 +34,7 @@ namespace uGCapture
 
         /// <summary>
         /// Copies the data from buff into this 
-        /// buffers data array.
+        /// buffer's data array.
         /// </summary>
         /// <param name="buff">Original buffer</param>
         public Buffer(Buffer<T> buff)

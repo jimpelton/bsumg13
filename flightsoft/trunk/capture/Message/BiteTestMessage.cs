@@ -5,14 +5,14 @@ using System.Text;
 
 namespace uGCapture
 {
-    class BiteTestMessage : Message
+    public class BiteTestMessage : Message
     {
         public BiteTestMessage(Receiver s)
             : base(s) { ; }
 
         public override void execute(Receiver r)
         {
-            r.exBiteTest(r);
+            r.exBiteTest(r, this);
         }
     }
 }

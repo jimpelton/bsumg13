@@ -6,7 +6,7 @@ using System.Text;
 
 namespace uGCapture
 {
-    class NIController : Receiver
+    public class NIController : Receiver, IController
     {
     }
 }

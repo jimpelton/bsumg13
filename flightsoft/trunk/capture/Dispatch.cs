@@ -5,9 +5,15 @@ using System.Text;
 
 namespace uGCapture
 {
-    struct ReceiverDudes{
-        Receiver dude;
-        string id;
+    public class ReceiverDudes{
+        public Receiver dude;
+        public string id;
+        public ReceiverDudes(Receiver dude, string id)
+        {
+            this.dude = dude;
+            this.id = id;
+        }
+
     }
     /// <summary>
     /// Maintains a list of Receivers and a Queue of Messages to send to those
@@ -16,7 +22,7 @@ namespace uGCapture
     /// register with the Dispatch singleton. It will then receive any broadcasts
     /// given to the Dispatch in the same order the Dispatch has received them.
     /// </summary>
-    class Dispatch
+    public class Dispatch
     {
         private Queue<Message> mesWait;
         private Dictionary<string, ReceiverDudes> receivers;
@@ -44,7 +50,8 @@ namespace uGCapture
         /// <param name="id">The id of the dude.</param>
         public void Register(Receiver r, string id)
         {
-            throw new NotImplementedException("Register(Receiver,string) not implemented yet.");
+            ReceiverDudes rd = new ReceiverDudes(r, id);
+            receivers.Add(id, rd);
         }
 
         /// <summary>
@@ -53,26 +60,53 @@ namespace uGCapture
         /// <param name="id">The id of the dude to remove.</param>
         public void Remove(string id)
         {
-            throw new NotImplementedException("Remove(string) not implemented yet.");
+            receivers.Remove(id);
         }
-
+        
         /// <summary>
         /// Broadcast this message to all known receivers.
         /// </summary>
         /// <param name="m"></param>
         public void Broadcast(Message m)
         {
-            throw new NotImplementedException("Broadcast(Message) not implemented yet");
+            lock (mesWait)
+            {
+                mesWait.Enqueue(m);
+            }
         }
+
+        public void BroadcastLog(Receiver sender, string message, int severity)
+        {
+            Broadcast
+            (
+                new LogMessage(sender, message, severity)
+            );
+        }
+
+        private void deliver()
+        {
+            foreach (ReceiverDudes r in receivers.Values)
+            {
+                foreach (Message m in mesWait)
+                {
+                    r.dude.accept(m);
+                }
+            }
+
+        }
+
         /// <summary>
         /// Broadcast Message m to receiver specified by string.
         /// </summary>
         /// <param name="m">The message to broadcast.</param>
         /// <param name="receiverId">The receiver of the message.</param>
-        public void Broadcast(Message m, string receiverId)
-        {
-            throw new NotImplementedException("Broadcast(Message,string) not implemented yet");
-        }
+        //public void Broadcast(Message m, string receiverId)
+        //{
+        //    singleReceiverBroadcastMutex.WaitOne(TimeSpan.FromMilliseconds(100.0));
+        //    Receiver r = receivers[receiverId].dude;
+        //    r.accept(m);
+        //    singleReceiverBroadcastMutex.ReleaseMutex();
+        //}
  
 
     }

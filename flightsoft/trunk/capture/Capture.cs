@@ -11,38 +11,44 @@ namespace uGCapture
     public class CaptureClass : Receiver
     {       
         
-        public static Queue<LogMessage> DebugMessages = null;
-      
-        PhidgetsController phidgetsController = null;
-        NIController niController = null;
-        UPSController upsController = null;
-        VCommController vCommController = null;
+        private Queue<Message> messages;
+        private Dispatch dispatch;
+        private Receiver[] controllers;
+
+        //PhidgetsController phidgetsController = null;
+        //NIController niController = null;
+        //UPSController upsController = null;
+        //VCommController vCommController = null;
 
         public CaptureClass()
         {
-            if (DebugMessages == null)
-            {
-                DebugMessages = new Queue<LogMessage>();
-            }
+            messages = new Queue<Message>();
 
-            phidgetsController = new PhidgetsController();
-            niController = new NIController();
-            upsController = new UPSController();
-            vCommController = new VCommController();
+            dispatch = Dispatch.Instance();
+            controllers = new Receiver[4];
+            controllers[0] = new PhidgetsController();
+            controllers[1] = new NIController();
+            controllers[2] = new UPSController();
+            controllers[3] = new VCommController();
         }
 
-        public static void LogDebugMessage(String s)
+        public void LogDebugMessage(String s)
         {
             LogDebugMessage(s, 0);
         }
 
-        public static void LogDebugMessage(String s, int severtity)
+        public void LogDebugMessage(String s, int severtity)
         {
-            if (DebugMessages != null)
-            {
-                LogMessage l = new LogMessage(s, severtity);
-                DebugMessages.Enqueue(l);
-            }
+            Dispatch.Instance().Broadcast
+            (
+                new LogMessage(this, s, severtity)
+            );
+
+            ////if (DebugMessages != null)
+            ////{
+            //    //LogMessage l = new LogMessage(this, s, severtity);
+            //    //DebugMessages.Enqueue(l);
+            //}
         }
 
 

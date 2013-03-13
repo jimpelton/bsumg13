@@ -47,6 +47,8 @@
     <Compile Include="Buffer.cs" />
     <Compile Include="BufferPool.cs" />
     <Compile Include="Capture.cs" />
+    <Compile Include="Controller\AptinaController.cs" />
+    <Compile Include="Controller\IController.cs" />
     <Compile Include="Dispatch.cs" />
     <Compile Include="Message\BiteTestMessage.cs" />
     <Compile Include="Message\LogMessage.cs" />

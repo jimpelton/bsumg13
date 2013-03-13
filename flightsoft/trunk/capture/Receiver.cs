@@ -1,87 +1,67 @@
 ﻿using System;
+using System.Collections.Generic;
 namespace uGCapture
 {
 
-    //class Sender
-    //{
-    //    Sender() { /* empty (for now) */ }
-    //}
-
     public abstract class Receiver
     {
+        protected Queue<Message> msgs;
+        protected Dispatch dp;
+        
+        /// <summary>
+        /// True if this Receiver is currently receiving messages.
+        /// </summary>
+        public bool Receiving
+        {
+            get;
+            set;
+        }
+        private bool receiving = false;
+
+        public Receiver()
+        {
+            msgs = new Queue<Message>();
+            dp = Dispatch.Instance();
+        }
+
+        /// <summary>
+        /// Accept the message and put it in the execution queue.
+        /// </summary>
+        /// <param name="m">the message being delivered.</param>
+        public void accept(Message m)
+        {
+            msgs.Enqueue(m);
+        }
+
+        
 
         /// <summary>
         /// Any receiver that should respond to the Bite test message should
         /// override this method.
-        /// This method should generate a BiteTestResultMessage, however the default behavior 
+        ///
+        /// This method could generate a BiteTestResultMessage, however the default behavior 
         /// is to do nothing.
         /// </summary>
-        /// <param name="r"></param>
-        public virtual void exBiteTest(Receiver r) { ; }
+        public virtual void exBiteTest(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Generate a PhidgetsStatusMessage
-        /// Default behavior is to do nothing.
         /// </summary>
-        /// <param name="r"></param>
-        public virtual void exPhidgetsStatus(Receiver r) { ; }
+        public virtual void exPhidgetsStatus(Receiver r, Message m) { ; }
 
         /// <summary>
-        /// Generate an AptinaStatusMessage
-        /// Default behavior is to do nothing.
+        /// Act upon given AptinaStatusMessage
         /// </summary>
-        /// <param name="r"></param>
-        public virtual void exAptinaStatus(Receiver r) { ; }
+        public virtual void exAptinaStatus(Receiver r, Message m) { ; }
+
+        /// <summary>
+        /// Act on given LogMessage.
+        /// </summary>
+        public void exLogMessage(Receiver r, Message m) { ; }
 
         public override string ToString()
         {
             return "Base Receiver";
         }
     }
-
-    //class PhidgetsAccelAccessor : Receiver
-    //{
-
-    //    public override void exPhidgetsStatus(Receiver r)
-    //    {
-    //        Console.WriteLine("status: " + this);
-    //        //base.exPhidgetsStatus(r);
-    //    }
-
-    //    public override void exBiteTest(Receiver r)
-    //    {
-    //        //respond in some way to bite test command.
-    //        Console.WriteLine("BiteTest: " + this);
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return "PhidgetsAccelAccessor";
-    //    }
-
-    //}
-
-    //class AptinaAccessor : Receiver
-    //{
-
-    //    public override void exAptinaStatus(Receiver r)
-    //    {
-    //        Console.WriteLine("status: " + this);   
-    //    }
-
-    //    public override void exBiteTest(Receiver r)
-    //    {
-    //        //respond in some way to bite test command.
-    //        Console.WriteLine("BiteTest: " + this);
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return "AptinaAccessor";
-    //    }
-    //}
-
-
-
-
 }

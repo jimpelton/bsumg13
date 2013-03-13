@@ -10,7 +10,7 @@ namespace uGCapture
     /// to keep track of empty and full buffers, respectively.
     /// The BufferPool parameter type must be a value type.
     /// </summary>
-    class BufferPool<T>  
+    public class BufferPool<T>  
         where T : struct
     {
         private Queue<Buffer<T>> fullBufs;

@@ -8,7 +8,7 @@ using Phidgets.Events;
 
 namespace uGCapture
 {
-    public class PhidgetsController : Receiver
+    public class PhidgetsController : Receiver, IController
     {
 
         private Accelerometer     accelCapture       = null;
@@ -27,25 +27,40 @@ namespace uGCapture
 
         public PhidgetsController()
         {
+            dp.BroadcastLog(this, "Phidgets starting up...", 1);
+
             vibration = new double[3];
             acceleration = new double[3];
             digitalInputs = new bool[8];
             analogInputs = new int[8];
-            CaptureClass.LogDebugMessage("Phidgets starting up...", 1);
 
-            try
-            {
+            openAccel1();
+            openTempSenser();
+            openDAQ();
+        }
 
-                accelFiltered = new Accelerometer();
-                accelFiltered.open();
-                CaptureClass.LogDebugMessage("Waiting for accelerometer 1 to be found", 0);
-                accelFiltered.waitForAttachment();
-                CaptureClass.LogDebugMessage("Accelerometer 1 found", 0);
-                accelFiltered.Attach += new AttachEventHandler(accel_Attach);
-                accelFiltered.Detach += new DetachEventHandler(Sensor_Detach);
-                accelFiltered.Error += new ErrorEventHandler(Sensor_Error);
-                accelFiltered.AccelerationChange += new AccelerationChangeEventHandler(accel_AccelerationChangeAcc);
+        private void openAccel1()
+        {
+                try
+                {
+                    dp.BroadcastLog(this, "Waiting for accelerometer 1 to be found", 0);
+                    accelFiltered = new Accelerometer();
+                    accelFiltered.open();
+                    accelFiltered.waitForAttachment();
+                    accelFiltered.Attach += new AttachEventHandler(accel_Attach);
+                    accelFiltered.Detach += new DetachEventHandler(Sensor_Detach);
+                    accelFiltered.Error += new ErrorEventHandler(Sensor_Error);
+                    accelFiltered.AccelerationChange += 
+                        new AccelerationChangeEventHandler(accel_AccelerationChangeAcc);
 
+                    dp.BroadcastLog(this, "Accelerometer 1 found", 0);
+                }
+                catch (PhidgetException ex)
+                {
+                    dp.BroadcastLog(this, 
+                        String.Format("Error waiting for Acceler-o-meter: %s", ex.Description), 
+                        100);	
+                }
                 
                 //accelCapture = new Accelerometer();
                 //accelCapture.open();
@@ -56,19 +71,44 @@ namespace uGCapture
                 //CaptureClass.LogDebugMessage("Waiting for accelerometer 2 to be found", 0);
                 //accelCapture.waitForAttachment(100000);
                 //CaptureClass.LogDebugMessage("Accelerometer 2 found", 0);
+        }
 
+        private void openTempSenser()
+        {
+            try
+            {
+                dp.BroadcastLog(this, "Searching for temperature sensor", 0);
                 phidgetTemperature = new TemperatureSensor();
                 phidgetTemperature.open();
-                CaptureClass.LogDebugMessage("Waiting for Temperature Sensor to be found", 0);
+
                 phidgetTemperature.waitForAttachment();
-                CaptureClass.LogDebugMessage("Temperature Sensor found", 0);
+
                 phidgetTemperature.Attach += new AttachEventHandler(tempSensor_Attach);
                 phidgetTemperature.Detach += new DetachEventHandler(Sensor_Detach);
                 phidgetTemperature.Error += new ErrorEventHandler(Sensor_Error);
-                phidgetTemperature.TemperatureChange += new TemperatureChangeEventHandler(tempSensor_TemperatureChange);
+                phidgetTemperature.TemperatureChange += 
+                    new TemperatureChangeEventHandler(tempSensor_TemperatureChange);
 
                 phidgetTemperature.thermocouples[0].Sensitivity = 0.02;
 
+                dp.BroadcastLog(this, "Temperature Sensor found", 0);
+            }
+            catch (PhidgetException ex)
+            {
+                dp.BroadcastLog
+                    (
+                        this,
+                        String.Format("Error waiting for temperature sensor: %s", ex.Description), 
+                        100
+                    );
+            }
+        }
+
+        private void openDAQ()
+        {
+            try
+            {
+                dp.BroadcastLog(this, "Searching for 1018 ", 0);
                 phidgets1018 = new InterfaceKit();
                 phidgets1018.open();
                 phidgets1018.Attach += new AttachEventHandler(ifKit_Attach);
@@ -78,45 +118,45 @@ namespace uGCapture
                 phidgets1018.InputChange += new InputChangeEventHandler(ifKit_InputChange);
                 phidgets1018.OutputChange += new OutputChangeEventHandler(ifKit_OutputChange);
                 phidgets1018.SensorChange += new SensorChangeEventHandler(ifKit_SensorChange);
-                
-                CaptureClass.LogDebugMessage("Waiting for 1018 to be found", 0);
+
                 phidgets1018.waitForAttachment(100000);
-                CaptureClass.LogDebugMessage("1018 found", 0);
-
-
-
+                dp.BroadcastLog(this, "1018 found", 0);
             }
             catch (PhidgetException ex)
-            {
-                CaptureClass.LogDebugMessage("Error (startup catch) " + ex.Description, 6);             
+            {                dp.BroadcastLog(this, String.Format("Error opening Phidgets DAQ %s", ex.Description), 6);    
             }
         }
 
+
         void Sensor_Detach(object sender, DetachEventArgs e)
         {
-            Phidget phid = (Phidget)sender;
-            CaptureClass.LogDebugMessage("" + phid.Name + " Detached", 5);
+            Phidget phid = sender as Phidget;
+            if (phid == null) return;
+            dp.BroadcastLog(this, String.Format("%s Detached", phid.Name), 5);
         }
 
         void Sensor_Error(object sender, ErrorEventArgs e)
         {
-            Phidget phid = (Phidget)sender;
-            CaptureClass.LogDebugMessage("" + phid.Name + " Error", 5);
+            Phidget phid = sender as Phidget;
+            if (phid == null) return;
+            
+            dp.BroadcastLog(this, String.Format("%s Error: %s", phid.Name, e.Description), 5);
         }
 
         void accel_Attach(object sender, AttachEventArgs e)
         {
-            Accelerometer attached = (Accelerometer)sender;
-
-
+            Accelerometer attached = sender as Accelerometer;
+            if (attached == null) return;
             try
             {
-            attached.axes[0].Sensitivity = 0;
-            attached.axes[1].Sensitivity = 0;
-            attached.axes[2].Sensitivity = 0;                       }
+                attached.axes[0].Sensitivity = 0;
+                attached.axes[1].Sensitivity = 0;
+                attached.axes[2].Sensitivity = 0;
+            }
             catch (PhidgetException ex)
             {
-                CaptureClass.LogDebugMessage("Error while attaching accelerometer", 5);
+                dp.BroadcastLog(this, 
+                    String.Format("Error while attaching accelerometer: %s", ex.Description), 5);
             }
         }
 
@@ -143,7 +183,7 @@ namespace uGCapture
                 phidgetTemperature_ProbeTemp = e.Temperature;
 
             //debug
-            CaptureClass.LogDebugMessage("Temperature Changed! "+e.Temperature, 2);
+            dp.BroadcastLog(this, String.Format("OMG OMG! Temperature Changed! %f", e.Temperature), 2);
         }
 
         void ifKit_Attach(object sender, AttachEventArgs e)

@@ -2,7 +2,7 @@
 
 namespace uGCapture
 {
-    abstract class Message
+    public abstract class Message
     {
         private Receiver m_source;
         public Receiver Source

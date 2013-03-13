@@ -10,12 +10,12 @@ namespace gui
     {
         private SeverityColor() { }
 
-        static int BLACK    = 0;    /* no severity */      
-        static int BLUE     = 1;     
-        static int VIOLET   = 2;    /* somewhat severe*/
-        static int YELLOW   = 3;
-        static int RED      = 4;
-        static int ORANGE   = 5;    /* hair on fire */
+        public static int BLACK = 0;    /* no severity */
+        public static int BLUE = 1;
+        public static int VIOLET = 2;    /* somewhat severe*/
+        public static int YELLOW = 3;
+        public static int RED = 4;
+        public static int ORANGE = 5;    /* hair on fire */
 
         private static Color[] severityColors = 
         {
@@ -29,16 +29,26 @@ namespace gui
 
         /// <summary>
         /// Get the color which matches given severity index.
+        /// If color > the highest severity level, return the color representing
+        /// the max severity. Otherwise return the requested color. If color is
+        /// less than 0 then returns the color representing the lowest severity level.
         /// </summary>
-        /// <param name="color"></param>
-        /// <returns></returns>
+        /// <param name="color">The severity level (1-5)</param>
+        /// <returns>A System.Drawing.Color for the given severity.</returns>
         public static Color GetColor(int color)
         {
+            Color c = severityColors[0];
+
             if (color > 0 && color < severityColors.Length)
             {
-                return severityColors[color];
+                c = severityColors[color];
             }
-            return severityColors[0];
+            else if (color > severityColors.Length)
+            {
+                c = severityColors.Last();
+            }
+
+            return c;
         }
     }
 }

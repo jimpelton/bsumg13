@@ -5,14 +5,14 @@ using System.Text;
 
 namespace uGCapture
 {
-    class PhidgetsStatusMessage : Message
+    public class PhidgetsStatusMessage : Message
     {
         PhidgetsStatusMessage(Receiver s)
             : base(s) { ; }
 
         public override void execute(Receiver r)
         {
-            r.exPhidgetsStatus(r);
+            r.exPhidgetsStatus(r, this);
         }
     }
 }
