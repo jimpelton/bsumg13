@@ -2,26 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using uGCapture.Message;
 
 namespace uGCapture
 {
-    public class LogMessage /*: Message*/
+    public class LogMessage : Message
     {
 
         public long time;
         public String message;
         public int severity;
 
-        public LogMessage(String m)
+        public LogMessage(Receiver sender, String m) : base(sender)
         {
-            time = System.DateTime.Now.Ticks;
+            time = DateTime.Now.Ticks;
             message = m;
             severity = 0;
         }
 
-        public LogMessage(String m, int s) 
+        public LogMessage(Receiver sender, String m, int s) : base(sender)
         {
-            time = System.DateTime.Now.Ticks;
+            time = DateTime.Now.Ticks;
             message = m;
             severity = s;
         }
