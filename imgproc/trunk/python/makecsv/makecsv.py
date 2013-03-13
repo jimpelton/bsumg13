@@ -1,12 +1,11 @@
 __author__ = 'jim'
 
-
 import argparse
 import conc
 import ugDataReader
 import ugDataWriter
 from ugDataFile import ugDataFile
-# import numpy as np
+
 
 
 def getArgs():
@@ -100,22 +99,23 @@ def main():
     slice405 = dataReader.valuesList("405")
     slice485 = dataReader.valuesList("485")
     ratios = calculateRatios(slice405, slice485)
-    concs = conc.calculateConcentrations(ratios, slice405, slice485)
-
+    cars = conc.calculateConcentrations(ratios, slice405, slice485)
+    
     # write data files
     dw = ugDataWriter.ugDataWriter(dataFile)
-
+    
     dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
-    dw.writeValues(dataFile.dirout() + 'conc.dat', concs)
-    dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', conc.F485MaxVals)
-    dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', conc.F405MaxVals)
-    dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', conc.F485MinVals)
-    dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', conc.F405MinVals)
-    dw.writeValues(dataFile.dirout() + 'QVals.dat', conc.QVals)
-    dw.writeValues(dataFile.dirout() + 'RminVals.dat', conc.RminVals)
-    dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', conc.RmaxVals)
-    dw.writeValues(dataFile.dirout() + 'NumVals.dat', conc.NumVals)
-    dw.writeValues(dataFile.dirout() + 'DenVals.dat', conc.DenVals)
+    dw.writeValues(dataFile.dirout() + 'cars.dat', cars.Concs)
+    dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', cars.F485MaxVals)
+    dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', cars.F405MaxVals)
+    dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', cars.F485MinVals)
+    dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', cars.F405MinVals)
+    dw.writeValues(dataFile.dirout() + 'QVals.dat', cars.QVals)
+    dw.writeValues(dataFile.dirout() + 'RminVals.dat', cars.RminVals)
+    dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', cars.RmaxVals)
+    dw.writeValues(dataFile.dirout() + 'NumVals.dat', cars.NumVals)
+    dw.writeValues(dataFile.dirout() + 'DenVals.dat', cars.DenVals)
+
 
 if __name__ == '__main__':
     main()

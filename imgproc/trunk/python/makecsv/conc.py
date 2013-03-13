@@ -1,19 +1,7 @@
 __author__ = 'jim'
 
 from re import match
-
-
-# concentration stats
-QVals = [[]]
-RminVals = [[]]
-RmaxVals = [[]]
-F405MinVals = [[]]
-F485MinVals = [[]]
-F405MaxVals = [[]]
-F485MaxVals = [[]]
-NumVals = [[]]
-DenVals = [[]]
-Concs = [[]]
+import numpy as np
 
 
 def calculateConcentrations(ratios, val405, val485):
@@ -30,7 +18,7 @@ def calculateConcentrations(ratios, val405, val485):
     print("Calculating Concentrations...")
     shortest = min(len(ratios), len(val405), len(val485))
     Kd = 0.23  # dissosiation constant for indo-1 dye.
-
+    carrs = concArrays()
     for time in range(shortest):
         well = 0
         for r in ratios[time]:
@@ -50,33 +38,20 @@ def calculateConcentrations(ratios, val405, val485):
             numval = r - Rmin
             denval = Rmax - r
 
-            QVals[time].append(Q)
-            RminVals[time].append(Rmin)
-            RmaxVals[time].append(Rmax)
-            F405MinVals[time].append(F405min)
-            F485MinVals[time].append(F485min)
-            F405MaxVals[time].append(F405max)
-            F485MaxVals[time].append(F485max)
-            NumVals[time].append(numval)
-            DenVals[time].append(denval)
-            Concs[time].append(Kd * Q * ((r - Rmin) / (Rmax - r)))
-            _appendList()
+            carrs.QVals[time][well] = Q
+            carrs.RminVals[time][well] = Rmin
+            carrs.RmaxVals[time][well] = Rmax
+            carrs.F405MinVals[time][well] = F405min
+            carrs.F485MinVals[time][well] = F485min
+            carrs.F405MaxVals[time][well] = F405max
+            carrs.F485MaxVals[time][well] = F485max
+            carrs.NumVals[time][well] = numval
+            carrs.DenVals[time][well] = denval
+            carrs.Concs[time][well] = Kd * Q * ((r - Rmin) / (Rmax - r))
+
             well += 1
 
-    return Concs
-
-
-def _appendList():
-    QVals.append([])
-    RminVals.append([])
-    RmaxVals.append([])
-    F405MinVals.append([])
-    F485MinVals.append([])
-    F405MaxVals.append([])
-    F485MaxVals.append([])
-    NumVals.append([])
-    DenVals.append([])
-    Concs.append([])
+    return carrs
 
 
 def getEgta(wellIdx):
@@ -110,3 +85,17 @@ def getIono(wellIdx):
     else:
         return None
 
+
+class concArrays():
+    def __init__(self):
+        # concentration stats
+        self.QVals = np.zeros((7526, 60), dtype=np.float64)
+        self.RminVals = np.zeros((7526, 60), dtype=np.float64)
+        self.RmaxVals = np.zeros((7526, 60), dtype=np.float64)
+        self.F405MinVals = np.zeros((7526, 60), dtype=np.float64)
+        self.F485MinVals = np.zeros((7526, 60), dtype=np.float64)
+        self.F405MaxVals = np.zeros((7526, 60), dtype=np.float64)
+        self.F485MaxVals = np.zeros((7526, 60), dtype=np.float64)
+        self.NumVals = np.zeros((7526, 60), dtype=np.float64)
+        self.DenVals = np.zeros((7526, 60), dtype=np.float64)
+        self.Concs = np.zeros((7526, 60), dtype=np.float64)

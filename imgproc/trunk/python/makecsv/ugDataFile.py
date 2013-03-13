@@ -7,29 +7,22 @@ import re
 
 
 class ugDataFile:
-    __dir405 = ""
-    __dir485 = ""
-    __dirgrav = ""
-    __dirout = ""
-
-    __files405 = None
-    __files485 = None
-    __filesgrav = None
-
-    __startingIndex = 0
-    __endingIndex = 0
-
-    __needsUpdate = True
 
     def __init__(self, dir405, dir485, dirgrav, dirout):
         self.__dir405 = dir405
         self.__dir485 = dir485
         self.__dirgrav = dirgrav
         self.__dirout = dirout
+        self.__files405 = []
+        self.__files485 = []
+        self.__filesgrav = []
+        self.__startingIndex = 0
+        self.__endingIndex = 0
+        self.__shortest = 0
+        self.__needsUpdate = True
 
     def update(self):
         if self.__needsUpdate:
-
             if not self.__sanitize():
                 raise Exception("Bad input aieeee!")
 
@@ -38,7 +31,28 @@ class ugDataFile:
             self.__files485 = []
             self.__filesgrav = []
             self.__readNames()
+            self.__shortest = min(self.__files405, self.__files485, self.__filesgrav)
             self.__needsUpdate = False
+
+    def fileNames(self, typeString):
+        if typeString == "405":
+            return self.__files405
+        elif typeString == "485":
+            return self.__files485
+        elif typeString == "grav":
+            return self.__filesgrav
+        else:
+            return None
+
+    def fromTo(self, sIdx=0, eIdx=0):
+        if sIdx > eIdx:
+            temp = eIdx
+            sIdx = temp
+            eIdx = sIdx
+
+        self.__startingIndex = sIdx
+        self.__endingIndex = eIdx
+        self.__needsUpdate = True
 
     def __readNames(self):
         self.__filesgrav = os.listdir(self.__dirgrav)
@@ -146,25 +160,7 @@ class ugDataFile:
 
         return rval
 
-    def fileNames(self, typeString):
-        if typeString == "405":
-            return self.__files405
-        elif typeString == "485":
-            return self.__files485
-        elif typeString == "grav":
-            return self.__filesgrav
-        else:
-            return None
 
-    def fromTo(self, sIdx=0, eIdx=0):
-        if sIdx > eIdx:
-            temp = eIdx
-            sIdx = temp
-            eIdx = sIdx
-
-        self.__startingIndex = sIdx
-        self.__endingIndex = eIdx
-        self.__needsUpdate = True
 
     def sIdx(self):
         return self.__startingIndex

@@ -1,21 +1,26 @@
 __author__ = 'jim'
 
 from math import sqrt
+from ugDataFile import ugDataFile
 
+import numpy as np
 
+NUM_WELLS = 96
 
 
 class ugDataReader():
-    # datafile
-    df = None
+    def __init__(self, datafile=None):
 
-    values405 = None
-    values485 = None
-    valuesgrav = None
+        if datafile is None:
+            self.df = None
+        else:
+            self.df = datafile
 
-    def __init__(self, datafile):
-        self.df = datafile
-        return
+        dflen = self.df.length()
+        self.values405 = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
+        self.values485 = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
+        self.valuesgrav = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
+
 
     def update(self):
         self.df.update()
@@ -23,42 +28,51 @@ class ugDataReader():
         self.readall(self.df)
 
     def readall(self, df):
-        # len=df.length()
-        self.values405 = self.read405Files_reversed(df.fileNames("405"))
-        self.values485 = self.read485Files(df.fileNames("485"))
-        self.valuesgrav = self.readGravityFiles(df.fileNames("grav"))
+        self._read405Files_reversed(df.fileNames("405"))
+        self._read485Files(df.fileNames("485"))
+        self._readGravityFiles(df.fileNames("grav"))
 
-    def read405Files_reversed(self, files405_list):
+    def valuesList(self, typeString):
+        if typeString == "405":
+            return self.values405
+        elif typeString == "485":
+            return self.values485
+        elif typeString == "grav":
+            return self.valuesgrav
+        else:
+            return None
+
+    def _read405Files_reversed(self, files405_list):
         """
         Read 405 files. Each file contains lines formated as: "well#:val".
+        Note: reverses the row.
         :param dir405: Path to 405 data files (expected to be sorted).
         :rtype : list of list
         """
-        print('Reading 405 files...'),
-        #files405_list = [f for f in os.listdir(dir405)]
-        #files405_list.sort()
-        values405_list = []
-        timeIdx = 0
+        print('Reading 405 files...')
         basedir = self.df.dir405()
+
+        timeIdx = 0
         for f in files405_list:
+            if timeIdx >= self.values405.shape[0]:
+                break
+
             thisfile = open(basedir + f)
             lines = thisfile.readlines()
             thisfile.close()
-            values405_list.append([])
 
+            colIdx = NUM_WELLS - 1
             for s in lines:
                 strs = s.split(':')
                 val = int(strs[1].strip())
-                values405_list[timeIdx].append(val)
+                self.values405[timeIdx][colIdx] = val
+                colIdx -= 1
 
-            #reverse to match the 485 well order
-            values405_list[timeIdx].reverse()
             timeIdx += 1
 
         print('{}'.format(timeIdx))
-        return values405_list
 
-    def read485Files(self, files485_list):
+    def _read485Files(self, files485_list):
         """
         Read in them 485 data files.
         Each file contains lines formatted as: "well#:val".
@@ -66,55 +80,50 @@ class ugDataReader():
         :param dir485:
         :return: list of lists of wells for each file.
         """
-        print('Reading 485 files...'),
-        #files485_list = [f for f in os.listdir(dir485)]
-        #files485_list.sort()
-        values485_list = []
-        timeIdx = 0
+        print('Reading 485 files...')
         basedir = self.df.dir485()
+
+        timeIdx = 0
         for f in files485_list:
+            if timeIdx >= self.values485.shape[0]:
+                break
+
             thisfile = open(basedir + f)
             lines = thisfile.readlines()
             thisfile.close()
-            values485_list.append([])
-
+            colIdx = 0
             for s in lines:
                 strs = s.split(':')
                 val = int(strs[1].strip())
-                values485_list[timeIdx].append(val)
-
+                self.values485[timeIdx][colIdx] = val
+                colIdx += 1
             timeIdx += 1
 
         print('{}'.format(timeIdx))
-        return values485_list
 
-    def readGravityFiles(self, gravityFiles):
+    def _readGravityFiles(self, gravityFiles):
         """
         :rtype : list
         :param gravityFiles: list of files
         :return:
         """
         print('Reading and calculating gravity vectors...')
-        gravity_list = []
+
         basedir = self.df.dirgrav()
+        timeIdx = 0
         for f in gravityFiles:
+            if timeIdx >= self.valuesgrav.shape[0]:
+                break
+
             thisfile = open(basedir + f)
             line = thisfile.readlines()[0]
             thisfile.close()
             xyzt = [float(i) for i in line.split(' ')]
             gMag = sqrt(xyzt[0] * xyzt[0] + xyzt[1] * xyzt[1] + xyzt[2] * xyzt[2])
-            gravity_list.append(gMag)
+            self.valuesgrav[timeIdx] = gMag
+            timeIdx += 1
 
-        print('{}'.format(len(gravity_list)))
-        return gravity_list
+        print('{}'.format(timeIdx))
 
-    def valuesList(self, type):
-        if type == "405":
-            return self.values405
-        elif type == "485":
-            return self.values485
-        elif type == "grav":
-            return self.valuesgrav
-        else:
-            return None
+
 
