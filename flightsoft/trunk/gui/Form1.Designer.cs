@@ -131,7 +131,6 @@
             // DebugUpdateTimer
             // 
             this.DebugUpdateTimer.Enabled = true;
-            this.DebugUpdateTimer.Interval = 1000;
             // 
             // Form1
             // 

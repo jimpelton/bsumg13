@@ -11,7 +11,7 @@ namespace gui
         private CaptureClass captureClass;
         private bool boolCapturing = false;
 
-        //TODO:        private GuiUpdater guiUpdater;
+        public GuiUpdater guiUpdater;
 
         private Form1 mainForm;
         public Form1 MainForm
@@ -26,7 +26,8 @@ namespace gui
 
        public void Startup_Init()
        {
-           captureClass = new CaptureClass();
+           guiUpdater = new GuiUpdater(mainForm);
+           captureClass = new CaptureClass();           
        }
 
        public void ToggleCapture()
@@ -46,6 +47,6 @@ namespace gui
        {
            mainForm.DebugOutput(s, col);
        }
-
+        
     }
 }

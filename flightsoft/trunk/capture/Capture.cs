@@ -3,34 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
+using System.Timers;
 using Phidgets;
 using Phidgets.Events;
 
 namespace uGCapture 
 {
     public class CaptureClass : Receiver
-    {       
+    {
+        private const int FRAME_TIME = 500;
         
         private Queue<Message> messages;
         private Dispatch dispatch;
         private Receiver[] controllers;
 
-        //PhidgetsController phidgetsController = null;
-        //NIController niController = null;
-        //UPSController upsController = null;
-        //VCommController vCommController = null;
+        private Timer ticker = null;
 
         public CaptureClass()
         {
             messages = new Queue<Message>();
 
             dispatch = Dispatch.Instance();
-            controllers = new Receiver[4];
+            controllers = new Receiver[7];
             controllers[0] = new PhidgetsController();
-            controllers[1] = new NIController();
-            controllers[2] = new UPSController();
-            controllers[3] = new VCommController();
+            controllers[1] = new AccelerometerController();
+            controllers[2] = new AccelerometerController();
+            controllers[3] = new NIController();
+            controllers[4] = new UPSController();
+            controllers[5] = new VCommController();
+            controllers[6] = new AptinaController();
+
+            
+            ticker = new Timer(FRAME_TIME);
+            ticker.Elapsed += new ElapsedEventHandler(DoFrame);
+            ticker.Enabled = true;
         }
+
+        public void DoFrame(object source, ElapsedEventArgs e)
+        {
+           
+        }
+
 
         public void LogDebugMessage(String s)
         {
@@ -43,12 +56,6 @@ namespace uGCapture
             (
                 new LogMessage(this, s, severtity)
             );
-
-            ////if (DebugMessages != null)
-            ////{
-            //    //LogMessage l = new LogMessage(this, s, severtity);
-            //    //DebugMessages.Enqueue(l);
-            //}
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 namespace uGCapture
 {
 
@@ -57,7 +58,7 @@ namespace uGCapture
         /// <summary>
         /// Act on given LogMessage.
         /// </summary>
-        public void exLogMessage(Receiver r, Message m) { ; }
+        public virtual void exLogMessage(Receiver r, Message m) { ; }
 
         public override string ToString()
         {

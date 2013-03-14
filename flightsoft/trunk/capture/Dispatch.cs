@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Timers;
 
 namespace uGCapture
 {
@@ -24,14 +25,20 @@ namespace uGCapture
     /// </summary>
     public class Dispatch
     {
+        private const int DISPATCH_INTERVAL = 100;
         private Queue<Message> mesWait;
         private Dictionary<string, ReceiverDudes> receivers;
+
+        private Timer ticker = null;
 
         private static Dispatch me=null;
         private Dispatch()
         {
             mesWait = new Queue<Message>();
             receivers = new Dictionary<string, ReceiverDudes>();
+            ticker = new Timer(DISPATCH_INTERVAL);
+            ticker.Elapsed += new ElapsedEventHandler(ProcessMessages);
+            ticker.Enabled = true;
         }
 
         public static Dispatch Instance()
@@ -83,6 +90,12 @@ namespace uGCapture
             );
         }
 
+        //we need to deliver the messages. At the moment it is bound to a timer. Should we do it this way?
+        private void ProcessMessages(object source, ElapsedEventArgs e)
+        {
+            deliver();
+        }
+
         private void deliver()
         {
             foreach (ReceiverDudes r in receivers.Values)
@@ -92,6 +105,8 @@ namespace uGCapture
                     r.dude.accept(m);
                 }
             }
+
+            mesWait.Clear();// after we send them out once lets not send them again.
 
         }
 

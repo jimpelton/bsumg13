@@ -12,16 +12,20 @@ namespace gui
     public partial class Form1 : Form
     {
         private GuiMain guiMain;
+        private GuiUpdater guiUpdater;
 
         public Form1()
         {
             InitializeComponent();
             guiMain = new GuiMain(this);
             guiMain.Startup_Init();
+            guiUpdater = guiMain.guiUpdater;
 
             Tab_Control_Main.SelectedIndex=4;
             //TODO: this updating should be handled externally to the form.
-            //DebugUpdateTimer.Tick += new EventHandler(grabCaptureDebugMessages);
+            //TODO: make an alternative thread-safe way to do this.
+            //it likes it when the timer is in here...
+            DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -39,14 +43,6 @@ namespace gui
             
         }
 
-        private void grabCaptureDebugMessages(object sender, EventArgs e)
-        {
-            //if (uGCapture.CaptureClass.DebugMessages.Count > 0)
-            //{
-            //    uGCapture.LogMessage l = uGCapture.CaptureClass.DebugMessages.Dequeue();
-            //    DebugOutput(l.message, l.severity);
-            //}
-        }
         public void DebugOutput(String s, int severity)
         {
             DebugOutput(s, SeverityColor.GetColor(severity));

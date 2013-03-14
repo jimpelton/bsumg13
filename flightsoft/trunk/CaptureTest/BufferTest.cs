@@ -7,8 +7,9 @@ namespace CaptureTest
     public class BufferTest
     {
         [TestMethod]
-        public void BufferTest()
+        public void BufferTest1()
         {
+
         }
  
     }
