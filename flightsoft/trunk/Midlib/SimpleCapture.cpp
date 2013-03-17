@@ -167,7 +167,7 @@ SimpleCapture::openTransport(int camIdx)
         m_camNM=m_cameraIdx;
     }
 
-    printShit(); //unprofessional, but accurate. 
+    //printShit(); //unprofessional, but accurate. 
 
     return 0;
 }
@@ -177,12 +177,12 @@ unsigned char *
 SimpleCapture::_doCapture()
 {
     char fname[30];
-    sprintf(fname, "Camera%d_%d.raw", m_camNM, m_nextFrameIdx++);
-    imfile = fopen(fname,"wb");
+    //sprintf(fname, "Camera%d_%d.raw", m_camNM, m_nextFrameIdx++);
+    //imfile = fopen(fname,"wb");
     //TODO: error checking for open file!
     // 
     //grabFrame 
-    printf("Grabbing frame: %s\n", fname);
+    //printf("Grabbing frame: %s\n", fname);
     for (frame = 0; frame < num_frames; frame++) {
         int    nRet;
         //mi_u8  tempByte;
@@ -195,10 +195,10 @@ SimpleCapture::_doCapture()
             return NULL;
         }
         memcpy(pCameraBuff, pGrabframeBuff, frameSize);
-        fwrite(pCameraBuff, frameSize, 1, imfile);
+        //fwrite(pCameraBuff, frameSize, 1, imfile);
     }
     printf("[done]\n");
-    fclose(imfile); 
+    //fclose(imfile); 
     return pCameraBuff;
 }
 
@@ -242,6 +242,10 @@ SimpleCapture::mallocate()
     return 0;
 }
 
+int SimpleCapture::getWavelength()
+{
+	return m_camNM;
+}
 
 void 
 SimpleCapture::printShit()

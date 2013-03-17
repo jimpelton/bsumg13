@@ -25,14 +25,13 @@ namespace uGCapture
 
             dispatch = Dispatch.Instance();
             controllers = new Receiver[7];
-            controllers[0] = new PhidgetsController();
-            controllers[1] = new AccelerometerController();
-            controllers[2] = new AccelerometerController();
-            controllers[3] = new NIController();
-            controllers[4] = new UPSController();
-            controllers[5] = new VCommController();
-            controllers[6] = new AptinaController();
-
+            controllers[0] = new NIController();
+            controllers[1] = new UPSController();
+            controllers[2] = new VCommController();
+            controllers[3] = new AptinaController();
+            controllers[4] = new PhidgetsController();
+            controllers[5] = new AccelerometerController();
+            controllers[6] = new AccelerometerController();
             
             ticker = new Timer(FRAME_TIME);
             ticker.Elapsed += new ElapsedEventHandler(DoFrame);

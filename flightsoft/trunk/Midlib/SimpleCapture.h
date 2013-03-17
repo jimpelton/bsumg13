@@ -69,6 +69,8 @@ public:
     SimpleCapture();
     ~SimpleCapture();
 
+	int getWavelength();
+
     /**
      *	\brief Open the midlib2 transport for the given camera index.
      *	
@@ -126,6 +128,16 @@ public:
     {
         return native_sc->openTransport(camidx);
     }
+
+	  /**
+	  *	\GIVE MEH TEH WABELENGHT
+	  */
+	int managed_GetWavelength()
+	{
+		return native_sc->getWavelength();
+	}
+
+
 
 	/**
 	  *	\brief CLR wrapper around sensorBufferSize().

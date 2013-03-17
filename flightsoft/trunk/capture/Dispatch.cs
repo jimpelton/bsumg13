@@ -96,18 +96,24 @@ namespace uGCapture
             deliver();
         }
 
-        private void deliver()
+        private void deliver()      
         {
-            foreach (ReceiverDudes r in receivers.Values)
+          //  try
             {
-                foreach (Message m in mesWait)
+                foreach (ReceiverDudes r in receivers.Values)
                 {
-                    r.dude.accept(m);
+                    foreach (Message m in mesWait)
+                    {
+                        r.dude.accept(m);
+                    }
                 }
+
+                mesWait.Clear();// after we send them out once lets not send them again.
             }
-
-            mesWait.Clear();// after we send them out once lets not send them again.
-
+          //  catch (IllegalOperationException e)
+            {
+                
+            }
         }
 
         /// <summary>
