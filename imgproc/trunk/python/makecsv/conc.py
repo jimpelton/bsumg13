@@ -4,16 +4,10 @@ from re import match
 import numpy as np
 
 
-def findRmin(ratios):
-    for i in range(ratios.shape[0]):
-        egtaRats = ratios[i][slice(60, 64, 1)]
-        ionoRats = ratios[i][slice(72, 76, 1)]
-
-    return
-
-
-
-
+def _concRmin(ratios):
+    """
+    Find the minimum ratio
+    """
 
 def calculateConcentrations(ratios, val405, val485):
     """

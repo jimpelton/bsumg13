@@ -1,7 +1,7 @@
 __author__ = 'jim'
 
 from math import sqrt
-from ugDataFile import ugDataFile
+import ugDataFile
 
 import numpy as np
 
@@ -25,9 +25,9 @@ class ugDataReader():
     def update(self):
         self.df.update()
         print("DataReader doing update.\n")
-        self.readall(self.df)
+        self._readall(self.df)
 
-    def readall(self, df):
+    def _readall(self, df):
         self._read405Files_reversed(df.fileNames("405"))
         self._read485Files(df.fileNames("485"))
         self._readGravityFiles(df.fileNames("grav"))
@@ -45,7 +45,8 @@ class ugDataReader():
     def _read405Files_reversed(self, files405_list):
         """
         Read 405 files. Each file contains lines formated as: "well#:val".
-        Note: reverses the row.
+        Note: adds to the row backwards, having a reversing effect, so that the
+            well patterns match that of the 485 well values.
         :param dir405: Path to 405 data files (expected to be sorted).
         :rtype : list of list
         """
@@ -103,6 +104,7 @@ class ugDataReader():
 
     def _readGravityFiles(self, gravityFiles):
         """
+        Read the gravity files and generate magnitudes of the gravity vectors.
         :rtype : list
         :param gravityFiles: list of files
         :return:

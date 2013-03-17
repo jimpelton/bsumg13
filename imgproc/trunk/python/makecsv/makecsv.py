@@ -52,6 +52,14 @@ def getArgs():
     else:
         return None
 
+def ccSlice(source):
+    """
+    Returns slice of 405 co-culture values.
+    """
+    w = range(96)
+    ccvals = source[w[0:4], w[12:16], w[24:28], w[36:40],
+                            w[48:52], w[60:64], w[72:76]]
+    return ccvals
 
 def calculateRatios(values405, values485):
     """
@@ -100,6 +108,8 @@ def main():
     slice485 = dataReader.valuesList("485")
     ratios = calculateRatios(slice405, slice485)
     cars = conc.calculateConcentrations(ratios, slice405, slice485)
+
+
     
     # write data files
     dw = ugDataWriter.ugDataWriter(dataFile)
@@ -119,35 +129,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-    # def sanitize(args):
-    #     """
-    #     Check the user given directories for existy-ness.
-    #     :param args: The args from a argparser
-    #     :return: true if all input checks out, false otherwise.
-    #     """
-    #     rval = True
-    #
-    #     try:
-    #         args.Directory485 = os.path.normpath(args.Directory485) + os.sep
-    #         args.Directory405 = os.path.normpath(args.Directory405) + os.sep
-    #         args.DirectoryGrav = os.path.normpath(args.DirectoryGrav) + os.sep
-    #         args.DirectoryOut = os.path.normpath(args.DirectoryOut) + os.sep
-    #     except :
-    #         return False
-    #
-    #     if not os.path.isdir(args.Directory485):
-    #         rval = False
-    #         print("{} is not a directory (given for Directory485).", args.Directory485)
-    #     if not os.path.isdir(args.Directory405):
-    #         rval = False
-    #         print("{} is not a directory (given for Directory405).", args.Directory405)
-    #     if not os.path.isdir(args.DirectoryGrav):
-    #         rval = False
-    #         print("{} is not a directory (given for DirectoryGrav).", args.DirectoryGrav)
-    #     if not os.path.isdir(args.DirectoryOut):
-    #         rval = False
-    #         print("{} is not a directory (given for DirectoryOut).", args.DirectoryOut)
-    #
-    #     return rval
