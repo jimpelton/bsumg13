@@ -98,7 +98,7 @@ namespace uGCapture
 
         private void deliver()      
         {
-          //  try
+          //  try // implement thread safety in all of this.
             {
                 foreach (ReceiverDudes r in receivers.Values)
                 {

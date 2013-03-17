@@ -29,8 +29,8 @@ namespace uGCapture
             ManagedSimpleCapture mansc1 = new ManagedSimpleCapture();
             ManagedSimpleCapture mansc2 = new ManagedSimpleCapture();
             
-            mansc1.managed_OpenTransport(0);
-            mansc2.managed_OpenTransport(1);
+            mansc1.managed_OpenTransport(1);
+            mansc2.managed_OpenTransport(0);
 
             AptinaController mysc1 = new AptinaController(mansc1);
             AptinaController mysc2 = new AptinaController(mansc2);
@@ -41,8 +41,6 @@ namespace uGCapture
             t1.Start();
             t2.Start();
 
-            t1.Join();
-            t2.Join();
 
             //wait for user to press a key, then stop.
             
@@ -96,11 +94,12 @@ namespace uGCapture
                 if (!running)
                 {
                     //me.mutex.ReleaseMutex();
-                    barrierCounter = 2 ^ 16;
+                    barrierCounter = 65536;
                     barrierSemaphore.Release(1);
                     return;
                 }
-                
+
+                me.dp.BroadcastLog(me, " " + me.nextIdx + " at " + DateTime.Now.Millisecond, 1);
 
                 unsafe 
                 {
@@ -113,7 +112,9 @@ namespace uGCapture
                     }
                     Marshal.Copy(new IntPtr(data), me.dest, 0, (int)me.size);
                     
-                    me.dp.BroadcastLog(me, "Wrote some datums.",1);
+                    //me.dp.BroadcastLog(me, "Wrote some datums at " + DateTime.Now.Millisecond,1);
+                
+               
                 };
                 File.WriteAllBytes(String.Format("data_{0}_{1}.raw",me.msc.managed_GetWavelength(), me.nextIdx++), me.dest);
             }
