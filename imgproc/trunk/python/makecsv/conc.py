@@ -16,9 +16,9 @@ def calculateConcentrations(ratios, val405, val485):
       (Kd * Q) * --------
                  (Rmax-R)
 
-    :param ratios: the well ratios on t=[0..tmax]
-    :param val405: 405 well values on t=[0..tmax]
-    :param val485: 485 well values on t=[0..tmax]
+    :param ratios: numpy array of the well ratios on t=[0..tmax]
+    :param val405: numpy array of 405 well values on t=[0..tmax]
+    :param val485: numpy array of 485 well values on t=[0..tmax]
     """
     print("Calculating Concentrations...")
     shortest = min(len(ratios), len(val405), len(val485))

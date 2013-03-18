@@ -4,6 +4,7 @@ import argparse
 import conc
 import ugDataReader
 import ugDataWriter
+import numpy as np
 from ugDataFile import ugDataFile
 
 
@@ -54,36 +55,39 @@ def getArgs():
 
 def ccSlice(source):
     """
-    Returns slice of 405 co-culture values.
+    Returns the co-culture values in a values array arranged as
+    one row of 96 columns
+    :param source: numpy array of 96 well values.
+    :return: one row of 20 columns of the values for the cc wells.
     """
     w = range(96)
     ccvals = source[w[0:4], w[12:16], w[24:28], w[36:40],
                             w[48:52], w[60:64], w[72:76]]
     return ccvals
 
+# def mcSlice(source):
+#     """
+#     Returns the mc values in source.
+#     """
+#     w = range(96)
+#
+
 def calculateRatios(values405, values485):
     """
-    :param start405:
+    Calculate the ratios of elements in values405 and values485.
+            ratios = values405/values485
+    :param values405: numpy array of 405 values
+    :param values485: numpy array of 485 values
     :rtype : list
-    :param smaller:
-    :param values405:
-    :param values485:
-    :return:
+    :return: An python list of rows of 96 wells for each time in values405 and values485.
     """
     print("Calculating Ratios...")
     shortest = min(len(values405), len(values485))
-    ratios_list = []
-    for sampNum in range(shortest):
-        samples405 = values405[sampNum]
-        samples485 = values485[sampNum]
-        if not (len(samples405) == 96 and len(samples485) == 96):
-            print('dadnamit, not both have 96 wells en im!')
-            exit()
-        ratios_list.append([])
-        for wellNum in range(96):
-            r = samples405[wellNum] / samples485[wellNum]
-            ratios_list[sampNum].append(r)
-    return ratios_list
+    rats = np.zeros((shortest, 96), dtype=np.float64)
+    for row in range(shortest):
+        for col in range(96):
+            rats[row][col] = values405[row][col] / values485[row][col]
+    return rats
 
 
 def main():
