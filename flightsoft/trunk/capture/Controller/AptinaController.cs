@@ -16,14 +16,22 @@ namespace uGCapture
         private int nextIdx=0;
         Mutex mutex;
         ManagedSimpleCapture msc;
+
         public static Semaphore barrierSemaphore;
         public static int barrierCounter;
+
         public AptinaController() 
         {
             barrierSemaphore = new Semaphore(0,2);
             barrierCounter = 0;
-            Int32 initResult = ManagedSimpleCapture.managed_InitMidLib(2);
-            
+            Int32 initResult = 1;// 1 is an error condition
+
+            //keep trying until it works.
+            do
+            {
+                initResult = ManagedSimpleCapture.managed_InitMidLib(2);           
+            } while (initResult!=0);
+
             dp.BroadcastLog(this, "initResult (success=0): " + initResult,1);
 
             ManagedSimpleCapture mansc1 = new ManagedSimpleCapture();
@@ -55,7 +63,7 @@ namespace uGCapture
         public AptinaController(ManagedSimpleCapture msc)
         {
             dp.BroadcastLog(this, "AptinaController starting up...", 1);
-            size = msc.managed_SensorBufferSize();
+            //size = msc.managed_SensorBufferSize();
             dest = new byte[size];
             mutex = new Mutex();
 
