@@ -17,6 +17,9 @@ namespace uGCapture
         private Dispatch dispatch;
         private Receiver[] controllers;
 
+        private BufferPool<Byte> StagingBuffer; 
+
+
         private Timer ticker = null;
 
         public CaptureClass()
@@ -57,9 +60,9 @@ namespace uGCapture
             );
         }
 
-
-
-
-
+        public Buffer GetEmptyBuffer()
+        {
+            
+        }
     }
 }

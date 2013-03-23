@@ -10,7 +10,7 @@ namespace uGCapture
     /// </summary>
     public class Buffer<T>
     {
-
+        private int capacityUtilization;
         public int NumElements
         {
             get { return m_data.Length; }
@@ -30,6 +30,7 @@ namespace uGCapture
         public Buffer(int nElements=1)
         {
             m_data = new T[nElements];
+            capacityUtilization = 0;
         }
 
         /// <summary>
@@ -46,6 +47,17 @@ namespace uGCapture
         public void resize(int nElem)
         {
             m_data = new T[nElem];
+            capacityUtilization = 0;
+        }
+
+        public int getUtilization()
+        {
+            return capacityUtilization;
+        }
+
+        public void setUtilization(int used)
+        {
+            capacityUtilization = used;
         }
     }
 }
