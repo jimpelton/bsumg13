@@ -10,16 +10,25 @@ namespace uGCapture
     /// </summary>
     public class Buffer<T>
     {
-        private int capacityUtilization;
+
         private BufferType type;
+        private T[] m_data;
 
         public int NumElements
         {
             get { return m_data.Length; }
         }
 
-        private T[] m_data;
-
+        private String text
+        {
+            get { return text; }
+            set { text = value; }
+        }
+        private int capacityUtilization
+        {
+            get { return capacityUtilization; }
+            set { capacityUtilization = value; }
+        }
         //old way
         //public T[] Data 
         //{
@@ -70,14 +79,5 @@ namespace uGCapture
             capacityUtilization = 0;
         }
 
-        public int getUtilization()
-        {
-            return capacityUtilization;
-        }
-
-        public void setUtilization(int used)
-        {
-            capacityUtilization = used;
-        }
     }
 }
