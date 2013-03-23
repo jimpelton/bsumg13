@@ -24,6 +24,8 @@ namespace uGCapture
 
         public CaptureClass()
         {
+            StagingBuffer = new BufferPool<byte>(100);
+
             messages = new Queue<Message>();
 
             dispatch = Dispatch.Instance();
@@ -60,9 +62,14 @@ namespace uGCapture
             );
         }
 
-        public Buffer GetEmptyBuffer()
+        public Buffer<Byte> GetEmptyByteBuffer()
         {
-            
+            return StagingBuffer.PopEmpty();
+        }
+
+        public void submitFilledByteBuffer(Buffer<Byte> fullbuf)
+        {
+            StagingBuffer.PostFull(fullbuf);
         }
     }
 }

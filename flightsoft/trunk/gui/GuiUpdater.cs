@@ -21,7 +21,8 @@ namespace gui
         public void UpdateGUI(object sender, EventArgs e)
         {
             if (this.msgs.Count > 0)
-                msgs.Dequeue().execute(this);          
+                msgs.Dequeue().execute(this);
+            dp.Broadcast();
         }
 
         public override void exLogMessage(Receiver r, Message m) 

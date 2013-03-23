@@ -11,16 +11,36 @@ namespace uGCapture
     public class Buffer<T>
     {
         private int capacityUtilization;
+        private BufferType type;
+
         public int NumElements
         {
             get { return m_data.Length; }
         }
 
         private T[] m_data;
-        public T[] Data 
+
+        //old way
+        //public T[] Data 
+        //{
+            //get { return m_data; }
+        //}
+    
+        /*
+         * setData
+         * copies passed data into the buffers memory.
+         * 
+         */
+        public void setData(T[] input, BufferType ty)
         {
-            get { return m_data; }
+            type = ty;
+            if(input.Length <= m_data.Length)
+                for (int i = 0; i < input.Length; i++)
+                {
+                    m_data[i] = input[i];
+                }
         }
+
 
         /// <summary>
         /// Makes a buffer of nElements elements.
