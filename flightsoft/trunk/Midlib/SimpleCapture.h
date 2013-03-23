@@ -76,11 +76,12 @@ public:
      *	
      *	initMidLib2() must be called prior to calling openTransport(). The
      *	value passed into camidx sets the index value for this camera.
+	 *  The return value is the MI_CAMERA_* error code.
      *	
      *	\param camidx The camera index to open transport for. Must be <= to the number
      *	of cameras that midlib2 found.
      *
-     *  \return 1 on error, 0 on success.
+     *  \return 0 on success, > 0 on error.
      *  
      */
     int  openTransport(int camidx); 
@@ -130,7 +131,7 @@ public:
     }
 
 	  /**
-	  *	\GIVE MEH TEH WABELENGHT
+	  *	\brief Get the wave
 	  */
 	int managed_GetWavelength()
 	{

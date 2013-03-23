@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NationalInstruments;
+//using NationalInstruments;
 
 namespace uGCapture
 {

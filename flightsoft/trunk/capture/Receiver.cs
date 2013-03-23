@@ -34,8 +34,6 @@ namespace uGCapture
             msgs.Enqueue(m);
         }
 
-        
-
         /// <summary>
         /// Any receiver that should respond to the Bite test message should
         /// override this method.

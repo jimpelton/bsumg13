@@ -59,14 +59,15 @@ SimpleCapture::SimpleCapture()
 
 SimpleCapture::~SimpleCapture(void) { }
 
-//return: 1 error, 0 success
+//return: 0 success, > 0 on error
 int 
 SimpleCapture::initMidLib2(int nCamsReq)
 {
     if (isMidLibInit) return 0;
 
+	//TODO: possible memory leak here?
 	gBarrierSemaphore = CreateSemaphore(NULL, 0, 1024, TEXT("Barrier Semaphore"));
-    gWaitingCount=0;
+	gWaitingCount=0;
     
     if (nCamsReq <= 0) {
         printf("You requested %d cams!" \
@@ -75,18 +76,15 @@ SimpleCapture::initMidLib2(int nCamsReq)
         return 1;
     }
 
-    mi_OpenCameras(gCameras, &SimpleCapture::num_cameras, mi_SensorData());
+    mi_s32 errval = mi_OpenCameras(gCameras, 
+		&SimpleCapture::num_cameras, mi_SensorData());
     
     if (num_cameras < nCamsReq) {
         printf("Could not initialize %d camera(s). Found %d. \n",
             nCamsReq, num_cameras);
         mi_CloseCameras();
-//#ifdef _DEBUG
-//        printf("<press a key>");
-//        _getch();
-//        printf("\n");
-//#endif
-        return 1;
+
+        return errval;
     } 
 
     isMidLibInit=true;
@@ -95,10 +93,11 @@ SimpleCapture::initMidLib2(int nCamsReq)
     return 0;
 }
 
-//return: 1 error, 0 success
+//return: 0 success, > 0 on failure.
 int 
 SimpleCapture::openTransport(int camIdx)
 {
+	int rval = 0;
     if (!isMidLibInit) {
         printf("openTransport() called before initMidLib2().\n");
         return 1;
@@ -107,15 +106,10 @@ SimpleCapture::openTransport(int camIdx)
     m_cameraIdx=camIdx;
     pCamera = 0==m_cameraIdx ? gCameras[0] : gCameras[1];
 
-    if( pCamera->startTransport(pCamera) != MI_CAMERA_SUCCESS ) {
+    if( (rval = pCamera->startTransport(pCamera)) != MI_CAMERA_SUCCESS ) {
         printf("Start Transport Unsuccessful.\n");
         mi_CloseCameras();
-//#ifdef _DEBUG
-//        printf("<press a key>");
-//        _getch();
-//        printf("\n");
-//#endif
-        return 1;
+        return rval;
     }    
 
     mi_OpenErrorLog(MI_LOG_SHIP, "ship_log.txt");
@@ -133,13 +127,13 @@ SimpleCapture::openTransport(int camIdx)
     switch(errnum) {
     case MI_INI_KEY_NOT_SUPPORTED:
         printf("%d: MI_INI_KEY_NOT_SUPPORTED\n", MI_INI_KEY_NOT_SUPPORTED);
-        return 1;
+        return errnum;
     case MI_INI_LOAD_ERROR:
         printf("%d: MI_INI_LOAD_ERROR\n", MI_INI_LOAD_ERROR);
-        return 1;
+        return errnum;
     case MI_INI_POLLREG_TIMEOUT:
         printf("%d: MI_INI_POLLREG_TIMEOUT\n", MI_INI_POLLREG_TIMEOUT);
-        return 1;
+        return errnum;
     }
     //switch logging OFF for some reason...
     pCamera->setMode(pCamera, MI_ERROR_LOG_TYPE, MI_NO_ERROR_LOG);

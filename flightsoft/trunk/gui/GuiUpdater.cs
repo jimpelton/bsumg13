@@ -26,8 +26,9 @@ namespace gui
 
         public override void exLogMessage(Receiver r, Message m) 
         {
-            LogMessage lm = (LogMessage)m;
-            mainform.DebugOutput(lm.message, lm.severity);
+            LogMessage lm = m as LogMessage;
+            if (lm != null)
+                mainform.DebugOutput(lm.message, lm.severity);
         }
     }
 }
