@@ -11,32 +11,37 @@ namespace uGCapture
     public class Buffer<T>
     {
 
-        private BufferType type;
+        private BufferType m_type;
         public BufferType Type
         {
-            get { return type; }
+            get { return m_type; }
+            private set { m_type = Type; }
         }
 
-
-        public int NumElements
+        public int Length
         {
             get { return m_data.Length; }
         }
 
-        public String text
+        private String m_text;
+        public String Text
         {
-            get; set; 
+            get { return m_text;  }
+            set { m_text = value; }
         }
 
-        public ulong capacityUtilization
+        private ulong m_capacityUtilization;
+        public ulong CapacityUtilization
         {
-            get; set; 
+            get { return m_capacityUtilization; }
+            set { m_capacityUtilization = value; }
         }
 
         private T[] m_data;
         public T[] Data
         {
             get { return m_data; }
+            private set { m_data = value; }
         }
     
         /*
@@ -45,13 +50,15 @@ namespace uGCapture
          */
         public void setData(T[] input, BufferType ty)
         {
-            type = ty;
+            m_type = ty;
             if (input.Length <= m_data.Length)
             {
-                for (int i = 0; i < input.Length; i++)
+                int i = 0;
+                for (; i < input.Length; i++)
                 {
                     m_data[i] = input[i];
                 }
+                CapacityUtilization = (ulong)i;
             }
         }
 
@@ -59,11 +66,13 @@ namespace uGCapture
         /// Makes a buffer of nElements elements.
         /// Number of bytes of this buffer = nElements*sizeof(T).
         /// </summary>
-        /// <param name="nElements"></param>
+        /// <param name="nElements">Number of elements that this buffer should
+        /// contain. </param>
         public Buffer(int nElements=1)
         {
             m_data = new T[nElements];
-            capacityUtilization = 0;
+            CapacityUtilization = 0;
+            m_text = "";
         }
 
         /// <summary>
@@ -74,13 +83,17 @@ namespace uGCapture
         public Buffer(Buffer<T> buff)
         {
             m_data = new T[buff.Data.Length];
+
+            this.CapacityUtilization = buff.CapacityUtilization;
+            this.Type = buff.Type;
+            this.Text = buff.Text;
             Array.Copy(buff.Data, m_data, buff.Data.Length);
         }
 
         public void resize(int nElem)
         {
             m_data = new T[nElem];
-            capacityUtilization = 0;
+            CapacityUtilization = 0;
         }
 
     }

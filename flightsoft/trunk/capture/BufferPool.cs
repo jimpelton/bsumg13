@@ -16,16 +16,39 @@ namespace uGCapture
         private Queue<Buffer<T>> fullBufs;
         private Stack<Buffer<T>> emptyBufs;
 
-        private readonly int m_bufElem;
+        /// <summary>
+        /// Get number of elements each buffer was initialized with.
+        /// Multiply by sizeof(T) to get size in bytes of each buffer.
+        /// </summary>
         public int BufElem
         {
             get { return m_bufElem; }
         }
+        private readonly int m_bufElem;
 
-        private readonly int m_numBufs;
+        /// <summary>
+        /// Get number of buffers available (should be FullCount+EmptyCount).
+        /// </summary>
         public int NumBufs
         {
             get { return m_numBufs; }
+        }
+        private readonly int m_numBufs;
+
+        /// <summary>
+        /// Get the number of full buffers available.
+        /// </summary>
+        public int FullCount
+        {
+            get { return fullBufs.Count; }
+        }
+
+        /// <summary>
+        /// Get the number of empty buffers available.
+        /// </summary>
+        public int EmptyCount
+        {
+            get { return emptyBufs.Count; }
         }
 
         /// <summary>
@@ -44,7 +67,8 @@ namespace uGCapture
         /// buffers initially.
         /// If nBuffs==0 then no buffers are allocated.
         /// </summary>
-        /// <param name="nBuffs">Number of buffers to allocation.</param>
+        /// <param name="nBuffs">Number of buffers to allocate.</param>
+        /// <param name="nElem"> Number of elements for each buffer.</param>
         public BufferPool(int nBuffs=0, int nElem=0)
         {
             if (nBuffs > 0)
@@ -80,7 +104,7 @@ namespace uGCapture
 
         /// <summary>
         /// Post an empty buffer. The buffer will be queued
-        /// for empty checkout. (via popempty).
+        /// for empty checkout. (which can be done via popempty()).
         /// </summary>
         /// <param name="b">The buffer to post.</param>
         public void PostEmpty(Buffer<T> b)

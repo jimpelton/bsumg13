@@ -20,54 +20,57 @@ namespace uGCapture
         public static Semaphore barrierSemaphore;
         public static int barrierCounter;
 
-        public AptinaController() 
+        //public AptinaController() 
+        //{
+        //    barrierSemaphore = new Semaphore(0,2);
+        //    barrierCounter = 0;
+
+        //    // 1 is an error condition
+        //    Int32 initResult = 1;
+        //    do
+        //    {
+        //        //TODO: fix the memory leak this loop causes in SimpleCapture::initMidLib(). --JP
+        //        initResult = ManagedSimpleCapture.managed_InitMidLib(2);           
+        //    } while (initResult!=0);
+
+        //    dp.BroadcastLog(this, "initResult (success=0): " + initResult,1);
+
+        //    ManagedSimpleCapture mansc1 = new ManagedSimpleCapture();
+        //    ManagedSimpleCapture mansc2 = new ManagedSimpleCapture();
+            
+        //    mansc1.managed_OpenTransport(1);
+        //    mansc2.managed_OpenTransport(0);
+
+        //    AptinaController mysc1 = new AptinaController(mansc1);
+        //    AptinaController mysc2 = new AptinaController(mansc2);
+
+        //    Thread t1 = new Thread(() => AptinaController.go(mysc1));
+        //    Thread t2 = new Thread(() => AptinaController.go(mysc2));
+        //    running = true;
+        //    t1.Start();
+        //    t2.Start();
+
+
+        //    //wait for user to press a key, then stop.
+            
+        //    //mysc.stop();
+        //    //t.Join();
+
+        //    dp.BroadcastLog(this, "Done!",1);
+
+        //}
+
+
+
+        public AptinaController()
         {
-            barrierSemaphore = new Semaphore(0,2);
+            barrierSemaphore = new Semaphore(0, 2);
             barrierCounter = 0;
-            Int32 initResult = 1;// 1 is an error condition
-
-            //keep trying until it works.
-            do
-            {
-                initResult = ManagedSimpleCapture.managed_InitMidLib(2);           
-            } while (initResult!=0);
-
-            dp.BroadcastLog(this, "initResult (success=0): " + initResult,1);
-
-            ManagedSimpleCapture mansc1 = new ManagedSimpleCapture();
-            ManagedSimpleCapture mansc2 = new ManagedSimpleCapture();
-            
-            mansc1.managed_OpenTransport(1);
-            mansc2.managed_OpenTransport(0);
-
-            AptinaController mysc1 = new AptinaController(mansc1);
-            AptinaController mysc2 = new AptinaController(mansc2);
-
-            Thread t1 = new Thread(() => AptinaController.go(mysc1));
-            Thread t2 = new Thread(() => AptinaController.go(mysc2));
-            running = true;
-            t1.Start();
-            t2.Start();
-
-
-            //wait for user to press a key, then stop.
-            
-            //mysc.stop();
-            //t.Join();
-
-            dp.BroadcastLog(this, "Done!",1);
-                  
-        }
-
-
-        public AptinaController(ManagedSimpleCapture msc)
-        {
-            dp.BroadcastLog(this, "AptinaController starting up...", 1);
-            //size = msc.managed_SensorBufferSize();
+            msc = new ManagedSimpleCapture();
+            size = msc.managed_SensorBufferSize();
             dest = new byte[size];
             mutex = new Mutex();
-
-            this.msc = msc;
+            dp.BroadcastLog(this, "AptinaController class initialized...", 1);
         }
 
         public void stop()
@@ -132,8 +135,8 @@ namespace uGCapture
                 imagebuffer.setData(me.dest,
                                     (me.msc.managed_GetWavelength() == 405) ? BufferType.IMAGE405 : BufferType.IMAGE485);
                 //File.WriteAllBytes(String.Format("data_{0}_{1}.raw",me.msc.managed_GetWavelength(), me.nextIdx++), me.dest);
-                imagebuffer.text = String.Format("{0}", me.nextIdx++);
-                imagebuffer.capacityUtilization = me.size;
+                imagebuffer.Text = String.Format("{0}", me.nextIdx++);
+                imagebuffer.CapacityUtilization = me.size;
                 StagingBuffer.PostFull(imagebuffer);
                 
             }   

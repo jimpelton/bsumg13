@@ -37,11 +37,11 @@ namespace uGCapture
                             WritePhidgetsOutput(fulbuf);
                             break;
                         case (BufferType.IMAGE405):
-                            index = uint.Parse(fulbuf.text);
+                            index = uint.Parse(fulbuf.Text);
                             WriteImageOutput(fulbuf,405);
                             break;
                         case (BufferType.IMAGE485):
-                            index = uint.Parse(fulbuf.text);
+                            index = uint.Parse(fulbuf.Text);
                             WriteImageOutput(fulbuf, 485);
                             break;
 
@@ -62,7 +62,7 @@ namespace uGCapture
         private void WriteImageOutput(Buffer<Byte> buf,int wavelength)
         {
             String filename = String.Format("data_{0}_{1}.raw", wavelength, index);
-            FileStream fs = File.Create("C:\\Data\\" + CaptureClass.directoryName + "\\" + filename, (int)(uint)buf.capacityUtilization, FileOptions.None);
+            FileStream fs = File.Create("C:\\Data\\" + CaptureClass.directoryName + "\\" + filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
             BinaryWriter bw = new BinaryWriter(fs);
             bw.Write(buf.Data);
             bw.Close();
@@ -72,7 +72,7 @@ namespace uGCapture
         private void WritePhidgetsOutput(Buffer<Byte> buf)
         {
             String filename = String.Format("Phidgets{0}.txt", index);
-            FileStream fs = File.Create("C:\\Data\\"+CaptureClass.directoryName+"\\"+filename, (int)(uint)buf.capacityUtilization, FileOptions.None);
+            FileStream fs = File.Create("C:\\Data\\"+CaptureClass.directoryName+"\\"+filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
             BinaryWriter bw = new BinaryWriter(fs);
             bw.Write(buf.Data);
             bw.Close();

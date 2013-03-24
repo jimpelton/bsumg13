@@ -36,8 +36,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NationalInstruments.Common, Version=13.0.35.188, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.DAQmx, Version=9.6.40.292, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Common, Version=13.0.40.188, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.Common.Native, Version=13.0.40.188, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.DAQmx, Version=9.6.45.292, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=x86" />
     <Reference Include="Phidget21.NET, Version=2.1.8.133, Culture=neutral, PublicKeyToken=c2b1f2a3594bce52, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\phidget21-windevel\Phidget21.NET.dll</HintPath>
@@ -58,7 +59,7 @@
     <Compile Include="Controller\AccelerometerController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
     <Compile Include="Controller\IController.cs" />
-    <Compile Include="Controller\ReceiverController.cs" />
+    <Compile Include="ReceiverController.cs" />
     <Compile Include="Dispatch.cs" />
     <Compile Include="Message\BiteTestMessage.cs" />
     <Compile Include="Message\GuiDataRequestMessage.cs" />
@@ -78,6 +79,9 @@
       <Project>{4a587572-fa3c-417b-88f0-430a0bfc8155}</Project>
       <Name>Midlib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
