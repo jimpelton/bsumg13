@@ -12,7 +12,9 @@ namespace uGCapture
     public class CaptureClass : Receiver
     {
         private const int FRAME_TIME = 500;
-        
+        public static String directoryName;
+
+
         private Queue<Message> messages;
         private Dispatch dispatch;
         private Receiver[] controllers;
@@ -24,12 +26,16 @@ namespace uGCapture
 
         public CaptureClass()
         {
+            DateTime time = DateTime.Now;              // Use current time
+            directoryName = "yyyyMMMdddHHmm";          // Use this format  
+
+            System.IO.Directory.CreateDirectory("C:\\Data\\"+directoryName);
             StagingBuffer = new BufferPool<byte>(100);
             Receiver.StagingBuffer = StagingBuffer;
             messages = new Queue<Message>();
 
             dispatch = Dispatch.Instance();
-            controllers = new Receiver[7];
+            controllers = new Receiver[8];
             controllers[0] = new NIController();
             controllers[1] = new UPSController();
             controllers[2] = new VCommController();
@@ -37,6 +43,7 @@ namespace uGCapture
             controllers[4] = new PhidgetsController();
             controllers[5] = new AccelerometerController();
             controllers[6] = new AccelerometerController();
+            controllers[7] = new Writer();
             
             ticker = new Timer(FRAME_TIME);
             ticker.Elapsed += new ElapsedEventHandler(DoFrame);

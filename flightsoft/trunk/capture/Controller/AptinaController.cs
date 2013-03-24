@@ -86,7 +86,7 @@ namespace uGCapture
                 me.mutex.ReleaseMutex();
                 return;
             }
-           
+
             while (true)
             {
                 Interlocked.Increment(ref barrierCounter);
@@ -95,7 +95,7 @@ namespace uGCapture
                 {
                     Interlocked.Decrement(ref barrierCounter);
                     Interlocked.Decrement(ref barrierCounter);
-                    barrierSemaphore.Release(2);//if we have two ready to go then release them both.
+                    barrierSemaphore.Release(2); //if we have two ready to go then release them both.
                 }
                 barrierSemaphore.WaitOne();
 
@@ -109,29 +109,34 @@ namespace uGCapture
 
                 me.dp.BroadcastLog(me, " " + me.nextIdx + " at " + DateTime.Now.Millisecond, 1);
 
-                unsafe 
+                unsafe
                 {
                     byte* data = me.msc.managed_DoCapture();
-                    if (data == null) 
+                    if (data == null)
                     {
                         //Console.Error.WriteLine("DoCapture returned a null pointer.");
                         me.dp.BroadcastLog(me, "DoCapture returned a null pointer.", 100);
                         continue;
                     }
-                    Marshal.Copy(new IntPtr(data), me.dest, 0, (int)me.size);
-                    
-                    //me.dp.BroadcastLog(me, "Wrote some datums at " + DateTime.Now.Millisecond,1);
-                
-               
-                };
+                    Marshal.Copy(new IntPtr(data), me.dest, 0, (int) me.size);
 
-                Buffer<Byte> imagebuffer = StagingBuffer.PopEmpty();
-                imagebuffer.setData(me.dest, (me.msc.managed_GetWavelength()==405)?BufferType.IMAGE405 : BufferType.IMAGE485);
+                    //me.dp.BroadcastLog(me, "Wrote some datums at " + DateTime.Now.Millisecond,1);
+
+
+                }
+                
+                Buffer<Byte> imagebuffer = null;
+                while(imagebuffer==null)
+                    imagebuffer=StagingBuffer.PopEmpty();
+
+                imagebuffer.setData(me.dest,
+                                    (me.msc.managed_GetWavelength() == 405) ? BufferType.IMAGE405 : BufferType.IMAGE485);
                 //File.WriteAllBytes(String.Format("data_{0}_{1}.raw",me.msc.managed_GetWavelength(), me.nextIdx++), me.dest);
-                imagebuffer.text = String.Format("data_{0}_{1}.raw", me.msc.managed_GetWavelength(), me.nextIdx++);
+                imagebuffer.text = String.Format("{0}", me.nextIdx++);
                 imagebuffer.capacityUtilization = me.size;
                 StagingBuffer.PostFull(imagebuffer);
-            }
+                
+            }   
         }
     }
 }

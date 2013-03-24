@@ -148,9 +148,11 @@ namespace uGCapture
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-            Buffer<Byte> buffer = StagingBuffer.PopEmpty();
+            Buffer<Byte> buffer = null;
+            while(buffer==null)
+                buffer=StagingBuffer.PopEmpty();
             String outputData = "Phidgets\n";
-            outputData += DateTime.Now.Ticks + " ";
+            outputData += DateTime.Now.Ticks.ToString() + " ";
             outputData += phidgetTemperature_ProbeTemp + " ";
             outputData += phidgetTemperature_AmbientTemp + " ";
             for (int i = 0; i < 8; i++)
@@ -159,10 +161,18 @@ namespace uGCapture
                 outputData += digitalInputs[i].ToString() + " ";
                 outputData += digitalOutputs[i].ToString() + " ";
             }
+            if (buffer != null)
+            {
 
-            buffer.text = String.Format("Phidgets");
-            buffer.capacityUtilization = (uint)outputData.Length*sizeof(char);
-            StagingBuffer.PostFull(buffer);
+                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                buffer.setData(encoding.GetBytes(outputData), BufferType.PHIDGETS);
+                buffer.text = String.Format("Phidgets");
+                buffer.capacityUtilization = ((uint) encoding.GetByteCount(outputData));
+                //buffer.capacityUtilization = (uint)outputData.Length*sizeof(char); not the case
+
+                StagingBuffer.PostFull(buffer);
+            }
         }
     }
 }
+
