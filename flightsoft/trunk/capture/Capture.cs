@@ -27,13 +27,18 @@ namespace uGCapture
         {
             DateTime time = DateTime.Now;              // Use current time
             directoryName = "yyyyMMMdddHHmm";          // Use this format  
-
             System.IO.Directory.CreateDirectory("C:\\Data\\"+directoryName);
             stagingBuffer = new BufferPool<byte>(100);
-            //Receiver.StagingBuffer = StagingBuffer;
             messages = new Queue<Message>();
-
             dispatch = Dispatch.Instance();
+
+            ticker = new Timer(FRAME_TIME);
+            ticker.Elapsed += new ElapsedEventHandler(DoFrame);
+            //ticker.Enabled = true;
+        }
+
+        public void init()
+        {
             controllers = new Receiver[8];
             controllers[0] = new NIController();
             controllers[1] = new UPSController();
@@ -42,11 +47,7 @@ namespace uGCapture
             controllers[4] = new PhidgetsController();
             controllers[5] = new AccelerometerController();
             controllers[6] = new AccelerometerController();
-            controllers[7] = new Writer();
-            
-            ticker = new Timer(FRAME_TIME);
-            ticker.Elapsed += new ElapsedEventHandler(DoFrame);
-            ticker.Enabled = true;
+            controllers[7] = new Writer(directoryName);
         }
 
         public void DoFrame(object source, ElapsedEventArgs e)
@@ -68,14 +69,14 @@ namespace uGCapture
             );
         }
 
-        public Buffer<Byte> GetEmptyByteBuffer()
-        {
-            return StagingBuffer.PopEmpty();
-        }
+        //public Buffer<Byte> GetEmptyByteBuffer()
+        //{
+        //    return StagingBuffer.PopEmpty();
+        //}
 
-        public void submitFilledByteBuffer(Buffer<Byte> fullbuf)
-        {
-            StagingBuffer.PostFull(fullbuf);
-        }
+        //public void submitFilledByteBuffer(Buffer<Byte> fullbuf)
+        //{
+        //    StagingBuffer.PostFull(fullbuf);
+        //}
     }
 }

@@ -8,11 +8,16 @@ using uGCapture.Controller;
 
 namespace uGCapture
 {
-    class UPSController : ReceiverController, IController
+    class UPSController : ReceiverController
     {
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
+            throw new NotImplementedException();
+        }
 
+        public override void init()
+        {
+            throw new NotImplementedException();
         }
     }
 }

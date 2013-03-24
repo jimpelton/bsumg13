@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buffer.cs" />
-    <Compile Include="BufferEnums.cs" />
+    <Compile Include="BufferType.cs" />
     <Compile Include="BufferPool.cs" />
     <Compile Include="Capture.cs" />
     <Compile Include="Controller\AccelerometerController.cs" />

@@ -8,7 +8,6 @@ namespace uGCapture
     {
         protected Queue<Message> msgs;
         protected Dispatch dp;
-        //public static BufferPool<Byte> StagingBuffer;
 
         /// <summary>
         /// True if this Receiver is currently receiving messages.
@@ -19,6 +18,7 @@ namespace uGCapture
             set;
         }
         private bool receiving = false;
+
 
         public Receiver()
         {

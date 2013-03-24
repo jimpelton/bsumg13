@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using uGCapture;
 using System.Threading;
+using uGCapture.Controller;
 
 namespace CaptureTest
 {
@@ -11,10 +12,8 @@ namespace CaptureTest
         [TestMethod]
         public void InitMidlibTest()
         {
-            //barrierSemaphore = new Semaphore(0,2);
-            //barrierCounter = 0;
-
-            // 1 is an error condition
+            AptinaController ac = new AptinaController(1);
+            
             Int32 initResult = 1;
             //do
             //{
