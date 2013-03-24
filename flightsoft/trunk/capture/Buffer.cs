@@ -12,7 +12,11 @@ namespace uGCapture
     {
 
         private BufferType type;
-        private T[] m_data;
+        public BufferType Type
+        {
+            get { return type; }
+        }
+
 
         public int NumElements
         {
@@ -29,7 +33,8 @@ namespace uGCapture
             get; set; 
         }
 
-        public T[] Data 
+        private T[] m_data;
+        public T[] Data
         {
             get { return m_data; }
         }
@@ -37,18 +42,18 @@ namespace uGCapture
         /*
          * setData
          * copies passed data into the buffers memory.
-         * 
          */
         public void setData(T[] input, BufferType ty)
         {
             type = ty;
-            if(input.Length <= m_data.Length)
+            if (input.Length <= m_data.Length)
+            {
                 for (int i = 0; i < input.Length; i++)
                 {
                     m_data[i] = input[i];
                 }
+            }
         }
-
 
         /// <summary>
         /// Makes a buffer of nElements elements.
