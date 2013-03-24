@@ -1,44 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.IO;
 using System.Runtime.InteropServices;
-using uGCapture.Controller;
 
 namespace uGCapture
 {
 public class AptinaController : ReceiverController
 {
     private ulong size;
+
     private byte[] dest;
 
-    private bool running=false;
-    private Mutex mutex;
+    private Mutex runningMutex;
 
-    private int nextIdx=0;
+    private bool running=false;
 
     ManagedSimpleCapture msc;
 
     private static Semaphore barrierSemaphore;
     private static int barrierCounter;
-    private static int numcams;
+    private readonly int numcams;
+    private int nextIdx;
 
-    public AptinaController(int numcams) : base()
+    public AptinaController(BufferPool<byte> bp, int numcams) 
+        : base(bp)
     { 
         if (barrierSemaphore != null)
         {
             barrierSemaphore = new Semaphore(0, numcams);
         }
 
-        if (mutex != null)
+        if (runningMutex != null)
         {
-            mutex = new Mutex();
+            runningMutex = new Mutex();
         }
 
         barrierCounter = 0;
-        
+        nextIdx = 0;
+        this.numcams = numcams;
     }
 
     public override void init()
@@ -51,51 +49,46 @@ public class AptinaController : ReceiverController
 
     public void stop()
     {
-        mutex.WaitOne();
+        runningMutex.WaitOne();
         running = false;
-        mutex.ReleaseMutex();
+        runningMutex.ReleaseMutex();
     }
 
     public static void go(AptinaController me)
     {
-        me.mutex.WaitOne();
-        if (me.running )
+        me.runningMutex.WaitOne();
+        if (me.running)
         {
-            me.mutex.ReleaseMutex();
+            me.runningMutex.ReleaseMutex();
             return;
         }
-        me.mutex.ReleaseMutex();
+        me.runningMutex.ReleaseMutex();
 
         while (true)
         {
-            me.mutex.WaitOne();
+            me.runningMutex.WaitOne();
             if (!me.running)
             {
-                me.mutex.ReleaseMutex();
+                me.runningMutex.ReleaseMutex();
                 barrierSemaphore.Release(1);
                 return;
             }
-            me.mutex.ReleaseMutex();
+            me.runningMutex.ReleaseMutex();
 
             Interlocked.Increment(ref barrierCounter);
-            if (barrierCounter == numcams)
+            if (barrierCounter == me.numcams)
             {
                 barrierSemaphore.Release(2); 
             }
             barrierSemaphore.WaitOne();
 
-            me.dp.BroadcastLog(
-                me, 
-                String.Format(" {0} at {1}", me.nextIdx, DateTime.Now.Millisecond),
-                1);
-
             unsafe
             {
-                byte* data = me.msc.managed_DoCapture();
+                byte *data = me.msc.managed_DoCapture();
                 if (data == null)
                 {
-                    //Console.Error.WriteLine("DoCapture returned a null pointer.");
-                    me.dp.BroadcastLog(me, "DoCapture returned a null pointer.", 100);
+                    //me.dp.BroadcastLog(me, "DoCapture returned a null pointer.", 100);
+                    
                     continue;
                 }
                 Marshal.Copy(new IntPtr(data), me.dest, 0, (int) me.size);
@@ -105,8 +98,8 @@ public class AptinaController : ReceiverController
             //while(imagebuffer==null)
             //    imagebuffer=StagingBuffer.PopEmpty();
 
-            BufferType bufferType = me.msc.managed_GetWavelength() == 405 ? 
-                BufferType.IMAGE405 : BufferType.IMAGE485;
+            //BufferType bufferType = me.msc.managed_GetWavelength() == 405 ? 
+            //    BufferType.IMAGE405 : BufferType.IMAGE485;
 
             //imagebuffer.setData(me.dest, bufferType);
             //File.WriteAllBytes(String.Format("data_{0}_{1}.raw",me.msc.managed_GetWavelength(), me.nextIdx++), me.dest);

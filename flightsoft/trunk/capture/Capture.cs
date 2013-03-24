@@ -1,60 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections;
 using System.Timers;
 using Phidgets;
 using Phidgets.Events;
 
 namespace uGCapture 
 {
-    public class CaptureClass : Receiver
+    public class CaptureClass : ReceiverController
     {
-        private const int FRAME_TIME = 500;
-        public static String directoryName;
-
+        private static int FRAME_TIME = 500;
+        private String directoryName;
 
         private Queue<Message> messages;
         private Dispatch dispatch;
-        private Receiver[] controllers;
-        private BufferPool<Byte> stagingBuffer; 
 
+        private PhidgetsController phidgetsController;
+        private AccelerometerController a1; 
+        private AccelerometerController a2;
+        private Writer writer;
 
-        private Timer ticker = null;
+        private Timer ticker;
 
-        public CaptureClass()
+        public CaptureClass() : base()
         {
             DateTime time = DateTime.Now;              // Use current time
             directoryName = "yyyyMMMdddHHmm";          // Use this format  
             System.IO.Directory.CreateDirectory("C:\\Data\\"+directoryName);
-            stagingBuffer = new BufferPool<byte>(100);
+            //stagingBuffer = new BufferPool<byte>(100);
             messages = new Queue<Message>();
             dispatch = Dispatch.Instance();
 
             ticker = new Timer(FRAME_TIME);
             ticker.Elapsed += new ElapsedEventHandler(DoFrame);
-            //ticker.Enabled = true;
         }
 
-        public void init()
+        public override void init()
         {
-            controllers = new Receiver[8];
-            controllers[0] = new NIController();
-            controllers[1] = new UPSController();
-            controllers[2] = new VCommController();
-            //controllers[3] = new AptinaController();
-            controllers[4] = new PhidgetsController();
-            controllers[5] = new AccelerometerController();
-            controllers[6] = new AccelerometerController();
-            controllers[7] = new Writer(directoryName);
+            
+            phidgetsController = new PhidgetsController(BufferPool);
+            a1 = new AccelerometerController(BufferPool);
+            a2 = new AccelerometerController(BufferPool);
+            writer = new Writer(BufferPool);
         }
 
-        public void DoFrame(object source, ElapsedEventArgs e)
+        public override void DoFrame(object source, ElapsedEventArgs e)
         {
            
         }
-
 
         public void LogDebugMessage(String s)
         {
@@ -63,7 +55,7 @@ namespace uGCapture
 
         public void LogDebugMessage(String s, int severtity)
         {
-            Dispatch.Instance().Broadcast
+            dp.Broadcast
             (
                 new LogMessage(this, s, severtity)
             );

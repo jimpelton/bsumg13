@@ -5,19 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
-using uGCapture.Controller;
 
 namespace uGCapture
 {
 class Writer : ReceiverController
 {
     private uint index = 0;
-    private string directoryName;
+    private string m_directoryName;
 
-    public Writer(string dirName) : base()
+    public string DirectoryName
     {
-        directoryName = dirName;
-        index = 0;
+        get { return m_directoryName; }
+        set { m_directoryName = value;}
+    }
+
+    public Writer(BufferPool<byte> bp) : base(bp)
+    {
     }
 
     public override void init()
@@ -70,7 +73,7 @@ class Writer : ReceiverController
     private void WriteImageOutput(Buffer<Byte> buf,int wavelength)
     {
         String filename = String.Format("data_{0}_{1}.raw", wavelength, index);
-        FileStream fs = File.Create("C:\\Data\\" + directoryName + "\\" + filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
+        FileStream fs = File.Create("C:\\Data\\" + m_directoryName + "\\" + filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
         BinaryWriter bw = new BinaryWriter(fs);
         bw.Write(buf.Data);
         bw.Close();
@@ -80,7 +83,7 @@ class Writer : ReceiverController
     private void WritePhidgetsOutput(Buffer<Byte> buf)
     {
         String filename = String.Format("Phidgets{0}.txt", index);
-        FileStream fs = File.Create("C:\\Data\\"+directoryName+"\\"+filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
+        FileStream fs = File.Create("C:\\Data\\"+m_directoryName+"\\"+filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
         BinaryWriter bw = new BinaryWriter(fs);
         bw.Write(buf.Data);
         bw.Close();

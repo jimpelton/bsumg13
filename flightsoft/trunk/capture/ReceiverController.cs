@@ -1,28 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Timers;
 
 
-namespace uGCapture.Controller
+namespace uGCapture
 {
     public abstract class ReceiverController : Receiver
     {
-        private Timer ticker;
-        private readonly int FRAME_TIME;
-        private BufferPool<byte> bufferPool;
-
-        //public ReceiverController() : base() { }
-        
-        public ReceiverController(BufferPool<byte> bp, int frame_time=500) : base()
+        /// <summary>
+        /// Enables/Disables this ReceiverController's timer.
+        /// </summary>
+        public bool TickerEnabled
         {
-            bufferPool = bp;
-            FRAME_TIME = frame_time;
-            ticker = new Timer(frame_time);
-            ticker.Elapsed += new ElapsedEventHandler(DoFrame);
-            //ticker.Enabled = true;
+            get { return m_ticker.Enabled; }
+            set { m_ticker.Enabled = value; }
+        }
+        private readonly Timer m_ticker;
+
+        /// <summary>
+        /// Update interval that the DoFrame ElapsedEventHandler is called.
+        /// </summary>
+        public int FrameTime { get; set; }
+        private int m_frameTime;
+
+        /// <summary>
+        /// Main pool that every Receiver controller writes into.
+        /// </summary>
+        public BufferPool<byte> BufferPool
+        {
+            get { return m_bufferPool; }
+            protected set { m_bufferPool = value; }
+        }
+        private BufferPool<byte> m_bufferPool;
+        
+        protected ReceiverController() { }
+
+        protected ReceiverController(BufferPool<byte> bp, int frame_time=500) 
+        {
+            m_bufferPool = bp;
+            m_frameTime = frame_time;
+
+            m_ticker = new Timer(frame_time);
+            m_ticker.Elapsed += new ElapsedEventHandler(DoFrame);
+            m_ticker.Enabled = false;
         }
 
         /// <summary>

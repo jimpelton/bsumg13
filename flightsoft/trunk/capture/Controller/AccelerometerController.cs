@@ -5,7 +5,6 @@ using System.Text;
 using Phidgets;
 using Phidgets.Events;
 using System.Timers;
-using uGCapture.Controller;
 
 
 namespace uGCapture
@@ -16,7 +15,7 @@ class AccelerometerController : ReceiverController
     private double[] acceleration = null;
     private double[] vibration = null;
 
-    public AccelerometerController() : base()
+    public AccelerometerController(BufferPool<byte> bp) : base(bp)
     {
         acceleration = new double[3];
         vibration = new double[3];

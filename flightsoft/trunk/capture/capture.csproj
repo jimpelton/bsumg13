@@ -52,13 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Buffer.cs" />
-    <Compile Include="BufferType.cs" />
-    <Compile Include="BufferPool.cs" />
+    <Compile Include="Buffer\Buffer.cs" />
+    <Compile Include="Buffer\BufferType.cs" />
+    <Compile Include="Buffer\BufferPool.cs" />
     <Compile Include="Capture.cs" />
     <Compile Include="Controller\AccelerometerController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
-    <Compile Include="Controller\IController.cs" />
     <Compile Include="ReceiverController.cs" />
     <Compile Include="Dispatch.cs" />
     <Compile Include="Message\BiteTestMessage.cs" />

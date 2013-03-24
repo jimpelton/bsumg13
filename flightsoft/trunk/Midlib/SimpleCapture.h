@@ -170,8 +170,6 @@ public:
     {
         return SimpleCapture::initMidLib2(nCamsReqd);
     }
-
-
 };
 
 static void 

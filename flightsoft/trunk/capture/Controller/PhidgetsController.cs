@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Timers;
 using Phidgets;
 using Phidgets.Events;
-using uGCapture.Controller;
 
 
 namespace uGCapture
 {
-public class PhidgetsController : ReceiverController, IController
+public class PhidgetsController : ReceiverController
 {
 
     private TemperatureSensor phidgetTemperature = null;
@@ -19,18 +15,20 @@ public class PhidgetsController : ReceiverController, IController
     private double phidgetTemperature_AmbientTemp = 0;
     private double phidgetTemperature_ProbeTemp = 0;
 
-    private bool[] digitalInputs = null;
-    private bool[] digitalOutputs = null;
-    private int[] analogInputs = null;
+    private bool[] digitalInputs; // = null;
+    private bool[] digitalOutputs; // = null;
+    private int[] analogInputs; // = null;
 
-    public PhidgetsController()
+    public PhidgetsController(BufferPool<byte> bp) 
+        : base(bp)
     {
         digitalInputs = new bool[8];
         digitalOutputs = new bool[8];
         analogInputs = new int[8];
     }
 
-                public override void init()
+            
+    public override void init()
     {
         openTempSenser();
         openDAQ();
@@ -165,7 +163,7 @@ public class PhidgetsController : ReceiverController, IController
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             buffer.setData(encoding.GetBytes(outputData), BufferType.PHIDGETS);
             buffer.Text = String.Format("Phidgets");
-            buffer.CapacityUtilization = ((uint) encoding.GetByteCount(outputData));
+            //buffer.CapacityUtilization = ((uint) encoding.GetByteCount(outputData));
             //buffer.CapacityUtilization = (uint)outputData.Length*sizeof(char); not the case
 
             //StagingBuffer.PostFull(buffer);

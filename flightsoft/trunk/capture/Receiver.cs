@@ -20,7 +20,7 @@ namespace uGCapture
         private bool receiving = false;
 
 
-        public Receiver()
+        protected Receiver()
         {
             msgs = new Queue<Message>();
             dp = Dispatch.Instance();

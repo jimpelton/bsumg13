@@ -34,7 +34,7 @@ namespace uGCapture
         public ulong CapacityUtilization
         {
             get { return m_capacityUtilization; }
-            set { m_capacityUtilization = value; }
+            private set { m_capacityUtilization = value; }
         }
 
         private T[] m_data;

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace uGCapture
 {
@@ -52,7 +50,7 @@ namespace uGCapture
         }
 
         /// <summary>
-        /// Instantiate 
+        /// Instantiate with empty buffers.
         /// </summary>
         public BufferPool()
         {
@@ -69,7 +67,7 @@ namespace uGCapture
         /// </summary>
         /// <param name="nBuffs">Number of buffers to allocate.</param>
         /// <param name="nElem"> Number of elements for each buffer.</param>
-        public BufferPool(int nBuffs=0, int nElem=0)
+        public BufferPool(int nBuffs, int nElem)
         {
             if (nBuffs > 0)
             {
