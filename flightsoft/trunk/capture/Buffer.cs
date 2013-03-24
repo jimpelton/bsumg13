@@ -19,21 +19,21 @@ namespace uGCapture
             get { return m_data.Length; }
         }
 
-        private String text
+        public String text
         {
             get { return text; }
             set { text = value; }
         }
-        private int capacityUtilization
+        public ulong capacityUtilization
         {
             get { return capacityUtilization; }
             set { capacityUtilization = value; }
         }
-        //old way
-        //public T[] Data 
-        //{
-            //get { return m_data; }
-        //}
+
+        public T[] Data 
+        {
+            get { return m_data; }
+        }
     
         /*
          * setData
