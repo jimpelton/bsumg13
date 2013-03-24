@@ -18,8 +18,7 @@ namespace uGCapture
         private Queue<Message> messages;
         private Dispatch dispatch;
         private Receiver[] controllers;
-
-        private BufferPool<Byte> StagingBuffer; 
+        private BufferPool<Byte> stagingBuffer; 
 
 
         private Timer ticker = null;
@@ -30,8 +29,8 @@ namespace uGCapture
             directoryName = "yyyyMMMdddHHmm";          // Use this format  
 
             System.IO.Directory.CreateDirectory("C:\\Data\\"+directoryName);
-            StagingBuffer = new BufferPool<byte>(100);
-            Receiver.StagingBuffer = StagingBuffer;
+            stagingBuffer = new BufferPool<byte>(100);
+            //Receiver.StagingBuffer = StagingBuffer;
             messages = new Queue<Message>();
 
             dispatch = Dispatch.Instance();
@@ -39,7 +38,7 @@ namespace uGCapture
             controllers[0] = new NIController();
             controllers[1] = new UPSController();
             controllers[2] = new VCommController();
-            controllers[3] = new AptinaController();
+            //controllers[3] = new AptinaController();
             controllers[4] = new PhidgetsController();
             controllers[5] = new AccelerometerController();
             controllers[6] = new AccelerometerController();

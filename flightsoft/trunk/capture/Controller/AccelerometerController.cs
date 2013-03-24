@@ -11,7 +11,7 @@ using uGCapture.Controller;
 
 namespace uGCapture
 {
-    class AccelerometerController : ReceiverController, IController
+    class AccelerometerController : ReceiverController
     {
         private Accelerometer accel = null;
         private double[] acceleration = null;
