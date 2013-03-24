@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using Phidgets;
 using Phidgets.Events;
-
+using System.Timers;
+using uGCapture.Controller;
 
 //lets handle phidgets accelerometers the same and capture vibration and acceleration data on both.
 
 namespace uGCapture
 {
-    class AccelerometerController : Receiver, IController
+    class AccelerometerController : ReceiverController, IController
     {
         private Accelerometer accel = null;
         private double[] acceleration = null;
@@ -86,5 +87,9 @@ namespace uGCapture
             dp.BroadcastLog(this, String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
         }
 
+        public override void DoFrame(object source, ElapsedEventArgs e)
+        {
+
+        }
     }
 }

@@ -6,5 +6,7 @@ using System.Text;
 namespace uGCapture
 {
     public interface IController
-    { }
+    {
+        
+    }
 }

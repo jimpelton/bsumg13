@@ -22,7 +22,7 @@ namespace gui
         {
             if (this.msgs.Count > 0)
                 msgs.Dequeue().execute(this);
-            dp.Broadcast();
+            dp.Broadcast(new GuiDataRequestMessage(this));
         }
 
         public override void exLogMessage(Receiver r, Message m) 

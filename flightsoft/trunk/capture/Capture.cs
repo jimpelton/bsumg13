@@ -25,7 +25,7 @@ namespace uGCapture
         public CaptureClass()
         {
             StagingBuffer = new BufferPool<byte>(100);
-
+            Receiver.StagingBuffer = StagingBuffer;
             messages = new Queue<Message>();
 
             dispatch = Dispatch.Instance();

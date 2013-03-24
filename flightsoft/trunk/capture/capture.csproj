@@ -52,13 +52,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buffer.cs" />
+    <Compile Include="BufferEnums.cs" />
     <Compile Include="BufferPool.cs" />
     <Compile Include="Capture.cs" />
     <Compile Include="Controller\AccelerometerController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
     <Compile Include="Controller\IController.cs" />
+    <Compile Include="Controller\ReceiverController.cs" />
     <Compile Include="Dispatch.cs" />
     <Compile Include="Message\BiteTestMessage.cs" />
+    <Compile Include="Message\GuiDataRequestMessage.cs" />
     <Compile Include="Message\LogMessage.cs" />
     <Compile Include="Message\Message.cs" />
     <Compile Include="Controller\NIController.cs" />
@@ -68,6 +71,7 @@
     <Compile Include="Receiver.cs" />
     <Compile Include="Controller\UPSController.cs" />
     <Compile Include="Controller\VCommController.cs" />
+    <Compile Include="Writer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Midlib\Midlib.vcxproj">

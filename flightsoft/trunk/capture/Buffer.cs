@@ -21,13 +21,12 @@ namespace uGCapture
 
         public String text
         {
-            get { return text; }
-            set { text = value; }
+            get; set; 
         }
+
         public ulong capacityUtilization
         {
-            get { return capacityUtilization; }
-            set { capacityUtilization = value; }
+            get; set; 
         }
 
         public T[] Data 

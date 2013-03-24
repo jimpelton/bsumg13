@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace uGCapture
 {
-    enum BufferType
+    public enum BufferType
     {
         ERROR,
         IMAGE405,

@@ -124,7 +124,13 @@ namespace uGCapture
                 
                
                 };
-                File.WriteAllBytes(String.Format("data_{0}_{1}.raw",me.msc.managed_GetWavelength(), me.nextIdx++), me.dest);
+
+                Buffer<Byte> imagebuffer = StagingBuffer.PopEmpty();
+                imagebuffer.setData(me.dest, (me.msc.managed_GetWavelength()==405)?BufferType.IMAGE405 : BufferType.IMAGE485);
+                //File.WriteAllBytes(String.Format("data_{0}_{1}.raw",me.msc.managed_GetWavelength(), me.nextIdx++), me.dest);
+                imagebuffer.text = String.Format("data_{0}_{1}.raw", me.msc.managed_GetWavelength(), me.nextIdx++);
+                imagebuffer.capacityUtilization = me.size;
+                StagingBuffer.PostFull(imagebuffer);
             }
         }
     }

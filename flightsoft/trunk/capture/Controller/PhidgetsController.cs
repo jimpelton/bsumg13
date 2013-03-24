@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using Phidgets;
 using Phidgets.Events;
+using uGCapture.Controller;
 
 
 namespace uGCapture
 {
-    public class PhidgetsController : Receiver, IController
+    public class PhidgetsController : ReceiverController, IController
     {
 
         private TemperatureSensor phidgetTemperature = null;
@@ -18,6 +20,7 @@ namespace uGCapture
         private double phidgetTemperature_ProbeTemp = 0;
 
         private bool[] digitalInputs = null;
+        private bool[] digitalOutputs = null;
         private int[] analogInputs = null;
 
         public PhidgetsController()
@@ -27,6 +30,7 @@ namespace uGCapture
             
             
             digitalInputs = new bool[8];
+            digitalOutputs = new bool[8];
             analogInputs = new int[8];
 
             
@@ -140,6 +144,25 @@ namespace uGCapture
         void ifKit_SensorChange(object sender, SensorChangeEventArgs e)
         {
             analogInputs[e.Index] = e.Value;
+        }
+
+        public override void DoFrame(object source, ElapsedEventArgs e)
+        {
+            Buffer<Byte> buffer = StagingBuffer.PopEmpty();
+            String outputData = "Phidgets\n";
+            outputData += DateTime.Now.Ticks + " ";
+            outputData += phidgetTemperature_ProbeTemp + " ";
+            outputData += phidgetTemperature_AmbientTemp + " ";
+            for (int i = 0; i < 8; i++)
+            {
+                outputData += analogInputs[i].ToString() + " ";
+                outputData += digitalInputs[i].ToString() + " ";
+                outputData += digitalOutputs[i].ToString() + " ";
+            }
+
+            buffer.text = String.Format("Phidgets");
+            buffer.capacityUtilization = (uint)outputData.Length*sizeof(char);
+            StagingBuffer.PostFull(buffer);
         }
     }
 }
