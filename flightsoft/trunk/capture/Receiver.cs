@@ -35,8 +35,23 @@ namespace uGCapture
         {
             //if (receiving)
             //{
+            lock (msgs)
+            {
                 msgs.Enqueue(m);
+            }
             //}
+        }
+        
+        public void executeQueue()
+        {
+            lock (msgs)
+            {
+                if (msgs.Count > 0)
+                {
+
+                    msgs.Dequeue().execute(this);
+                }
+            }
         }
 
         /// <summary>
