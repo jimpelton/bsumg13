@@ -24,7 +24,7 @@ namespace uGCapture
         private AptinaController ac1;
         private AptinaController ac2;
         private VCommController weatherboard;
-        private Timer ticker;
+        //private Timer ticker;
 
         private Thread acThread1;
         private Thread acThread2;
@@ -40,17 +40,17 @@ namespace uGCapture
             messages = new Queue<Message>();
             dispatch = Dispatch.Instance();
 
-            ticker = new Timer(FRAME_TIME);
-            ticker.Elapsed += new ElapsedEventHandler(DoFrame);
+            //ticker = new Timer(FRAME_TIME);
+            //ticker.Elapsed += new ElapsedEventHandler(DoFrame);
         }
 
         public override void init()
         {
             BufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
-            writer = new Writer(BufferPool);
+            writer = new Writer(BufferPool);       
             writer.DirectoryName = directoryName;
             writer.init();
-
+            
             a1 = new AccelerometerController(BufferPool);
             a2 = new AccelerometerController(BufferPool);
             ac1 = new AptinaController(BufferPool);
@@ -101,9 +101,9 @@ namespace uGCapture
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-            executeQueue();
             //while(this.msgs.Count > 0)
             //    msgs.Dequeue().execute(this);
+            ExecuteMessageQueue();
 
            //check to see if we are capturing and if we are then enable the timers on our shtuff.
             if (!boolCapturing)

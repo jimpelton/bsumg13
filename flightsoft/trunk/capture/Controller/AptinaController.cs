@@ -143,12 +143,11 @@ public class AptinaController : ReceiverController
                 Marshal.Copy(new IntPtr(data), me.dest, 0, (int) me.size);
             }
 
-            Buffer<Byte> imagebuffer = null;
-            while (imagebuffer == null)
-            {
-                imagebuffer = me.BufferPool.PopEmpty();
-                Thread.Sleep(10);
-            }
+            Buffer<Byte> imagebuffer = me.BufferPool.PopEmpty();
+            //{
+            //    imagebuffer = me.BufferPool.PopEmpty();
+            //    Thread.Sleep(10);
+            //}
 
             BufferType bufferType = me.msc.managed_GetWavelength() == 405 ? 
                 BufferType.IMAGE405 : BufferType.IMAGE485;

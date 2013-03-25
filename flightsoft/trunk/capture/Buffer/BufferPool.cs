@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace uGCapture
 {
@@ -97,6 +98,7 @@ namespace uGCapture
             lock(fullBufs)
             {
                 fullBufs.Enqueue(b);
+                Monitor.PulseAll(fullBufs);
             }
         }
 
@@ -110,6 +112,7 @@ namespace uGCapture
             lock (emptyBufs)
             {
                 emptyBufs.Push(b);
+                Monitor.PulseAll(emptyBufs);
             }
         }
 
@@ -121,10 +124,14 @@ namespace uGCapture
             Buffer<T> b = null;
             lock (fullBufs)
             {
-                if (fullBufs.Count > 0)
+                while (fullBufs.Count == 0)
                 {
-                    b = fullBufs.Dequeue();
+                    Monitor.Wait(fullBufs);
                 }
+                //if (fullBufs.Count > 0)
+                //{
+                    b = fullBufs.Dequeue();
+                //}
             }
             return b;
         }
@@ -138,10 +145,14 @@ namespace uGCapture
             Buffer<T> b = null;
             lock (emptyBufs)
             {
-                if (emptyBufs.Count > 0)
+                while (emptyBufs.Count == 0)
                 {
-                    b = emptyBufs.Pop();
+                    Monitor.Wait(emptyBufs);
                 }
+                //if (emptyBufs.Count > 0)
+                //{
+                    b = emptyBufs.Pop();
+                //}
             }
             return b;
         }
@@ -155,10 +166,14 @@ namespace uGCapture
             Buffer<T> b = null;
             lock (fullBufs)
             {
-                if (fullBufs.Count > 0)
+                while (fullBufs.Count == 0)
                 {
-                    b = new Buffer<T>(fullBufs.Peek());
+                    Monitor.Wait(fullBufs);
                 }
+                //if (fullBufs.Count > 0)
+                //{
+                    b = new Buffer<T>(fullBufs.Peek());
+                //}
             }
             return b;
         }

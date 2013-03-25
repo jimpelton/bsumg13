@@ -27,7 +27,8 @@ public class Writer : ReceiverController
     public override void init()
     {
         //this.Receiving = true;
-        dp.Register(this,"FileWriter");
+        //dp.Register(this,"FileWriter");
+
         this.FrameTime = 50;
     }
 
@@ -45,7 +46,7 @@ public class Writer : ReceiverController
             {
                 fulbuf = BufferPool.PopFull();
 
-                if (fulbuf == null){ continue; }
+                //if (fulbuf == null){ continue; }
                 
                 switch (fulbuf.Type)
                 {

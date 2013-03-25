@@ -30,7 +30,7 @@ namespace uGCapture
             while (buffer == null)
             {
                 buffer = BufferPool.PopEmpty();
-                Thread.Sleep(50);
+                //Thread.Sleep(50);
             }
             String outputData = "Weatherboard\n";
             outputData += DateTime.Now.Ticks.ToString() + " ";
@@ -42,15 +42,15 @@ namespace uGCapture
             outputData +=illumunation.ToString() + " ";
             outputData += recordnum.ToString() + " ";
 
-            if (buffer != null)
-            {
+            //if (buffer != null)
+            //{
 
                 System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
                 buffer.setData(encoding.GetBytes(outputData), BufferType.VCOM);
                 buffer.Text = String.Format("Weatherboard");
                 BufferPool.PostFull(buffer);
 
-            }
+            //}
         }
 
         public override void init()

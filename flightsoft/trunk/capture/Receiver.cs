@@ -42,13 +42,12 @@ namespace uGCapture
             //}
         }
         
-        public void executeQueue()
+        public void ExecuteMessageQueue()
         {
             lock (msgs)
             {
-                if (msgs.Count > 0)
+                while (msgs.Count > 0)
                 {
-
                     msgs.Dequeue().execute(this);
                 }
             }

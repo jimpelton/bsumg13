@@ -147,12 +147,12 @@ public class PhidgetsController : ReceiverController
     public override void DoFrame(object source, ElapsedEventArgs e)
     {
  
-        Buffer<Byte> buffer = null;
-        while (buffer == null)
-        {
-            buffer = BufferPool.PopEmpty();
-            Thread.Sleep(50);
-        }
+        Buffer<Byte> buffer = BufferPool.PopEmpty();
+        //while (buffer == null)
+        //{
+        //    buffer = BufferPool.PopEmpty();
+        //    Thread.Sleep(50);
+        //}
         String outputData = "Phidgets\n";
         outputData += DateTime.Now.Ticks.ToString() + " ";
         outputData += phidgetTemperature_ProbeTemp + " ";
@@ -163,8 +163,8 @@ public class PhidgetsController : ReceiverController
             outputData += digitalInputs[i].ToString() + " ";
             outputData += digitalOutputs[i].ToString() + " ";
         }
-        if (buffer != null)
-        {
+        //if (buffer != null)
+        //{
 
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             buffer.setData(encoding.GetBytes(outputData), BufferType.PHIDGETS);
@@ -173,7 +173,7 @@ public class PhidgetsController : ReceiverController
             //buffer.CapacityUtilization = (uint)outputData.Length*sizeof(char); not the case
             BufferPool.PostFull(buffer);
             
-        }
+        //}
     }
 
 
