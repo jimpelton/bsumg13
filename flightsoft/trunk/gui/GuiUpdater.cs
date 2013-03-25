@@ -22,12 +22,13 @@ namespace gui
         {
             try
             {
-                while (this.msgs.Count > 0)
-                    msgs.Dequeue().execute(this);
+                //while (this.msgs.Count > 0)
+                //    msgs.Dequeue().execute(this);
+                ExecuteMessageQueue();
             }
             catch (NullReferenceException nel)/// temp fix for monday's test. 5 minutes out.
             {
-                Console.Write("UpdateGUI in GuiUpdater.cs threw a null pointer exception at msgs.Dequeue().execute(this)");
+                Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at msgs.Dequeue().execute(this)");
  
             }
 

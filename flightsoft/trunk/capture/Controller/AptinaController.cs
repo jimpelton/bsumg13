@@ -108,7 +108,6 @@ public class AptinaController : ReceiverController
 
         while (true)
         {
-            Console.WriteLine(String.Format("{0} top. {1}", me.tnum, DateTime.Now.Millisecond));
             curval = Interlocked.Increment(ref barrierCounter);
             if (curval == numcams)
             {
@@ -119,6 +118,7 @@ public class AptinaController : ReceiverController
             {
                 barrierSemaphore.WaitOne();
             }
+            Console.WriteLine(String.Format("{0} top. {1}", me.tnum, DateTime.Now.Millisecond));
 
             me.runningMutex.WaitOne();
             if (!me.running)

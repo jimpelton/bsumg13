@@ -195,7 +195,7 @@ SimpleCapture::_doCapture()
         memcpy(pCameraBuff, pGrabframeBuff, frameSize);
         //fwrite(pCameraBuff, frameSize, 1, imfile);
     }
-    printf("[done]\n");
+    //printf("[done]\n");
     //fclose(imfile); 
     return pCameraBuff;
 }

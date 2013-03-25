@@ -25,7 +25,7 @@ namespace uGCapture
     /// </summary>
     public class Dispatch
     {
-        private const int DISPATCH_INTERVAL = 100;
+        private const int DISPATCH_INTERVAL = 1000;
         private Queue<Message> mesWait;
         private Dictionary<string, ReceiverDudes> receivers;
 
@@ -100,19 +100,22 @@ namespace uGCapture
         {
             try // implement thread safety in all of this.
             {
-                foreach (ReceiverDudes r in receivers.Values)
+                lock (mesWait)
                 {
-                    foreach (Message m in mesWait)
+                    foreach (ReceiverDudes r in receivers.Values)
                     {
-                        r.dude.accept(m);
+                        foreach (Message m in mesWait)
+                        {
+                            r.dude.accept(m);
+                        }
                     }
-                }
 
-                mesWait.Clear();// after we send them out once lets not send them again.
+                    mesWait.Clear(); // after we send them out once lets not send them again.
+                }
             }
             catch (InvalidOperationException e)
             {
-                Console.Write(e.StackTrace);
+                Console.WriteLine(e.StackTrace);
             }
         }
 

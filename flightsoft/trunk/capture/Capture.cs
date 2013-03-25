@@ -10,7 +10,7 @@ namespace uGCapture
 {
     public class CaptureClass : ReceiverController
     {
-        private static int FRAME_TIME = 500;
+        //private static int FRAME_TIME = 500;
         private String directoryName;
         private bool boolCapturing = false;
 
