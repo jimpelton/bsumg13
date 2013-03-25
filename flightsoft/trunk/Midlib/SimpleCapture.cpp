@@ -188,7 +188,7 @@ SimpleCapture::_doCapture()
 
         /* Skip frames until a good frame is found.  */
         int count=0;
-        nRet = pCamera->grabFrame(pCamera, pGrabframeBuff, pCamera->sensor->bufferSize);
+        nRet = pCamera->grabFrame(pCamera, pGrabframeBuff, pCamera->sensor->bufferSize); //this throws a null pointer exception if a camera is not connected.
         if (nRet != MI_CAMERA_SUCCESS) {
             return NULL;
         }

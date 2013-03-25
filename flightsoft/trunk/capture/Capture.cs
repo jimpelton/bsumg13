@@ -48,7 +48,7 @@ namespace uGCapture
         {
             BufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
             writer = new Writer(BufferPool);       
-            phidgetsController = new PhidgetsController(BufferPool);
+            
             a1 = new AccelerometerController(BufferPool);
             a2 = new AccelerometerController(BufferPool);
             ac1 = new AptinaController(BufferPool);
@@ -72,13 +72,22 @@ namespace uGCapture
             {
                 dp.BroadcastLog(this, eek.Message, 100);
                 Console.WriteLine(eek.StackTrace);
-            } 
+            }
 
+            phidgetsController = new PhidgetsController(BufferPool);
             phidgetsController.init();
 
-            weatherboard = new VCommController(BufferPool);
-            weatherboard.init();
-            
+            try
+            {
+                weatherboard = new VCommController(BufferPool);
+                weatherboard.init();
+            }
+            catch (VCommControllerNotInitializedException eek)
+            {
+                dp.BroadcastLog(this, eek.Message, 100);
+                Console.WriteLine(eek.StackTrace);               
+            }
+
             writer.DirectoryName = directoryName;
             writer.init();
 
@@ -135,7 +144,7 @@ namespace uGCapture
                 boolCapturing = lm.running;
 
                 if (boolCapturing)
-                {
+                {                   
                     acThread1 = new Thread(() => AptinaController.go(ac1));
                     acThread2 = new Thread(() => AptinaController.go(ac2));
                     acThread1.Start();

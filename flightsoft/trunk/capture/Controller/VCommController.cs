@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Timers;
@@ -58,7 +59,15 @@ namespace uGCapture
             port.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
             port.ReadTimeout = 500;
             port.WriteTimeout = 500;
-            port.Open();
+            try
+            {
+                port.Open();
+            }
+            catch( IOException e)
+            {
+                throw new VCommControllerNotInitializedException("VComm crapped out on .Open");
+            }
+            
         }
 
         private void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -85,6 +94,14 @@ namespace uGCapture
                 illumunation = Double.Parse(values[5]);
                 
             }
+        }
+
+    }
+    public class VCommControllerNotInitializedException : Exception
+    {
+        public VCommControllerNotInitializedException(string message)
+            : base(message)
+        {
         }
     }
 }
