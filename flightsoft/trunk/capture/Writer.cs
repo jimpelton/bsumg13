@@ -8,7 +8,7 @@ using System.Timers;
 
 namespace uGCapture
 {
-class Writer : ReceiverController
+public class Writer : ReceiverController
 {
     private uint index = 0;
     private string m_directoryName;
@@ -40,7 +40,7 @@ class Writer : ReceiverController
         {
             try
             {
-                //fulbuf = StagingBuffer.PopFull();
+                fulbuf = BufferPool.PopFull();
 
                 switch (fulbuf.Type)
                 {
@@ -59,6 +59,7 @@ class Writer : ReceiverController
                     default:
                         break;
                 }
+                BufferPool.PostEmpty(fulbuf);
             }
             catch (Exception e)
             {
