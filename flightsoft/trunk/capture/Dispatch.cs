@@ -98,7 +98,7 @@ namespace uGCapture
 
         private void deliver()      
         {
-          //  try // implement thread safety in all of this.
+            try // implement thread safety in all of this.
             {
                 foreach (ReceiverDudes r in receivers.Values)
                 {
@@ -110,9 +110,9 @@ namespace uGCapture
 
                 mesWait.Clear();// after we send them out once lets not send them again.
             }
-          //  catch (IllegalOperationException e)
+            catch (InvalidOperationException e)
             {
-                
+                Console.Write(e.StackTrace);
             }
         }
 

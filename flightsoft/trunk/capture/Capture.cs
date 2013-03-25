@@ -23,6 +23,7 @@ namespace uGCapture
         private Writer writer;
         private AptinaController ac1;
         private AptinaController ac2;
+        private VCommController weatherboard;
         private Timer ticker;
 
         private Thread acThread1;
@@ -52,6 +53,8 @@ namespace uGCapture
             a2 = new AccelerometerController(BufferPool);
             ac1 = new AptinaController(BufferPool);
             ac2 = new AptinaController(BufferPool);
+            weatherboard = new VCommController(BufferPool);
+            weatherboard.init();
             phidgetsController.init();
             ac1.init();
             ac2.init();
@@ -79,6 +82,7 @@ namespace uGCapture
                 a1.TickerEnabled = false;
                 a2.TickerEnabled = false;
                 writer.TickerEnabled = false;
+                weatherboard.TickerEnabled = false;
             }
             else
             {
@@ -86,6 +90,7 @@ namespace uGCapture
                 a1.TickerEnabled = true;
                 a2.TickerEnabled = true;
                 writer.TickerEnabled = true;
+                weatherboard.TickerEnabled = true;
             }
         }
 
@@ -105,18 +110,22 @@ namespace uGCapture
         public override void exSetCaptureState(Receiver r, Message m)
         {
             SetCaptureStateMessage lm = m as SetCaptureStateMessage;
-            boolCapturing = lm.running;
-            if (boolCapturing)
+            if (lm != null)
             {
-                acThread1 = new Thread(() => AptinaController.go(ac1));
-                acThread2 = new Thread(() => AptinaController.go(ac2));
-                acThread1.Start();
-                acThread2.Start();
-            }
-            else
-            {
-                ac1.stop();
-                ac2.stop();
+                boolCapturing = lm.running;
+
+                if (boolCapturing)
+                {
+                    acThread1 = new Thread(() => AptinaController.go(ac1));
+                    acThread2 = new Thread(() => AptinaController.go(ac2));
+                    acThread1.Start();
+                    acThread2.Start();
+                }
+                else
+                {
+                    ac1.stop();
+                    ac2.stop();
+                }
             }
         }
 

@@ -52,6 +52,9 @@ public class Writer : ReceiverController
                     case (BufferType.PHIDGETS):
                         WritePhidgetsOutput(fulbuf, Math.Min(index405, index485));
                         break;
+                    case (BufferType.VCOM):
+                        WriteWeatherboardOutput(fulbuf, Math.Min(index405, index485));
+                        break;
                     case (BufferType.IMAGE405):
                         //index405 = uint.Parse(fulbuf.Text);
                         WriteImageOutput(fulbuf, 405, index405++);
@@ -90,6 +93,16 @@ public class Writer : ReceiverController
     {
         String filename = String.Format("Phidgets{0}.txt", index);
         FileStream fs = File.Create("C:\\Data\\"+m_directoryName+"\\"+filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
+        BinaryWriter bw = new BinaryWriter(fs);
+        bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
+        bw.Close();
+        fs.Close();
+    }
+
+    private void WriteWeatherboardOutput(Buffer<Byte> buf, uint index)
+    {
+        String filename = String.Format("Barometer{0}.txt", index);
+        FileStream fs = File.Create("C:\\Data\\" + m_directoryName + "\\" + filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
         BinaryWriter bw = new BinaryWriter(fs);
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
