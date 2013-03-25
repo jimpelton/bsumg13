@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 
+using std::string;
 
 mi_camera_t *gCameras[MAX_CAMS]; 
 bool gDone = FALSE;						// Set to cause all workers to exit
@@ -79,13 +80,13 @@ SimpleCapture::initMidLib2(int nCamsReq)
     mi_s32 errval = mi_OpenCameras(gCameras, 
 		&SimpleCapture::num_cameras, mi_SensorData());
     
-    if (num_cameras < nCamsReq) {
+ /*   if (num_cameras < nCamsReq) {
         printf("Could not initialize %d camera(s). Found %d. \n",
             nCamsReq, num_cameras);
         mi_CloseCameras();
 
         return errval;
-    } 
+    } */
 
     isMidLibInit=true;
 
@@ -100,7 +101,7 @@ SimpleCapture::openTransport(int camIdx)
 	int rval = 0;
     if (!isMidLibInit) {
         printf("openTransport() called before initMidLib2().\n");
-        return 1;
+        return -1;
     }
 
     m_cameraIdx=camIdx;
@@ -116,14 +117,15 @@ SimpleCapture::openTransport(int camIdx)
     mi_GetErrorLogFileName(errorFileName);
     printf("Log file: %s \n", errorFileName);
 
-    std::stringstream iniFilePath;
-    char lpCwdBuf[100];
-    GetCurrentDirectory(100, lpCwdBuf);
-	iniFilePath << lpCwdBuf << "\\MicrogravityImager.ini";
-	std::string iniDir = iniFilePath.str();
-	const char* presetNamePtr = "Demo Initialization Mono";
+    //std::stringstream iniFilePath;
+    //char lpCwdBuf[100];
+    //GetCurrentDirectory(100, lpCwdBuf);
+	//iniFilePath << lpCwdBuf << "\\MicrogravityImager.ini";
+	//std::string iniDir = iniFilePath.str();
+	std::string iniFilePath("C:\\MicrogravityImager.ini");
+	const char* presetName = "Demo Initialization Mono";
     
-    mi_s32 errnum = mi_LoadINIPreset(pCamera, iniDir.c_str(), presetNamePtr);
+	mi_s32 errnum = mi_LoadINIPreset(pCamera, iniFilePath.c_str(), presetName);
     switch(errnum) {
     case MI_INI_KEY_NOT_SUPPORTED:
         printf("%d: MI_INI_KEY_NOT_SUPPORTED\n", MI_INI_KEY_NOT_SUPPORTED);
@@ -170,7 +172,7 @@ SimpleCapture::openTransport(int camIdx)
 unsigned char * 
 SimpleCapture::_doCapture()
 {
-    char fname[30];
+    //char fname[30];
     //sprintf(fname, "Camera%d_%d.raw", m_camNM, m_nextFrameIdx++);
     //imfile = fopen(fname,"wb");
     //TODO: error checking for open file!

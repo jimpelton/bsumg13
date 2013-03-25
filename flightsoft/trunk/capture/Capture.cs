@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Timers;
 using Phidgets;
 using Phidgets.Events;
+using Timer = System.Timers.Timer;
 
 namespace uGCapture 
 {
@@ -19,8 +21,12 @@ namespace uGCapture
         private AccelerometerController a1; 
         private AccelerometerController a2;
         private Writer writer;
-
+        private AptinaController ac1;
+        private AptinaController ac2;
         private Timer ticker;
+
+        private Thread acThread1;
+        private Thread acThread2;
 
         public CaptureClass() : base()
         {
@@ -44,18 +50,21 @@ namespace uGCapture
             phidgetsController = new PhidgetsController(BufferPool);
             a1 = new AccelerometerController(BufferPool);
             a2 = new AccelerometerController(BufferPool);
-
+            ac1 = new AptinaController(BufferPool);
+            ac2 = new AptinaController(BufferPool);
             phidgetsController.init();
+            ac1.init();
+            ac2.init();
             
             writer.DirectoryName = directoryName;
             writer.init();
 
-
+            
             this.Receiving = true;
             dp.Register(this,"CaptureControl");
 
             this.TickerEnabled = true;
-
+           
         }
 
         public override void DoFrame(object source, ElapsedEventArgs e)
@@ -97,6 +106,18 @@ namespace uGCapture
         {
             SetCaptureStateMessage lm = m as SetCaptureStateMessage;
             boolCapturing = lm.running;
+            if (boolCapturing)
+            {
+                acThread1 = new Thread(() => AptinaController.go(ac1));
+                acThread2 = new Thread(() => AptinaController.go(ac2));
+                acThread1.Start();
+                acThread2.Start();
+            }
+            else
+            {
+                ac1.stop();
+                ac2.stop();
+            }
         }
 
     }

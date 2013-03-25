@@ -35,7 +35,7 @@ public:
     /** 
      * \brief Init all cams, make sure at least nCamsReq 
      * cameras were initialized.
-     * \return 1 on failure, 0 otherwise.
+     * \return 0 on success, or greater than 0 on failure.
      */
     static int initMidLib2(int nCamsReq);
 
@@ -92,6 +92,8 @@ public:
     void stopTransport();
 
     unsigned long sensorBufferSize();
+
+
     unsigned char* _doCapture();
 
   /************************************************************************/
@@ -125,7 +127,7 @@ public:
 	 * 
      *  \return 1 on error, 0 on success.
      */
-    int managed_OpenTransport(int camidx)
+	int managed_OpenTransport(int camidx)
     {
         return native_sc->openTransport(camidx);
     }
@@ -158,8 +160,6 @@ public:
 
 	/**-
 	  *  \brief CLR wrapper around _doCapture.
-	  *  Note: _doCapture writes the captured file to disk, so
-	  *  if you are planning on doing that yourself
 	  */
     unsigned char* managed_DoCapture()
     {

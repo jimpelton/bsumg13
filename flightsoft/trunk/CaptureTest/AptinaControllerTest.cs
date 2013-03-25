@@ -11,9 +11,23 @@ namespace CaptureTest
         [TestMethod]
         public void InitMidlibTest()
         {
-            //AptinaController ac = new AptinaController(1);
+            BufferPool<byte> bp = new BufferPool<byte>(10, 16777216);
+            AptinaController ac = new AptinaController(bp);
+            ac.init();
+
+            Thread t1 = new Thread(() => AptinaController.go(ac));
+            t1.Start();
+
+            //Thread.Sleep(1000);
+
+            //ac.stop();
+
+            //t1.Join();
+
+            //AptinaController ac2 = new AptinaController(bp);
+            //ac2.init();
+
             
-            Int32 initResult = 1;
             //do
             //{
                 //TODO: fix the memory leak this loop causes in SimpleCapture::initMidLib(). --JP
