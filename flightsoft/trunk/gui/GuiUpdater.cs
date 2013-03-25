@@ -20,8 +20,17 @@ namespace gui
 
         public void UpdateGUI(object sender, EventArgs e)
         {
-            if (this.msgs.Count > 0)
-                msgs.Dequeue().execute(this);
+            try
+            {
+                while (this.msgs.Count > 0)
+                    msgs.Dequeue().execute(this);
+            }
+            catch (NullReferenceException nel)/// temp fix for monday's test. 5 minutes out.
+            {
+                Console.Write("UpdateGUI in GuiUpdater.cs threw a null pointer exception at msgs.Dequeue().execute(this)");
+ 
+            }
+
             dp.Broadcast(new GuiDataRequestMessage(this));
         }
 

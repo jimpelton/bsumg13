@@ -52,7 +52,8 @@ public class PhidgetsController : ReceiverController
             phidgetTemperature.TemperatureChange += 
                 new TemperatureChangeEventHandler(tempSensor_TemperatureChange);
 
-            phidgetTemperature.thermocouples[0].Sensitivity = 0.01;
+            phidgetTemperature.thermocouples[0].Sensitivity = 0.001;
+
 
             dp.BroadcastLog(this, "Temperature Sensor found", 0);
         }
@@ -115,9 +116,9 @@ public class PhidgetsController : ReceiverController
     void tempSensor_TemperatureChange(object sender, TemperatureChangeEventArgs e)
     {
         if (e.Index == 0)
-            phidgetTemperature_AmbientTemp = e.Temperature;
-        else
             phidgetTemperature_ProbeTemp = e.Temperature;
+
+        phidgetTemperature_AmbientTemp = phidgetTemperature.ambientSensor.Temperature;
 
         //debug
         //dp.BroadcastLog(this, String.Format("OMG OMG! Temperature Changed! {0}", e.Temperature), 2);

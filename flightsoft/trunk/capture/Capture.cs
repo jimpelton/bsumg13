@@ -47,8 +47,10 @@ namespace uGCapture
         public override void init()
         {
             BufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
-            writer = new Writer(BufferPool);       
-            
+            writer = new Writer(BufferPool);
+            writer.DirectoryName = directoryName;
+            writer.init();
+
             a1 = new AccelerometerController(BufferPool);
             a2 = new AccelerometerController(BufferPool);
             ac1 = new AptinaController(BufferPool);
@@ -88,8 +90,6 @@ namespace uGCapture
                 Console.WriteLine(eek.StackTrace);               
             }
 
-            writer.DirectoryName = directoryName;
-            writer.init();
 
             
             this.Receiving = true;
@@ -101,8 +101,9 @@ namespace uGCapture
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-            while(this.msgs.Count > 0)
-                msgs.Dequeue().execute(this);
+            executeQueue();
+            //while(this.msgs.Count > 0)
+            //    msgs.Dequeue().execute(this);
 
            //check to see if we are capturing and if we are then enable the timers on our shtuff.
             if (!boolCapturing)

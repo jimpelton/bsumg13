@@ -106,9 +106,9 @@
             // 
             // btn_Go
             // 
-            this.btn_Go.Location = new System.Drawing.Point(420, 157);
+            this.btn_Go.Location = new System.Drawing.Point(6, 6);
             this.btn_Go.Name = "btn_Go";
-            this.btn_Go.Size = new System.Drawing.Size(159, 80);
+            this.btn_Go.Size = new System.Drawing.Size(1142, 676);
             this.btn_Go.TabIndex = 0;
             this.btn_Go.Text = "Start Capture";
             this.btn_Go.UseVisualStyleBackColor = true;

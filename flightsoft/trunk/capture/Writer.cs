@@ -28,6 +28,7 @@ public class Writer : ReceiverController
     {
         //this.Receiving = true;
         dp.Register(this,"FileWriter");
+        this.FrameTime = 50;
     }
 
     /*
