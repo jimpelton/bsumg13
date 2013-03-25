@@ -25,7 +25,9 @@ public class Writer : ReceiverController
 
     public override void init()
     {
-        throw new NotImplementedException();
+        this.Receiving = true;
+        dp.Register(this,"FileWriter");
+        //throw new NotImplementedException();
     }
 
     /*

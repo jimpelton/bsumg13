@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Timers;
 using Phidgets;
 using Phidgets.Events;
@@ -24,7 +25,7 @@ public class PhidgetsController : ReceiverController
     {
         digitalInputs = new bool[8];
         digitalOutputs = new bool[8];
-        analogInputs = new int[8];
+        analogInputs = new int[8];     
     }
 
             
@@ -51,7 +52,7 @@ public class PhidgetsController : ReceiverController
             phidgetTemperature.TemperatureChange += 
                 new TemperatureChangeEventHandler(tempSensor_TemperatureChange);
 
-            phidgetTemperature.thermocouples[0].Sensitivity = 0.02;
+            phidgetTemperature.thermocouples[0].Sensitivity = 0.01;
 
             dp.BroadcastLog(this, "Temperature Sensor found", 0);
         }
@@ -119,7 +120,7 @@ public class PhidgetsController : ReceiverController
             phidgetTemperature_ProbeTemp = e.Temperature;
 
         //debug
-        dp.BroadcastLog(this, String.Format("OMG OMG! Temperature Changed! %f", e.Temperature), 2);
+        //dp.BroadcastLog(this, String.Format("OMG OMG! Temperature Changed! {0}", e.Temperature), 2);
     }
 
     void ifKit_Attach(object sender, AttachEventArgs e)
@@ -134,7 +135,7 @@ public class PhidgetsController : ReceiverController
 
     void ifKit_OutputChange(object sender, OutputChangeEventArgs e)
     {
-       
+        digitalOutputs[e.Index] = e.Value;
     }
 
     void ifKit_SensorChange(object sender, SensorChangeEventArgs e)
@@ -144,9 +145,13 @@ public class PhidgetsController : ReceiverController
 
     public override void DoFrame(object source, ElapsedEventArgs e)
     {
+ 
         Buffer<Byte> buffer = null;
-        //while(buffer==null)
-        //    buffer=StagingBuffer.PopEmpty();
+        while (buffer == null)
+        {
+            buffer = BufferPool.PopEmpty();
+            Thread.Sleep(50);
+        }
         String outputData = "Phidgets\n";
         outputData += DateTime.Now.Ticks.ToString() + " ";
         outputData += phidgetTemperature_ProbeTemp + " ";
@@ -162,11 +167,11 @@ public class PhidgetsController : ReceiverController
 
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             buffer.setData(encoding.GetBytes(outputData), BufferType.PHIDGETS);
-            buffer.Text = String.Format("Phidgets");
+            buffer.Text = String.Format("Phidgets");           
             //buffer.CapacityUtilization = ((uint) encoding.GetByteCount(outputData));
             //buffer.CapacityUtilization = (uint)outputData.Length*sizeof(char); not the case
-
-            //StagingBuffer.PostFull(buffer);
+            BufferPool.PostFull(buffer);
+            
         }
     }
 

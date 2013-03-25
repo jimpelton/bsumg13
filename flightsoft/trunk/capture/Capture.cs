@@ -39,11 +39,17 @@ namespace uGCapture
 
         public override void init()
         {
-            
+            BufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
+            writer = new Writer(BufferPool);       
             phidgetsController = new PhidgetsController(BufferPool);
             a1 = new AccelerometerController(BufferPool);
             a2 = new AccelerometerController(BufferPool);
-            writer = new Writer(BufferPool);
+
+            phidgetsController.init();
+            
+            writer.DirectoryName = directoryName;
+            writer.init();
+
 
             this.Receiving = true;
             dp.Register(this,"CaptureControl");
