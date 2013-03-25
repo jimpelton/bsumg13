@@ -30,8 +30,15 @@ namespace uGCapture
             protected set { m_bufferPool = value; }
         }
         private BufferPool<byte> m_bufferPool;
-        
-        protected ReceiverController() { }
+
+        protected ReceiverController()
+        {
+            m_frameTime = 500;
+
+            m_ticker = new Timer(m_frameTime);
+            m_ticker.Elapsed += new ElapsedEventHandler(DoFrame);
+            m_ticker.Enabled = false;
+        }
 
         protected ReceiverController(BufferPool<byte> bp, int frame_time=500) 
         {

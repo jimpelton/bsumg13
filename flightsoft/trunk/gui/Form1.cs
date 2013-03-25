@@ -40,6 +40,11 @@ namespace gui
 
         private void btn_Go_Click(object sender, EventArgs e)
         {
+            bool capting = guiMain.ToggleCapture();           
+            if(capting)
+                btn_Go.Text = "Stop Capture";
+            else
+                btn_Go.Text = "Start Capture";
             
         }
 

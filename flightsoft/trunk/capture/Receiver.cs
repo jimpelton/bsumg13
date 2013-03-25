@@ -55,6 +55,11 @@ namespace uGCapture
         public virtual void exAptinaStatus(Receiver r, Message m) { ; }
 
         /// <summary>
+        /// Generate a SetCaptureStateMessage
+        /// </summary>
+        public virtual void exSetCaptureState(Receiver r, Message m) { ; }
+
+        /// <summary>
         /// Act on given LogMessage.
         /// </summary>
         public virtual void exLogMessage(Receiver r, Message m) { ; }

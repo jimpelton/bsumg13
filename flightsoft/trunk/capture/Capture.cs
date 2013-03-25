@@ -10,6 +10,7 @@ namespace uGCapture
     {
         private static int FRAME_TIME = 500;
         private String directoryName;
+        private bool boolCapturing = false;
 
         private Queue<Message> messages;
         private Dispatch dispatch;
@@ -25,8 +26,10 @@ namespace uGCapture
         {
             DateTime time = DateTime.Now;              // Use current time
             directoryName = "yyyyMMMdddHHmm";          // Use this format  
+            directoryName = time.ToString(directoryName);
+
             System.IO.Directory.CreateDirectory("C:\\Data\\"+directoryName);
-            //stagingBuffer = new BufferPool<byte>(100);
+
             messages = new Queue<Message>();
             dispatch = Dispatch.Instance();
 
@@ -41,11 +44,34 @@ namespace uGCapture
             a1 = new AccelerometerController(BufferPool);
             a2 = new AccelerometerController(BufferPool);
             writer = new Writer(BufferPool);
+
+            this.Receiving = true;
+            dp.Register(this,"CaptureControl");
+
+            this.TickerEnabled = true;
+
         }
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-           
+            while(this.msgs.Count > 0)
+                msgs.Dequeue().execute(this);
+
+           //check to see if we are capturing and if we are then enable the timers on our shtuff.
+            if (!boolCapturing)
+            {
+                phidgetsController.TickerEnabled = false;
+                a1.TickerEnabled = false;
+                a2.TickerEnabled = false;
+                writer.TickerEnabled = false;
+            }
+            else
+            {
+                phidgetsController.TickerEnabled = true;
+                a1.TickerEnabled = true;
+                a2.TickerEnabled = true;
+                writer.TickerEnabled = true;
+            }
         }
 
         public void LogDebugMessage(String s)
@@ -61,14 +87,11 @@ namespace uGCapture
             );
         }
 
-        //public Buffer<Byte> GetEmptyByteBuffer()
-        //{
-        //    return StagingBuffer.PopEmpty();
-        //}
+        public override void exSetCaptureState(Receiver r, Message m)
+        {
+            SetCaptureStateMessage lm = m as SetCaptureStateMessage;
+            boolCapturing = lm.running;
+        }
 
-        //public void submitFilledByteBuffer(Buffer<Byte> fullbuf)
-        //{
-        //    StagingBuffer.PostFull(fullbuf);
-        //}
     }
 }
