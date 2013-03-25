@@ -26,9 +26,8 @@ public class Writer : ReceiverController
 
     public override void init()
     {
-        this.Receiving = true;
+        //this.Receiving = true;
         dp.Register(this,"FileWriter");
-        //throw new NotImplementedException();
     }
 
     /*
@@ -82,7 +81,7 @@ public class Writer : ReceiverController
     private void WriteImageOutput(Buffer<Byte> buf,int wavelength,uint index)
     {
         String filename = String.Format("data_{0}_{1}.raw", wavelength, index);
-        FileStream fs = File.Create("C:\\Data\\" + m_directoryName + "\\" + filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
+        FileStream fs = File.Create("C:\\Data\\" + m_directoryName + "\\" + filename, (int)buf.CapacityUtilization, FileOptions.None);
         BinaryWriter bw = new BinaryWriter(fs);
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
@@ -92,7 +91,7 @@ public class Writer : ReceiverController
     private void WritePhidgetsOutput(Buffer<Byte> buf, uint index)
     {
         String filename = String.Format("Phidgets{0}.txt", index);
-        FileStream fs = File.Create("C:\\Data\\"+m_directoryName+"\\"+filename, (int)(uint)buf.CapacityUtilization, FileOptions.None);
+        FileStream fs = File.Create("C:\\Data\\"+m_directoryName+"\\"+filename, (int)buf.CapacityUtilization, FileOptions.None);
         BinaryWriter bw = new BinaryWriter(fs);
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();

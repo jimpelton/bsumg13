@@ -95,6 +95,8 @@ SimpleCapture::initMidLib2(int nCamsReq)
 }
 
 //return: 0 success, > 0 on failure.
+// -1 midlib not initialized
+// -2 likely no cameras were found.
 int 
 SimpleCapture::openTransport(int camIdx)
 {
@@ -106,7 +108,7 @@ SimpleCapture::openTransport(int camIdx)
 
     m_cameraIdx=camIdx;
     pCamera = 0==m_cameraIdx ? gCameras[0] : gCameras[1];
-
+	if (pCamera == NULL) { return -2; }
     if( (rval = pCamera->startTransport(pCamera)) != MI_CAMERA_SUCCESS ) {
         printf("Start Transport Unsuccessful.\n");
         mi_CloseCameras();

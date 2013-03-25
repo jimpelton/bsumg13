@@ -53,11 +53,31 @@ namespace uGCapture
             a2 = new AccelerometerController(BufferPool);
             ac1 = new AptinaController(BufferPool);
             ac2 = new AptinaController(BufferPool);
+            try
+            {
+                ac1.init();
+                acThread1 = new Thread(() => AptinaController.go(ac1));
+            }
+            catch (AptinaControllerNotInitializedException eek)
+            {
+                dp.BroadcastLog(this, eek.Message, 100);
+                Console.WriteLine(eek.StackTrace);
+            }
+            try
+            {
+                ac2.init();
+                acThread2 = new Thread(() => AptinaController.go(ac2));
+            }
+            catch (AptinaControllerNotInitializedException eek)
+            {
+                dp.BroadcastLog(this, eek.Message, 100);
+                Console.WriteLine(eek.StackTrace);
+            } 
+
+            phidgetsController.init();
+
             weatherboard = new VCommController(BufferPool);
             weatherboard.init();
-            phidgetsController.init();
-            ac1.init();
-            ac2.init();
             
             writer.DirectoryName = directoryName;
             writer.init();
@@ -94,18 +114,18 @@ namespace uGCapture
             }
         }
 
-        public void LogDebugMessage(String s)
-        {
-            LogDebugMessage(s, 0);
-        }
+        //public void LogDebugMessage(String s)
+        //{
+        //    LogDebugMessage(s, 0);
+        //}
 
-        public void LogDebugMessage(String s, int severtity)
-        {
-            dp.Broadcast
-            (
-                new LogMessage(this, s, severtity)
-            );
-        }
+        //public void LogDebugMessage(String s, int severtity)
+        //{
+        //    dp.Broadcast
+        //    (
+        //        new LogMessage(this, s, severtity)
+        //    );
+        //}
 
         public override void exSetCaptureState(Receiver r, Message m)
         {

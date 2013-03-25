@@ -51,13 +51,40 @@ public class AptinaController : ReceiverController
     public override void init()
     {
         int r = ManagedSimpleCapture.managed_InitMidLib(numcams);
-        if (r == 0) { r = msc.managed_OpenTransport(tnum); }
-        size = msc.managed_SensorBufferSize();
-        dest = new byte[size];
+        if (r == 0)
+        {
+            r = msc.managed_OpenTransport(tnum);
+        }
+        else
+        {
+            throw new AptinaControllerNotInitializedException("AptinaController failed init: InitMidLib failed.");
+        }
 
+        if (r == 0)
+        {
+            size = msc.managed_SensorBufferSize();
+        }
+        else
+        {
+            throw new AptinaControllerNotInitializedException("AptinaController failed init: OpenTransport failed for controller: "+tnum);
+        }
+
+        if (size != 0)
+        {
+            dest = new byte[size];
+        }
+        else
+        {
+            throw new AptinaControllerNotInitializedException("AptinaController failed init: SensorBufferSize() returned 0 size for controller: "+tnum);
+        }
+
+
+        //Receiving = r == 0 && size != 0;
         Receiving = true;
+        //Receiving = false;
         dp.Register(this, "AptianController"+tnum);
-        dp.BroadcastLog(this, "AptinaController class initialized...", 1);
+        dp.BroadcastLog(this, String.Format("AptinaController receiving {0}", Receiving),1);
+        dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
     }
 
     public void stop()
@@ -81,7 +108,6 @@ public class AptinaController : ReceiverController
 
         while (true)
         {
-
             Console.WriteLine(String.Format("{0} top. {1}", me.tnum, DateTime.Now.Millisecond));
             curval = Interlocked.Increment(ref barrierCounter);
             if (curval == numcams)
@@ -140,4 +166,11 @@ public class AptinaController : ReceiverController
         throw new Exception("The method or operation is not implemented.");
     }
 }
+
+    public class AptinaControllerNotInitializedException : Exception
+    {
+        public AptinaControllerNotInitializedException(string message) : base(message)
+        {
+        }
+    }
 }

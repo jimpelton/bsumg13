@@ -81,7 +81,8 @@ public:
      *	\param camidx The camera index to open transport for. Must be <= to the number
      *	of cameras that midlib2 found.
      *
-     *  \return 0 on success, > 0 on error.
+     *  \return -1 if initmidlib was never called, -2 if no cameras were found, 
+	 *           0 on success, > 0 on error.
      *  
      */
     int  openTransport(int camidx); 

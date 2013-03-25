@@ -27,12 +27,16 @@ namespace uGCapture
         }
 
         /// <summary>
-        /// Accept the message and put it in the execution queue.
+        /// Accept the message and put it in the execution queue if the 
+        /// receiving state of this Receiver is true.
         /// </summary>
         /// <param name="m">the message being delivered.</param>
         public void accept(Message m)
         {
-            msgs.Enqueue(m);
+            //if (receiving)
+            //{
+                msgs.Enqueue(m);
+            //}
         }
 
         /// <summary>
