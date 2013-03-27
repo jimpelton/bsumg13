@@ -112,6 +112,15 @@
     <ClCompile Include="CirclesFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\debug-gui\moc_CirclePropsFrame.cpp">
+      <Filter>Generated Files\debug-gui</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_CirclePropsFrame.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_CirclePropsFrame.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ugip.qrc">
@@ -144,12 +153,15 @@
     <CustomBuild Include="uigp2.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="CirclePropsFrame.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CirclePropsFrame.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_InputFrame.h">
@@ -166,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="CirclesFile.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_CirclePropsFrame.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
