@@ -65,7 +65,7 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
 {
     ofstream file(m_filename, std::ios::out);
     if (!file.is_open()) {
-        std::cerr << m_filename << " never opened for output! Can't write circles file." << std::endl;
+        std::cerr << m_filename << " never opened for output! Can't write circles file.\n";
         return -1;
     }
 
@@ -98,7 +98,7 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
     return i;
 }
 
-//return -1 on error, >=0 on success.
+//return -1 on error, number of circles on success.
 int CirclesFile::parseCirclesFile()
 {
 
@@ -110,7 +110,7 @@ int CirclesFile::parseCirclesFile()
 
     int nLines = 0, nCirc = 0;
 
-    //[xx]|[abcd]:[xxxx],[xxxx]
+    //circles file has lines like this: [12]|[abcd]:[1234],[1234]
     regex reg("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
     cmatch cm;
     char line[50];
@@ -148,11 +148,11 @@ int CirclesFile::parseCirclesFile()
                 k=std::stoi(key); 
                 std::cout << "k=" << k << std::endl;
 
-            } catch (std::invalid_argument eek) {
+            } catch (const std::invalid_argument &eek) {
                 std::cerr << "Error parsing circles file." << std::endl;                  
                 std::cerr << eek.what();
                 return -1;
-            } catch (std::out_of_range eek) {
+            } catch (const std::out_of_range &eek) {
                 std::cerr << "Argument in circles file was expected to be an integer: " << std::endl;
                 std::cerr << eek.what();
                 return -1;

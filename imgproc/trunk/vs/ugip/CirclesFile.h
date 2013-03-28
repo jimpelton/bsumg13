@@ -49,6 +49,7 @@ public:
 
     /** 
     * \brief Parse the circles file at filename 
+	* \return -1 on error, number of circles parsed on success.
     */
     int parseCirclesFile();
 

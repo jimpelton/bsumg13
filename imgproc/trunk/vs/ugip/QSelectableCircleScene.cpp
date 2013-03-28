@@ -92,7 +92,6 @@ void QSelectableCircleScene::setRadius( int r )
 	//		eee->setRect(rectangle);
 	//	}
 	//}
-
 }
 
 

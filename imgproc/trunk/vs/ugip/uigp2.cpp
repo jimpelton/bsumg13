@@ -205,7 +205,12 @@ void uigp2::openCirclesFile()
 
 void uigp2::displayImage( int idx )
 {
-    if (idx >= m_circlesList.size() || idx < 0) {
+	if (m_fileNameList.isEmpty())
+	{
+		qDebug() << "Filename list is empty, can't display image.";
+		return;
+	}
+    if (idx >= m_fileNameList.size() || idx < 0) {
         qDebug() << "Invalid index given to display image: " << idx;
         return;
     }

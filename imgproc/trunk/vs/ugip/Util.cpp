@@ -22,6 +22,8 @@ const char *EXTENSION = ".raw";
 string circlesFileName;
 string infile;
 string outfile;
+int sidx;
+int eidx;
 
 bool parseArgs( int argc, char **argv )
 {
@@ -31,9 +33,11 @@ bool parseArgs( int argc, char **argv )
         desc.add_options()
             ("help", "produce help message")
             ("text", "enter command line mode")
-            ("circles-file,c", po::value<string>(), "set circles file")
-            ("input-dir,i", po::value<string>(), "set input directory")
-            ("output-dir,o", po::value<string>(), "set output directory")
+            ("circles-file,c", po::value<string>(), "Set circles file")
+            ("input-dir,i", po::value<string>(), "Set input directory")
+            ("output-dir,o", po::value<string>(), "Set output directory")
+			("start-idx,s", po::value<string>(), "Starting Index")
+			("end-idx,e", po::value<string>(), "Ending Index")
         ;
 
         po::variables_map vm;
@@ -62,6 +66,20 @@ bool parseArgs( int argc, char **argv )
         } else {
             std::cout << "No output dir given.\n";
         }
+
+		if (vm.count("start-idx")) {
+			sidx = vm["start-idx"].as<int>();
+		} else {
+			sidx = -1;
+			std::cout << "No starting index given, assuming starting index of 0.\n";
+		}
+
+		if (vm.count("end-idx")) {
+			eidx = vm["end-idx"].as<int>();
+		} else {
+			eidx = -1;
+			std::cout << "No ending index given, assuming ending idx as last file.\n";
+		}
 
     } catch(std::exception &eek) {
         std::cerr << "error: " << eek.what() << "\n";
