@@ -178,5 +178,13 @@ public class PhidgetsController : ReceiverController
 
 
 }
+public class PhidgetsControllerNotInitializedException : Exception
+{
+    public PhidgetsControllerNotInitializedException(string message)
+        : base(message)
+    {
+    }
+}
+
 }
 

@@ -37,47 +37,53 @@ public class Writer : ReceiverController
      * Writes data to the disk.
      * returns false if an error occurs.
      */
-    public Boolean WriteData()
+    public static void WriteData(Writer w)
     {
         Buffer<Byte> fulbuf = null;
-        do
+        while (true)
         {
             try
             {
-                fulbuf = BufferPool.PopFull();
+                fulbuf = w.BufferPool.PopFull();
 
                 //if (fulbuf == null){ continue; }
                 
                 switch (fulbuf.Type)
                 {
                     case (BufferType.PHIDGETS):
-                        WritePhidgetsOutput(fulbuf, Math.Min(index405, index485));
+                        w.WritePhidgetsOutput(fulbuf, Math.Min(w.index405, w.index485));
                         break;
                     case (BufferType.VCOM):
-                        WriteWeatherboardOutput(fulbuf, Math.Min(index405, index485));
+                        w.WriteWeatherboardOutput(fulbuf, Math.Min(w.index405, w.index485));
+                        break;
+                    case (BufferType.ACCELEROMETER):
+                        w.WriteAccelerometerOutput(fulbuf, Math.Min(w.index405, w.index485));
+                        break;
+                    case (BufferType.NI6008):
+                        w.WriteNI6008Output(fulbuf, Math.Min(w.index405, w.index485));
                         break;
                     case (BufferType.IMAGE405):
                         //index405 = uint.Parse(fulbuf.Text);
-                        WriteImageOutput(fulbuf, 405, index405++);
+                        w.WriteImageOutput(fulbuf, 405, w.index405++);
                         break;
                     case (BufferType.IMAGE485):
                         //index485 = uint.Parse(fulbuf.Text);
-                        WriteImageOutput(fulbuf, 485, index485++);
+                        w.WriteImageOutput(fulbuf, 485, w.index485++);
                         break;
                     default:
                         break;
                 }
-                BufferPool.PostEmpty(fulbuf);
+                w.BufferPool.PostEmpty(fulbuf);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.StackTrace); 
-                return false;
+                return ;
             }
-        } while (fulbuf!=null);
-        
+        } // while (fulbuf!=null);
 
-        return true;
+
+        //return;
     }
 
     private void WriteImageOutput(Buffer<Byte> buf,int wavelength,uint index)
@@ -100,6 +106,26 @@ public class Writer : ReceiverController
         fs.Close();
     }
 
+    private void WriteNI6008Output(Buffer<Byte> buf, uint index)
+    {
+        String filename = String.Format("NI6008_{0}.txt", index);
+        FileStream fs = File.Create("C:\\Data\\" + m_directoryName + "\\" + filename, (int)buf.CapacityUtilization, FileOptions.None);
+        BinaryWriter bw = new BinaryWriter(fs);
+        bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
+        bw.Close();
+        fs.Close();
+    }
+
+    private void WriteAccelerometerOutput(Buffer<Byte> buf, uint index)
+    {
+        String filename = String.Format("Accel{0}_{1}.txt", buf.Text, index);//we can use the text to differentiate between different accelerometers.
+        FileStream fs = File.Create("C:\\Data\\" + m_directoryName + "\\" + filename, (int)buf.CapacityUtilization, FileOptions.None);
+        BinaryWriter bw = new BinaryWriter(fs);
+        bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
+        bw.Close();
+        fs.Close();
+    }
+
     private void WriteWeatherboardOutput(Buffer<Byte> buf, uint index)
     {
         String filename = String.Format("Barometer{0}.txt", index);
@@ -112,7 +138,7 @@ public class Writer : ReceiverController
 
     public override void DoFrame(object source, ElapsedEventArgs e)
     {
-        WriteData();
+        //WriteData();
     }
 
 

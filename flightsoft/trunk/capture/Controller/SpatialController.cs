@@ -9,15 +9,15 @@ using System.Timers;
 
 namespace uGCapture
 {
-    public class AccelerometerController : ReceiverController
+    public class SpatialController : ReceiverController
     {
-        private Accelerometer accel = null;
+        private Spatial accel = null;
         private double[] rawacceleration = null;
         private double[] acceleration = null;
         private double[] vibration = null;
         private int SerialNumber;
 
-        public AccelerometerController(BufferPool<byte> bp, int serial)
+        public SpatialController(BufferPool<byte> bp, int serial)
             : base(bp)
         {
             SerialNumber = serial;
@@ -37,14 +37,14 @@ namespace uGCapture
             try
             {
                 dp.BroadcastLog(this, "Waiting for accelerometer to be found", 0);
-                accel = new Accelerometer();
+                accel = new Spatial();
                 accel.open(SerialNumber);
                 accel.waitForAttachment(10000);
                 accel.Attach += new AttachEventHandler(accel_Attach);
                 accel.Detach += new DetachEventHandler(Sensor_Detach);
                 accel.Error += new ErrorEventHandler(Sensor_Error);
-                accel.AccelerationChange +=
-                    new AccelerationChangeEventHandler(accel_AccelerationChange);
+                accel.SpatialData +=
+                    new SpatialDataEventHandler(accel_AccelerationChange);
 
                 dp.BroadcastLog(this, "Accelerometer found", 0);
             }
@@ -74,11 +74,15 @@ namespace uGCapture
         }
 
         //gets an raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise. (wip)
-        void accel_AccelerationChange(object sender, AccelerationChangeEventArgs e)
+        void accel_AccelerationChange(object sender, SpatialDataEventArgs e)
         {
-            vibration[e.Index] += Math.Abs(e.Acceleration - rawacceleration[e.Index]);          //accumulates total change per axis
-            acceleration[e.Index] = (acceleration[e.Index] + rawacceleration[e.Index]) / 2.0;   //need a better filter than this
-            rawacceleration[e.Index] = e.Acceleration;                                          //what we will use the most
+            for (int i = 0; i < 3; i++)
+            {
+                double acc = e.spatialData[0].Acceleration[i];
+                vibration[i] += Math.Abs(acc - rawacceleration[i]);
+                acceleration[i] = (acceleration[i] + rawacceleration[i])/2.0;                
+                rawacceleration[i] = acc; 
+            }
         }
 
         void Sensor_Detach(object sender, DetachEventArgs e)
@@ -124,9 +128,9 @@ namespace uGCapture
 
     }
 
-    public class AccelerometerControllerNotInitializedException : Exception
+    public class SpatialControllerNotInitializedException : Exception
     {
-        public AccelerometerControllerNotInitializedException(string message)
+        public SpatialControllerNotInitializedException(string message)
             : base(message)
         {
         }

@@ -168,7 +168,7 @@ namespace uGCapture
             {
                 while (fullBufs.Count == 0)
                 {
-                    Monitor.Wait(fullBufs);
+                    Monitor.Wait(fullBufs,10000);
                 }
                 //if (fullBufs.Count > 0)
                 //{

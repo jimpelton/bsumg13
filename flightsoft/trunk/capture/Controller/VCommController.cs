@@ -59,6 +59,10 @@ namespace uGCapture
             port.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
             port.ReadTimeout = 500;
             port.WriteTimeout = 500;
+            if (port.IsOpen)
+            {
+                port.Close();
+            }
             try
             {
                 port.Open();
