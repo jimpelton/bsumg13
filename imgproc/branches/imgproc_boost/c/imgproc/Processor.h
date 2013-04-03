@@ -34,7 +34,7 @@ namespace uG
         void requestStop()
         {
             m_mutex.lock();
-            m_stopRequested=true;
+                m_stopRequested=true;
             m_mutex.unlock();
         }
 
