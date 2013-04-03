@@ -1,8 +1,6 @@
 
-
 #include "Writer.h"
 #include "ugTypes.h"
-
 
 #include <iostream>
 #include <fstream>
@@ -49,10 +47,11 @@ namespace uG
         ss << m_outPath << "/Data" << buf->id << ".txt";
 
         string outfile = ss.str();
-        ofstream ofile(outfile, std::ios::out);
+        ofstream ofile(outfile.c_str(), std::ios::out);
 
         if (!ofile.is_open()) {
-            cerr << outfile << " never opened for output! Can't write output file!" << endl;
+            cerr << outfile << " never opened for output! Can't write output file!" 
+                 << endl;
             return;
         }
 

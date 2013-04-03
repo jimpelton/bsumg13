@@ -18,9 +18,9 @@
 
 
 namespace uG {
-    /**
-      *	\brief Reads any file from disc and places the data into a buffer pool of char.
-      */
+/**
+  *	\brief Reads any file from disc and places the data into a buffer pool of char.
+ */
 class Reader
 {
 public:

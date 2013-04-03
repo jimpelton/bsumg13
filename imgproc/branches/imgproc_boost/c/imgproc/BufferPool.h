@@ -40,6 +40,9 @@ namespace uG
   * soon I will know how to do this the right way.
   * 
   * //  [1/21/2013 jim]
+  * 
+  * Change log:
+  *     [2/22/2013 jim] Port to boost mutex and threads. 
   */
 template <  class _Ty > 
 class BufferPool

@@ -9,10 +9,10 @@ SVN_V:=-D'SVNVER="$(shell svnversion -n .)"'
 
 CC=g++
 INCDIR=-Iboost
-CFLAGS=-g -Wall -shared -fPIC -O0 -I$(INCDIR)
+CFLAGS=-g -Wall -fPIC -shared  $(INCDIR)
 
-LIBS=-lboost_filesystem -lboost_program_options
-LFLAGS=-L$(LIBDIR) $(LIBS)
+LIBS=-lboost_thread 
+LFLAGS=$(LIBDIR) $(LIBS)
 
 OBJS:=$(patsubst %.cpp,%.o,$(wildcard *.cpp))
 

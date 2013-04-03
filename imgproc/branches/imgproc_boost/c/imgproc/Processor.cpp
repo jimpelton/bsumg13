@@ -25,7 +25,7 @@ namespace uG
         m_stopRequested = false;
         m_imgproc = ImageProcessorFactory::getInstance()->newProc(vars);
 
-        m_tid = 0;
+//        m_tid = 0;
         m_stopRequested = false;
         m_imgproc = ImageProcessorFactory::getInstance()->newProc(vars);
     }
