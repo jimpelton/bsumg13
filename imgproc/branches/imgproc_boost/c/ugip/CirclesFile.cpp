@@ -12,28 +12,30 @@
 #include <algorithm>
 #include <regex>
 
-using namespace std;
+using std::string;
+using std::vector;
 
 typedef std::vector<CenterInfo > centerVector;
 
 
 CirclesFile::CirclesFile()
     : m_filename()
-    , m_centers(NULL)
+    , m_centers()
 {}
 
 CirclesFile::CirclesFile(string filename)
     : m_filename(filename)
-    , m_centers(NULL)
+    , m_centers()
 {}
 
 CirclesFile::~CirclesFile() {}
 
 
-void CirclesFile::findRows(centerVector &centers, std::vector<centerVector > &rows, 
+void CirclesFile::findRows(centerVector &centers, vector<centerVector > &rows, 
     int dist_thresh)
 {
     std::sort(centers.begin(), centers.end(), sortCenterByY);
+
 	centerVector::iterator centerIt = centers.begin();
 	centerVector::iterator centerIt_end = centers.end()-1;
     int curRow = 0;	
@@ -63,20 +65,20 @@ void CirclesFile::findRows(centerVector &centers, std::vector<centerVector > &ro
 
 int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
 {
-    ofstream file(m_filename, std::ios::out);
+    std::ofstream file(m_filename.c_str(), std::ios::out);
     if (!file.is_open()) {
         std::cerr << m_filename << " never opened for output! Can't write circles file." << std::endl;
         return -1;
     }
 
     //initial "header" stuff
-    stringstream fileText;
+    std::stringstream fileText;
     fileText << "[imgx]:" << img.xdim  << "\n" <<    //image x dim
         "[imgy]:" << img.ydim << "\n" <<             //image y dim
         "[crad]:" << centers.front().r << "\n";      //circle radius
 
     //sort circles file.
-    vector<vector<CenterInfo> > rows;
+    vector<vector<CenterInfo > > rows;
     findRows(centers, rows, 60);
 
     int i=0;
@@ -101,8 +103,8 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
 //return -1 on error, >=0 on success.
 int CirclesFile::parseCirclesFile()
 {
-
-    ifstream file(m_filename, std::ios::in);
+    
+    std::ifstream file(m_filename.c_str(), std::ios::in);
     if (!file.is_open()) {
         std::cerr << "Couldn't open given circles file: " << m_filename << std::endl;
         return -1;
@@ -111,13 +113,13 @@ int CirclesFile::parseCirclesFile()
     int nLines = 0, nCirc = 0;
 
     //[xx]|[abcd]:[xxxx],[xxxx]
-    regex reg("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
-    cmatch cm;
+    std::regex reg("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
+    std::cmatch cm;
     char line[50];
     while (!file.eof() && nLines < 500) { //500 chosen just for sanity.
         file.getline(line, 50);
         ++nLines;
-        regex_match(line, cm, reg);
+        std::regex_match(line, cm, reg);
         string key(cm[1]);
         string val(cm[2]);
         string val2(cm[3]);
@@ -136,7 +138,7 @@ int CirclesFile::parseCirclesFile()
                 return -1;
             }
         } else {
-            int x,y,k,row,col;
+            int x,y,k;
             try {
 
                 x = std::stoi(val);
@@ -176,13 +178,13 @@ CenterInfo CirclesFile::getCenter(int idx)
 }
 
 //sort ascending by X
-bool CirclesFile::sortCenterByX(CenterInfo &lhs, CenterInfo &rhs)
+bool CirclesFile::sortCenterByX(const CenterInfo &lhs, const CenterInfo &rhs)
 {
     return  lhs.x < rhs.x;
 }
 
 //sort ascending by Y
-bool CirclesFile::sortCenterByY(CenterInfo &lhs, CenterInfo &rhs)
+bool CirclesFile::sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs)
 {
     return lhs.y < rhs.y;
 }

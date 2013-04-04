@@ -27,7 +27,7 @@ namespace uG
          *  \param pfun The worker function.
          *  \param parg Pointer to arguments for pfun.
          */
-        WorkerThread(DWORD (WINAPI *pfun)(void*), void *parg)
+        WorkerThread(void (*func)(void), void *parg, boost::barrier *bar)
             : m_stoprequested(false)
             , m_running(false)
             , m_tid()
@@ -93,11 +93,12 @@ namespace uG
         bool m_stoprequested;
         bool m_running;
         boost::thread m_thread;
+        boost::barrier *m_barrier;
 
         
-        LPDWORD m_tid;
-        HANDLE m_thread;
-        CRITICAL_SECTION m_criticalSection;
+//        LPDWORD m_tid;
+//        HANDLE m_thread;
+//        CRITICAL_SECTION m_criticalSection;
     };
 
 } /* namespace uG */

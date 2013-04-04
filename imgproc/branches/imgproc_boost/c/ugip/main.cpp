@@ -7,12 +7,13 @@
 #include "Reader.h"
 #include "Processor.h"
 #include "Writer.h"
-#include "WorkerThread.h"
+//#include "WorkerThread.h"
 #include "BufferPool.h"
 #include "ugTypes.h"
 
 #include <QtWidgets/QMainWindow>
 #include <QtCore/QCoreApplication>
+#include <boost/thread.hpp>
 
 #include <vector>
 #include <iostream>
@@ -21,7 +22,7 @@ using uG::BufferPool;
 using uG::Processor;
 using uG::Writer;
 using uG::Reader;
-using uG::WorkerThread;
+//using uG::WorkerThread;
 
 using std::string;
 using std::vector;
@@ -86,7 +87,7 @@ int doCL(int argc, char *argv[])
     vector<Reader*> readers;
     vector<Processor*> procs;
     vector<Writer*> writers;
-    vector<WorkerThread*> workers;    
+    vector<boost::thread*> workers;    
 
     uG::ImageBufferPool imgbp(60, szfile);
     uG::DataBufferPool  datbp(20, numcirc);
@@ -102,7 +103,7 @@ int doCL(int argc, char *argv[])
     for (int i = 0; i < NUM_READERS; ++i) {
         Reader *r = new Reader(readerFilesVec[i], &imgbp);
         readers.push_back(r);
-        workers.push_back(new WorkerThread(r->do_work, (void*)r));
+//        workers.push_back(new WorkerThread(r->do_work, (void*)r));
     }
 
     uG::uGProcVars vars;    
@@ -120,13 +121,13 @@ int doCL(int argc, char *argv[])
     for (int i = 0; i < NUM_PROCS; ++i) {
         Processor *p = new Processor(&imgbp, &datbp, &vars);
         procs.push_back(p);
-        workers.push_back( new WorkerThread(p->do_work, (void*)p) );
+//        workers.push_back( new WorkerThread(p->do_work, (void*)p) );
     }
 
     for (int i = 0; i < NUM_WRITE; ++i) {
         Writer *w = new Writer(outpath, &datbp);
         writers.push_back(w);
-        workers.push_back(new WorkerThread(w->do_work, (void*)w));
+//        workers.push_back(new WorkerThread(w->do_work, (void*)w));
     }
 
     std::cout << "Created: " << readers.size() << " reader threads.\n";
@@ -134,15 +135,15 @@ int doCL(int argc, char *argv[])
     std::cout << "Created: " << writers.size() << " writer threads.\n";
     std::cout << "Starting threads..." << std::endl;
 
-    vector<WorkerThread*>::iterator worker_iter = workers.begin();
-    for (; worker_iter != workers.end(); ++worker_iter) {
-        (*worker_iter)->go();
-    }
+//    vector<WorkerThread*>::iterator worker_iter = workers.begin();
+//    for (; worker_iter != workers.end(); ++worker_iter) {
+//        (*worker_iter)->go();
+//    }
 
-    worker_iter = workers.begin();
-    for(; worker_iter != workers.end(); ++worker_iter) {
-        (*worker_iter)->join();
-    }
+//    worker_iter = workers.begin();
+//    for(; worker_iter != workers.end(); ++worker_iter) {
+//        (*worker_iter)->join();
+//    }
 
     //TODO: cleanup!! whaaattt?!? I cleanup for no one!  
 

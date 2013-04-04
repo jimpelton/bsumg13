@@ -61,8 +61,8 @@ private:
     ImageInfo m_info;
     int m_radius;
 
-    static bool sortCenterByY(CenterInfo &lhs, CenterInfo &rhs); 
-    static bool sortCenterByX(CenterInfo &lhs, CenterInfo &rhs);
+    static bool sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs); 
+    static bool sortCenterByX(const CenterInfo &lhs, const CenterInfo &rhs);
 
     /**
     *	\brief Sort centers into rows, then rows into columns.
