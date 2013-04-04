@@ -31,6 +31,8 @@ const   int    NUM_PROCS         = 2;
 const   int    NUM_WRITE         = 2;
 const  string  file_extension    = ".raw";
 
+extern  int    sidx;                        // starting image index
+extern  int    eidx;                        // ending image index
 extern string  circlesFileName;
 extern string  infile;
 extern string  outfile;
@@ -69,7 +71,7 @@ int doCL(int argc, char *argv[])
         return 0;
     }
 
-    //read every .raw file into fileVec
+    //read every .raw filename into fileVec
     stringVector fileVec;
     getDirEntries(inpath, file_extension, fileVec);
     std::cout << "Found " << fileVec.size() << " .raw files.\n";
@@ -87,7 +89,7 @@ int doCL(int argc, char *argv[])
     vector<WorkerThread*> workers;    
 
     uG::ImageBufferPool imgbp(60, szfile);
-    uG::DataBufferPool  datbp(20, 96);
+    uG::DataBufferPool  datbp(20, numcirc);
     
     //partition file names for Readers
     int i = 0;
@@ -106,10 +108,10 @@ int doCL(int argc, char *argv[])
     uG::uGProcVars vars;    
     vars.imgh = 1944;
     vars.imgw = 2592;
-    vars.radius = 45;
-    vars.numWells = 96;
-    vars.centers = new uG::uGCenter[96];
-    for (int i = 0; i < circlesFile.getNumCircles(); ++i) {
+    vars.radius = circlesFile.getRadius();
+    vars.numWells = numcirc;
+    vars.centers = new uG::uGCenter[numcirc];
+    for (int i = 0; i < numcirc; ++i) {
         CenterInfo ci = circlesFile.getCenter(i);
         uG::uGCenter ugc = {ci.x, ci.y, ci.r};
         vars.centers[i] = ugc;
