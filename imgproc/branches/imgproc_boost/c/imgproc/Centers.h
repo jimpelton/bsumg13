@@ -34,6 +34,7 @@ struct uGProcVars
 };
 
 /// 1 if we will draw DEBUG circles, 0 otherwise.
+/// initialized in Imgproc.cpp
 extern int uG_DEBUG;
 
 

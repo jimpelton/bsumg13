@@ -35,11 +35,11 @@ namespace uG
         AbstractImageProcessor* newProc(uGProcVars *vars)
         {
             AbstractImageProcessor *rval = NULL;
-            if (uG_DEBUG){
-                rval = new CircleDrawingImageProcessor();
-            } else {
+            //if (uG_DEBUG){
+            //    rval = new CircleDrawingImageProcessor();
+            //} else {
                 rval = new WellIndexImageProcessor();
-            }
+            //}
 
             rval->setVars(vars);
             return rval;

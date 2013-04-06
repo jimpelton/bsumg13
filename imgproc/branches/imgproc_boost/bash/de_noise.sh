@@ -16,7 +16,7 @@ function con () {
     local prefix=$5
 
     echo 
-    for i in $(seq -f "%05g" $start $end); do
+    for i in $(seq $start $end); do
         echo -en "$prefix$i.raw...\r"
         convert -noise 3 -size 2592x1944 \
         gray:$indir/$prefix$i.raw \
