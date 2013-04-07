@@ -23,6 +23,10 @@ public:
         return this->inputFrame;
     }
 
+	CirclePropsFrame *getCirclePropsFrame() const {
+		return this->circlePropsFrame;
+	}
+
 };
 
 

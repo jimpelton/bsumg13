@@ -29,15 +29,44 @@ public:
     ~uigp2();
 
 public slots:
+	/// responds to a circle being inserted into the scene.
+	void circleAdded(QSelectableEllipse *eee);
+
+    /// makes a CenterInfo from the given QSelectableEllipse and adds it
+	/// to the m_circlesList.
     void addSelectedCircle(QSelectableEllipse* eee);
+    
+	/// Receives the just removed QGraphicsItem.
+	void removedExistingCircle(QGraphicsItem *eee);
+
+	/// Changes the radius of all circles in the scene.
+	void changeCircleRadius(int r);
+
+    /// set m_imageDir to the given QString dir.
     void setImageDir(QString dir);
+
+    /// set the output directory to dir
     void setOutputDir(QString dir);
+    
+    /// set the circles file to the given filename.
     void setCirclesFileName(QString fname);
+    
+    /// adds the file name to the list of image files.
     void addScannedFile(QString fname, float percentDone);
+    
+    /// start processing (un-implemented)
     void startProcessing();
+    
+    /// save the existing circles to the specified file.
     void saveCirclesFile(QString);
+
+    /// open circles file, replaces existing CirclesFile object.
     void openCirclesFile();
+    
+    /// display image 0, called after scanning image directory.
     void doneScan();
+
+    /// display image idx in the list of image files.
     void displayImage(int idx);
 
 private:
@@ -48,9 +77,10 @@ private:
     QSelectableCircleScene *m_scene;
     SaveShowFrame *m_saveShowFrame;
     InputFrame *m_inputFrame;
+	CirclePropsFrame *m_circlePropsFrame;
 
 /************************************************************************/
-/* STUFFS                                                               */
+/* STUFFS and THINGS                                                    */
 /************************************************************************/
     QString m_imageDir;
     QString m_outputDir;

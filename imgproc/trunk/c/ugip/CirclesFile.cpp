@@ -150,11 +150,11 @@ int CirclesFile::parseCirclesFile()
                 k=std::stoi(key); 
                 std::cout << "k=" << k << std::endl;
 
-            } catch (std::invalid_argument eek) {
+            } catch (const std::invalid_argument &eek) {
                 std::cerr << "Error parsing circles file." << std::endl;                  
                 std::cerr << eek.what();
                 return -1;
-            } catch (std::out_of_range eek) {
+            } catch (const std::out_of_range &eek) {
                 std::cerr << "Argument in circles file was expected to be an integer: " << std::endl;
                 std::cerr << eek.what();
                 return -1;

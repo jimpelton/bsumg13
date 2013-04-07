@@ -27,9 +27,13 @@ uigp2::uigp2(QWidget *parent)
 
     m_saveShowFrame = infoWidget->getSaveShowFrame();
     m_inputFrame = infoWidget->getInputFrame();
+	m_circlePropsFrame = infoWidget->getCirclePropsFrame();	
 
     connect(m_scene, SIGNAL(insertedNewCircle(QSelectableEllipse*)), 
         this, SLOT(circleAdded(QSelectableEllipse*)));
+
+	connect(m_circlePropsFrame, SIGNAL(circleRadiusChanged(int)), 
+		this, SLOT(changeCircleRadius(int)));
 
     connect(m_inputFrame, SIGNAL(imageDir(QString)), 
         this, SLOT(setImageDir(QString)));
@@ -59,6 +63,12 @@ uigp2::~uigp2() { }
 /************************************************************************/
 /*    PUBLIC SLOTS                                                      */
 /************************************************************************/
+
+void uigp2::circleAdded(QSelectableEllipse *eee)
+{
+	//TODO: increment circle count?
+}
+
 void uigp2::addSelectedCircle( QSelectableEllipse* eee ) 
 {
     CenterInfo c;
@@ -68,6 +78,17 @@ void uigp2::addSelectedCircle( QSelectableEllipse* eee )
 
     m_circlesList.push_back(c);
     qDebug() << "added Center " << c.x << "," << c.y << "," << c.r;
+}
+
+void uigp2::removedExistingCircle(QGraphicsItem *eee)
+{
+	qDebug() << "Removed item: " << eee->x() << " " << eee->y();	
+}
+
+void uigp2::changeCircleRadius(int r)
+{
+	m_scene->setRadius(r);	
+	qDebug() << "Circle radius change: " << r;
 }
 
 void uigp2::setImageDir( QString dir )
@@ -103,7 +124,8 @@ void uigp2::startProcessing()
     qDebug() << "start proc'in.";
     if (m_fileNameList.size() < 1) {
         qDebug() << "Ahnooo...No file names in the list.";
-        QMessageBox::information(NULL, "No file names.", "Please select an input directory with some .raw files in it.");
+        QMessageBox::information(NULL, "No file names.", "Please select an input" \
+			"directory with some .raw files in it.");
     }
     if (m_circlesList.size() < 1) {
         qDebug() << "Ahnooo...No circles in the list.";
@@ -117,7 +139,7 @@ void uigp2::saveCirclesFile(QString fname)
 {
     if (fname.isEmpty()) {
         //TODO: write with default filename.
-        qDebug() << "no circles file name given to save to.";
+        qDebug() << "No circles file name given to save to.";
         return;
     }
 
@@ -130,16 +152,19 @@ void uigp2::saveCirclesFile(QString fname)
         m_currentImage.height() 
     };
 
-    //get all items, remove non-ellipse items.
+    //get all items, then remove non-ellipse items.
     QVector<CenterInfo> vsauce;
     QList<QGraphicsItem*> thangs = m_scene->items();
 
     for (int i=0; i < thangs.size(); ++i) {
         QGraphicsItem *item = thangs.at(i);
 
+		//remove any non-ellipse items
         if (item->type() == QSelectableEllipse::Type) {
 
             QSelectableEllipse *eee = qgraphicsitem_cast<QSelectableEllipse*>(item);
+
+			if (!eee) { continue; }
 
             //TODO: this radius is not correct (always ==0?).
             int rad = eee->rad();
@@ -168,7 +193,7 @@ void uigp2::openCirclesFile()
 
     m_circlesFile = CirclesFile(m_circlesFileName.toStdString());
 
-    if ( m_circlesList.size() < m_circlesFile.parseCirclesFile()) {
+    if (m_circlesList.size() < m_circlesFile.parseCirclesFile()) {
         m_circlesList.resize(m_circlesFile.getNumCircles());
     }
 
@@ -181,12 +206,17 @@ void uigp2::openCirclesFile()
 
 void uigp2::displayImage( int idx )
 {
-    if (idx > m_circlesList.size() || idx < 0) {
+	if (m_fileNameList.isEmpty())
+	{
+		qDebug() << "Filename list is empty, can't display image.";
+		return;
+	}
+    if (idx >= m_fileNameList.size() || idx < 0) {
         qDebug() << "Invalid index given to display image: " << idx;
         return;
     }
 
-    //open
+    //open image file
     QString thang = m_fileNameList.at(0);
     QFile img(thang);
     img.open(QIODevice::ReadOnly);
@@ -196,7 +226,7 @@ void uigp2::displayImage( int idx )
         return;
     }
 
-    //read
+    //read image into byte array
     QByteArray byteAray= img.readAll();
     size_t szAlloc = byteAray.length();
     if (szAlloc <= 0)   { 

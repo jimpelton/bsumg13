@@ -9,18 +9,28 @@
 using std::vector;
 using std::string;
 
+/**
+  *	\brief Represents a circle center in x,y coordinates, with the
+  *        associated radius.
+  */
 struct CenterInfo
 {
     int x,y,r;
 };
 
+/**
+  *	\brief Represents the size in bytes, xdim and ydim of an image.
+  */
 struct ImageInfo
 {
-    size_t img_size;
-    size_t xdim;
-    size_t ydim;
+    size_t img_size;   //< size in bytes
+    size_t xdim;       //< pixels in x dimension
+    size_t ydim;       //< pixels in y dimension
 };
 
+/**
+  *	\brief Encapsulates a circles file for easy access to the values in the file.
+  */
 class CirclesFile 
 {
 
@@ -39,12 +49,13 @@ public:
 
     /** 
     * \brief Parse the circles file at filename 
+	* \return -1 on error, number of circles parsed on success.
     */
     int parseCirclesFile();
 
     /**
       *	\brief Get the CenterInfo at idx.
-      *      *	
+      *      	
       *	\return a CenterInfo with radius -1 if no circles or idx out of bounds,
       *	otherwise returns the CenterInfo at idx.
       */

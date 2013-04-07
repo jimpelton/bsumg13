@@ -5,6 +5,8 @@
 #include <QtWidgets/QGraphicsItem>
 #include <QtWidgets/QGraphicsEllipseItem>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtGui/QKeyEvent>
+#include <QRectF>
 
 class QSelectableEllipse : public QGraphicsEllipseItem
 {
@@ -54,7 +56,7 @@ public:
     void setMode(Mode m)  { m_mode = m; }
     Mode getMode() const  { return m_mode; }
     int getRadius() const { return m_radius; }
-    void setRadius(int r) { m_radius = r; }
+    void setRadius(int r);
 
 private:
 
@@ -66,17 +68,26 @@ private:
     /// The current graphics item.
     QGraphicsItem *m_item;
 
+	/// set radius for next added circle.
     int m_radius;
 
-
+	/// set color for the next added circle.
     void setCircleColor(QColor c);
 
+	/// helper to keyPressEvent() for delete and backspace keys.
+	void removeSelected();
+
+	/************************************************************************/
+	/* EVENT OVERRIDES                                                      */
+	/************************************************************************/
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+	void keyPressEvent(QKeyEvent *event);
 
 signals:
     void insertedNewCircle(QSelectableEllipse *);
+	void removedExistingCircle(QGraphicsItem*);
 };
 
 #endif // QCLICKABLEGRAPHICSSCENE_H

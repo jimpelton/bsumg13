@@ -1,6 +1,7 @@
 #include "QSelectableCircleScene.h"
 
 #include "Centers.h"
+//#include <QDebug>
 
 using namespace uG;
 
@@ -53,6 +54,44 @@ void QSelectableCircleScene::mouseReleaseEvent( QGraphicsSceneMouseEvent *event 
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
+void QSelectableCircleScene::keyPressEvent( QKeyEvent *event )
+{
+	int key = event->key();
+	if (key == Qt::Key_Delete || key == Qt::Key_Backspace) {
+		removeSelected();		
+	}
+
+	QGraphicsScene::keyPressEvent(event);
+}
+
+void QSelectableCircleScene::removeSelected()
+{
+	QList<QGraphicsItem*> selItems = selectedItems();
+
+	QList<QGraphicsItem*>::const_iterator it = selItems.cbegin();
+	QList<QGraphicsItem*>::const_iterator itend = selItems.cend();
+	for (; it != itend; ++it) {
+		removeItem(*it);
+		emit removedExistingCircle(*it);	
+	}
+}
+
+void QSelectableCircleScene::setRadius( int r )
+{
+	m_radius = r;
+	//foreach (QGraphicsItem *item, items())
+	//{
+	//	QGraphicsEllipseItem *eee = 
+	//		qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+	//	if (eee){
+	//		qDebug() << "setting radius...";
+	//		QRectF rectangle = eee->rect();
+	//		rectangle.setWidth(2*r);
+	//		rectangle.setHeight(2*r);
+	//		eee->setRect(rectangle);
+	//	}
+	//}
+}
 
 
 
