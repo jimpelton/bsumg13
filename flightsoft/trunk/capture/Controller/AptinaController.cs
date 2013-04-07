@@ -150,7 +150,7 @@ public class AptinaController : ReceiverController
             //}
 
             BufferType bufferType = me.msc.managed_GetWavelength() == 405 ? 
-                BufferType.IMAGE405 : BufferType.IMAGE485;
+                BufferType.USHORT_IMAGE405 : BufferType.USHORT_IMAGE485;
 
             imagebuffer.setData(me.dest, bufferType);
             //File.WriteAllBytes(String.Format("data_{0}_{1}.raw",me.msc.managed_GetWavelength(), me.nextIdx++), me.dest);

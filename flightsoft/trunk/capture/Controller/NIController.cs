@@ -74,7 +74,7 @@ namespace uGCapture
             outputData += analogDataIn_Z_T + " ";
 
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            buffer.setData(encoding.GetBytes(outputData), BufferType.NI6008);
+            buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_NI6008);
             buffer.Text = String.Format("NI6008");
             BufferPool.PostFull(buffer);
             

@@ -50,23 +50,23 @@ public class Writer : ReceiverController
                 
                 switch (fulbuf.Type)
                 {
-                    case (BufferType.PHIDGETS):
+                    case (BufferType.UTF8_PHIDGETS):
                         w.WritePhidgetsOutput(fulbuf, Math.Min(w.index405, w.index485));
                         break;
-                    case (BufferType.VCOM):
+                    case (BufferType.UTF8_VCOM):
                         w.WriteWeatherboardOutput(fulbuf, Math.Min(w.index405, w.index485));
                         break;
-                    case (BufferType.ACCELEROMETER):
+                    case (BufferType.UTF8_ACCEL):
                         w.WriteAccelerometerOutput(fulbuf, Math.Min(w.index405, w.index485));
                         break;
-                    case (BufferType.NI6008):
+                    case (BufferType.UTF8_NI6008):
                         w.WriteNI6008Output(fulbuf, Math.Min(w.index405, w.index485));
                         break;
-                    case (BufferType.IMAGE405):
+                    case (BufferType.USHORT_IMAGE405):
                         //index405 = uint.Parse(fulbuf.Text);
                         w.WriteImageOutput(fulbuf, 405, w.index405++);
                         break;
-                    case (BufferType.IMAGE485):
+                    case (BufferType.USHORT_IMAGE485):
                         //index485 = uint.Parse(fulbuf.Text);
                         w.WriteImageOutput(fulbuf, 485, w.index485++);
                         break;

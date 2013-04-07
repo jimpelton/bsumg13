@@ -115,7 +115,7 @@ namespace uGCapture
                     outputData += vibration[i] + " ";
 
                 System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                buffer.setData(encoding.GetBytes(outputData), BufferType.ACCELEROMETER);
+                buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_ACCEL);
                 buffer.Text = String.Format(accel.SerialNumber.ToString());
                 BufferPool.PostFull(buffer);
             }

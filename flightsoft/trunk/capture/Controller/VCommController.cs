@@ -46,7 +46,7 @@ namespace uGCapture
             //{
 
                 System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                buffer.setData(encoding.GetBytes(outputData), BufferType.VCOM);
+                buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_VCOM);
                 buffer.Text = String.Format("Weatherboard");
                 BufferPool.PostFull(buffer);
 

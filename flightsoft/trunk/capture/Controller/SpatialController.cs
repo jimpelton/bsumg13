@@ -108,6 +108,8 @@ namespace uGCapture
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 String outputData = "Accel \n";
 
+                //TODO: maybe change these concatenations to StringBuilder, 
+                //      to ease string copies and GC-ing.
                 outputData += DateTime.Now.Ticks.ToString() + " ";
                 for (int i = 0; i < 3; i++)
                     outputData += rawacceleration[i] + " ";
@@ -119,7 +121,7 @@ namespace uGCapture
                     outputData += vibration[i] + " ";
 
                 System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                buffer.setData(encoding.GetBytes(outputData), BufferType.ACCELEROMETER);
+                buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_ACCEL);
                 buffer.Text = String.Format(accel.SerialNumber.ToString());
                 BufferPool.PostFull(buffer);
             }

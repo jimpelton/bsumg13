@@ -167,7 +167,7 @@ public class PhidgetsController : ReceiverController
         //{
 
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            buffer.setData(encoding.GetBytes(outputData), BufferType.PHIDGETS);
+            buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_PHIDGETS);
             buffer.Text = String.Format("Phidgets");           
             //buffer.CapacityUtilization = ((uint) encoding.GetByteCount(outputData));
             //buffer.CapacityUtilization = (uint)outputData.Length*sizeof(char); not the case
