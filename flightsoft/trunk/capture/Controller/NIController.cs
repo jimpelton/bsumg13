@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Timers;
 
 using NationalInstruments;
@@ -29,6 +30,8 @@ namespace uGCapture
         private AnalogSingleChannelReader reader_Y_T;
         private AnalogSingleChannelReader reader_Z_T;
 
+        private static Object hardwareMutex = new object();
+
         public NIController(BufferPool<byte> bp) 
         : base(bp)
         {
@@ -51,7 +54,8 @@ namespace uGCapture
             double analogDataIn_Y_T=0;
             double analogDataIn_Z_T=0;
 
-            lock (this)// if another instance of this method is executing we can loose data.
+            
+            lock (hardwareMutex)// if another instance of this method is executing we can loose data.
             {
                 analogDataIn_X_A = reader_X_A.ReadSingleSample();
                 analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
@@ -86,35 +90,45 @@ namespace uGCapture
 
         public override void init()
         {
+            try
+            {
 
 
 
-            AIChannel_X_A = analogInTask_X_A.AIChannels.CreateVoltageChannel(
-"dev1/ai0", "AIChannel_X_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
 
-            AIChannel_Y_A = analogInTask_Y_A.AIChannels.CreateVoltageChannel(
-"dev1/ai4", "AIChannel_Y_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                AIChannel_X_A = analogInTask_X_A.AIChannels.CreateVoltageChannel(
+                    "dev1/ai0", "AIChannel_X_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
 
-            AIChannel_Z_A = analogInTask_Z_A.AIChannels.CreateVoltageChannel(
-"dev1/ai1", "AIChannel_Z_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                AIChannel_Y_A = analogInTask_Y_A.AIChannels.CreateVoltageChannel(
+                    "dev1/ai4", "AIChannel_Y_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
 
-            AIChannel_X_T = analogInTask_X_T.AIChannels.CreateVoltageChannel(
-"dev1/ai5", "AIChannel_X_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                AIChannel_Z_A = analogInTask_Z_A.AIChannels.CreateVoltageChannel(
+                    "dev1/ai1", "AIChannel_Z_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
 
-            AIChannel_Y_T = analogInTask_Y_T.AIChannels.CreateVoltageChannel(
-"dev1/ai2", "AIChannel_Y_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                AIChannel_X_T = analogInTask_X_T.AIChannels.CreateVoltageChannel(
+                    "dev1/ai5", "AIChannel_X_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
 
-            AIChannel_Z_T = analogInTask_Z_T.AIChannels.CreateVoltageChannel(
-"dev1/ai6", "AIChannel_Z_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                AIChannel_Y_T = analogInTask_Y_T.AIChannels.CreateVoltageChannel(
+                    "dev1/ai2", "AIChannel_Y_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
 
-            reader_X_A = new AnalogSingleChannelReader(analogInTask_X_A.Stream);
-            reader_Y_A = new AnalogSingleChannelReader(analogInTask_Y_A.Stream);
-            reader_Z_A = new AnalogSingleChannelReader(analogInTask_Z_A.Stream);
-            reader_X_T = new AnalogSingleChannelReader(analogInTask_X_T.Stream);
-            reader_Y_T = new AnalogSingleChannelReader(analogInTask_Y_T.Stream);
-            reader_Z_T = new AnalogSingleChannelReader(analogInTask_Z_T.Stream);
+                AIChannel_Z_T = analogInTask_Z_T.AIChannels.CreateVoltageChannel(
+                    "dev1/ai6", "AIChannel_Z_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
 
-            dp.BroadcastLog(this, "NI-USB-6008 started up...", 1);
+                reader_X_A = new AnalogSingleChannelReader(analogInTask_X_A.Stream);
+                reader_Y_A = new AnalogSingleChannelReader(analogInTask_Y_A.Stream);
+                reader_Z_A = new AnalogSingleChannelReader(analogInTask_Z_A.Stream);
+                reader_X_T = new AnalogSingleChannelReader(analogInTask_X_T.Stream);
+                reader_Y_T = new AnalogSingleChannelReader(analogInTask_Y_T.Stream);
+                reader_Z_T = new AnalogSingleChannelReader(analogInTask_Z_T.Stream);
+
+                dp.BroadcastLog(this, "NI-USB-6008 started up...", 1);
+            }
+            catch (NationalInstruments.DAQmx.DaqException)
+            {
+                dp.BroadcastLog(this, "NI-USB-6008 failed to start up...", 1);
+                throw new NIControllerNotInitializedException("NI-USB-6008 failed to start up...");
+            }
+
         }
     }
 

@@ -67,11 +67,15 @@ namespace uGCapture
             {
                 port.Open();
             }
-            catch( IOException e)
+            catch (IOException e)
             {
                 throw new VCommControllerNotInitializedException("VComm crapped out on .Open");
             }
-            
+            catch (UnauthorizedAccessException e)
+            {
+                
+                port.Close();         
+            }
         }
 
         private void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)

@@ -99,7 +99,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, eek.Message, 100);
                 Console.WriteLine(eek.StackTrace);               
             }
-
+            
             try
             {
                 ni6008 = new NIController(BufferPool);
@@ -110,7 +110,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, eek.Message, 100);
                 Console.WriteLine(eek.StackTrace);
             }
-
+            
             try
             {
                 a1 = new AccelerometerController(BufferPool, 159352);
@@ -164,7 +164,7 @@ namespace uGCapture
                 a2.TickerEnabled = true;
                 writer.TickerEnabled = true;
                 weatherboard.TickerEnabled = true;
-                ni6008.TickerEnabled = true;
+               // ni6008.TickerEnabled = true;
             }
         }
 

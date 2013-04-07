@@ -67,6 +67,11 @@ namespace gui
         private String GetTimestamp()
         {
             return DateTime.Now.ToString("dd:HH:mm:ss ");
+        }
+
+        private void chart1_Click(object sender, EventArgs e)
+        {
+
         }    
     }
 }
