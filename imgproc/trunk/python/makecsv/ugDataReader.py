@@ -33,6 +33,11 @@ class ugDataReader():
         self._readGravityFiles(df.fileNames("grav"))
 
     def valuesList(self, typeString):
+        """
+        Get the list for the given type (405, 485, grav).
+        :param typeString:
+        :return:
+        """
         if typeString == "405":
             return self.values405
         elif typeString == "485":

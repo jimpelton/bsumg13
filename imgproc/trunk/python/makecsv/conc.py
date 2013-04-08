@@ -9,6 +9,8 @@ def _concRmin(ratios):
     Find the minimum ratio
     """
 
+
+
 def calculateConcentrations(ratios, val405, val485):
     """
     Calculate Ca+2 concentrations from calibration equation:
@@ -34,9 +36,9 @@ def calculateConcentrations(ratios, val405, val485):
             ionoSlice = getIono(well)
 
             F405min = min(val405[time][egtaSlice])
-            F405max = max(val405[time][ionoSlice])  # should be Iono
+            F405max = max(val405[time][ionoSlice])
             F485min = min(val485[time][ionoSlice])
-            F485max = max(val485[time][egtaSlice])  # should be EGTA
+            F485max = max(val485[time][egtaSlice])
             Q = F485min / F485max
             Rmin = F405min / F485min
             Rmax = F405max / F485max
@@ -52,7 +54,7 @@ def calculateConcentrations(ratios, val405, val485):
             carrs.F485MaxVals[time][well] = F485max
             carrs.NumVals[time][well] = numval
             carrs.DenVals[time][well] = denval
-            carrs.Concs[time][well] = Kd * Q * ((r - Rmin) / (Rmax - r))
+            carrs.Concs[time][well] = Kd * Q * (numval / denval)
 
             well += 1
 

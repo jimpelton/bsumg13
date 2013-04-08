@@ -1,4 +1,4 @@
-from asynchat import find_prefix_at_end
+
 
 __author__ = 'jim'
 
@@ -35,6 +35,11 @@ class ugDataFile:
             self.__needsUpdate = False
 
     def fileNames(self, typeString):
+        """
+        Get the file names for the files for the given value type.
+        :param typeString:
+        :return:
+        """
         if typeString == "405":
             return self.__files405
         elif typeString == "485":
@@ -45,6 +50,11 @@ class ugDataFile:
             return None
 
     def fromTo(self, sIdx=0, eIdx=0):
+        """
+        Set the
+        :param sIdx:
+        :param eIdx:
+        """
         if sIdx > eIdx:
             temp = eIdx
             sIdx = temp
@@ -163,22 +173,50 @@ class ugDataFile:
 
 
     def sIdx(self):
+        """
+        Starting index (the first index).
+        :return: start index as an int.
+        """
         return self.__startingIndex
 
     def eIdx(self):
+        """
+        Ending index.
+        :return:
+        """
         return self.__endingIndex
 
     def length(self):
+        """
+        Number of elements in the data file.
+        :return:
+        """
         return (self.eIdx() - self.sIdx()) + 1
 
     def dir405(self):
+        """
+        405 files directory.
+        :return:
+        """
         return self.__dir405
 
     def dir485(self):
+        """
+        485 files directory.
+        :return:
+        """
         return self.__dir485
 
     def dirgrav(self):
+        """
+        Gravity files directory.
+        :return:
+        """
         return self.__dirgrav
 
     def dirout(self):
+        """
+        Output directory (if saving data).
+        :return:
+        """
         return self.__dirout
