@@ -131,6 +131,7 @@ public class Writer : ReceiverController
         bw.Close();
         fs.Close();
         StoreImageData(buf,wavelength,index);
+        
     }
 
     private void WritePhidgetsOutput(Buffer<Byte> buf, uint index)
@@ -179,10 +180,11 @@ public class Writer : ReceiverController
 
     private void StoreImageData(Buffer<Byte> buf, int wavelength, uint index)
     {
+        Buffer<byte> buf2 = new Buffer<byte>(buf);
         if (wavelength == 405)
-            image405 = buf;
+            image405 = buf2;
         else if (wavelength == 485)
-            image485 = buf;
+            image485 = buf2;
         else
             dp.BroadcastLog(this, "Writer passed an image with an invalid wavelength.", 5);
 
