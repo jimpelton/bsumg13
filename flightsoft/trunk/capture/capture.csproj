@@ -59,11 +59,13 @@
     <Compile Include="Controller\AccelerometerController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
     <Compile Include="Controller\SpatialController.cs" />
+    <Compile Include="Message\DataRequestMessage.cs" />
     <Compile Include="Message\SetCaptureStateMessage.cs" />
+    <Compile Include="Message\DataMessage.cs" />
     <Compile Include="ReceiverController.cs" />
     <Compile Include="Dispatch.cs" />
     <Compile Include="Message\BiteTestMessage.cs" />
-    <Compile Include="Message\GuiDataRequestMessage.cs" />
+    <Compile Include="Message\BiteDataRequestMessage.cs" />
     <Compile Include="Message\LogMessage.cs" />
     <Compile Include="Message\Message.cs" />
     <Compile Include="Controller\NIController.cs" />

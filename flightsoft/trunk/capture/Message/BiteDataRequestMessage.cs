@@ -5,9 +5,9 @@ using System.Text;
 
 namespace uGCapture
 {
-    public class GuiDataRequestMessage : Message
+    public class BiteDataRequestMessage : Message
     {     
-        public GuiDataRequestMessage(Receiver s)
+        public BiteDataRequestMessage(Receiver s)
             : base(s) { ; }
 
         public override void execute(Receiver r)

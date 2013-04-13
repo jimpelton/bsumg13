@@ -32,7 +32,7 @@ namespace gui
  
             }
 
-            dp.Broadcast(new GuiDataRequestMessage(this));
+            dp.Broadcast(new DataRequestMessage(this));
         }
 
         public override void exLogMessage(Receiver r, Message m) 

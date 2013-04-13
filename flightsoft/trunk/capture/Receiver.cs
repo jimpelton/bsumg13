@@ -68,6 +68,16 @@ namespace uGCapture
         public virtual void exPhidgetsStatus(Receiver r, Message m) { ; }
 
         /// <summary>
+        /// Generate a DataMessage
+        /// </summary>
+        public virtual void exData(Receiver r, Message m) { ; }
+
+        /// <summary>
+        /// Generate a DataMessage
+        /// </summary>
+        public virtual void exDataRequest(Receiver r, Message m) { ; }
+
+        /// <summary>
         /// Act upon given AptinaStatusMessage
         /// </summary>
         public virtual void exAptinaStatus(Receiver r, Message m) { ; }

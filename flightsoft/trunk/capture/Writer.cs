@@ -14,6 +14,29 @@ public class Writer : ReceiverController
     private uint index405 = 0;
     private string m_directoryName;
 
+    //This is the last written data stored temp so that we can send it to anyone who sends a data request.
+    private long[, ,] WellIntensities;
+    private bool[] phidgetsdigitalInputs;
+    private bool[] phidgetsdigitalOutputs;
+    private int[] phidgetsanalogInputs;
+    private double[] accel1rawacceleration;
+    private double[] accel1acceleration;
+    private double[] accel1vibration;
+    private double[] accel2rawacceleration;
+    private double[] accel2acceleration;
+    private double[] accel2vibration;
+    private double[] NIanaloginputs;
+    private double humidity = 0;
+    private double temp1 = 0;
+    private double temp2 = 0;
+    private double temp3 = 0;
+    private double pressure = 0;
+    private double illumunation = 0;
+
+    private Buffer<byte> image405 = null;
+    private Buffer<byte> image485 = null;
+
+
     public string DirectoryName
     {
         get { return m_directoryName; }
@@ -22,6 +45,17 @@ public class Writer : ReceiverController
 
     public Writer(BufferPool<byte> bp) : base(bp)
     {
+        WellIntensities = new long[2,16,12];
+        phidgetsdigitalInputs = new bool[8];
+        phidgetsdigitalOutputs = new bool[8];
+        phidgetsanalogInputs = new int[8];
+        accel1rawacceleration = new double[3];
+        accel1acceleration = new double[3];
+        accel1vibration = new double[3];
+        accel2rawacceleration = new double[3];
+        accel2acceleration = new double[3];
+        accel2vibration = new double[3];
+        NIanaloginputs = new double[6];
     }
 
     public override void init()
@@ -94,6 +128,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
+        StoreImageData(buf,wavelength,index);
     }
 
     private void WritePhidgetsOutput(Buffer<Byte> buf, uint index)
@@ -104,6 +139,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
+        StorePhidgetsData(buf,index);
     }
 
     private void WriteNI6008Output(Buffer<Byte> buf, uint index)
@@ -114,6 +150,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
+        StoreNI6008Data(buf,index);
     }
 
     private void WriteAccelerometerOutput(Buffer<Byte> buf, uint index)
@@ -124,6 +161,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
+        StoreAccelerometerData(buf,index);
     }
 
     private void WriteWeatherboardOutput(Buffer<Byte> buf, uint index)
@@ -134,8 +172,78 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
+        StoreWeatherboardData(buf,index);
     }
 
+    private void StoreImageData(Buffer<Byte> buf, int wavelength, uint index)
+    {
+        if (wavelength == 405)
+            image405 = buf;
+        else if (wavelength == 485)
+            image485 = buf;
+        else
+            dp.BroadcastLog(this, "Writer passed an image with an invalid wavelength.", 5);
+
+    }
+
+    private void StorePhidgetsData(Buffer<Byte> buf, uint index)
+    {
+        string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
+        string[] data = datain.Split();
+        for (int i = 0; i < 8; i++)
+        {
+                phidgetsanalogInputs[i] = int.Parse(data[(i * 3) + 1]);
+                phidgetsdigitalInputs[i] = bool.Parse(data[(i * 3) + 2]); ;
+                phidgetsdigitalOutputs[i] = bool.Parse(data[(i * 3) + 3]); ;               
+        }
+    }
+
+    private void StoreNI6008Data(Buffer<Byte> buf, uint index)
+    {
+        string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
+        string[] data = datain.Split();
+        for (int i = 0; i < 6; i++)
+            NIanaloginputs[i] = double.Parse(data[i + 1]);
+    }
+
+    private void StoreAccelerometerData(Buffer<Byte> buf, uint index)
+    {
+        string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
+        string[] data = datain.Split();
+        //decide if it is the spacial or the accelerometer.
+        if (buf.Text == "TODO:whatever the serial number of one of them is...")
+        {
+            for (int i = 2; i < 5; i++)
+                accel1rawacceleration[i - 2] = double.Parse(data[i]);
+            for (int i = 5; i < 8; i++)
+                accel1acceleration[i - 5] = double.Parse(data[i]);
+            for (int i = 8; i < 11; i++)
+                accel1vibration[i - 8] = double.Parse(data[i]);
+        }
+        else
+        {
+            for (int i = 2; i < 5; i++)
+                accel2rawacceleration[i - 2] = double.Parse(data[i]);
+            for (int i = 5; i < 8; i++)
+                accel2acceleration[i - 5] = double.Parse(data[i]);
+            for (int i = 8; i < 11; i++)
+                accel2vibration[i - 8] = double.Parse(data[i]);
+        }
+
+    }
+
+    private void StoreWeatherboardData(Buffer<Byte> buf, uint index)
+    {
+        string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
+        string[] data = datain.Split();
+
+        humidity = double.Parse(data[2]);
+        temp1 = double.Parse(data[3]);
+        temp2 = double.Parse(data[4]);
+        temp3 = double.Parse(data[5]);
+        pressure = double.Parse(data[6]);
+        illumunation = double.Parse(data[7]);
+    }
     public override void DoFrame(object source, ElapsedEventArgs e)
     {
         //WriteData();
