@@ -5,9 +5,11 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 using std::vector;
 using std::string;
+using std::map;
 
 /**
   *	\brief Represents a circle center in x,y coordinates, with the
@@ -27,6 +29,7 @@ struct ImageInfo
     size_t xdim;       //< pixels in x dimension
     size_t ydim;       //< pixels in y dimension
 };
+
 
 /**
   *	\brief Encapsulates a circles file for easy access to the values in the file.
@@ -69,8 +72,11 @@ public:
 private:
     string m_filename;
     vector<CenterInfo> m_centers;
+    map<int, CenterInfo> m_centersMap;    
     ImageInfo m_info;
     int m_radius;
+
+    int parseCirclesFile_helper(int &nCirc);
 
     static bool sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs); 
     static bool sortCenterByX(const CenterInfo &lhs, const CenterInfo &rhs);

@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -38,7 +39,7 @@ void CirclesFile::findRows(centerVector &centers, vector<centerVector > &rows,
 
 	centerVector::iterator centerIt = centers.begin();
 	centerVector::iterator centerIt_end = centers.end()-1;
-    int curRow = 0;	
+    unsigned int curRow = 0;
     centerVector *aRow;
     centerVector emptyRow;
 
@@ -100,70 +101,92 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
     return i;
 }
 
-//return -1 on error, >=0 on success.
-int CirclesFile::parseCirclesFile()
+
+int CirclesFile::parseCirclesFile_helper(int &nCirc)
 {
-    
     std::ifstream file(m_filename.c_str(), std::ios::in);
     if (!file.is_open()) {
         std::cerr << "Couldn't open given circles file: " << m_filename << std::endl;
         return -1;
     }
 
-    int nLines = 0, nCirc = 0;
+    try {
 
-    //[xx]|[abcd]:[xxxx],[xxxx]
-    std::regex reg("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
-    std::cmatch cm;
-    char line[50];
-    while (!file.eof() && nLines < 500) { //500 chosen just for sanity.
-        file.getline(line, 50);
-        ++nLines;
-        std::regex_match(line, cm, reg);
-        string key(cm[1]);
-        string val(cm[2]);
-        string val2(cm[3]);
-         
-        if (val2.empty()) { 
-            try {
-                if (key == "imgx") {  
-                    m_info.xdim = std::stoi(val);
-                } else if (key == "imgy") {
-                    m_info.ydim = std::stoi(val);
-                } else if (key == "crad") { 
-                    m_radius = std::stoi(val);
+        //[xx]|[abcd]:[xxxx],[xxxx]
+        std::regex reg("^\\[(\\d\\d?|[a-zA-Z]{4})\\]:([0-9]{1,4}),?([0-9]{0,4})$");
+        std::cmatch cm;
+        int nLines=0;
+        char line[50];
+        while (!file.eof() && nLines < 500) { //500 chosen just for sanity.
+            file.getline(line, 50);
+            ++nLines;
+            std::regex_match(line, cm, reg);
+            string key(cm[1]);
+            string val(cm[2]);
+            string val2(cm[3]);
+             
+            if (val2.empty()) { 
+                try {
+                    if (key == "imgx") {  
+                        m_info.xdim = std::stoi(val);
+                    } else if (key == "imgy") {
+                        m_info.ydim = std::stoi(val);
+                    } else if (key == "crad") { 
+                        m_radius = std::stoi(val);
+                    }
+                } catch (const std::exception &eek) {
+                    std::cerr << "Error parsing circles file: " << eek.what();
+                    return -1;
                 }
-            } catch (std::exception &eek) {
-                std::cerr << "Error parsing circles file: " << eek.what();
-                return -1;
-            }
-        } else {
-            int x,y,k;
-            try {
+            } else {
+                int x,y,k;
+                try {
 
-                x = std::stoi(val);
-                std::cout << "x=" << x << std::endl;
+                    x = std::stoi(val);
+                    std::cout << "x=" << x << std::endl;
 
-                y = std::stoi(val2);
-                std::cout << "y=" << y<< std::endl;
+                    y = std::stoi(val2);
+                    std::cout << "y=" << y<< std::endl;
 
-                k=std::stoi(key); 
-                std::cout << "k=" << k << std::endl;
+                    k=std::stoi(key); 
+                    std::cout << "k=" << k << std::endl;
 
-            } catch (const std::invalid_argument &eek) {
-                std::cerr << "Error parsing circles file." << std::endl;                  
-                std::cerr << eek.what();
-                return -1;
-            } catch (const std::out_of_range &eek) {
-                std::cerr << "Argument in circles file was expected to be an integer: " << std::endl;
-                std::cerr << eek.what();
-                return -1;
-            }
-            CenterInfo c = { x, y, m_radius };
-            m_centers.push_back(c);
-            ++nCirc;
-        } //else
-    } // while (!file.eof...
+                } catch (const std::invalid_argument &eek) {
+                    std::cerr << "Error parsing circles file: " << eek.what() << std::endl;                  
+                    return -1;
+                } catch (const std::out_of_range &eek) {
+                    std::cerr << "Argument in circles file was expected to be an integer: "
+                        << eek.what() << std::endl;
+                    return -1;
+                }
+                CenterInfo c = { x, y, m_radius };
+//              m_centers.push_back(c);
+                m_centersMap[nCirc++] = c;
+                ++nCirc;
+            } //else
+        } // while (!file.eof...
+
+    } catch (const std::regex_error &eek) {
+        std::cerr << "Caught regex_error when making regex.\n";
+        return -1;
+    }
+}
+
+//return -1 on error, >=0 on success.
+int CirclesFile::parseCirclesFile()
+{
+    
+//    std::ifstream file(m_filename.c_str(), std::ios::in);
+//    if (!file.is_open()) {
+//        std::cerr << "Couldn't open given circles file: " << m_filename << std::endl;
+//        return -1;
+//    }
+
+    int nCirc = 0;
+    if (parseCirclesFile_helper(nCirc) < 0) {
+        return -1;
+    }
+
     return nCirc;
 }
 
