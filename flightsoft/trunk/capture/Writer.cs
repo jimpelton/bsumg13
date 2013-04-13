@@ -19,6 +19,8 @@ public class Writer : ReceiverController
     private bool[] phidgetsdigitalInputs;
     private bool[] phidgetsdigitalOutputs;
     private int[] phidgetsanalogInputs;
+    private double phidgetTemperature_ProbeTemp;
+    private double phidgetTemperature_AmbientTemp;
     private double[] accel1rawacceleration;
     private double[] accel1acceleration;
     private double[] accel1vibration;
@@ -190,11 +192,13 @@ public class Writer : ReceiverController
     {
         string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
         string[] data = datain.Split();
+        phidgetTemperature_ProbeTemp = double.Parse(data[2]);
+        phidgetTemperature_AmbientTemp = double.Parse(data[3]);
         for (int i = 0; i < 8; i++)
         {
-                phidgetsanalogInputs[i] = int.Parse(data[(i * 3) + 1]);
-                phidgetsdigitalInputs[i] = bool.Parse(data[(i * 3) + 2]); ;
-                phidgetsdigitalOutputs[i] = bool.Parse(data[(i * 3) + 3]); ;               
+                phidgetsanalogInputs[i] = int.Parse(data[(i * 3) + 4]);
+                phidgetsdigitalInputs[i] = bool.Parse(data[(i * 3) + 5]); ;
+                phidgetsdigitalOutputs[i] = bool.Parse(data[(i * 3) + 6]); ;               
         }
     }
 

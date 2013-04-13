@@ -127,7 +127,7 @@ public class AptinaController : ReceiverController
                 string mes = String.Format("{0} exiting.", me.tnum);
                 Console.WriteLine(mes, me.tnum);
                 me.dp.BroadcastLog(me, mes, 3);
-                barrierSemaphore.Release(1);
+                barrierSemaphore.Release(1);// this throws a semaphore full exception
                 return;
             }
             me.runningMutex.ReleaseMutex();
