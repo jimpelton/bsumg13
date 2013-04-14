@@ -185,19 +185,15 @@ public class Writer : ReceiverController
 
     private void StoreImageData(Buffer<Byte> buf, int wavelength, uint index)
     {
-        if (wavelength == 405)
-            image405 = buf;
-        else if (wavelength == 485)
-            image485 = buf;
-        //this is a nightmare for the GC
-        /*
+
+        //this is a nightmare for the GC       
         Buffer<byte> buf2 = new Buffer<byte>(buf);
         if (wavelength == 405)
             image405 = buf2;
         else if (wavelength == 485)
             image485 = buf2;
         else
-            dp.BroadcastLog(this, "Writer passed an image with an invalid wavelength.", 5);*/
+            dp.BroadcastLog(this, "Writer passed an image with an invalid wavelength.", 5);
 
     }
 
