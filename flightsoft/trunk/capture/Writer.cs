@@ -305,7 +305,8 @@ public class Writer : ReceiverController
             dat.image405  =new Buffer<byte>(image405);
         if (image485 != null)
             dat.image485 = new Buffer<byte>(image485);
-
+        dat.phidgetTemperature_ProbeTemp = phidgetTemperature_ProbeTemp;
+        dat.phidgetTemperature_AmbientTemp = phidgetTemperature_AmbientTemp;
         dat.timestamp = DateTime.Now.Ticks;   
         
         dp.Broadcast(dat);

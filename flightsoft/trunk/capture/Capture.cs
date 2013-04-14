@@ -194,8 +194,8 @@ namespace uGCapture
                     acThread2 = new Thread(() => AptinaController.go(ac2));
                     wrtThread = new Thread(() => Writer.WriteData(writer));
                     wrtThread.Start();
-                    acThread1.Start();
-                    acThread2.Start();
+                    //acThread1.Start();
+                    //acThread2.Start();
                 }
                 else
                 {

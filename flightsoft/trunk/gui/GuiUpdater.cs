@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using System.Windows.Forms.DataVisualization.Charting;
 using uGCapture;
 
 
@@ -12,9 +13,11 @@ namespace gui
     {
         Form1 mainform = null;
         private GuiMain Guimain = null;
+        private Series graph1data = null;
         public GuiUpdater(Form1 f,GuiMain m)
         {         
             mainform = f;
+            graph1data = new Series("Points");
             Guimain = m;
             this.Receiving = true;
             dp.Register(this, "GuiUpdater");
@@ -33,7 +36,26 @@ namespace gui
                 Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at msgs.Dequeue().execute(this)");
  
             }
-
+            mainform.chart1.Series.Clear();
+            List<DataPoint> frames = Guimain.getDataPoints();
+            if (frames.Count > 0)
+            {
+                mainform.chart1.Series.Add("Graph1");
+                mainform.chart1.Series.Add("Graph2");
+                mainform.chart1.Series.Add("Graph3");
+                foreach (DataPoint p in frames)
+                {
+                    mainform.chart1.Series["Graph1"].ChartType = SeriesChartType.FastLine;
+                    mainform.chart1.Series["Graph1"].Points.AddY(p.phidgetTemperature_AmbientTemp);
+                    mainform.chart1.Series["Graph1"].ChartArea = "ChartArea1";
+                    mainform.chart1.Series["Graph2"].ChartType = SeriesChartType.FastLine;
+                    mainform.chart1.Series["Graph2"].Points.AddY(p.phidgetTemperature_ProbeTemp);
+                    mainform.chart1.Series["Graph2"].ChartArea = "ChartArea2";
+                    mainform.chart1.Series["Graph3"].ChartType = SeriesChartType.FastLine;
+                    mainform.chart1.Series["Graph3"].Points.AddY(p.phidgetsanalogInputs[0]);
+                    mainform.chart1.Series["Graph3"].ChartArea = "ChartArea3";
+                }
+            }
             dp.Broadcast(new DataRequestMessage(this));
         }
 
@@ -67,8 +89,10 @@ namespace gui
             dat.phidgetsdigitalInputs = ((DataMessage)m).phidgetsdigitalInputs;
             dat.phidgetsdigitalOutputs = ((DataMessage)m).phidgetsdigitalOutputs;
             dat.phidgetstempstate = ((DataMessage)m).phidgetstempstate;
+            dat.phidgetTemperature_AmbientTemp = ((DataMessage) m).phidgetTemperature_AmbientTemp;
+            dat.phidgetTemperature_ProbeTemp = ((DataMessage) m).phidgetTemperature_ProbeTemp;
             dat.timestamp = ((DataMessage)m).timestamp;   
-       
+            
             Guimain.insertDataPoint(dat);
         }
         public override void exDataRequest(Receiver r, Message m)

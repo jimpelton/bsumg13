@@ -79,5 +79,10 @@ namespace gui
             //and place us at last.
             dataFrames.Add(p);
         }
+
+        public List<DataPoint> getDataPoints()
+        {
+            return dataFrames;
+        }
     }
 }

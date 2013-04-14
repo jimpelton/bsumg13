@@ -14,8 +14,8 @@ namespace uGCapture
         public bool[] phidgetsdigitalInputs;
         public bool[] phidgetsdigitalOutputs;
         public int[] phidgetsanalogInputs;
-        private double phidgetTemperature_ProbeTemp;
-        private double phidgetTemperature_AmbientTemp;
+        public double phidgetTemperature_ProbeTemp;
+        public double phidgetTemperature_AmbientTemp;
         public double[] accel1rawacceleration;
         public double[] accel1acceleration;
         public double[] accel1vibration;
