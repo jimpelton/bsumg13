@@ -28,6 +28,8 @@ namespace gui
         public int phidgetstempstate = 0;
         public int UPSstate = 0;
         public int VCommstate = 0;
+        public uGCapture.Buffer<byte> image405 = null;
+        public uGCapture.Buffer<byte> image485 = null;
 
         public DataPoint()
         {           

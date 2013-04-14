@@ -11,9 +11,11 @@ namespace gui
     public class GuiUpdater : Receiver
     {
         Form1 mainform = null;
-        public GuiUpdater(Form1 f)
+        private GuiMain Guimain = null;
+        public GuiUpdater(Form1 f,GuiMain m)
         {         
             mainform = f;
+            Guimain = m;
             this.Receiving = true;
             dp.Register(this, "GuiUpdater");
         }
@@ -45,6 +47,9 @@ namespace gui
         public override void exData(Receiver r, Message m)
         {
             DataPoint dat = new DataPoint();
+            dat.image405 = ((DataMessage) m).image405;
+            dat.image485 = ((DataMessage) m).image485;
+
             dat.NIanaloginputs = ((DataMessage) m).NIanaloginputs;
             dat.UPSstate = ((DataMessage)m).UPSstate;
             dat.VCommstate = ((DataMessage)m).VCommstate;
@@ -62,7 +67,9 @@ namespace gui
             dat.phidgetsdigitalInputs = ((DataMessage)m).phidgetsdigitalInputs;
             dat.phidgetsdigitalOutputs = ((DataMessage)m).phidgetsdigitalOutputs;
             dat.phidgetstempstate = ((DataMessage)m).phidgetstempstate;
-            dat.timestamp = ((DataMessage)m).timestamp;          
+            dat.timestamp = ((DataMessage)m).timestamp;   
+       
+            Guimain.insertDataPoint(dat);
         }
         public override void exDataRequest(Receiver r, Message m)
         {

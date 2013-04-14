@@ -76,7 +76,7 @@ namespace uGCapture
         /// <param name="m"></param>
         public void Broadcast(Message m)
         {
-            lock (mesWait)
+            lock (mesWait)// this seems to take a long time.
             {
                 mesWait.Enqueue(m);
             }

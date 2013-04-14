@@ -185,13 +185,19 @@ public class Writer : ReceiverController
 
     private void StoreImageData(Buffer<Byte> buf, int wavelength, uint index)
     {
+        if (wavelength == 405)
+            image405 = buf;
+        else if (wavelength == 485)
+            image485 = buf;
+        //this is a nightmare for the GC
+        /*
         Buffer<byte> buf2 = new Buffer<byte>(buf);
         if (wavelength == 405)
             image405 = buf2;
         else if (wavelength == 485)
             image485 = buf2;
         else
-            dp.BroadcastLog(this, "Writer passed an image with an invalid wavelength.", 5);
+            dp.BroadcastLog(this, "Writer passed an image with an invalid wavelength.", 5);*/
 
     }
 
@@ -272,21 +278,40 @@ public class Writer : ReceiverController
         dat.UPSstate = UPSstate;
         dat.VCommstate = VCommstate;
         for (int i = 0; i < 2; i++)
-        dat.WellIntensities = WellIntensities;
-        dat.accel1acceleration = accel1acceleration;
-        dat.accel1rawacceleration = accel1rawacceleration;
+            for (int x = 0; x < 16; x++)
+                for (int y = 0; y < 12; y++)
+                    dat.WellIntensities[i,x,y] = WellIntensities[i,x,y];
+        for (int i = 0; i < 3; i++)
+            dat.accel1acceleration[i] = accel1acceleration[i];
+        for (int i = 0; i < 3; i++)
+            dat.accel1rawacceleration[i] = accel1rawacceleration[i];
+        for (int i = 0; i < 3; i++)
+            dat.accel1vibration[i] = accel1vibration[i];
+        for (int i = 0; i < 3; i++)
+            dat.accel2acceleration[i] = accel2acceleration[i];
+        for (int i = 0; i < 3; i++)
+            dat.accel2rawacceleration[i] = accel2rawacceleration[i];
+        for (int i = 0; i < 3; i++)
+            dat.accel2vibration[i] = accel2vibration[i];
+
         dat.accel1state = accel1state;
-        dat.accel1vibration = accel1vibration;
-        dat.accel2acceleration = accel2acceleration;
-        dat.accel2rawacceleration = accel2rawacceleration;
         dat.accel2state = accel2state;
-        dat.accel2vibration = accel2vibration;
+
         dat.phidgets888state = phidgets888state;
-        dat.phidgetsanalogInputs = phidgetsanalogInputs;
-        dat.phidgetsdigitalInputs = phidgetsdigitalInputs;
-        dat.phidgetsdigitalOutputs = phidgetsdigitalOutputs;
+        for (int i = 0; i < 8; i++)
+            dat.phidgetsanalogInputs[i] = phidgetsanalogInputs[i];
+        for (int i = 0; i < 8; i++)
+            dat.phidgetsdigitalInputs[i] = phidgetsdigitalInputs[i];
+        for (int i = 0; i < 8; i++)
+            dat.phidgetsdigitalOutputs[i] = phidgetsdigitalOutputs[i];
         dat.phidgetstempstate = phidgetstempstate;
+        if (image405 != null)
+            dat.image405  =new Buffer<byte>(image405);
+        if (image485 != null)
+            dat.image485 = new Buffer<byte>(image485);
+
         dat.timestamp = DateTime.Now.Ticks;   
+        
         dp.Broadcast(dat);
     }
 

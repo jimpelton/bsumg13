@@ -31,7 +31,7 @@ namespace gui
        public void Startup_Init()
        {
            dataFrames = new List<DataPoint>();
-           guiUpdater = new GuiUpdater(mainForm);
+           guiUpdater = new GuiUpdater(mainForm,this);
            captureClass = new CaptureClass();
            captureClass.init();
        }
@@ -68,5 +68,16 @@ namespace gui
            mainForm.DebugOutput(s, col);
        }
         
+        public void insertDataPoint(DataPoint p)
+        {
+            if(dataFrames.Count>0)
+            {
+                //we are adding to the end of the list so the previous data point will be last.
+                dataFrames.Last().image405 = null;
+                dataFrames.Last().image485 = null;
+            }
+            //and place us at last.
+            dataFrames.Add(p);
+        }
     }
 }
