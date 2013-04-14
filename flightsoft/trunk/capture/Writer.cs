@@ -267,9 +267,11 @@ public class Writer : ReceiverController
     public override void exDataRequest(Receiver r, Message m)
     {
         DataMessage dat = new DataMessage(r);
-        dat.NIanaloginputs = NIanaloginputs;
+        for (int i = 0; i < 6;i++ )
+            dat.NIanaloginputs[i] = NIanaloginputs[i];
         dat.UPSstate = UPSstate;
         dat.VCommstate = VCommstate;
+        for (int i = 0; i < 2; i++)
         dat.WellIntensities = WellIntensities;
         dat.accel1acceleration = accel1acceleration;
         dat.accel1rawacceleration = accel1rawacceleration;
