@@ -17,7 +17,7 @@ namespace uGCapture
             get;
             set;
         }
-        private bool receiving = false;
+        //private bool receiving = false;
 
 
         protected Receiver()

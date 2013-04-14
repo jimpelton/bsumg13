@@ -8,10 +8,14 @@ namespace uGCapture
 {
     public class DataMessage : Message
     {
+
+        public long timestamp;
         public long[,,] WellIntensities;
         public bool[] phidgetsdigitalInputs;
         public bool[] phidgetsdigitalOutputs;
         public int[] phidgetsanalogInputs;
+        private double phidgetTemperature_ProbeTemp;
+        private double phidgetTemperature_AmbientTemp;
         public double[] accel1rawacceleration;
         public double[] accel1acceleration;
         public double[] accel1vibration;
@@ -19,7 +23,6 @@ namespace uGCapture
         public double[] accel2acceleration;
         public double[] accel2vibration;
         public double[] NIanaloginputs;
-
         public int accel1state=0;
         public int accel2state=0;
         public int phidgets888state=0;
@@ -27,7 +30,7 @@ namespace uGCapture
         public int UPSstate=0;
         public int VCommstate=0;
 
-        DataMessage(Receiver s)
+        public DataMessage(Receiver s)
             : base(s)
         {
             WellIntensities = new long[2,16,12];
@@ -41,7 +44,7 @@ namespace uGCapture
             accel2vibration = new double[3];
             accel2acceleration = new double[3];
             NIanaloginputs = new double[6];
-
+            timestamp = 0;
         }
 
         public override void execute(Receiver r)

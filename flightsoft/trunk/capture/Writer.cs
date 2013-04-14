@@ -34,7 +34,12 @@ public class Writer : ReceiverController
     private double temp3 = 0;
     private double pressure = 0;
     private double illumunation = 0;
-
+    public int accel1state = 0;
+    public int accel2state = 0;
+    public int phidgets888state = 0;
+    public int phidgetstempstate = 0;
+    public int UPSstate = 0;
+    public int VCommstate = 0;
     private Buffer<byte> image405 = null;
     private Buffer<byte> image485 = null;
 
@@ -62,9 +67,8 @@ public class Writer : ReceiverController
 
     public override void init()
     {
-        //this.Receiving = true;
-        //dp.Register(this,"FileWriter");
-
+        this.Receiving = true;
+        dp.Register(this,"FileWriter");
         this.FrameTime = 50;
     }
 
@@ -116,9 +120,10 @@ public class Writer : ReceiverController
                 Console.WriteLine(e.StackTrace); 
                 return ;
             }
+            w.ExecuteMessageQueue();
         } // while (fulbuf!=null);
 
-
+       
         //return;
     }
 
@@ -250,11 +255,38 @@ public class Writer : ReceiverController
         pressure = double.Parse(data[6]);
         illumunation = double.Parse(data[7]);
     }
+
+
+
+
     public override void DoFrame(object source, ElapsedEventArgs e)
     {
         //WriteData();
     }
 
+    public override void exDataRequest(Receiver r, Message m)
+    {
+        DataMessage dat = new DataMessage(r);
+        dat.NIanaloginputs = NIanaloginputs;
+        dat.UPSstate = UPSstate;
+        dat.VCommstate = VCommstate;
+        dat.WellIntensities = WellIntensities;
+        dat.accel1acceleration = accel1acceleration;
+        dat.accel1rawacceleration = accel1rawacceleration;
+        dat.accel1state = accel1state;
+        dat.accel1vibration = accel1vibration;
+        dat.accel2acceleration = accel2acceleration;
+        dat.accel2rawacceleration = accel2rawacceleration;
+        dat.accel2state = accel2state;
+        dat.accel2vibration = accel2vibration;
+        dat.phidgets888state = phidgets888state;
+        dat.phidgetsanalogInputs = phidgetsanalogInputs;
+        dat.phidgetsdigitalInputs = phidgetsdigitalInputs;
+        dat.phidgetsdigitalOutputs = phidgetsdigitalOutputs;
+        dat.phidgetstempstate = phidgetstempstate;
+        dat.timestamp = DateTime.Now.Ticks;   
+        dp.Broadcast(dat);
+    }
 
 }
 }

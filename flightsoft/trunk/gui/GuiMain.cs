@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
 using uGCapture;
 
 namespace gui
@@ -12,6 +13,9 @@ namespace gui
         private CaptureClass captureClass;
         private bool boolCapturing = false;
         public GuiUpdater guiUpdater;
+        public List<DataPoint> dataFrames = null;
+
+
 
         private Form1 mainForm;
         public Form1 MainForm
@@ -26,6 +30,7 @@ namespace gui
 
        public void Startup_Init()
        {
+           dataFrames = new List<DataPoint>();
            guiUpdater = new GuiUpdater(mainForm);
            captureClass = new CaptureClass();
            captureClass.init();
