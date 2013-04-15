@@ -97,7 +97,7 @@ public class PhidgetsController : ReceiverController
     {
         Phidget phid = sender as Phidget;
         if (phid == null) return;
-        dp.BroadcastLog(this, String.Format("{0} Detached", phid.Name), 5);
+        dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Detached", phid.Name), 5);
     }
 
     void Sensor_Error(object sender, ErrorEventArgs e)
@@ -105,7 +105,7 @@ public class PhidgetsController : ReceiverController
         Phidget phid = sender as Phidget;
         if (phid == null) return;
 
-        dp.BroadcastLog(this, String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
+        dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Error: {1}", phid.Name, e.Description), 5);
     }
 
     void tempSensor_Attach(object sender, AttachEventArgs e)
@@ -148,11 +148,7 @@ public class PhidgetsController : ReceiverController
     {
  
         Buffer<Byte> buffer = BufferPool.PopEmpty();
-        //while (buffer == null)
-        //{
-        //    buffer = BufferPool.PopEmpty();
-        //    Thread.Sleep(50);
-        //}
+
         String outputData = "Phidgets\n";
         outputData += DateTime.Now.Ticks.ToString() + " ";
         outputData += phidgetTemperature_ProbeTemp + " ";
@@ -163,17 +159,11 @@ public class PhidgetsController : ReceiverController
             outputData += digitalInputs[i].ToString() + " ";
             outputData += digitalOutputs[i].ToString() + " ";
         }
-        //if (buffer != null)
-        //{
 
-            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_PHIDGETS);
-            buffer.Text = String.Format("Phidgets");           
-            //buffer.CapacityUtilization = ((uint) encoding.GetByteCount(outputData));
-            //buffer.CapacityUtilization = (uint)outputData.Length*sizeof(char); not the case
-            BufferPool.PostFull(buffer);
-            
-        //}
+        System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+        buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_PHIDGETS);
+        buffer.Text = "Phidgets"; // String.Format("Phidgets");
+        BufferPool.PostFull(buffer);
     }
 
 

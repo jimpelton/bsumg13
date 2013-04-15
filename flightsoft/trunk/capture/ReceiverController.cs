@@ -36,8 +36,8 @@ namespace uGCapture
             m_frameTime = 500;
 
             m_ticker = new Timer(m_frameTime);
-            m_ticker.Elapsed += new ElapsedEventHandler(DoFrame);
             m_ticker.Enabled = false;
+            m_ticker.Elapsed += new ElapsedEventHandler(DoFrame);
         }
 
         protected ReceiverController(BufferPool<byte> bp, int frame_time=500) 
@@ -46,8 +46,8 @@ namespace uGCapture
             m_frameTime = frame_time;
 
             m_ticker = new Timer(frame_time);
-            m_ticker.Elapsed += new ElapsedEventHandler(DoFrame);
             m_ticker.Enabled = false;
+            m_ticker.Elapsed += new ElapsedEventHandler(DoFrame);
         }
 
         /// <summary>

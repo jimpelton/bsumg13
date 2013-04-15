@@ -18,8 +18,8 @@ namespace uGCapture
         private Dispatch dispatch;
 
         private PhidgetsController phidgetsController;
-        private AccelerometerController a1; 
-        private SpatialController a2;
+        private AccelerometerController accelControler; 
+        private SpatialController spatialController;
         private Writer writer;
         private AptinaController ac1;
         private AptinaController ac2;
@@ -113,8 +113,8 @@ namespace uGCapture
             
             try
             {
-                a1 = new AccelerometerController(BufferPool, 159352);
-                a1.init();
+                accelControler = new AccelerometerController(BufferPool, 159352);
+                accelControler.init();
             }
             catch (AccelerometerControllerNotInitializedException eek)
             {
@@ -124,8 +124,8 @@ namespace uGCapture
 
             try
             {
-                a2 = new SpatialController(BufferPool, 169140);
-                a2.init();
+                spatialController = new SpatialController(BufferPool, 169140);
+                spatialController.init();
             }
             catch (SpatialControllerNotInitializedException eek)
             {
@@ -151,8 +151,8 @@ namespace uGCapture
             if (!boolCapturing)
             {
                 phidgetsController.TickerEnabled = false;
-                a1.TickerEnabled = false;
-                a2.TickerEnabled = false;
+                accelControler.TickerEnabled = false;
+                spatialController.TickerEnabled = false;
                 //writer.TickerEnabled = false;
                 weatherboard.TickerEnabled = false;
                 ni6008.TickerEnabled = false;
@@ -160,8 +160,8 @@ namespace uGCapture
             else
             {
                 phidgetsController.TickerEnabled = true;
-                a1.TickerEnabled = true;
-                a2.TickerEnabled = true;
+                accelControler.TickerEnabled = true;
+                spatialController.TickerEnabled = true;
                 writer.TickerEnabled = true;
                 weatherboard.TickerEnabled = true;
                // ni6008.TickerEnabled = true;
@@ -194,8 +194,8 @@ namespace uGCapture
                     acThread2 = new Thread(() => AptinaController.go(ac2));
                     wrtThread = new Thread(() => Writer.WriteData(writer));
                     wrtThread.Start();
-                    //acThread1.Start();
-                    //acThread2.Start();
+                    acThread1.Start();
+                    acThread2.Start();
                 }
                 else
                 {

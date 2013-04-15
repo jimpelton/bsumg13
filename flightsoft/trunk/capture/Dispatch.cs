@@ -103,6 +103,7 @@ namespace uGCapture
                 lock (mesWait)
                 {
                     foreach (ReceiverDudes r in receivers.Values)
+
                     {
                         foreach (Message m in mesWait)
                         {

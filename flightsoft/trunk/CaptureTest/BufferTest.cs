@@ -13,7 +13,7 @@ namespace CaptureTest
             byte[] b = new byte[10];
             Random r = new Random();
             r.NextBytes(b);
-            buff.setData(b, BufferType.IMAGE405);
+            buff.setData(b, BufferType.USHORT_IMAGE405);
             Assert.IsTrue(b.Length == (int)buff.CapacityUtilization);
         }
 
@@ -23,10 +23,10 @@ namespace CaptureTest
             Buffer<byte> buff = new Buffer<byte>(10);
             byte[] b = new byte[10];
             new Random().NextBytes(b);
-            buff.setData(b, BufferType.IMAGE405);
+            buff.setData(b, BufferType.USHORT_IMAGE405);
             
             byte[] actual = buff.Data;
-            Assert.IsTrue(BufferType.IMAGE405 == buff.Type);
+            Assert.IsTrue(BufferType.USHORT_IMAGE405 == buff.Type);
             Assert.IsTrue(b.Length == actual.Length);
             CollectionAssert.AreEqual(b, actual);
         }
@@ -38,7 +38,7 @@ namespace CaptureTest
 
             byte[] b = new byte[10];
             new Random().NextBytes(b);
-            buff.setData(b, BufferType.IMAGE405);
+            buff.setData(b, BufferType.USHORT_IMAGE405);
 
             Buffer<byte> buffcopy = new Buffer<byte>(buff);
             Assert.AreEqual(buff.Type, buffcopy.Type);                     //type

@@ -22,7 +22,7 @@ namespace CaptureTest
                 Buffer<Byte> buf = null;
                 while(buf==null)
                     buf = bufpool.PopEmpty();
-                buf.setData(bytes, BufferType.PHIDGETS);
+                buf.setData(bytes, BufferType.UTF8_PHIDGETS);
                 buf.Text = "test";
                 testWriter.DirectoryName = "Test";
                 bufpool.PostFull(buf);

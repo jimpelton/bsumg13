@@ -16,7 +16,7 @@ namespace CaptureTest
                 Buffer<byte> b = bp.PopEmpty();
                 if (b != null)
                 {
-                    b.setData(barr, BufferType.IMAGE405);
+                    b.setData(barr, BufferType.USHORT_IMAGE405);
                     bp.PostFull(b);
                     filled += 1;
                 }

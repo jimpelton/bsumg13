@@ -6,17 +6,23 @@ namespace uGCapture
 {
 public class AptinaController : ReceiverController
 {
+    //the buffer size for this controller
     private ulong size;
+    //the thread number for this controller.
     private int tnum;
+    //destination buffer for data from ManagedSimpleCapture
     private byte[] dest;
-    private Mutex runningMutex;
+    //true if another thread is using this class
     private bool running=false;
-    private ManagedSimpleCapture msc;
-    
+    //true if this controller has been successfuly initialized
+    private bool isInit = false;
 
+    private Mutex runningMutex;
     private static Semaphore barrierSemaphore;
     private static int barrierCounter;
     private static int nextIdx = 0;
+
+    private ManagedSimpleCapture msc;
     private static int numcams = 2;
 
     private int m_errno;
@@ -50,6 +56,7 @@ public class AptinaController : ReceiverController
 
     public override void init()
     {
+        isInit = true;
         int r = ManagedSimpleCapture.managed_InitMidLib(numcams);
         if (r == 0)
         {
@@ -57,6 +64,7 @@ public class AptinaController : ReceiverController
         }
         else
         {
+            isInit = false;
             throw new AptinaControllerNotInitializedException("AptinaController failed init: InitMidLib failed.");
         }
 
@@ -66,6 +74,7 @@ public class AptinaController : ReceiverController
         }
         else
         {
+            isInit = false;
             throw new AptinaControllerNotInitializedException("AptinaController failed init: OpenTransport failed for controller: "+tnum);
         }
 
@@ -75,6 +84,7 @@ public class AptinaController : ReceiverController
         }
         else
         {
+            isInit = false;
             throw new AptinaControllerNotInitializedException("AptinaController failed init: SensorBufferSize() returned 0 size for controller: "+tnum);
         }
 
@@ -98,7 +108,7 @@ public class AptinaController : ReceiverController
     {
         int curval;
         me.runningMutex.WaitOne();
-        if (me.running)
+        if (me.running || !me.isInit)
         {
             me.runningMutex.ReleaseMutex();
             return;
@@ -118,14 +128,16 @@ public class AptinaController : ReceiverController
             {
                 barrierSemaphore.WaitOne();
             }
-            Console.WriteLine(String.Format("{0} top. {1}", me.tnum, DateTime.Now.Millisecond));
+            Console.WriteLine(String.Format("Aptina Controller Capture {0} begin. Time: {1}", me.tnum, DateTime.Now.Millisecond));
 
             me.runningMutex.WaitOne();
             if (!me.running)
             {
                 me.runningMutex.ReleaseMutex();
-                string mes = String.Format("{0} exiting.", me.tnum);
-                Console.WriteLine(mes, me.tnum);
+
+                string mes = "Aptina controller " + me.tnum + " exiting"; // String.Format("{0} exiting.", me.tnum);
+                Console.WriteLine(mes);
+
                 me.dp.BroadcastLog(me, mes, 3);
                 barrierSemaphore.Release(1);// this throws a semaphore full exception
                 return;
@@ -144,17 +156,12 @@ public class AptinaController : ReceiverController
             }
 
             Buffer<Byte> imagebuffer = me.BufferPool.PopEmpty();
-            //{
-            //    imagebuffer = me.BufferPool.PopEmpty();
-            //    Thread.Sleep(10);
-            //}
 
             BufferType bufferType = me.msc.managed_GetWavelength() == 405 ? 
                 BufferType.USHORT_IMAGE405 : BufferType.USHORT_IMAGE485;
 
             imagebuffer.setData(me.dest, bufferType);
-            //File.WriteAllBytes(String.Format("data_{0}_{1}.raw",me.msc.managed_GetWavelength(), me.nextIdx++), me.dest);
-            imagebuffer.Text = String.Format("{0}", DateTime.Now.Millisecond);
+            imagebuffer.Text = DateTime.Now.Millisecond.ToString(); // String.Format("{0}", DateTime.Now.Millisecond);
             me.BufferPool.PostFull(imagebuffer);
             
         }   
@@ -162,7 +169,7 @@ public class AptinaController : ReceiverController
 
     public override void DoFrame(object source, System.Timers.ElapsedEventArgs e)
     {
-        throw new Exception("The method or operation is not implemented.");
+        throw new NotImplementedException("The method or operation is not implemented.");
     }
 }
 

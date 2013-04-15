@@ -24,34 +24,7 @@ namespace uGCapture
         }
 
 
-        public override void DoFrame(object source, ElapsedEventArgs e)
-        {
-            Buffer<Byte> buffer = null;
-            while (buffer == null)
-            {
-                buffer = BufferPool.PopEmpty();
-                //Thread.Sleep(50);
-            }
-            String outputData = "Weatherboard\n";
-            outputData += DateTime.Now.Ticks.ToString() + " ";
-            outputData +=humidity.ToString() + " ";
-            outputData +=temp1.ToString() + " ";
-            outputData +=temp2.ToString() + " ";
-            outputData +=temp3.ToString() + " ";
-            outputData +=pressure.ToString() + " ";
-            outputData +=illumunation.ToString() + " ";
-            outputData += recordnum.ToString() + " ";
 
-            //if (buffer != null)
-            //{
-
-                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_VCOM);
-                buffer.Text = String.Format("Weatherboard");
-                BufferPool.PostFull(buffer);
-
-            //}
-        }
 
         public override void init()
         {
@@ -76,6 +49,29 @@ namespace uGCapture
                 
                 port.Close();         
             }
+        }
+
+        public override void DoFrame(object source, ElapsedEventArgs e)
+        {
+            Buffer<Byte> buffer = null;
+            buffer = BufferPool.PopEmpty();
+
+            String outputData = "Weatherboard\n";
+            outputData += DateTime.Now.Ticks.ToString() + " ";
+            outputData += humidity.ToString() + " ";
+            outputData += temp1.ToString() + " ";
+            outputData += temp2.ToString() + " ";
+            outputData += temp3.ToString() + " ";
+            outputData += pressure.ToString() + " ";
+            outputData += illumunation.ToString() + " ";
+            outputData += recordnum.ToString() + " ";
+
+            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+            buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_VCOM);
+            buffer.Text = "Weatherboard"; // String.Format("Weatherboard");
+
+            BufferPool.PostFull(buffer);
+
         }
 
         private void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)

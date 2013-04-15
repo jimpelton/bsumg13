@@ -56,9 +56,11 @@
     <Compile Include="Buffer\BufferType.cs" />
     <Compile Include="Buffer\BufferPool.cs" />
     <Compile Include="Capture.cs" />
+    <Compile Include="CirclesFile.cs" />
     <Compile Include="Controller\AccelerometerController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
     <Compile Include="Controller\SpatialController.cs" />
+    <Compile Include="Image\ImageProcessor.cs" />
     <Compile Include="Message\DataRequestMessage.cs" />
     <Compile Include="Message\SetCaptureStateMessage.cs" />
     <Compile Include="Message\DataMessage.cs" />

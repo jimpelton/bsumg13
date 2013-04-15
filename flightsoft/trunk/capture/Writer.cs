@@ -67,9 +67,9 @@ public class Writer : ReceiverController
 
     public override void init()
     {
-        this.Receiving = true;
+        Receiving = true;
         dp.Register(this,"FileWriter");
-        this.FrameTime = 50;
+        FrameTime = 50;
     }
 
     /*
@@ -202,13 +202,14 @@ public class Writer : ReceiverController
     {
         string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
         string[] data = datain.Split();
+
         phidgetTemperature_ProbeTemp = double.Parse(data[2]);
         phidgetTemperature_AmbientTemp = double.Parse(data[3]);
         for (int i = 0; i < 8; i++)
         {
-                phidgetsanalogInputs[i] = int.Parse(data[(i * 3) + 4]);
-                phidgetsdigitalInputs[i] = bool.Parse(data[(i * 3) + 5]); ;
-                phidgetsdigitalOutputs[i] = bool.Parse(data[(i * 3) + 6]); ;               
+            phidgetsanalogInputs[i] = int.Parse(data[(i * 3) + 4]);
+            phidgetsdigitalInputs[i] = bool.Parse(data[(i * 3) + 5]); ;
+            phidgetsdigitalOutputs[i] = bool.Parse(data[(i * 3) + 6]); ;
         }
     }
 
