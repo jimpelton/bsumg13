@@ -19,15 +19,14 @@ namespace CaptureTest
             for (byte i = 0; i < 200; i++)
             {
                 byte[] bytes = { i++, i++, i++, i++, i++, i++, i++, i++, i++, i++, i++};
-                Buffer<Byte> buf = null;
-                while(buf==null)
-                    buf = bufpool.PopEmpty();
+                Buffer<Byte> buf;
+                buf = bufpool.PopEmpty();
                 buf.setData(bytes, BufferType.UTF8_PHIDGETS);
                 buf.Text = "test";
                 testWriter.DirectoryName = "Test";
                 bufpool.PostFull(buf);
             }
-            while (bufpool.FullCount>0) ;
+            //while (bufpool.FullCount>0) ;
         }
     }
 }

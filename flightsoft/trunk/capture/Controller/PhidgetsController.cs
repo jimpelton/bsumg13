@@ -46,11 +46,10 @@ public class PhidgetsController : ReceiverController
 
             phidgetTemperature.waitForAttachment(1000);
 
-            phidgetTemperature.Attach += new AttachEventHandler(tempSensor_Attach);
-            phidgetTemperature.Detach += new DetachEventHandler(Sensor_Detach);
-            phidgetTemperature.Error += new ErrorEventHandler(Sensor_Error);
-            phidgetTemperature.TemperatureChange += 
-                new TemperatureChangeEventHandler(tempSensor_TemperatureChange);
+            phidgetTemperature.Attach += tempSensor_Attach;
+            phidgetTemperature.Detach += Sensor_Detach;
+            phidgetTemperature.Error += Sensor_Error;
+            phidgetTemperature.TemperatureChange += tempSensor_TemperatureChange;
 
             phidgetTemperature.thermocouples[0].Sensitivity = 0.001;
 
@@ -75,13 +74,13 @@ public class PhidgetsController : ReceiverController
             dp.BroadcastLog(this, "Searching for 1018 ", 0);
             phidgets1018 = new InterfaceKit();
             phidgets1018.open();
-            phidgets1018.Attach += new AttachEventHandler(ifKit_Attach);
-            phidgets1018.Detach += new DetachEventHandler(Sensor_Detach);
-            phidgets1018.Error += new ErrorEventHandler(Sensor_Error);
+            phidgets1018.Attach += ifKit_Attach;
+            phidgets1018.Detach += Sensor_Detach;
+            phidgets1018.Error += Sensor_Error;
 
-            phidgets1018.InputChange += new InputChangeEventHandler(ifKit_InputChange);
-            phidgets1018.OutputChange += new OutputChangeEventHandler(ifKit_OutputChange);
-            phidgets1018.SensorChange += new SensorChangeEventHandler(ifKit_SensorChange);
+            phidgets1018.InputChange += ifKit_InputChange;
+            phidgets1018.OutputChange += ifKit_OutputChange;
+            phidgets1018.SensorChange += ifKit_SensorChange;
 
             phidgets1018.waitForAttachment(1000);
             dp.BroadcastLog(this, "1018 found", 0);

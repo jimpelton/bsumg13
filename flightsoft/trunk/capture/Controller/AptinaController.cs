@@ -133,13 +133,14 @@ public class AptinaController : ReceiverController
             me.runningMutex.WaitOne();
             if (!me.running)
             {
+                
                 me.runningMutex.ReleaseMutex();
 
-                string mes = "Aptina controller " + me.tnum + " exiting"; // String.Format("{0} exiting.", me.tnum);
+                string mes = "Aptina controller " + me.tnum + " exiting"; 
                 Console.WriteLine(mes);
 
                 me.dp.BroadcastLog(me, mes, 3);
-                barrierSemaphore.Release(1);// this throws a semaphore full exception
+                barrierSemaphore.Release(1);  // this throws a semaphore full exception
                 return;
             }
             me.runningMutex.ReleaseMutex();

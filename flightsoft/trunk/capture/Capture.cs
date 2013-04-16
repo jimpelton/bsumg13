@@ -10,12 +10,10 @@ namespace uGCapture
 {
     public class CaptureClass : ReceiverController
     {
-        //private static int FRAME_TIME = 500;
         private String directoryName;
         private bool boolCapturing = false;
 
         private Queue<Message> messages;
-        private Dispatch dispatch;
 
         private PhidgetsController phidgetsController;
         private AccelerometerController accelControler; 
@@ -25,7 +23,6 @@ namespace uGCapture
         private AptinaController ac2;
         private VCommController weatherboard;
         private NIController ni6008;
-        //private Timer ticker;
 
         private Thread acThread1;
         private Thread acThread2;
@@ -33,21 +30,17 @@ namespace uGCapture
 
         public CaptureClass() : base()
         {
-            DateTime time = DateTime.Now;              // Use current time
-            directoryName = "yyyyMMMdddHHmm";          // Use this format  
-            directoryName = time.ToString(directoryName);
-
+            //TODO: move datetime and directory creation into GUI.
+            directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
             System.IO.Directory.CreateDirectory("C:\\Data\\"+directoryName);
 
             messages = new Queue<Message>();
-            dispatch = Dispatch.Instance();
-
-            //ticker = new Timer(FRAME_TIME);
-            //ticker.Elapsed += new ElapsedEventHandler(DoFrame);
         }
 
         public override void init()
         {
+            dp.Register(this,"CaptureControl");
+
             BufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
             writer = new Writer(BufferPool);       
             writer.DirectoryName = directoryName;
@@ -133,12 +126,8 @@ namespace uGCapture
                 Console.WriteLine(eek.StackTrace);
             }
  
-
             this.Receiving = true;
-            dp.Register(this,"CaptureControl");
-
             this.TickerEnabled = true;
-           
         }
 
         public override void DoFrame(object source, ElapsedEventArgs e)
@@ -153,7 +142,7 @@ namespace uGCapture
                 phidgetsController.TickerEnabled = false;
                 accelControler.TickerEnabled = false;
                 spatialController.TickerEnabled = false;
-                //writer.TickerEnabled = false;
+                writer.TickerEnabled = false;
                 weatherboard.TickerEnabled = false;
                 ni6008.TickerEnabled = false;
             }

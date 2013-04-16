@@ -50,6 +50,12 @@ namespace uGCapture
             get { return emptyBufs.Count; }
         }
 
+        public Type BufferType
+        {
+            get { return typeof (T); }
+        }
+
+
         /// <summary>
         /// Instantiate with empty buffers.
         /// </summary>

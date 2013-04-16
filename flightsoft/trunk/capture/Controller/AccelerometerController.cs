@@ -39,7 +39,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, "Waiting for accelerometer to be found", 0);
                 accel = new Accelerometer();
                 accel.open(SerialNumber);
-                accel.waitForAttachment(10000);
+                accel.waitForAttachment(1000);
                 accel.Attach += new AttachEventHandler(accel_Attach);
                 accel.Detach += new DetachEventHandler(Sensor_Detach);
                 accel.Error += new ErrorEventHandler(Sensor_Error);

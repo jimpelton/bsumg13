@@ -43,17 +43,18 @@ namespace gui
            if (!boolCapturing)
            {
                boolCapturing = true;
-               dp.Broadcast(new SetCaptureStateMessage(this, boolCapturing));
-               return boolCapturing;
+               dp.Broadcast(new SetCaptureStateMessage(this, true));
            }
-           //if we are capturing bring up a dialog and ask if we really want to stop.
-           if (boolCapturing)
+           else
            {
-               DialogResult dr = MessageBox.Show("Stop Capture?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+               DialogResult dr = MessageBox.Show("Stop Capture?", "", 
+                   MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
                if (dr == DialogResult.Yes)
+               {
                    boolCapturing = false;
-               //now we stop capture.
-               dp.Broadcast(new SetCaptureStateMessage(this, boolCapturing));
+                   dp.Broadcast(new SetCaptureStateMessage(this, false));
+               }
                 
            }
            return boolCapturing;
