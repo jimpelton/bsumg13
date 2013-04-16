@@ -17,7 +17,6 @@ namespace uGCapture
             get;
             set;
         }
-        //private bool receiving = false;
 
 
         protected Receiver()
@@ -68,24 +67,24 @@ namespace uGCapture
         public virtual void exPhidgetsStatus(Receiver r, Message m) { ; }
 
         /// <summary>
-        /// Generate a DataMessage
+        /// Execute a DataMessage. 
         /// </summary>
-        public virtual void exData(Receiver r, Message m) { ; }
+        public virtual void exDataMessage(Receiver r, Message m) { ; }
 
         /// <summary>
-        /// Generate a DataMessage
+        /// Execute a DataRequestMessage.
         /// </summary>
-        public virtual void exDataRequest(Receiver r, Message m) { ; }
+        public virtual void exDataRequestMessage(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Act upon given AptinaStatusMessage
         /// </summary>
-        public virtual void exAptinaStatus(Receiver r, Message m) { ; }
+        public virtual void exAptinaStatusMessage(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Generate a SetCaptureStateMessage
         /// </summary>
-        public virtual void exSetCaptureState(Receiver r, Message m) { ; }
+        public virtual void exSetCaptureStateMessage(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Act on given LogMessage.

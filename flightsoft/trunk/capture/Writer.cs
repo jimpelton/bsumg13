@@ -268,7 +268,7 @@ public class Writer : ReceiverController
         //WriteData();
     }
 
-    public override void exDataRequest(Receiver r, Message m)
+    public override void exDataRequestMessage(Receiver r, Message m)
     {
         DataMessage dat = new DataMessage(r);
         for (int i = 0; i < 6;i++ )

@@ -8,13 +8,15 @@ using Timer = System.Timers.Timer;
 
 namespace uGCapture 
 {
-    public class CaptureClass : ReceiverController
+    public class CaptureClass : Receiver
     {
         private String directoryName;
         private bool boolCapturing = false;
+        
+        private BufferPool<byte> m_bufferPool;
+        //private Queue<Message> messages;
 
-        private Queue<Message> messages;
-
+        private Timer m_timer;
         private PhidgetsController phidgetsController;
         private AccelerometerController accelControler; 
         private SpatialController spatialController;
@@ -27,27 +29,32 @@ namespace uGCapture
         private Thread acThread1;
         private Thread acThread2;
         private Thread wrtThread;
+        private const double frame_time = 500;
 
-        public CaptureClass() : base()
+        public CaptureClass() 
         {
             //TODO: move datetime and directory creation into GUI.
             directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
             System.IO.Directory.CreateDirectory("C:\\Data\\"+directoryName);
 
-            messages = new Queue<Message>();
+            //messages = new Queue<Message>();
         }
 
-        public override void init()
+        public void init()
         {
             dp.Register(this,"CaptureControl");
 
-            BufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
-            writer = new Writer(BufferPool);       
+            m_bufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
+
+            m_timer = new Timer(frame_time);
+            m_timer.Elapsed += DoFrame;
+
+            writer = new Writer(m_bufferPool);       
             writer.DirectoryName = directoryName;
             writer.init();
             
-            ac1 = new AptinaController(BufferPool);
-            ac2 = new AptinaController(BufferPool);
+            ac1 = new AptinaController(m_bufferPool);
+            ac2 = new AptinaController(m_bufferPool);
             
 
             try
@@ -73,7 +80,7 @@ namespace uGCapture
 
             try
             {
-                phidgetsController = new PhidgetsController(BufferPool);
+                phidgetsController = new PhidgetsController(m_bufferPool);
                 phidgetsController.init();
             }
             catch (PhidgetsControllerNotInitializedException eek)
@@ -84,7 +91,7 @@ namespace uGCapture
 
             try
             {
-                weatherboard = new VCommController(BufferPool);
+                weatherboard = new VCommController(m_bufferPool);
                 weatherboard.init();
             }
             catch (VCommControllerNotInitializedException eek)
@@ -95,7 +102,7 @@ namespace uGCapture
             
             try
             {
-                ni6008 = new NIController(BufferPool);
+                ni6008 = new NIController(m_bufferPool);
                 ni6008.init();
             }
             catch (NIControllerNotInitializedException eek)
@@ -106,7 +113,7 @@ namespace uGCapture
             
             try
             {
-                accelControler = new AccelerometerController(BufferPool, 159352);
+                accelControler = new AccelerometerController(m_bufferPool, 159352);
                 accelControler.init();
             }
             catch (AccelerometerControllerNotInitializedException eek)
@@ -117,7 +124,7 @@ namespace uGCapture
 
             try
             {
-                spatialController = new SpatialController(BufferPool, 169140);
+                spatialController = new SpatialController(m_bufferPool, 169140);
                 spatialController.init();
             }
             catch (SpatialControllerNotInitializedException eek)
@@ -127,13 +134,11 @@ namespace uGCapture
             }
  
             this.Receiving = true;
-            this.TickerEnabled = true;
+            m_timer.Enabled = true;
         }
 
-        public override void DoFrame(object source, ElapsedEventArgs e)
+        public void DoFrame(object source, ElapsedEventArgs e)
         {
-            //while(this.msgs.Count > 0)
-            //    msgs.Dequeue().execute(this);
             ExecuteMessageQueue();
 
            //check to see if we are capturing and if we are then enable the timers on our shtuff.
@@ -170,7 +175,7 @@ namespace uGCapture
         //    );
         //}
 
-        public override void exSetCaptureState(Receiver r, Message m)
+        public override void exSetCaptureStateMessage(Receiver r, Message m)
         {
             SetCaptureStateMessage lm = m as SetCaptureStateMessage;
             if (lm != null)

@@ -4,11 +4,11 @@ namespace uGCapture
 {
     public abstract class Message
     {
-        private Receiver m_source;
-        public Receiver Source
+        private Receiver m_sender;
+        public Receiver Sender
         {
-            get { return m_source; }
-            set { m_source = value; }
+            get { return m_sender; }
+            set { m_sender = value; }
         }
 
         /// <summary>
@@ -16,7 +16,7 @@ namespace uGCapture
         /// should pass itself into this constructor.
         /// </summary>
         /// <param name="s">The Receiver that generated this message.</param>
-        public Message(Receiver s) { m_source = s; }
+        public Message(Receiver sender) { m_sender = sender; }
 
         public abstract void execute(Receiver r);
     }

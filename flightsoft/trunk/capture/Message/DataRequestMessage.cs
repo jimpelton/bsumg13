@@ -16,7 +16,7 @@ namespace uGCapture
 
         public override void execute(Receiver r)
         {
-            r.exDataRequest(r, this);         
+            r.exDataRequestMessage(r, this);         
         }
     }
 }

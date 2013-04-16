@@ -52,7 +52,7 @@ namespace uGCapture
 
         public override void execute(Receiver r)
         {
-            r.exData(r, this);
+            r.exDataMessage(r, this);
         }
     }
 }

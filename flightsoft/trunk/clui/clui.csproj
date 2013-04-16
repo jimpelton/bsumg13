@@ -41,11 +41,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CLUI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\capture\capture.csproj">
+      <Project>{16c569c2-a76b-47b0-a4df-7b39b505943e}</Project>
+      <Name>capture</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Midlib\Midlib.vcxproj">
+      <Project>{4a587572-fa3c-417b-88f0-430a0bfc8155}</Project>
+      <Name>Midlib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

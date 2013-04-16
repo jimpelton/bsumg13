@@ -89,7 +89,7 @@ namespace gui
                 mainform.DebugOutput(lm.message, lm.severity);
         }
 
-        public override void exData(Receiver r, Message m)
+        public override void exDataMessage(Receiver r, Message m)
         {
             DataPoint dat = new DataPoint();
 
@@ -125,7 +125,7 @@ namespace gui
 
 
         }
-        public override void exDataRequest(Receiver r, Message m)
+        public override void exDataRequestMessage(Receiver r, Message m)
         {
             int test = 0;
         }

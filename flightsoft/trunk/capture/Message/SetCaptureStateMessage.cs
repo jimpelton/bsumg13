@@ -24,7 +24,7 @@ namespace uGCapture
 
         public override void execute(Receiver r)
         {          
-            r.exSetCaptureState(r, this);
+            r.exSetCaptureStateMessage(r, this);
         }
     }
 }
