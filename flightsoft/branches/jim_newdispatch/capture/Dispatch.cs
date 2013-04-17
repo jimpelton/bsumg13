@@ -24,23 +24,23 @@ namespace uGCapture
             get { return m_dude.Id; }
         }
 
-        public ConcurrentQueue<Message> MesWait
+        public BlockingCollection<Message> MesWait
         {
             get { return mesWait; }
         }
-        private ConcurrentQueue<Message> mesWait;
+        private BlockingCollection<Message> mesWait;
 
         public ReceiverIdPair(Receiver dude)
         {
             m_dude = dude;
-            mesWait = new ConcurrentQueue<Message>();
+            mesWait = new BlockingCollection<Message>();
         }
 
         public Thread T { get; set; }
 
         public void Enqueue(Message m)
         {
-            mesWait.Enqueue(m);
+            mesWait.Add(m);
             Console.WriteLine("Enqueued message: type [{0}], Sender [{1}] Receiver [{2}].", 
                 m.GetType(), m.Sender.Id, Id);
         }
@@ -48,7 +48,7 @@ namespace uGCapture
         public Message Dequeue()
         {
             Message rval;
-            mesWait.TryDequeue(out rval);
+            rval = mesWait.Take(); //(out rval);
 
             Console.WriteLine("Dequeued message: type [{0}], Sender [{1}] Receiver [{2}].", 
                 rval.GetType(), rval.Sender.Id, Id);
