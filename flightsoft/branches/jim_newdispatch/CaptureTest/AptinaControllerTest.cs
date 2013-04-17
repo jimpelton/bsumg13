@@ -12,7 +12,7 @@ namespace CaptureTest
         public void InitMidlibTest()
         {
             BufferPool<byte> bp = new BufferPool<byte>(10, 16777216);
-            AptinaController ac = new AptinaController(bp);
+            AptinaController ac = new AptinaController(bp, "Ac1");
             ac.init();
 
             Thread t1 = new Thread(() => AptinaController.go(ac));
@@ -30,7 +30,6 @@ namespace CaptureTest
             
             //do
             //{
-                //TODO: fix the memory leak this loop causes in SimpleCapture::initMidLib(). --JP
                 //initResult = ManagedSimpleCapture.managed_InitMidLib(2);           
             //} while (initResult!=0);
 

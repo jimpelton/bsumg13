@@ -1,20 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Timers;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-13                                                                      
+// ******************************************************************************
+
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace uGCapture
 {
-    internal class ReceiverIdPair{
-        public Receiver dude;
-        public string id;
-        public ReceiverIdPair(Receiver dude, string id)
+    internal class ReceiverIdPair
+    {
+        public Receiver Receiver
         {
-            this.dude = dude;
-            this.id = id;
+            get { return m_dude; }
+        }
+        private Receiver m_dude;
+
+        public string Id
+        {
+            get { return m_dude.Id; }
         }
 
+        public ConcurrentQueue<Message> MesWait
+        {
+            get { return mesWait; }
+        }
+        private ConcurrentQueue<Message> mesWait;
+
+        public ReceiverIdPair(Receiver dude)
+        {
+            m_dude = dude;
+            mesWait = new ConcurrentQueue<Message>();
+        }
+
+        public Thread T { get; set; }
+
+        public void Enqueue(Message m)
+        {
+            mesWait.Enqueue(m);
+            Console.WriteLine("Enqueued message: type [{0}], Sender [{1}] Receiver [{2}].", 
+                m.GetType(), m.Sender.Id, Id);
+        }
+
+        public Message Dequeue()
+        {
+            Message rval;
+            mesWait.TryDequeue(out rval);
+
+            Console.WriteLine("Dequeued message: type [{0}], Sender [{1}] Receiver [{2}].", 
+                rval.GetType(), rval.Sender.Id, Id);
+
+            return rval;
+        }
     }
 
     /// <summary>
@@ -26,20 +66,12 @@ namespace uGCapture
     /// </summary>
     public class Dispatch
     {
-        private const int DISPATCH_INTERVAL = 1000;
-        private Queue<Message> mesWait;
-        private Dictionary<string, ReceiverIdPair> receivers;
+        private ConcurrentDictionary<string, ReceiverIdPair> receivers;
+        private static Dispatch me = null;
 
-        private Timer ticker = null;
-
-        private static Dispatch me=null;
         private Dispatch()
         {
-            mesWait = new Queue<Message>();
-            receivers = new Dictionary<string, ReceiverIdPair>();
-            ticker = new Timer(DISPATCH_INTERVAL);
-            ticker.Elapsed += ProcessMessages;
-            ticker.Enabled = true;
+            receivers = new ConcurrentDictionary<string, ReceiverIdPair>();
         }
 
         public static Dispatch Instance()
@@ -47,6 +79,7 @@ namespace uGCapture
             if (me == null)
             {
                 me = new Dispatch();
+                Console.WriteLine("Dispatch Created.");
             }
             return me;
         }
@@ -56,70 +89,102 @@ namespace uGCapture
         /// </summary>
         /// <param name="r">The dude to add.</param>
         /// <param name="id">The id of the dude.</param>
-        public void Register(Receiver r, string id)
+        public void Register(Receiver r)
         {
-            ReceiverIdPair rd = new ReceiverIdPair(r, id);
-            receivers.Add(id, rd);
+            ReceiverIdPair p = receivers.GetOrAdd(r.Id, makeNewQueue(r));
+            p.T = new Thread(() => Receiver.ExecuteMessageQueue(r));
+            p.T.Start();
+
+            //try
+            //{
+            //    Parallel.Invoke(() => Receiver.ExecuteMessageQueue(r));
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e.StackTrace);
+            //}
+            Console.WriteLine("Dispatch: Registered Id: [{0}]", r.Id);
+        }
+
+        private ReceiverIdPair makeNewQueue(Receiver r)
+        {
+            return new ReceiverIdPair(r);
         }
 
         /// <summary>
         /// Remove Receiver specified by id from the list of receivers.
         /// </summary>
         /// <param name="id">The id of the dude to remove.</param>
-        public void Remove(string id)
-        {
-            receivers.Remove(id);
-        }
-        
+        //public void Remove(string id)
+        //{
+        //    receivers.
+        //}
         /// <summary>
         /// Broadcast this message to all known receivers.
         /// </summary>
         /// <param name="m">The message to enqueue.</param>
         public void Broadcast(Message m)
         {
-            lock (mesWait)
-            {
-                mesWait.Enqueue(m);
-            }
+            Parallel.ForEach(receivers, q => q.Value.Enqueue(m));
         }
 
         public void BroadcastLog(Receiver sender, string message, int severity)
         {
             Broadcast
-            (
-                new LogMessage(sender, message, severity)
-            );
+                (
+                    new LogMessage(sender, message, severity)
+                );
+        }
+
+        public void BroadcastTo(Receiver dest, Message m)
+        {
+            if (dest.IsReceiving)
+            {
+                receivers[dest.Id].Enqueue(m);
+            }
+        }
+
+        public void BroadcastTo(string toId, Message m)
+        {
+            receivers[toId].Enqueue(m);
+        }
+
+        public Message Next(Receiver r)
+        {
+            return receivers[r.Id].Dequeue();
+        }
+
+        public Message Next(string id)
+        {
+            return receivers[id].Dequeue();
         }
 
         //we need to deliver the messages. At the moment it is bound to a timer. Should we do it this way?
-        private void ProcessMessages(object source, ElapsedEventArgs e)
-        {
-            deliver();
-        }
+        //private void ProcessMessages(object source, ElapsedEventArgs e)
+        //{
+        //    deliver();
+        //}
 
-        private void deliver()      
-        {
-            try // implement thread safety in all of this.
-            {
-                lock (mesWait)
-                {
-                    foreach (ReceiverIdPair r in receivers.Values)
+        //private void deliver()      
+        //{
 
-                    {
-                        foreach (Message m in mesWait)
-                        {
-                            r.dude.accept(m);
-                        }
-                    }
+        //            foreach (ReceiverIdPair r in receivers.Values)
 
-                    mesWait.Clear(); // after we send them out once lets not send them again.
-                }
-            }
-            catch (InvalidOperationException e)
-            {
-                Console.WriteLine(e.StackTrace);
-            }
-        }
+        //            {
+        //                foreach (Message m in mesWait)
+        //                {
+        //                    r.dude.accept(m);
+        //                }
+        //            }
+
+        //            mesWait.Clear(); // after we send them out once lets not send them again.
+        //        }
+        //    }
+        //    catch (InvalidOperationException e)
+        //    {
+        //        Console.WriteLine(e.StackTrace);
+        //    }
+        //}
 
         /// <summary>
         /// Broadcast Message m to receiver specified by string.
@@ -133,7 +198,5 @@ namespace uGCapture
         //    r.accept(m);
         //    singleReceiverBroadcastMutex.ReleaseMutex();
         //}
- 
-
     }
 }

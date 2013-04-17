@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-06                                                                      
+// ******************************************************************************
+
+using System;
 using System.IO;
 using System.IO.Ports;
 using System.Threading;
@@ -17,14 +23,9 @@ namespace uGCapture
         private double illumunation=0;
         private int recordnum=0;
 
-        public VCommController(BufferPool<byte> bp)
-            : base(bp)
+        public VCommController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
-
         }
-
-
-
 
         public override void init()
         {
@@ -36,25 +37,27 @@ namespace uGCapture
             {
                 port.Close();
             }
+
             try
             {
                 port.Open();
             }
             catch (IOException e)
             {
-                throw new VCommControllerNotInitializedException("VComm crapped out on .Open");
+                Console.WriteLine(e.StackTrace);
+                throw new VCommControllerNotInitializedException("VCommContoller was unable to open.");
+
             }
             catch (UnauthorizedAccessException e)
             {
-                
+                Console.WriteLine(e.StackTrace);
                 port.Close();         
             }
         }
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-            Buffer<Byte> buffer = null;
-            buffer = BufferPool.PopEmpty();
+            Buffer<byte> buffer = BufferPool.PopEmpty();
 
             String outputData = "Weatherboard\n";
             outputData += DateTime.Now.Ticks.ToString() + " ";
@@ -68,7 +71,7 @@ namespace uGCapture
 
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_VCOM);
-            buffer.Text = "Weatherboard"; // String.Format("Weatherboard");
+            buffer.Text = "Weatherboard"; 
 
             BufferPool.PostFull(buffer);
 

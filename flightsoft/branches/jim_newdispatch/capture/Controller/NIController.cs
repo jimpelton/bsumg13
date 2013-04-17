@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Timers;
-
 using NationalInstruments;
 using NationalInstruments.DAQmx;
 
@@ -32,18 +31,9 @@ namespace uGCapture
 
         private static Object hardwareMutex = new object();
 
-        public NIController(BufferPool<byte> bp) 
-        : base(bp)
+        public NIController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
-        
-
-
-
         }
-
-
-
-
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {

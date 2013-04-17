@@ -1,27 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-03-29                                                                      
+// ******************************************************************************
+
+
+using System;
+using System.Timers;
 using Phidgets;
 using Phidgets.Events;
-using System.Timers;
-
 
 namespace uGCapture
 {
-    public class AccelerometerController : ReceiverController
+    public class SpatialAccelController : ReceiverController
     {
-        private Accelerometer accel = null;
-        private double[] rawacceleration = null;
-        private double[] acceleration = null;
-        private double[] vibration = null;
+        private Spatial accel;
+        private double[] rawAcceleration;
+        private double[] acceleration;
+        private double[] vibration;
         private int SerialNumber;
 
-        public AccelerometerController(BufferPool<byte> bp, int serial)
-            : base(bp)
-        {
-            SerialNumber = serial;
-            rawacceleration = new double[3];
+        public SpatialAccelController(BufferPool<byte> bp, string id, int serial, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
+        {            SerialNumber = serial;
+            rawAcceleration = new double[3];
             acceleration = new double[3];
             vibration = new double[3];
         }
@@ -37,14 +38,14 @@ namespace uGCapture
             try
             {
                 dp.BroadcastLog(this, "Waiting for accelerometer to be found", 0);
-                accel = new Accelerometer();
+                accel = new Spatial();
                 accel.open(SerialNumber);
                 accel.waitForAttachment(1000);
                 accel.Attach += new AttachEventHandler(accel_Attach);
                 accel.Detach += new DetachEventHandler(Sensor_Detach);
                 accel.Error += new ErrorEventHandler(Sensor_Error);
-                accel.AccelerationChange +=
-                    new AccelerationChangeEventHandler(accel_AccelerationChange);
+                accel.SpatialData +=
+                    new SpatialDataEventHandler(accel_AccelerationChange);
 
                 dp.BroadcastLog(this, "Accelerometer found", 0);
             }
@@ -74,11 +75,15 @@ namespace uGCapture
         }
 
         //gets an raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise. (wip)
-        void accel_AccelerationChange(object sender, AccelerationChangeEventArgs e)
+        void accel_AccelerationChange(object sender, SpatialDataEventArgs e)
         {
-            vibration[e.Index] += Math.Abs(e.Acceleration - rawacceleration[e.Index]);          //accumulates total change per axis
-            acceleration[e.Index] = (acceleration[e.Index] + rawacceleration[e.Index]) / 2.0;   //need a better filter than this
-            rawacceleration[e.Index] = e.Acceleration;                                          //what we will use the most
+            for (int i = 0; i < 3; i++)
+            {
+                double acc = e.spatialData[0].Acceleration[i];
+                vibration[i] += Math.Abs(acc - rawAcceleration[i]);
+                acceleration[i] = (acceleration[i] + rawAcceleration[i])/2.0;                
+                rawAcceleration[i] = acc; 
+            }
         }
 
         void Sensor_Detach(object sender, DetachEventArgs e)
@@ -104,9 +109,11 @@ namespace uGCapture
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 String outputData = "Accel \n";
 
+                //TODO: maybe change these concatenations to StringBuilder, 
+                //      to ease string copies and GC-ing.
                 outputData += DateTime.Now.Ticks.ToString() + " ";
                 for (int i = 0; i < 3; i++)
-                    outputData += rawacceleration[i] + " ";
+                    outputData += rawAcceleration[i] + " ";
 
                 for (int i = 0; i < 3; i++)
                     outputData += acceleration[i] + " ";
@@ -124,9 +131,9 @@ namespace uGCapture
 
     }
 
-    public class AccelerometerControllerNotInitializedException : Exception
+    public class SpatialControllerNotInitializedException : Exception
     {
-        public AccelerometerControllerNotInitializedException(string message)
+        public SpatialControllerNotInitializedException(string message)
             : base(message)
         {
         }

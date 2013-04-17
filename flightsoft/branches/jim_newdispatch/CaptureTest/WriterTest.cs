@@ -12,8 +12,8 @@ namespace CaptureTest
         public void PhidgetsFileWritingTest1()
         {
             
-            uGCapture.BufferPool<Byte> bufpool = new BufferPool<byte>(NUM_BUFFERS, (int)Math.Pow(2, 24));
-            uGCapture.Writer testWriter = new Writer(bufpool);
+            BufferPool<Byte> bufpool = new BufferPool<byte>(NUM_BUFFERS, (int)Math.Pow(2, 24));
+            Writer testWriter = new Writer(bufpool, "Writer");
             testWriter.FrameTime = 500;
             testWriter.TickerEnabled = true;
             for (byte i = 0; i < 200; i++)

@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-13                                                                      
+// ******************************************************************************
+
+using System;
 using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
@@ -25,22 +31,23 @@ public class AptinaController : ReceiverController
     private ManagedSimpleCapture msc;
     private static int numcams = 2;
 
-    private int m_errno;
     public int Errno
     {
         get { return m_errno ; }
         private set { m_errno = value; }
     }
+    private int m_errno;
 
-    private string m_iniFilePath;
     public string IniFilePath
     {
         get { return m_iniFilePath;  }
         set { m_iniFilePath = value; }
     }
-    public AptinaController(BufferPool<byte> bp) 
-        : base(bp)
-    { 
+    private string m_iniFilePath;
+
+    public AptinaController(BufferPool<byte> bp, string id, bool receiving = true,
+        int frame_time = 500) : base(bp, id, receiving, frame_time)
+    {
         if (barrierSemaphore == null)
         {
             barrierSemaphore = new Semaphore(0, numcams);
@@ -65,7 +72,8 @@ public class AptinaController : ReceiverController
         else
         {
             isInit = false;
-            throw new AptinaControllerNotInitializedException("AptinaController failed init: InitMidLib failed.");
+            throw new AptinaControllerNotInitializedException(
+                "AptinaController failed init: InitMidLib failed.");
         }
 
         if (r == 0)
@@ -75,7 +83,8 @@ public class AptinaController : ReceiverController
         else
         {
             isInit = false;
-            throw new AptinaControllerNotInitializedException("AptinaController failed init: OpenTransport failed for controller: "+tnum);
+            throw new AptinaControllerNotInitializedException(
+                "AptinaController failed init: OpenTransport failed for controller: "+tnum);
         }
 
         if (size != 0)
@@ -85,15 +94,15 @@ public class AptinaController : ReceiverController
         else
         {
             isInit = false;
-            throw new AptinaControllerNotInitializedException("AptinaController failed init: SensorBufferSize() returned 0 size for controller: "+tnum);
+            throw new AptinaControllerNotInitializedException(
+                "AptinaController failed init: SensorBufferSize() returned 0 size for controller: "+tnum);
         }
 
 
-        //Receiving = r == 0 && size != 0;
-        Receiving = true;
-        //Receiving = false;
-        dp.Register(this, "AptianController"+tnum);
-        dp.BroadcastLog(this, String.Format("AptinaController receiving {0}", Receiving),1);
+        ////IsReceiving = r == 0 && size != 0;
+        //IsReceiving = true;
+        //dp.Register(this, "AptianController"+tnum);
+        //dp.BroadcastLog(this, String.Format("AptinaController receiving {0}", IsReceiving),1);
         dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
     }
 
@@ -128,7 +137,7 @@ public class AptinaController : ReceiverController
             {
                 barrierSemaphore.WaitOne();
             }
-            Console.WriteLine(String.Format("Aptina Controller Capture {0} begin. Time: {1}", me.tnum, DateTime.Now.Millisecond));
+            Console.WriteLine("Aptina Controller Capture {0} begin. Time: {1:g}", me.tnum, DateTime.Now.TimeOfDay);
 
             me.runningMutex.WaitOne();
             if (!me.running)
@@ -162,7 +171,7 @@ public class AptinaController : ReceiverController
                 BufferType.USHORT_IMAGE405 : BufferType.USHORT_IMAGE485;
 
             imagebuffer.setData(me.dest, bufferType);
-            imagebuffer.Text = DateTime.Now.Millisecond.ToString(); // String.Format("{0}", DateTime.Now.Millisecond);
+            imagebuffer.Text = DateTime.Now.Millisecond.ToString();
             me.BufferPool.PostFull(imagebuffer);
             
         }   

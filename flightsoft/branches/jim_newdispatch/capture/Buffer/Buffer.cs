@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-03-24                                                                      
+// ******************************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

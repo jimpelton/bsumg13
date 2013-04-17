@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-03-29                                                                      
+// ******************************************************************************
+
+using System;
 using System.Threading;
 using System.Timers;
 using Phidgets;
@@ -10,8 +16,8 @@ namespace uGCapture
 public class PhidgetsController : ReceiverController
 {
 
-    private TemperatureSensor phidgetTemperature = null;
-    private InterfaceKit      phidgets1018       = null;
+    private TemperatureSensor phidgetTemperature;
+    private InterfaceKit phidgets1018;
 
     private double phidgetTemperature_AmbientTemp = 0;
     private double phidgetTemperature_ProbeTemp = 0;
@@ -20,13 +26,21 @@ public class PhidgetsController : ReceiverController
     private bool[] digitalOutputs; // = null;
     private int[] analogInputs; // = null;
 
-    public PhidgetsController(BufferPool<byte> bp) 
-        : base(bp)
+    public PhidgetsController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
     {
         digitalInputs = new bool[8];
         digitalOutputs = new bool[8];
         analogInputs = new int[8];     
     }
+
+
+    //public PhidgetsController(BufferPool<byte> bp) 
+    //    : base(bp)
+    //{
+    //    digitalInputs = new bool[8];
+    //    digitalOutputs = new bool[8];
+    //    analogInputs = new int[8];     
+    //}
 
             
     public override void init()

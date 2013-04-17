@@ -11,32 +11,29 @@ namespace gui
 {
     public class GuiUpdater : Receiver
     {
-        Form1 mainform = null;
-        private GuiMain Guimain = null;
-        private Series graph1data = null;
-        public GuiUpdater(Form1 f,GuiMain m)
-        {         
+        Form1 mainform;
+        private GuiMain Guimain;
+        private Series graph1data;
+
+        public GuiUpdater(Form1 f, GuiMain m, string id, bool receiving = true) : base(id, receiving)
+        {
             mainform = f;
             graph1data = new Series("Points");
             Guimain = m;
-            this.Receiving = true;
-            dp.Register(this, "GuiUpdater");
         }
+
+        //public GuiUpdater(Form1 f, GuiMain m)
+        //{         
+        //    mainform = f;
+        //    graph1data = new Series("Points");
+        //    Guimain = m;
+        //    this.IsReceiving = true;
+        //    dp.Register(this, "GuiUpdater");
+        //}
 
         public void UpdateGUI(object sender, EventArgs e)
         {
-            try
-            {
-                //while (this.msgs.Count > 0)
-                //    msgs.Dequeue().execute(this);
-                ExecuteMessageQueue();
-                
-            }
-            catch (NullReferenceException nel)/// temp fix for monday's test. 5 minutes out.
-            {
-                Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at msgs.Dequeue().execute(this)");
  
-            }
             mainform.chart1.Series.Clear();
             mainform.chart2.Series.Clear();
             List<DataPoint> frames = Guimain.getDataPoints();
@@ -73,9 +70,7 @@ namespace gui
                     mainform.chart1.Series["Graph3"].ChartArea = "ChartArea3";
 
                     mainform.chart2.Series["Gravity"].ChartType = SeriesChartType.SplineArea;
-                    mainform.chart2.Series["Gravity"].Points.AddY(
-                        p.accel2acceleration[1]
-                        );
+                    mainform.chart2.Series["Gravity"].Points.AddY(p.accel2acceleration[1]);
                     mainform.chart2.Series["Gravity"].ChartArea = "ChartArea1";
                 }
             }
@@ -121,10 +116,8 @@ namespace gui
             dat.timestamp = dm.timestamp;   
             
             Guimain.insertDataPoint(dat);
-            
-
-
         }
+
         public override void exDataRequestMessage(Receiver r, Message m)
         {
             int test = 0;

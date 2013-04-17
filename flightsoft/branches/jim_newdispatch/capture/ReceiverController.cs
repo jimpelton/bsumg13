@@ -1,8 +1,22 @@
-﻿using System.Timers;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-03-24                                                                      
+// ******************************************************************************
+
+using System;
+using System.Timers;
 
 
 namespace uGCapture
 {
+    /// <summary>
+    /// ReceiverController adds a BufferPool to the Receiver hierarchy. The ReceiverController is
+    /// designed to capture data from some hardware device and shove the data into the bufferpool.
+    /// A ReceiverController also adds a Timer loop to the Receiver hierarchy. The default firing time
+    /// is 500ms. Currently the Timers are horribly abused.
+    /// 
+    /// </summary>
     public abstract class ReceiverController : Receiver
     {
         /// <summary>
@@ -18,7 +32,15 @@ namespace uGCapture
         /// <summary>
         /// Update interval that the DoFrame ElapsedEventHandler is called.
         /// </summary>
-        public int FrameTime { get; set; }
+        public int FrameTime
+        {
+            get { return m_frameTime; }
+            set
+            {
+                m_frameTime = value;
+                m_ticker.Interval = m_frameTime;
+            }
+        }
         private int m_frameTime;
 
         /// <summary>
@@ -31,23 +53,22 @@ namespace uGCapture
         }
         private BufferPool<byte> m_bufferPool;
 
-        //protected ReceiverController()
-        //{
-        //    m_frameTime = 500;
-
-        //    m_ticker = new Timer(m_frameTime);
-        //    m_ticker.Enabled = false;
-        //    m_ticker.Elapsed += new ElapsedEventHandler(DoFrame);
-        //}
-
-        protected ReceiverController(BufferPool<byte> bp, int frame_time=500) 
+        /// <summary>
+        /// Create a new ReceiverController that will receive messages from the Dispatch.
+        /// </summary>
+        /// <param name="bp">The BufferPool for this Receiver.</param>
+        /// <param name="id">A unique identifier for this ReceiverController.</param>
+        /// <param name="receiving">If this ReceiverController should begin life receiving. Defaults to true.</param>
+        /// <param name="frame_time">The interval between the DoFrame timer events. Defaults to 500ms.</param>
+        protected ReceiverController(BufferPool<byte> bp, string id, 
+            bool receiving=true, int frame_time=500) : base(id, receiving)
         {
-            m_bufferPool = bp;
-            m_frameTime = frame_time;
-
             m_ticker = new Timer(frame_time);
             m_ticker.Enabled = false;
-            m_ticker.Elapsed += new ElapsedEventHandler(DoFrame);
+            m_ticker.Elapsed += DoFrame;
+
+            BufferPool = bp;
+            FrameTime = frame_time;
         }
 
         /// <summary>

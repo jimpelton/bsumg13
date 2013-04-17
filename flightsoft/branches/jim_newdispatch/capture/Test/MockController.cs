@@ -29,7 +29,7 @@ namespace uGCapture
 
         private Random m_rand;
 
-        public MockController(BufferPool<byte> bp) : base(bp)
+        public MockController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
             m_maxDataBytes = bp.BufElem;
             SleepMin = 5;

@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-13                                                                      
+// ******************************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,15 +23,15 @@ namespace gui
         public Form1()
         {
             InitializeComponent();
-            guiMain = new GuiMain(this);
+            guiMain = new GuiMain(this, "GuiMain"); //TODO: move ID strings into a lookup table --JP
             guiMain.Startup_Init();
-            guiUpdater = guiMain.guiUpdater;
+            guiUpdater = guiMain.GuiUpdater;
 
             Tab_Control_Main.SelectedIndex=4;
-            //TODO: this updating should be handled externally to the form.
-            //TODO: make an alternative thread-safe way to do this.
+
+            //TODO: this updating should be handled externally to the form. --JP
             //it likes it when the timer is in here...
-            DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);
+            DebugUpdateTimer.Tick += guiUpdater.UpdateGUI;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -69,14 +75,5 @@ namespace gui
             return DateTime.Now.ToString("dd:HH:mm:ss ");
         }
 
-        private void chart1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void chart1_Click_1(object sender, EventArgs e)
-        {
-
-        }    
     }
 }

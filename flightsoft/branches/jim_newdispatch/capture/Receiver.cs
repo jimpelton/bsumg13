@@ -1,21 +1,26 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-13                                                                      
+// ******************************************************************************
+
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace uGCapture
 {
 
     public abstract class Receiver
     {
-        protected Queue<Message> msgs;
         protected Dispatch dp;
         private bool m_receiving; 
         private object receivingMutex = new object();
-        private object msgsMutex = new object();
-
+        
         /// <summary>
         /// True if this Receiver is currently receiving messages.
         /// </summary>
-        public bool Receiving
+        public bool IsReceiving
         {
             get 
             { 
@@ -36,11 +41,17 @@ namespace uGCapture
             }
         }
 
-
-        protected Receiver(bool receiving=true)
+        public string Id
         {
+            get { return m_id; }
+        }
+        private string m_id;
+
+
+        protected Receiver(string id, bool receiving=true)
+        {
+            m_id = id;
             m_receiving = receiving;
-            msgs = new Queue<Message>();
             dp = Dispatch.Instance();
         }
 
@@ -49,37 +60,32 @@ namespace uGCapture
         /// receiving state of this Receiver is true.
         /// </summary>
         /// <param name="m">the message being delivered.</param>
-        public void accept(Message m)
-        {
-            if (!Receiving)
-            {
-                return;
-            }
+        //public void accept(Message m)
+        //{
+        //    if (!IsReceiving)
+        //    {
+        //        return;
+        //    }
 
-            lock (msgs)
-            {
-                msgs.Enqueue(m);
-            }
-        }
+        //    lock (msgs)
+        //    {
+        //        msgs.Enqueue(m);
+        //    }
+        //}
         
-        public void ExecuteMessageQueue()
+        public static void ExecuteMessageQueue(Receiver r)
         {
-            
-        }
-
-        private void executeNextMessage()
-        {
-            Message m;
-            lock (msgs)
+            while (true)
             {
-                if (msgs.Count > 0)
+                if (!r.IsReceiving)
                 {
-                    m = msgs.Dequeue();
+                    break;
                 }
-
+                r.dp.Next(r.Id).execute(r);
+                Console.WriteLine("Receiver: {0} Executed {1}", r.Id, r.GetType());
             }
-            m.execute(this);
         }
+
         /// <summary>
         /// Any receiver that should respond to the Bite test message should
         /// override this method.
@@ -121,7 +127,7 @@ namespace uGCapture
 
         public override string ToString()
         {
-            return "Base Receiver";
+            return Id;
         }
     }
 }

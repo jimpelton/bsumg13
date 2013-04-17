@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-13                                                                      
+// ******************************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,10 +21,10 @@ public class Writer : ReceiverController
     private string m_directoryName;
 
     //This is the last written data stored temp so that we can send it to anyone who sends a data request.
-    private long[, ,] WellIntensities;
-    private bool[] phidgetsdigitalInputs;
-    private bool[] phidgetsdigitalOutputs;
-    private int[] phidgetsanalogInputs;
+    private long[, ,] wellIntensities;
+    private bool[] phidgetsDigitalInputs;
+    private bool[] phidgetsDigitalOutputs;
+    private int[] phidgetsAnalogInputs;
     private double phidgetTemperature_ProbeTemp;
     private double phidgetTemperature_AmbientTemp;
     private double[] accel1rawacceleration;
@@ -50,12 +56,12 @@ public class Writer : ReceiverController
         set { m_directoryName = value;}
     }
 
-    public Writer(BufferPool<byte> bp) : base(bp)
+    public Writer(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
     {
-        WellIntensities = new long[2,16,12];
-        phidgetsdigitalInputs = new bool[8];
-        phidgetsdigitalOutputs = new bool[8];
-        phidgetsanalogInputs = new int[8];
+        wellIntensities = new long[2,16,12];
+        phidgetsDigitalInputs = new bool[8];
+        phidgetsDigitalOutputs = new bool[8];
+        phidgetsAnalogInputs = new int[8];
         accel1rawacceleration = new double[3];
         accel1acceleration = new double[3];
         accel1vibration = new double[3];
@@ -65,11 +71,23 @@ public class Writer : ReceiverController
         NIanaloginputs = new double[6];
     }
 
+    //public Writer(BufferPool<byte> bp) : base(bp)
+    //{
+    //    wellIntensities = new long[2,16,12];
+    //    phidgetsDigitalInputs = new bool[8];
+    //    phidgetsDigitalOutputs = new bool[8];
+    //    phidgetsAnalogInputs = new int[8];
+    //    accel1rawacceleration = new double[3];
+    //    accel1acceleration = new double[3];
+    //    accel1vibration = new double[3];
+    //    accel2rawacceleration = new double[3];
+    //    accel2acceleration = new double[3];
+    //    accel2vibration = new double[3];
+    //    NIanaloginputs = new double[6];
+    //}
+
     public override void init()
     {
-        Receiving = true;
-        dp.Register(this,"FileWriter");
-        FrameTime = 50;
     }
 
     /*
@@ -86,8 +104,6 @@ public class Writer : ReceiverController
             {
                 fulbuf = w.BufferPool.PopFull();
 
-                //if (fulbuf == null){ continue; }
-                
                 switch (fulbuf.Type)
                 {
                     case (BufferType.UTF8_PHIDGETS):
@@ -120,12 +136,9 @@ public class Writer : ReceiverController
                 Console.WriteLine(e.StackTrace); 
                 return ;
             }
-            w.ExecuteMessageQueue();
             
-        } // while (fulbuf!=null);
+        } // while...
 
-       
-        //return;
     }
 
     private void WriteImageOutput(Buffer<Byte> buf,int wavelength,uint index)
@@ -207,9 +220,9 @@ public class Writer : ReceiverController
         phidgetTemperature_AmbientTemp = double.Parse(data[3]);
         for (int i = 0; i < 8; i++)
         {
-            phidgetsanalogInputs[i] = int.Parse(data[(i * 3) + 4]);
-            phidgetsdigitalInputs[i] = bool.Parse(data[(i * 3) + 5]); ;
-            phidgetsdigitalOutputs[i] = bool.Parse(data[(i * 3) + 6]); ;
+            phidgetsAnalogInputs[i] = int.Parse(data[(i * 3) + 4]);
+            phidgetsDigitalInputs[i] = bool.Parse(data[(i * 3) + 5]); ;
+            phidgetsDigitalOutputs[i] = bool.Parse(data[(i * 3) + 6]); ;
         }
     }
 
@@ -278,7 +291,7 @@ public class Writer : ReceiverController
         for (int i = 0; i < 2; i++)
             for (int x = 0; x < 16; x++)
                 for (int y = 0; y < 12; y++)
-                    dat.WellIntensities[i,x,y] = WellIntensities[i,x,y];
+                    dat.WellIntensities[i,x,y] = wellIntensities[i,x,y];
         for (int i = 0; i < 3; i++)
             dat.accel1acceleration[i] = accel1acceleration[i];
         for (int i = 0; i < 3; i++)
@@ -297,11 +310,11 @@ public class Writer : ReceiverController
 
         dat.phidgets888state = phidgets888state;
         for (int i = 0; i < 8; i++)
-            dat.phidgetsanalogInputs[i] = phidgetsanalogInputs[i];
+            dat.phidgetsanalogInputs[i] = phidgetsAnalogInputs[i];
         for (int i = 0; i < 8; i++)
-            dat.phidgetsdigitalInputs[i] = phidgetsdigitalInputs[i];
+            dat.phidgetsdigitalInputs[i] = phidgetsDigitalInputs[i];
         for (int i = 0; i < 8; i++)
-            dat.phidgetsdigitalOutputs[i] = phidgetsdigitalOutputs[i];
+            dat.phidgetsdigitalOutputs[i] = phidgetsDigitalOutputs[i];
         dat.phidgetstempstate = phidgetstempstate;
         if (image405 != null)
             dat.image405  =new Buffer<byte>(image405);

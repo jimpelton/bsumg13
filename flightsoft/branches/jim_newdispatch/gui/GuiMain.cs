@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-13                                                                      
+// ******************************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,19 +18,23 @@ namespace gui
     {
         private CaptureClass captureClass;
         private bool boolCapturing = false;
-        public GuiUpdater guiUpdater;
+
         public List<DataPoint> dataFrames = null;
         private static int MAX_DATA_POINTS = 100;
 
-
-
-        private Form1 mainForm;
         public Form1 MainForm
         {
             get { return mainForm; }
         }
+        private Form1 mainForm;
 
-        public GuiMain(Form1 mainForm)
+        public GuiUpdater GuiUpdater
+        {
+            get { return guiUpdater; }
+        }
+        private GuiUpdater guiUpdater;
+
+        public GuiMain(Form1 mainForm, string id, bool receiving = true) : base(id, receiving)
         {
             this.mainForm = mainForm;
         }
@@ -32,8 +42,9 @@ namespace gui
        public void Startup_Init()
        {
            dataFrames = new List<DataPoint>();
-           guiUpdater = new GuiUpdater(mainForm,this);
-           captureClass = new CaptureClass();
+           guiUpdater = new GuiUpdater(mainForm,this, "GuiUpdater");
+
+           captureClass = new CaptureClass("CaptureClass");
            captureClass.init();
        }
 
@@ -78,8 +89,11 @@ namespace gui
                 dataFrames.Last().image405 = null;
                 dataFrames.Last().image485 = null;
             }
+
             //and place us at last.
             dataFrames.Add(p);
+
+            //TODO: List.RemoveAt(0) = O(n). Use Queue instead? --JP
             if (dataFrames.Count > MAX_DATA_POINTS)
                 dataFrames.RemoveAt(0);
         }
@@ -89,9 +103,5 @@ namespace gui
             return dataFrames;
         }
 
-       // public int getMaxDataPoints()
-       // {
-       //     return MAX_DATA_POINTS;
-       // }
     }
 }
