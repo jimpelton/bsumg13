@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Timers;
@@ -44,12 +46,12 @@ namespace gui
             {
 
                 mainform.chart1.Series.Add("Graph1");
-                mainform.chart1.Series.Add("Graph2");
-                mainform.chart1.Series.Add("Graph3");
+             //   mainform.chart1.Series.Add("Graph2");
+              //  mainform.chart1.Series.Add("Graph3");
                 mainform.chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 38.0;
-                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = 35.0;
-                mainform.chart1.ChartAreas["ChartArea2"].AxisY.Maximum = 38.0;
-                mainform.chart1.ChartAreas["ChartArea2"].AxisY.Minimum = 30.0;
+                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = 18.0;
+                //mainform.chart1.ChartAreas["ChartArea2"].AxisY.Maximum = 38.0;
+                //mainform.chart1.ChartAreas["ChartArea2"].AxisY.Minimum = 10.0;
 
                 mainform.chart2.Series.Add("Gravity");
                 mainform.chart2.ChartAreas["ChartArea1"].AxisY.Maximum = 2.0;
@@ -63,7 +65,7 @@ namespace gui
                     mainform.chart1.Series["Graph1"].ChartType = SeriesChartType.SplineArea;                
                     mainform.chart1.Series["Graph1"].Points.AddY(p.phidgetTemperature_ProbeTemp);
                     mainform.chart1.Series["Graph1"].ChartArea = "ChartArea1";
-
+/*
                     mainform.chart1.Series["Graph2"].ChartType = SeriesChartType.SplineArea;
                     mainform.chart1.Series["Graph2"].Points.AddY(p.phidgetTemperature_AmbientTemp);
                     mainform.chart1.Series["Graph2"].ChartArea = "ChartArea2";
@@ -71,7 +73,7 @@ namespace gui
                     mainform.chart1.Series["Graph3"].ChartType = SeriesChartType.SplineArea;
                     mainform.chart1.Series["Graph3"].Points.AddY(p.phidgetsanalogInputs[0]);
                     mainform.chart1.Series["Graph3"].ChartArea = "ChartArea3";
-
+                    */
                     mainform.chart2.Series["Gravity"].ChartType = SeriesChartType.SplineArea;
                     mainform.chart2.Series["Gravity"].Points.AddY(
                         p.accel2acceleration[1]
@@ -121,13 +123,62 @@ namespace gui
             dat.timestamp = dm.timestamp;   
             
             Guimain.insertDataPoint(dat);
-            
+            if (mainform.getImageForm().Visible)
+            {
+                
 
-
+                mainform.getImageForm().pictureBox1.Image = ConvertCapturedRawImage(dat.image405.Data);
+                
+                mainform.getImageForm().pictureBox2.Image = ConvertCapturedRawImage(dat.image485.Data);
+            }
         }
+
         public override void exDataRequestMessage(Receiver r, Message m)
-        {
+        {   
             int test = 0;
+        }
+        
+        static unsafe public Bitmap ConvertCapturedRawImage(byte[] indata)
+        {
+            Bitmap bitmap = null;
+            unsafe
+            {
+                fixed (byte* ptr = indata)
+                {
+                    ushort[] pixels = new ushort[indata.Length/2];
+                    for (int i = 0; i < pixels.Length; i++)
+                    {
+                        pixels[i] = (ushort) ((indata[i * 2] * 256) + indata[i]);
+                    }
+                    uint[] dat = ConvertGray16ToRGB(pixels, 12);
+                    fixed (uint* ptr2 = dat)
+                    {
+
+
+                        IntPtr scan0 = new IntPtr(ptr2);
+                        bitmap = new Bitmap(2592, 1944, // Image size
+                                            2592, // Scan size
+                                            PixelFormat.Format24bppRgb, scan0);
+
+        
+                    }
+                }
+            }
+            return bitmap;
+        }
+
+        public static uint[] ConvertGray16ToRGB(ushort[] grayPixels, int bitsUsed)
+        {
+            int pixelCount = grayPixels.Length;
+            uint[] rgbPixels = new uint[pixelCount];
+            int shift = bitsUsed - 8;
+            for (int i = 0; i < pixelCount; i++)
+            {
+                uint gray = (uint)grayPixels[i] >> shift;
+                rgbPixels[i] = 0xff000000U | gray | (gray << 8) | (gray <<
+                16);
+            }
+            return (rgbPixels);
         }
     }
 }

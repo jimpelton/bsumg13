@@ -159,7 +159,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
-        StoreNI6008Data(buf,index);
+        //StoreNI6008Data(buf,index);
     }
 
     private void WriteAccelerometerOutput(Buffer<Byte> buf, uint index)
@@ -170,7 +170,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
-        StoreAccelerometerData(buf,index);
+        //StoreAccelerometerData(buf,index);
     }
 
     private void WriteWeatherboardOutput(Buffer<Byte> buf, uint index)
@@ -181,7 +181,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
-        StoreWeatherboardData(buf,index);
+        //StoreWeatherboardData(buf,index);
     }
 
     private void StoreImageData(Buffer<Byte> buf, int wavelength, uint index)

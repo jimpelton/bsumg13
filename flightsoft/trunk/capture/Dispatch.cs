@@ -25,7 +25,7 @@ namespace uGCapture
     /// </summary>
     public class Dispatch
     {
-        private const int DISPATCH_INTERVAL = 1000;
+        private const int DISPATCH_INTERVAL = 250;
         private Queue<Message> mesWait;
         private Dictionary<string, ReceiverDudes> receivers;
 

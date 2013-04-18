@@ -43,14 +43,21 @@ namespace uGCapture
         
         public void ExecuteMessageQueue()
         {
-            lock (msgs)
+            Message m = null;
+
+
+            while (msgs.Count > 0)
             {
-                while (msgs.Count > 0)
+                lock (msgs)
                 {
-                    msgs.Dequeue().execute(this);
+                    m = msgs.Dequeue();
                 }
+                if(m!=null)
+                    m.execute(this);
             }
         }
+            
+        
 
         /// <summary>
         /// Any receiver that should respond to the Bite test message should

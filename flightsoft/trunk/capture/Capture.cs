@@ -42,6 +42,7 @@ namespace uGCapture
 
         public void init()
         {
+
             dp.Register(this,"CaptureControl");
 
             m_bufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
@@ -50,11 +51,13 @@ namespace uGCapture
             m_timer.Elapsed += DoFrame;
 
             writer = new Writer(m_bufferPool);       
+
             writer.DirectoryName = directoryName;
             writer.init();
-            
+
             ac1 = new AptinaController(m_bufferPool);
             ac2 = new AptinaController(m_bufferPool);
+
             
 
             try
@@ -154,8 +157,13 @@ namespace uGCapture
             else
             {
                 phidgetsController.TickerEnabled = true;
+
+                //a1.TickerEnabled = true;
+                //a2.TickerEnabled = true;
+
                 accelControler.TickerEnabled = true;
                 spatialController.TickerEnabled = true;
+
                 writer.TickerEnabled = true;
                 weatherboard.TickerEnabled = true;
                // ni6008.TickerEnabled = true;
@@ -195,7 +203,7 @@ namespace uGCapture
                 {
                     ac1.stop();
                     ac2.stop();
-                    //wrtThread.Start();
+                   // wrtThread.stop();
                 }
             }
         }
