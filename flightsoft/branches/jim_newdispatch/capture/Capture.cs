@@ -202,7 +202,8 @@ namespace uGCapture
                 ac2.stop();
                 //wrtThread.Start();
 
-                phidgetsController.TickerEnabled = false;
+
+                phidgetsController.TickerEnabled = false;
                 accelControler.TickerEnabled = false;
                 spatialController.TickerEnabled = false;
                 writer.TickerEnabled = false;

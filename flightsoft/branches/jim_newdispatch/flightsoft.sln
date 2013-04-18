@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gui", "gui\gui.csproj", "{3
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Midlib", "Midlib\Midlib.vcxproj", "{4A587572-FA3C-417B-88F0-430A0BFC8155}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptureTest", "CaptureTest\CaptureTest.csproj", "{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "clui", "clui\clui.csproj", "{B8C49DD8-8E7D-4F5B-9F07-B988D2871099}"
 EndProject
 Global
@@ -75,20 +73,6 @@ Global
 		{4A587572-FA3C-417B-88F0-430A0BFC8155}.Release|Win32.Build.0 = Release|Win32
 		{4A587572-FA3C-417B-88F0-430A0BFC8155}.Release|x86.ActiveCfg = Release|Win32
 		{4A587572-FA3C-417B-88F0-430A0BFC8155}.Release|x86.Build.0 = Release|Win32
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Debug|Win32.Build.0 = Debug|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Debug|Win32.Deploy.0 = Debug|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Release|Win32.ActiveCfg = Release|Any CPU
-		{A8B10295-FBA1-42E8-97D5-0E42DDC01E40}.Release|x86.ActiveCfg = Release|Any CPU
 		{B8C49DD8-8E7D-4F5B-9F07-B988D2871099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8C49DD8-8E7D-4F5B-9F07-B988D2871099}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8C49DD8-8E7D-4F5B-9F07-B988D2871099}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
