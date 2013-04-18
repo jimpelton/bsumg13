@@ -21,15 +21,13 @@ namespace CaptureTest
             mockControllers = new MockController[7];
             for (int i = 0; i < mockControllers.Length; i++)
             {
-                mockControllers[i] = new MockController(bp);
+                mockControllers[i] = new MockController(bp,"MockController"+i);
             }
 
-            int mcidx = 0;
             foreach (MockController mc in mockControllers)
             {
                 mc.init();
-                dp.Register(mc, "mc"+mcidx);
-                ++mcidx;
+                dp.Register(mc);
             }
 
         }
