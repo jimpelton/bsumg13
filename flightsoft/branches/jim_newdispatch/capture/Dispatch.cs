@@ -54,16 +54,22 @@ namespace uGCapture
                 m.GetType(), m.Sender.Id, Id);
         }
 
+        /// <summary>
+        /// Dequeue a message from the message queue.
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public Message Dequeue()
         {
             Message rval;
-            rval = m_mesWait.Take(); //(out rval);
+            rval = m_mesWait.Take(); 
 
             Console.WriteLine("Dequeued message: type [{0}], Sender [{1}] Receiver [{2}].", 
                 rval.GetType(), rval.Sender.Id, Id);
 
             return rval;
-        }
+        }
+
     }
 
     /// <summary>
@@ -107,7 +113,7 @@ namespace uGCapture
         public void Register(Receiver r)
         {
             ReceiverIdPair p = m_receiversMap.GetOrAdd(r.Id, makeNewQueue(r));
-            p.T = new Thread(() => Receiver.ExecuteMessageQueue(r));
+            p.T = new Thread(() => ExecuteMessageQueue(r));
             p.T.Start();
 
             //try
@@ -240,7 +246,22 @@ namespace uGCapture
         }
 
         
-
+        /// <summary>
+        /// Worker method for Message execution.
+        /// </summary>
+        /// <param name="r"></param>
+        public static void ExecuteMessageQueue(Receiver r)
+        {
+            while (true)
+            {
+                if (!r.IsReceiving)
+                {
+                    break;
+                }
+                Instance().Next(r.Id).execute(r);
+                Console.WriteLine("Receiver: {0} Executed {1}", r.Id, r.GetType());
+            }
+        }
 
         //we need to deliver the messages. At the moment it is bound to a timer. Should we do it this way?
         //private void ProcessMessages(object source, ElapsedEventArgs e)

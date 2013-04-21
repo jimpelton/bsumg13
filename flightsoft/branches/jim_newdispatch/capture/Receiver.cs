@@ -55,22 +55,7 @@ namespace uGCapture
             dp = Dispatch.Instance();
         }
 
-        /// <summary>
-        /// Worker method for receiving r.
-        /// </summary>
-        /// <param name="r"></param>
-        public static void ExecuteMessageQueue(Receiver r)
-        {
-            while (true)
-            {
-                if (!r.IsReceiving)
-                {
-                    break;
-                }
-                r.dp.Next(r.Id).execute(r);
-                Console.WriteLine("Receiver: {0} Executed {1}", r.Id, r.GetType());
-            }
-        }
+
 
         /// <summary>
         /// Any receiver that should respond to the Bite test message should
