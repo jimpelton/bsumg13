@@ -54,7 +54,18 @@ namespace uGCapture
         private BufferPool<byte> m_bufferPool;
 
         /// <summary>
+        /// True if this ReceiverController has been initialized correctly.
+        /// </summary>
+        public bool IsInit
+        {
+            get; 
+            private set; 
+        }
+
+        /// <summary>
         /// Create a new ReceiverController that will receive messages from the Dispatch.
+        /// The timer is set to disabled.
+        /// The Receiving status is set to true.
         /// </summary>
         /// <param name="bp">The BufferPool for this Receiver.</param>
         /// <param name="id">A unique identifier for this ReceiverController.</param>
@@ -65,17 +76,35 @@ namespace uGCapture
         {
             m_ticker = new Timer(frame_time);
             m_ticker.Enabled = false;
-            m_ticker.Elapsed += DoFrame;
+            m_ticker.Elapsed += FrameElapsed;
 
             BufferPool = bp;
             FrameTime = frame_time;
         }
 
+        // calls DoFrame() when the timer has expired.
+        private void FrameElapsed(object source, ElapsedEventArgs e)
+        {
+            if (!IsInit) return;
+            DoFrame(source, e);
+        }
+
+        /// <summary>
+        /// Initializes this ReceiverController.
+        /// </summary>
+        /// <returns></returns>
+        public bool Initialize()
+        {
+            return (IsInit = init());
+        }
+
+        //TODO: change init() to return bool value, which will be the value given to IsInit.
+
         /// <summary>
         /// A receivercontroller must implement init() which will initialize
         /// hardware and other objects when called.
         /// </summary>
-        public abstract void init(); 
+        protected abstract bool init(); 
 
         /// <summary>
         /// Called after every FRAME_TIME interval.

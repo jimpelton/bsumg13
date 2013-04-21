@@ -20,8 +20,7 @@ public class AptinaController : ReceiverController
     private byte[] dest;
     //true if another thread is using this class
     private bool running=false;
-    //true if this controller has been successfuly initialized
-    private bool isInit = false;
+
 
     private Mutex runningMutex;
     private static Semaphore barrierSemaphore;
@@ -61,9 +60,9 @@ public class AptinaController : ReceiverController
         msc = new ManagedSimpleCapture();
     }
 
-    public override void init()
+    protected override bool init()
     {
-        isInit = true;
+        bool rval = true;
         int r = ManagedSimpleCapture.managed_InitMidLib(numcams);
         if (r == 0)
         {
@@ -71,9 +70,9 @@ public class AptinaController : ReceiverController
         }
         else
         {
-            isInit = false;
-            throw new AptinaControllerNotInitializedException(
-                "AptinaController failed init: InitMidLib failed.");
+            rval = false;
+            //throw new AptinaControllerNotInitializedException(
+            //    "AptinaController failed init: InitMidLib failed.");
         }
 
         if (r == 0)
@@ -82,9 +81,9 @@ public class AptinaController : ReceiverController
         }
         else
         {
-            isInit = false;
-            throw new AptinaControllerNotInitializedException(
-                "AptinaController failed init: OpenTransport failed for controller: "+tnum);
+            rval = false;
+            //throw new AptinaControllerNotInitializedException(
+            //    "AptinaController failed init: OpenTransport failed for controller: "+tnum);
         }
 
         if (size != 0)
@@ -93,17 +92,18 @@ public class AptinaController : ReceiverController
         }
         else
         {
-            isInit = false;
-            throw new AptinaControllerNotInitializedException(
-                "AptinaController failed init: SensorBufferSize() returned 0 size for controller: "+tnum);
+            rval = false;
+            //throw new AptinaControllerNotInitializedException(
+            //    "AptinaController failed init: SensorBufferSize() returned 0 size for controller: "+tnum);
         }
 
-
+        
         ////IsReceiving = r == 0 && size != 0;
         //IsReceiving = true;
         //dp.Register(this, "AptianController"+tnum);
         //dp.BroadcastLog(this, String.Format("AptinaController receiving {0}", IsReceiving),1);
         dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
+        return rval;
     }
 
     public void stop()
@@ -117,7 +117,7 @@ public class AptinaController : ReceiverController
     {
         int curval;
         me.runningMutex.WaitOne();
-        if (me.running || !me.isInit)
+        if (me.running || !me.IsInit)
         {
             me.runningMutex.ReleaseMutex();
             return;

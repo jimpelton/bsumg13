@@ -86,8 +86,9 @@ public class Writer : ReceiverController
     //    NIanaloginputs = new double[6];
     //}
 
-    public override void init()
+    protected override bool init()
     {
+        return true;
     }
 
     /*
@@ -97,7 +98,7 @@ public class Writer : ReceiverController
      */
     public static void WriteData(Writer w)
     {
-        Buffer<Byte> fulbuf = null;
+        Buffer<Byte> fulbuf;
         while (true)
         {
             try
@@ -215,7 +216,6 @@ public class Writer : ReceiverController
     {
         string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
         string[] data = datain.Split();
-
         phidgetTemperature_ProbeTemp = double.Parse(data[2]);
         phidgetTemperature_AmbientTemp = double.Parse(data[3]);
         for (int i = 0; i < 8; i++)

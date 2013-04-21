@@ -44,35 +44,36 @@ namespace uGCapture
         //    vibration = new double[3];
         //}
 
-        public override void init()
+        protected override bool init()
         {
-            openAccel();
+            return openAccel();
         }
 
 
-        private void openAccel()
+        private bool openAccel()
         {
+            bool rval = true;
             try
             {
                 dp.BroadcastLog(this, "Waiting for accelerometer to be found", 0);
                 accel = new Accelerometer();
                 accel.open(SerialNumber);
                 accel.waitForAttachment(1000);
-                accel.Attach += new AttachEventHandler(accel_Attach);
-                accel.Detach += new DetachEventHandler(Sensor_Detach);
-                accel.Error += new ErrorEventHandler(Sensor_Error);
-                accel.AccelerationChange +=
-                    new AccelerationChangeEventHandler(accel_AccelerationChange);
+                accel.Attach += accel_Attach;
+                accel.Detach += Sensor_Detach;
+                accel.Error += Sensor_Error;
+                accel.AccelerationChange += accel_AccelerationChange;
 
                 dp.BroadcastLog(this, "Accelerometer found", 0);
             }
             catch (PhidgetException ex)
             {
-                dp.BroadcastLog(this,
-                                String.Format("Error waiting for Acceler-o-meter: {0}",
-                                              ex.Description),
-                                100);
+                rval = false;
+                dp.BroadcastLog( this, 
+                    "Error waiting for Acceler-o-meter: "+ex.Description,
+                    100 );
             }
+            return rval;
         }
 
         private void accel_Attach(object sender, AttachEventArgs e)
@@ -116,7 +117,7 @@ namespace uGCapture
             if (phid == null) return;
 
             dp.BroadcastLog(this,
-                            String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
+                String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
         }
 
         public override void DoFrame(object source, ElapsedEventArgs e)

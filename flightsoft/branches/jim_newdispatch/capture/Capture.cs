@@ -13,15 +13,6 @@ namespace uGCapture
 {
     public class CaptureClass : Receiver
     {
-        private const string ID_WRITER = "Writer";
-        private const string ID_APTINA_ONE = "Aptina_One";
-        private const string ID_APTINA_TWO = "Aptina_Two";
-        private const string ID_PHIDGETS_DAQ = "Phidgets";
-        private const string ID_PHIDGETS_ACCEL = "Phidgets_Accel";
-        private const string ID_PHIDGETS_SPATIAL = "Phidgets_Spatial";
-        private const string ID_WEATHERBOARD = "Weatherboard";
-        private const string ID_NI_DAQ = "NI6008";
-
         private String directoryName;
         private bool boolCapturing = false;
         
@@ -40,7 +31,7 @@ namespace uGCapture
         private Thread acThread1;
         private Thread acThread2;
         private Thread wrtThread;
-        private const double frame_time = 500;
+        private const double FRAME_TIME = 500;
 
         public CaptureClass(string id) : base(id)
         {
@@ -51,14 +42,15 @@ namespace uGCapture
 
         public void init()
         {
-            m_timer = new Timer(frame_time);
+            m_timer = new Timer(FRAME_TIME);
             m_timer.Elapsed += DoFrame;
 
             m_bufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
 
-            writer = new Writer(m_bufferPool, ID_WRITER) {DirectoryName = directoryName};
-            writer.init();
-            
+            writer = new Writer(m_bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { DirectoryName = directoryName };
+            writer.Initialize();
+            wrtThread = new Thread(() => Writer.WriteData(writer));
+
             initAptina();
             initPhidgets();
             initAccelController();
@@ -76,101 +68,124 @@ namespace uGCapture
 
         private void initAptina()
         {
-            try
+            ac1 = new AptinaController(m_bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE));
+            if (ac1.Initialize())
             {
-                ac1 = new AptinaController(m_bufferPool, ID_APTINA_ONE);
-                ac1.init();
                 acThread1 = new Thread(() => AptinaController.go(ac1));
                 dp.Register(ac1);
             }
-            catch (AptinaControllerNotInitializedException eek)
+            else
             {
-                dp.BroadcastLog(this, eek.Message, 100);
-                Console.WriteLine(eek.StackTrace);
+                dp.BroadcastLog(this,
+                                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + " :Camera 1.",
+                                100);
             }
 
-            try
+            ac2 = new AptinaController(m_bufferPool, Str.GetIdStr(IdStr.ID_APTINA_TWO));
+            if (ac2.Initialize())
             {
-                ac2 = new AptinaController(m_bufferPool, ID_APTINA_TWO);
-                ac2.init();
                 acThread2 = new Thread(() => AptinaController.go(ac2));
                 dp.Register(ac2);
             }
-            catch (AptinaControllerNotInitializedException eek)
+            else
             {
-                dp.BroadcastLog(this, eek.Message, 100);
-                Console.WriteLine(eek.StackTrace);
+                dp.BroadcastLog(this,
+                                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + " :Camera 2.",
+                                100);
             }
         }
 
         private void initPhidgets()
         {
-            try
+            phidgetsController = new PhidgetsController(m_bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_DAQ));
+            if (phidgetsController.Initialize())
             {
-                phidgetsController = new PhidgetsController(m_bufferPool, ID_PHIDGETS_DAQ);
-                phidgetsController.init();
+                string s = Str.GetMsgString(MsgStr.INIT_OK_PHID_1018);
+                dp.BroadcastLog(this,s,100);
+                Console.Error.WriteLine(s);
             }
-            catch (PhidgetsControllerNotInitializedException eek)
+            else
             {
-                dp.BroadcastLog(this, eek.Message, 100);
-                Console.WriteLine(eek.StackTrace);
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_PHID_1018);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
             }
+
         }
 
 
         private void initAccelController()
         {
-            try
+            accelControler = new AccelerometerPhidgetsController(m_bufferPool, 
+                Str.GetIdStr(IdStr.ID_PHIDGETS_ACCEL), 159352);
+            if (accelControler.Initialize())
             {
-                accelControler = new AccelerometerPhidgetsController(m_bufferPool, ID_PHIDGETS_ACCEL, 159352);
-                accelControler.init();
+                string s = Str.GetMsgString(MsgStr.INIT_OK_PHID_ACCEL);
+                dp.BroadcastLog(this,s,100);
+                Console.Error.WriteLine(s);
             }
-            catch (AccelerometerControllerNotInitializedException eek)
+            else
             {
-                dp.BroadcastLog(this, eek.Message, 100);
-                Console.WriteLine(eek.StackTrace);
-            }           
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_PHID_ACCEL);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
+            }
         }
 
         private void initSpatialController()
         {
-            try
+            spatialController = new SpatialAccelController(m_bufferPool, 
+                Str.GetIdStr(IdStr.ID_PHIDGETS_SPATIAL), 169140);
+
+            if (spatialController.Initialize())
             {
-                spatialController = new SpatialAccelController(m_bufferPool, ID_PHIDGETS_SPATIAL, 169140);
-                spatialController.init();
+                string s = Str.GetMsgString(MsgStr.INIT_OK_PHID_SPTL);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
             }
-            catch (SpatialControllerNotInitializedException eek)
+            else
             {
-                dp.BroadcastLog(this, eek.Message, 100);
-                Console.WriteLine(eek.StackTrace);
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_PHID_SPTL);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
             }
         }
 
         private void initWeatherBoard()
         {
-            try
+            weatherboard = new VCommController(m_bufferPool, 
+                Str.GetIdStr(IdStr.ID_WEATHERBOARD));
+
+            if (weatherboard.Initialize())
             {
-                weatherboard = new VCommController(m_bufferPool, ID_WEATHERBOARD);
-                weatherboard.init();
+                string s = Str.GetMsgString(MsgStr.INIT_OK_WEATHERBOARD);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
             }
-            catch (VCommControllerNotInitializedException eek)
+            else
             {
-                dp.BroadcastLog(this, eek.Message, 100);
-                Console.WriteLine(eek.StackTrace);               
-            }           
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_WEATHERBOARD);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
+            }
         }
 
         private void initNI6008Controller()
         {
-            try
+            ni6008 = new NIController(m_bufferPool, 
+                Str.GetIdStr(IdStr.ID_NI_DAQ));
+
+            if (ni6008.Initialize())
             {
-                ni6008 = new NIController(m_bufferPool, ID_NI_DAQ);
-                ni6008.init();
+                string s = Str.GetMsgString(MsgStr.INIT_OK_NI_6008);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
             }
-            catch (NIControllerNotInitializedException eek)
+            else
             {
-                dp.BroadcastLog(this, eek.Message, 100);
-                Console.WriteLine(eek.StackTrace);
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_NI_6008);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
             }
         }
 
@@ -182,33 +197,28 @@ namespace uGCapture
 
             if (boolCapturing)
             {
-                acThread1 = new Thread(() => AptinaController.go(ac1));
-                acThread2 = new Thread(() => AptinaController.go(ac2));
-                wrtThread = new Thread(() => Writer.WriteData(writer));
-                acThread1.Start();
-                acThread2.Start();
-                wrtThread.Start();
+                //acThread1.Start();
+                //acThread2.Start();
+                //wrtThread.Start();
 
-                phidgetsController.TickerEnabled = true;
-                accelControler.TickerEnabled = true;
-                spatialController.TickerEnabled = true;
-                writer.TickerEnabled = true;
-                weatherboard.TickerEnabled = true;
+                //phidgetsController.TickerEnabled = true;
+                //accelControler.TickerEnabled = true;
+                //spatialController.TickerEnabled = true;
+                //writer.TickerEnabled = true;
+                //weatherboard.TickerEnabled = true;
                 // ni6008.TickerEnabled = true;
             }
             else
             {
-                ac1.stop();
-                ac2.stop();
-                //wrtThread.Start();
+                //ac1.stop();
+                //ac2.stop();
 
-
-                phidgetsController.TickerEnabled = false;
-                accelControler.TickerEnabled = false;
-                spatialController.TickerEnabled = false;
-                writer.TickerEnabled = false;
-                weatherboard.TickerEnabled = false;
-                ni6008.TickerEnabled = false;
+                //phidgetsController.TickerEnabled = false;
+                //accelControler.TickerEnabled = false;
+                //spatialController.TickerEnabled = false;
+                //writer.TickerEnabled = false;
+                //weatherboard.TickerEnabled = false;
+                //ni6008.TickerEnabled = false;
             }
         }
     }

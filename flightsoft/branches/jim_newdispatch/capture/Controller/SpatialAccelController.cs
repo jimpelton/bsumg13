@@ -21,41 +21,52 @@ namespace uGCapture
         private int SerialNumber;
 
         public SpatialAccelController(BufferPool<byte> bp, string id, int serial, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
-        {            SerialNumber = serial;
+        {
+            SerialNumber = serial;
             rawAcceleration = new double[3];
             acceleration = new double[3];
             vibration = new double[3];
         }
 
-        public override void init()
+        protected override bool init()
         {
-            openAccel();
+            return openAccel();
         }
 
 
-        private void openAccel()
+        private bool openAccel()
         {
+            bool rval = true;
             try
             {
                 dp.BroadcastLog(this, "Waiting for accelerometer to be found", 0);
                 accel = new Spatial();
                 accel.open(SerialNumber);
                 accel.waitForAttachment(1000);
-                accel.Attach += new AttachEventHandler(accel_Attach);
-                accel.Detach += new DetachEventHandler(Sensor_Detach);
-                accel.Error += new ErrorEventHandler(Sensor_Error);
-                accel.SpatialData +=
-                    new SpatialDataEventHandler(accel_AccelerationChange);
+                accel.Attach += accel_Attach;
+                accel.Detach += Sensor_Detach;
+                accel.Error += Sensor_Error;
+                accel.SpatialData += accel_AccelerationChange;
 
-                dp.BroadcastLog(this, "Accelerometer found", 0);
+                dp.BroadcastLog(this, "Accelerometer found.", 0);
             }
             catch (PhidgetException ex)
             {
+                rval = false;
+
+                Console.Error.WriteLine(ex.StackTrace);
+
                 dp.BroadcastLog(this,
                     String.Format("Error waiting for Acceler-o-meter: {0}", ex.Description),
                     100);
             }
+
+            return rval;
         }
+
+        /******************************************************
+         * Phidgets Event Handlers 
+         *******************************************************/
 
         void accel_Attach(object sender, AttachEventArgs e)
         {
@@ -100,6 +111,11 @@ namespace uGCapture
 
             dp.BroadcastLog(this, String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
         }
+
+
+        /******************************************************
+        * DoFrame()
+        *******************************************************/
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {

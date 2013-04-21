@@ -56,23 +56,9 @@ namespace uGCapture
         }
 
         /// <summary>
-        /// Accept the message and put it in the execution queue if the 
-        /// receiving state of this Receiver is true.
+        /// Worker method for receiving r.
         /// </summary>
-        /// <param name="m">the message being delivered.</param>
-        //public void accept(Message m)
-        //{
-        //    if (!IsReceiving)
-        //    {
-        //        return;
-        //    }
-
-        //    lock (msgs)
-        //    {
-        //        msgs.Enqueue(m);
-        //    }
-        //}
-        
+        /// <param name="r"></param>
         public static void ExecuteMessageQueue(Receiver r)
         {
             while (true)

@@ -20,31 +20,33 @@ namespace uGCapture
         public int SleepMin { get; set; }
 
         private int m_maxDataBytes;
-        private bool m_isInit;
-        public bool IsInit
-        {
-            get { return m_isInit; }
-            set { m_isInit = value; }
-        }
-
         private Random m_rand;
 
-        public MockController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
+        /// <summary>
+        /// Instantiate a MockController with a default simulated work time of
+        /// between 5ms and 500ms. Set SleepMin and SleepMax to change this.
+        /// </summary>
+        /// <param name="bp">the BufferPool this MockController should use.</param>
+        /// <param name="id">identifier for this mockcontroller</param>
+        /// <param name="receiving">start receiving messages</param>
+        /// <param name="frame_time">default time between calls to DoFrame</param>
+        public MockController(BufferPool<byte> bp, string id, 
+            bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
-            m_maxDataBytes = bp.BufElem;
+            m_maxDataBytes = bp.BufElem; //the bufferpool in this case is always bytes, so the number of bytes
+                                         //in the pool = number of elements in the buffer.
             SleepMin = 5;
             SleepMax = 500;
         }
 
-        public override void init()
+        protected override bool init()
         {
             m_rand = new Random();
+            return true;
         }
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-            if (!IsInit) return;
-
             Buffer<byte> buffer = BufferPool.PopEmpty();
             byte[] data = makeData();
             buffer.setData(data, BufferType.USHORT_IMAGE405);

@@ -9,9 +9,9 @@ namespace clui
 {
     class CLUI : Receiver
     {
-        private CaptureClass cc = new CaptureClass();
+        //private CaptureClass cc = new CaptureClass();
 
-        public CLUI() 
+        public CLUI(string id, bool receiving = true) : base(id, receiving)
         {
         }
 

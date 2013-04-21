@@ -43,15 +43,19 @@ public class PhidgetsController : ReceiverController
     //}
 
             
-    public override void init()
+    protected override bool init()
     {
-        openTempSenser();
-        openDAQ();
-        dp.BroadcastLog(this, "Phidgets started up...", 1);
+        bool initSuccess = openTempSenser() && openDAQ();
+        if (initSuccess)
+        {
+            dp.BroadcastLog(this, "Phidgets started up...", 1);
+        }
+        return initSuccess;
     }
 
-    private void openTempSenser()
+    private bool openTempSenser()
     {
+        bool success = true;
         try
         {
             dp.BroadcastLog(this, "Searching for temperature sensor", 0);
@@ -72,6 +76,7 @@ public class PhidgetsController : ReceiverController
         }
         catch (PhidgetException ex)
         {
+            success = false;
             dp.BroadcastLog
                 (
                     this,
@@ -79,10 +84,12 @@ public class PhidgetsController : ReceiverController
                     100
                 );
         }
+        return success;
     }
 
-    private void openDAQ()
+    private bool openDAQ()
     {
+        bool success = true;
         try
         {
             dp.BroadcastLog(this, "Searching for 1018 ", 0);
@@ -101,8 +108,10 @@ public class PhidgetsController : ReceiverController
         }
         catch (PhidgetException ex)
         {
+            success = false;
             dp.BroadcastLog(this, String.Format("Error opening Phidgets DAQ {0}", ex.Description), 6);    
         }
+        return success;
     }
 
 
