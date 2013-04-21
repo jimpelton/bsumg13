@@ -80,22 +80,24 @@ namespace uGCapture
             {
                 string data = port.ReadLine();
                 string[] values = data.Split(',');
-                if (values[0].Length > 1)
+                if (values.Length > 7)
                 {
-                    values[0] = values[0].Substring(1);
-                    humidity = Double.Parse(values[0]);
+                    if (values[0].Length > 1)
+                    {
+                        values[0] = values[0].Substring(1);
+                        humidity = Double.Parse(values[0]);
+                    }
+                    if (values[7].Length > 7)
+                    {
+                        values[7] = values[7].Substring(0, 6);
+                        recordnum = int.Parse(values[7]);
+                    }
+                    temp1 = Double.Parse(values[1]);
+                    temp2 = Double.Parse(values[2]);
+                    temp3 = Double.Parse(values[3]);
+                    pressure = Double.Parse(values[4]);
+                    illumunation = Double.Parse(values[5]);
                 }
-                if (values[7].Length > 7) 
-                {
-                    values[7] = values[7].Substring(0, 6);
-                    recordnum = int.Parse(values[7]);
-                }
-            
-                temp1 = Double.Parse(values[1]);
-                temp2 = Double.Parse(values[2]);
-                temp3 = Double.Parse(values[3]);
-                pressure = Double.Parse(values[4]);
-                illumunation = Double.Parse(values[5]);
                 
             }
         }

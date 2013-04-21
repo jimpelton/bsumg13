@@ -22,6 +22,14 @@ namespace gui
         public double[] accel2acceleration;
         public double[] accel2vibration;
         public double[] NIanaloginputs;
+
+        public double vcommHumidity = 0;
+        public double vcommTemperature1 = 0;
+        public double vcommTemperature2 = 0;
+        public double vcommTemperature3 = 0;
+        public double vcommPressure = 0;
+        public double vcommIllumination = 0;
+
         public int accel1state = 0;
         public int accel2state = 0;
         public int phidgets888state = 0;

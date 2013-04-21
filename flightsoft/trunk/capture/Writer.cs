@@ -336,7 +336,13 @@ public class Writer : ReceiverController
             dat.phidgetsdigitalOutputs[i] = phidgetsdigitalOutputs[i];
         dat.phidgetstempstate = phidgetstempstate;
 
-        
+        dat.vcommHumidity = humidity;
+        dat.vcommIllumination = illumunation;
+        dat.vcommPressure = pressure;
+        dat.vcommTemperature1 = temp1;
+        dat.vcommTemperature2 = temp2;
+        dat.vcommTemperature3 = temp3;
+       
         System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
         long available =  proc.VirtualMemorySize64;
         long peak = proc.PeakVirtualMemorySize64;
