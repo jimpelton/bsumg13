@@ -85,7 +85,7 @@ namespace uGCapture
                     values[0] = values[0].Substring(1);
                     humidity = Double.Parse(values[0]);
                 }
-                if (values[0].Length > 7) //Dan. Take a look at this. [0]?
+                if (values[7].Length > 7) 
                 {
                     values[7] = values[7].Substring(0, 6);
                     recordnum = int.Parse(values[7]);
