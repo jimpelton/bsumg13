@@ -45,15 +45,17 @@ namespace uGCapture
         {
             Message m = null;
 
-
-            while (msgs.Count > 0)
+            if (msgs != null)
             {
-                lock (msgs)
+                while (msgs.Count > 0)
                 {
-                    m = msgs.Dequeue();
+                    lock (msgs)
+                    {
+                        m = msgs.Dequeue();
+                    }
+                    if (m != null)
+                        m.execute(this);
                 }
-                if(m!=null)
-                    m.execute(this);
             }
         }
             

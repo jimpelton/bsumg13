@@ -73,16 +73,19 @@ namespace uGCapture
             }
         }
 
-        //gets an raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise. (wip)
+        //gets an raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise.
+        //(TODO)profile with this locking and see how it is doing
         void accel_AccelerationChange(object sender, SpatialDataEventArgs e)
         {
-            for (int i = 0; i < 3; i++)
-            {
-                double acc = e.spatialData[0].Acceleration[i];
-                vibration[i] += Math.Abs(acc - rawacceleration[i]);
-                acceleration[i] = (acceleration[i] + rawacceleration[i])/2.0;                
-                rawacceleration[i] = acc; 
-            }
+            lock(rawacceleration)//also used as a mutex for accel and vib since they are always changed together.               
+                for (int i = 0; i < 3; i++)
+                {
+                    double acc = e.spatialData[0].Acceleration[i];
+                    vibration[i] += Math.Abs(acc - rawacceleration[i]);
+                    acceleration[i] = rawacceleration[i]*0.01;
+                    acceleration[i] *= 0.99;
+                    rawacceleration[i] = acc; 
+                }
         }
 
         void Sensor_Detach(object sender, DetachEventArgs e)
@@ -104,26 +107,28 @@ namespace uGCapture
         {
             if (accel.Attached)
             {
+                lock (rawacceleration)// we dont use this here but we use this as the mutex for modifying accel and vib.
+                {
+                    Buffer<Byte> buffer = BufferPool.PopEmpty();
+                    String outputData = "Accel \n";
 
-                Buffer<Byte> buffer = BufferPool.PopEmpty();
-                String outputData = "Accel \n";
+                    //TODO: maybe change these concatenations to StringBuilder, 
+                    //      to ease string copies and GC-ing.
+                    outputData += DateTime.Now.Ticks.ToString() + " ";
+                    for (int i = 0; i < 3; i++)
+                        outputData += accel.accelerometerAxes[i].Acceleration + " ";
 
-                //TODO: maybe change these concatenations to StringBuilder, 
-                //      to ease string copies and GC-ing.
-                outputData += DateTime.Now.Ticks.ToString() + " ";
-                for (int i = 0; i < 3; i++)
-                    outputData += rawacceleration[i] + " ";
+                    for (int i = 0; i < 3; i++)
+                        outputData += acceleration[i] + " ";
 
-                for (int i = 0; i < 3; i++)
-                    outputData += acceleration[i] + " ";
+                    for (int i = 0; i < 3; i++)
+                        outputData += vibration[i] + " ";
 
-                for (int i = 0; i < 3; i++)
-                    outputData += vibration[i] + " ";
-
-                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_ACCEL);
-                buffer.Text = String.Format(accel.SerialNumber.ToString());
-                BufferPool.PostFull(buffer);
+                    System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                    buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_ACCEL);
+                    buffer.Text = String.Format(accel.SerialNumber.ToString());
+                    BufferPool.PostFull(buffer);
+                }
             }
 
         }

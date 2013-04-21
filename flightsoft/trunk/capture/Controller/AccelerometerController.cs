@@ -40,6 +40,7 @@ namespace uGCapture
                 accel = new Accelerometer();
                 accel.open(SerialNumber);
                 accel.waitForAttachment(1000);
+                
                 accel.Attach += new AttachEventHandler(accel_Attach);
                 accel.Detach += new DetachEventHandler(Sensor_Detach);
                 accel.Error += new ErrorEventHandler(Sensor_Error);
@@ -76,9 +77,21 @@ namespace uGCapture
         //gets an raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise. (wip)
         void accel_AccelerationChange(object sender, AccelerationChangeEventArgs e)
         {
-            vibration[e.Index] += Math.Abs(e.Acceleration - rawacceleration[e.Index]);          //accumulates total change per axis
-            acceleration[e.Index] = (acceleration[e.Index] + rawacceleration[e.Index]) / 2.0;   //need a better filter than this
-            rawacceleration[e.Index] = e.Acceleration;                                          //what we will use the most
+            //create a mutex. these have a weak identity.
+            lock (rawacceleration)
+            {
+                rawacceleration[e.Index] = e.Acceleration;
+                lock (vibration)
+                {                  
+                    vibration[e.Index] += Math.Abs(e.Acceleration - rawacceleration[e.Index]);          //accumulates total change per axis
+                }
+                lock (acceleration)
+                {
+                    //filtered acceleration.
+                    acceleration[e.Index] += rawacceleration[e.Index] * 0.01;//add one tenth of the current acceleration.
+                    acceleration[e.Index] *= 0.99;//remove one tenth of the accumulated past acceleration.
+                }
+            }
         }
 
         void Sensor_Detach(object sender, DetachEventArgs e)
@@ -106,22 +119,20 @@ namespace uGCapture
 
                 outputData += DateTime.Now.Ticks.ToString() + " ";
                 for (int i = 0; i < 3; i++)
-                    outputData += rawacceleration[i] + " ";
-
-                for (int i = 0; i < 3; i++)
-                    outputData += acceleration[i] + " ";
-
-                for (int i = 0; i < 3; i++)
-                    outputData += vibration[i] + " ";
+                    outputData += accel.axes[i].Acceleration + " ";
+                lock(acceleration)
+                    for (int i = 0; i < 3; i++)
+                        outputData += acceleration[i] + " ";
+                lock(vibration)
+                    for (int i = 0; i < 3; i++)
+                        outputData += vibration[i] + " ";
 
                 System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
                 buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_ACCEL);
                 buffer.Text = String.Format(accel.SerialNumber.ToString());
                 BufferPool.PostFull(buffer);
             }
-
         }
-
     }
 
     public class AccelerometerControllerNotInitializedException : Exception

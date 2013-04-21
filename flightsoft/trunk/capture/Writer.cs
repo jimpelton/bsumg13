@@ -102,12 +102,10 @@ public class Writer : ReceiverController
                     case (BufferType.UTF8_NI6008):
                         w.WriteNI6008Output(fulbuf, Math.Min(w.index405, w.index485));
                         break;
-                    case (BufferType.USHORT_IMAGE405):
-                        //index405 = uint.Parse(fulbuf.Text);
+                    case (BufferType.USHORT_IMAGE405):                       
                         w.WriteImageOutput(fulbuf, 405, w.index405++);
                         break;
-                    case (BufferType.USHORT_IMAGE485):
-                        //index485 = uint.Parse(fulbuf.Text);
+                    case (BufferType.USHORT_IMAGE485):                     
                         w.WriteImageOutput(fulbuf, 485, w.index485++);
                         break;
                     default:
@@ -159,7 +157,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
-        //StoreNI6008Data(buf,index);
+        StoreNI6008Data(buf,index);
     }
 
     private void WriteAccelerometerOutput(Buffer<Byte> buf, uint index)
@@ -170,7 +168,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
-        //StoreAccelerometerData(buf,index);
+        StoreAccelerometerData(buf,index);
     }
 
     private void WriteWeatherboardOutput(Buffer<Byte> buf, uint index)
@@ -181,7 +179,7 @@ public class Writer : ReceiverController
         bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
         bw.Close();
         fs.Close();
-        //StoreWeatherboardData(buf,index);
+        StoreWeatherboardData(buf,index);
     }
 
     private void StoreImageData(Buffer<Byte> buf, int wavelength, uint index)
@@ -190,9 +188,31 @@ public class Writer : ReceiverController
         //this is a nightmare for the GC       
         Buffer<byte> buf2 = new Buffer<byte>(buf);
         if (wavelength == 405)
-            image405 = buf2;
+        {
+            if (image405 != null)
+            {
+                Buffer<byte> tempHandle = image405;
+                lock (tempHandle)
+                {
+                    image405 = buf2;
+                }
+            }
+            else
+                image405 = buf2;
+        }
         else if (wavelength == 485)
-            image485 = buf2;
+        {
+            if (image485 != null)
+            {
+                Buffer<byte> tempHandle = image485;
+                lock (tempHandle)
+                {
+                    image485 = buf2;
+                }
+            }
+            else
+                image485 = buf2;
+        }
         else
             dp.BroadcastLog(this, "Writer passed an image with an invalid wavelength.", 5);
 
@@ -200,7 +220,10 @@ public class Writer : ReceiverController
 
     private void StorePhidgetsData(Buffer<Byte> buf, uint index)
     {
-        string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
+        byte[] tempBuf = new byte[buf.CapacityUtilization];
+        for (ulong i = 0; i < buf.CapacityUtilization; i++)
+            tempBuf[i] = buf.Data[i];
+        string datain = System.Text.Encoding.UTF8.GetString(tempBuf);
         string[] data = datain.Split();
 
         phidgetTemperature_ProbeTemp = double.Parse(data[2]);
@@ -215,7 +238,10 @@ public class Writer : ReceiverController
 
     private void StoreNI6008Data(Buffer<Byte> buf, uint index)
     {
-        string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
+        byte[] tempBuf = new byte[buf.CapacityUtilization];
+        for (ulong i = 0; i < buf.CapacityUtilization; i++)
+            tempBuf[i] = buf.Data[i];
+        string datain = System.Text.Encoding.UTF8.GetString(tempBuf);
         string[] data = datain.Split();
         for (int i = 0; i < 6; i++)
             NIanaloginputs[i] = double.Parse(data[i + 1]);
@@ -223,7 +249,10 @@ public class Writer : ReceiverController
 
     private void StoreAccelerometerData(Buffer<Byte> buf, uint index)
     {
-        string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
+        byte[] tempBuf = new byte[buf.CapacityUtilization];
+        for (ulong i = 0; i < buf.CapacityUtilization; i++)
+            tempBuf[i] = buf.Data[i];
+        string datain = System.Text.Encoding.UTF8.GetString(tempBuf);
         string[] data = datain.Split();
         //decide if it is the spacial or the accelerometer.
         if (buf.Text == "TODO:whatever the serial number of one of them is...")
@@ -249,7 +278,10 @@ public class Writer : ReceiverController
 
     private void StoreWeatherboardData(Buffer<Byte> buf, uint index)
     {
-        string datain = System.Text.Encoding.UTF8.GetString(buf.Data);
+        byte[] tempBuf = new byte[buf.CapacityUtilization];
+        for (ulong i = 0; i < buf.CapacityUtilization; i++)
+            tempBuf[i] = buf.Data[i];
+        string datain = System.Text.Encoding.UTF8.GetString(tempBuf);
         string[] data = datain.Split();
 
         humidity = double.Parse(data[2]);
@@ -303,10 +335,21 @@ public class Writer : ReceiverController
         for (int i = 0; i < 8; i++)
             dat.phidgetsdigitalOutputs[i] = phidgetsdigitalOutputs[i];
         dat.phidgetstempstate = phidgetstempstate;
-        if (image405 != null)
-            dat.image405  =new Buffer<byte>(image405);
-        if (image485 != null)
-            dat.image485 = new Buffer<byte>(image485);
+
+        
+        System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
+        long available =  proc.VirtualMemorySize64;
+        long peak = proc.PeakVirtualMemorySize64;
+
+        if (available < peak / 2)//this seems to work well.
+        {
+            if (image405 != null)
+                lock (image405)
+                    dat.image405 = image405;
+            if (image485 != null)
+                lock (image485)
+                    dat.image485 = image485;
+        }
         dat.phidgetTemperature_ProbeTemp = phidgetTemperature_ProbeTemp;
         dat.phidgetTemperature_AmbientTemp = phidgetTemperature_AmbientTemp;
         dat.timestamp = DateTime.Now.Ticks;   

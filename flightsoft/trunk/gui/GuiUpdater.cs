@@ -29,14 +29,11 @@ namespace gui
         {
             try
             {
-                //while (this.msgs.Count > 0)
-                //    msgs.Dequeue().execute(this);
-                ExecuteMessageQueue();
-                
+                ExecuteMessageQueue();              
             }
             catch (NullReferenceException nel)/// temp fix for monday's test. 5 minutes out.
             {
-                Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at msgs.Dequeue().execute(this)");
+                Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at ExecuteMessageQueue();  ");
  
             }
             mainform.chart1.Series.Clear();
@@ -123,14 +120,20 @@ namespace gui
             dat.timestamp = dm.timestamp;   
             
             Guimain.insertDataPoint(dat);
-            if (mainform.getImageForm().Visible)
-            {
-                
-
-                mainform.getImageForm().pictureBox1.Image = ConvertCapturedRawImage(dat.image405.Data);
-                
-                mainform.getImageForm().pictureBox2.Image = ConvertCapturedRawImage(dat.image485.Data);
-            }
+            if(mainform.getImageForm()!=null)
+                if (mainform.getImageForm().Visible)
+                {
+                    if (dat.image405 != null)
+                    {
+                        lock(dat.image405)
+                            mainform.getImageForm().pictureBox1.Image = ConvertCapturedRawImage(dat.image405.Data);
+                    }
+                    if (dat.image485 != null)
+                    {
+                        lock(dat.image485)
+                            mainform.getImageForm().pictureBox2.Image = ConvertCapturedRawImage(dat.image485.Data);
+                    }
+                }
         }
 
         public override void exDataRequestMessage(Receiver r, Message m)
