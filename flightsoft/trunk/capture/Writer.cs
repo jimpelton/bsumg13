@@ -98,7 +98,7 @@ public class Writer : ReceiverController
                     case (BufferType.UTF8_PHIDGETS):
                         w.WritePhidgetsOutput(fulbuf, Math.Min(w.index405, w.index485));
                         break;
-                    case (BufferType.UTF8_VCOM):
+                    case (BufferType.UTF8_VCOMM):
                         w.WriteWeatherboardOutput(fulbuf, Math.Min(w.index405, w.index485));
                         break;
                     case (BufferType.UTF8_ACCEL):

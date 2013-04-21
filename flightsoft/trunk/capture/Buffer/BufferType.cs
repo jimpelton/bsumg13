@@ -19,9 +19,10 @@ namespace uGCapture
         USHORT_IMAGE405,
         USHORT_IMAGE485,
         UTF8_ACCEL,
+	UTF8_SPATIAL,
         UTF8_PHIDGETS,
         UTF8_NI6008,
         UPS,
-        UTF8_VCOM
+        UTF8_VCOMM
     }
 }

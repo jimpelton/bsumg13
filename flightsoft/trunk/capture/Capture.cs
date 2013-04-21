@@ -77,7 +77,7 @@ namespace uGCapture
             else
             {
                 dp.BroadcastLog(this,
-                                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + " :Camera 1.",
+                                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.",
                                 100);
             }
 
@@ -90,7 +90,7 @@ namespace uGCapture
             else
             {
                 dp.BroadcastLog(this,
-                                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + " :Camera 2.",
+                                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 2.",
                                 100);
             }
         }
@@ -100,7 +100,7 @@ namespace uGCapture
             phidgetsController = new PhidgetsController(m_bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_DAQ));
             if (phidgetsController.Initialize())
             {
-                string s = Str.GetMsgString(MsgStr.INIT_OK_PHID_1018);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_1018);
                 dp.BroadcastLog(this,s,100);
                 Console.Error.WriteLine(s);
             }
@@ -120,7 +120,7 @@ namespace uGCapture
                 Str.GetIdStr(IdStr.ID_PHIDGETS_ACCEL), 159352);
             if (accelControler.Initialize())
             {
-                string s = Str.GetMsgString(MsgStr.INIT_OK_PHID_ACCEL);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_ACCEL);
                 dp.BroadcastLog(this,s,100);
                 Console.Error.WriteLine(s);
             }
@@ -139,7 +139,7 @@ namespace uGCapture
 
             if (spatialController.Initialize())
             {
-                string s = Str.GetMsgString(MsgStr.INIT_OK_PHID_SPTL);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_SPTL);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -154,17 +154,17 @@ namespace uGCapture
         private void initWeatherBoard()
         {
             weatherboard = new VCommController(m_bufferPool, 
-                Str.GetIdStr(IdStr.ID_WEATHERBOARD));
+                Str.GetIdStr(IdStr.ID_VCOMM));
 
             if (weatherboard.Initialize())
             {
-                string s = Str.GetMsgString(MsgStr.INIT_OK_WEATHERBOARD);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_VCOMM);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
             else
             {
-                string s = Str.GetErrStr(ErrStr.INIT_FAIL_WEATHERBOARD);
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_VCOMM);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -177,7 +177,7 @@ namespace uGCapture
 
             if (ni6008.Initialize())
             {
-                string s = Str.GetMsgString(MsgStr.INIT_OK_NI_6008);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_NI_6008);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }

@@ -68,7 +68,8 @@ namespace uGCapture
                 rval.GetType(), rval.Sender.Id, Id);
 
             return rval;
-        }
+        }
+
 
     }
 

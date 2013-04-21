@@ -13,7 +13,7 @@ namespace uGCapture
         INIT_FAIL_PHID_ACCEL,
         INIT_FAIL_NI_6008,
         INIT_FAIL_APTINA,
-        INIT_FAIL_WEATHERBOARD
+        INIT_FAIL_VCOMM
     }
 
     enum MsgStr
@@ -23,7 +23,7 @@ namespace uGCapture
         INIT_OK_PHID_ACCEL,
         INIT_OK_NI_6008,
         INIT_OK_APTINA,
-        INIT_OK_WEATHERBOARD
+        INIT_OK_VCOMM
     }
 
     enum IdStr
@@ -34,7 +34,7 @@ namespace uGCapture
         ID_PHIDGETS_DAQ,    
         ID_PHIDGETS_ACCEL,  
         ID_PHIDGETS_SPATIAL,
-        ID_WEATHERBOARD,    
+        ID_VCOMM,    
         ID_NI_DAQ           
     }
 
@@ -56,14 +56,14 @@ namespace uGCapture
                     return "NI-6008 DAQ failed to initialize."; 
                 case ErrStr.INIT_FAIL_APTINA:
                     return "Aptina camera failed to initialize.";
-                case ErrStr.INIT_FAIL_WEATHERBOARD:
+                case ErrStr.INIT_FAIL_VCOMM:
                     return "Weatherboard failed to initialize.";
                 default:
                     return "Unknown Error.";
             }
         }
 
-        public static string GetMsgString(MsgStr msg)
+        public static string GetMsgStr(MsgStr msg)
         {
             switch (msg)
             {
@@ -77,10 +77,10 @@ namespace uGCapture
                     return "NI-6008 DAQ initialized."; 
                 case MsgStr.INIT_OK_APTINA:
                     return "Aptina camera initialized.";
-                case MsgStr.INIT_OK_WEATHERBOARD:
+                case MsgStr.INIT_OK_VCOMM:
                     return "Weatherboard initialized.";
                 default:
-                    return "Yar! There be pirates in this message!.";
+                    return "Yar! There be pirates in this message! (Unknown Message).";
             }
         }
 
@@ -94,7 +94,7 @@ namespace uGCapture
                 case IdStr.ID_PHIDGETS_DAQ: return "Phidgets"; 
                 case IdStr.ID_PHIDGETS_ACCEL: return "Phidgets_Accel"; 
                 case IdStr.ID_PHIDGETS_SPATIAL: return "Phidgets_Spatial"; 
-                case IdStr.ID_WEATHERBOARD: return "Weatherboard"; 
+                case IdStr.ID_VCOMM: return "Weatherboard"; 
                 case IdStr.ID_NI_DAQ: return "NI6008"; 
                 default: return "UnknownId";
             }

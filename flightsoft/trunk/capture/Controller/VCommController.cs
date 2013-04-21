@@ -7,6 +7,7 @@
 using System;
 using System.IO;
 using System.IO.Ports;
+using System.Text;
 using System.Threading;
 using System.Timers;
 
@@ -72,8 +73,8 @@ namespace uGCapture
             outputData += illumunation.ToString() + " ";
             outputData += recordnum.ToString() + " ";
 
-            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_VCOM);
+            buffer.setData(new UTF8Encoding().GetBytes(outputData), 
+                BufferType.UTF8_VCOMM);
             buffer.Text = "Weatherboard"; 
             BufferPool.PostFull(buffer);
         }
@@ -89,7 +90,7 @@ namespace uGCapture
                     values[0] = values[0].Substring(1);
                     humidity = Double.Parse(values[0]);
                 }
-                if (values[0].Length > 7)
+                if (values[7].Length > 7)
                 {
                     values[7] = values[7].Substring(0, 6);
                     recordnum = int.Parse(values[7]);

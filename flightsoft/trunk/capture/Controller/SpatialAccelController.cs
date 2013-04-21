@@ -9,6 +9,7 @@ using System;
 using System.Timers;
 using Phidgets;
 using Phidgets.Events;
+using System.Text;
 
 namespace uGCapture
 {
@@ -141,12 +142,14 @@ namespace uGCapture
                 for (int i = 0; i < 3; i++)
                     outputData += vibration[i] + " ";
 
-                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_ACCEL);
+              
+                buffer.setData(new UTF8Encoding().GetBytes(outputData),
+                    BufferType.UTF8_ACCEL);
                 buffer.Text = String.Format(accel.SerialNumber.ToString());
                 BufferPool.PostFull(buffer);
             }
-}
+
+            }
 
         }
 
