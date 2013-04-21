@@ -6,9 +6,8 @@ namespace uGCapture
 {
     class UPSController : ReceiverController
     {
-        public UPSController(BufferPool<byte> bp) : base(bp)
+        public UPSController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
-
         }
 
         public override void DoFrame(object source, ElapsedEventArgs e)
@@ -16,9 +15,9 @@ namespace uGCapture
             throw new NotImplementedException();
         }
 
-        public override void init()
+        protected override bool init()
         {
-            throw new NotImplementedException();
+            return false;
         }
     }
 }

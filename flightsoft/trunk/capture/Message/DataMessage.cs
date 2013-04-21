@@ -10,12 +10,11 @@ namespace uGCapture
     {
 
         public long timestamp;
-        public long[,,] WellIntensities;
         public bool[] phidgetsdigitalInputs;
         public bool[] phidgetsdigitalOutputs;
         public int[] phidgetsanalogInputs;
-        public double phidgetTemperature_ProbeTemp=0;
-        public double phidgetTemperature_AmbientTemp=0;
+        public double phidgetTemperature_ProbeTemp;
+        public double phidgetTemperature_AmbientTemp;
         public double[] accel1rawacceleration;
         public double[] accel1acceleration;
         public double[] accel1vibration;
@@ -37,15 +36,17 @@ namespace uGCapture
         public int phidgetstempstate=0;
         public int UPSstate=0;
         public int VCommstate=0;
-
         public Buffer<byte> image405 = null;
         public Buffer<byte> image485 = null;
+        public long[] WellIntensities405;
+        public long[] WellIntensities485;
 
 
         public DataMessage(Receiver s)
             : base(s)
         {
-            WellIntensities = new long[2,16,12];
+	    WellIntensities405 = new long[192];
+	    WellIntensities485 = new long[192];
             phidgetsdigitalInputs = new bool[8];
             phidgetsdigitalOutputs = new bool[8];
             phidgetsanalogInputs = new int[8];

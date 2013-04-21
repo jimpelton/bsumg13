@@ -12,7 +12,7 @@ namespace uGCapture
 
         public override void execute(Receiver r)
         {
-            r.exPhidgetsStatus(r, this);
+            r.exPhidgetsStatusMessage(r, this);
         }
     }
 }

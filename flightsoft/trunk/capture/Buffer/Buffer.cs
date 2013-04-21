@@ -1,4 +1,10 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-03-24                                                                      
+// ******************************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,8 +59,12 @@ namespace uGCapture
             m_type = ty;
             if (input.Length <= m_data.Length)
             {
-                Array.Copy(input, m_data,input.Length);
-                CapacityUtilization = (ulong)input.Length;
+                int i = 0;
+                for (; i < input.Length; i++)
+                {
+                    m_data[i] = input[i];
+                }
+                CapacityUtilization = (ulong)i;
             }
         }
 
@@ -78,9 +88,8 @@ namespace uGCapture
         /// <param name="buff">Original buffer</param>
         public Buffer(Buffer<T> buff)
         {
-
             m_data = new T[buff.Data.Length];
- 
+
             this.CapacityUtilization = buff.CapacityUtilization;
             this.Type = buff.Type;
             this.Text = buff.Text;

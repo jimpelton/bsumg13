@@ -1,10 +1,17 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-13                                                                      
+// ******************************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using Enc = System.Text.Encoding;
 
 namespace uGCapture
 {
@@ -15,10 +22,9 @@ public class Writer : ReceiverController
     private string m_directoryName;
 
     //This is the last written data stored temp so that we can send it to anyone who sends a data request.
-    private long[, ,] WellIntensities;
-    private bool[] phidgetsdigitalInputs;
-    private bool[] phidgetsdigitalOutputs;
-    private int[] phidgetsanalogInputs;
+    private bool[] phidgetsDigitalInputs;
+    private bool[] phidgetsDigitalOutputs;
+    private int[] phidgetsAnalogInputs;
     private double phidgetTemperature_ProbeTemp;
     private double phidgetTemperature_AmbientTemp;
     private double[] accel1rawacceleration;
@@ -42,6 +48,8 @@ public class Writer : ReceiverController
     public int VCommstate = 0;
     private Buffer<byte> image405 = null;
     private Buffer<byte> image485 = null;
+    private long[] wellIntensities405;
+    private long[] wellIntensities485;
 
 
     public string DirectoryName
@@ -50,12 +58,13 @@ public class Writer : ReceiverController
         set { m_directoryName = value;}
     }
 
-    public Writer(BufferPool<byte> bp) : base(bp)
+    public Writer(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
     {
-        WellIntensities = new long[2,16,12];
-        phidgetsdigitalInputs = new bool[8];
-        phidgetsdigitalOutputs = new bool[8];
-        phidgetsanalogInputs = new int[8];
+        wellIntensities405 = new long[192];
+        wellIntensities485 = new long[192];
+        phidgetsDigitalInputs = new bool[8];
+        phidgetsDigitalOutputs = new bool[8];
+        phidgetsAnalogInputs = new int[8];
         accel1rawacceleration = new double[3];
         accel1acceleration = new double[3];
         accel1vibration = new double[3];
@@ -65,11 +74,9 @@ public class Writer : ReceiverController
         NIanaloginputs = new double[6];
     }
 
-    public override void init()
+    protected override bool init()
     {
-        Receiving = true;
-        dp.Register(this,"FileWriter");
-        FrameTime = 50;
+        return true;
     }
 
     /*
@@ -79,15 +86,13 @@ public class Writer : ReceiverController
      */
     public static void WriteData(Writer w)
     {
-        Buffer<Byte> fulbuf = null;
+        Buffer<Byte> fulbuf;
         while (true)
         {
             try
             {
                 fulbuf = w.BufferPool.PopFull();
 
-                //if (fulbuf == null){ continue; }
-                
                 switch (fulbuf.Type)
                 {
                     case (BufferType.UTF8_PHIDGETS):
@@ -102,10 +107,12 @@ public class Writer : ReceiverController
                     case (BufferType.UTF8_NI6008):
                         w.WriteNI6008Output(fulbuf, Math.Min(w.index405, w.index485));
                         break;
-                    case (BufferType.USHORT_IMAGE405):                       
+                    case (BufferType.USHORT_IMAGE405):
+                        //index405 = uint.Parse(fulbuf.Text);
                         w.WriteImageOutput(fulbuf, 405, w.index405++);
                         break;
-                    case (BufferType.USHORT_IMAGE485):                     
+                    case (BufferType.USHORT_IMAGE485):
+                        //index485 = uint.Parse(fulbuf.Text);
                         w.WriteImageOutput(fulbuf, 485, w.index485++);
                         break;
                     default:
@@ -118,12 +125,9 @@ public class Writer : ReceiverController
                 Console.WriteLine(e.StackTrace); 
                 return ;
             }
-            w.ExecuteMessageQueue();
             
-        } // while (fulbuf!=null);
+        } // while...
 
-       
-        //return;
     }
 
     private void WriteImageOutput(Buffer<Byte> buf,int wavelength,uint index)
@@ -188,31 +192,9 @@ public class Writer : ReceiverController
         //this is a nightmare for the GC       
         Buffer<byte> buf2 = new Buffer<byte>(buf);
         if (wavelength == 405)
-        {
-            if (image405 != null)
-            {
-                Buffer<byte> tempHandle = image405;
-                lock (tempHandle)
-                {
-                    image405 = buf2;
-                }
-            }
-            else
-                image405 = buf2;
-        }
+            image405 = buf2;
         else if (wavelength == 485)
-        {
-            if (image485 != null)
-            {
-                Buffer<byte> tempHandle = image485;
-                lock (tempHandle)
-                {
-                    image485 = buf2;
-                }
-            }
-            else
-                image485 = buf2;
-        }
+            image485 = buf2;
         else
             dp.BroadcastLog(this, "Writer passed an image with an invalid wavelength.", 5);
 
@@ -220,28 +202,21 @@ public class Writer : ReceiverController
 
     private void StorePhidgetsData(Buffer<Byte> buf, uint index)
     {
-        byte[] tempBuf = new byte[buf.CapacityUtilization];
-        for (ulong i = 0; i < buf.CapacityUtilization; i++)
-            tempBuf[i] = buf.Data[i];
-        string datain = System.Text.Encoding.UTF8.GetString(tempBuf);
+        string datain = Enc.UTF8.GetString(buf.Data,0,(int) buf.CapacityUtilization);
         string[] data = datain.Split();
-
         phidgetTemperature_ProbeTemp = double.Parse(data[2]);
         phidgetTemperature_AmbientTemp = double.Parse(data[3]);
         for (int i = 0; i < 8; i++)
         {
-            phidgetsanalogInputs[i] = int.Parse(data[(i * 3) + 4]);
-            phidgetsdigitalInputs[i] = bool.Parse(data[(i * 3) + 5]); ;
-            phidgetsdigitalOutputs[i] = bool.Parse(data[(i * 3) + 6]); ;
+            phidgetsAnalogInputs[i] = int.Parse(data[(i * 3) + 4]);
+            phidgetsDigitalInputs[i] = bool.Parse(data[(i * 3) + 5]); ;
+            phidgetsDigitalOutputs[i] = bool.Parse(data[(i * 3) + 6]); ;
         }
     }
 
     private void StoreNI6008Data(Buffer<Byte> buf, uint index)
     {
-        byte[] tempBuf = new byte[buf.CapacityUtilization];
-        for (ulong i = 0; i < buf.CapacityUtilization; i++)
-            tempBuf[i] = buf.Data[i];
-        string datain = System.Text.Encoding.UTF8.GetString(tempBuf);
+        string datain = Enc.UTF8.GetString(buf.Data,0,(int) buf.CapacityUtilization);
         string[] data = datain.Split();
         for (int i = 0; i < 6; i++)
             NIanaloginputs[i] = double.Parse(data[i + 1]);
@@ -249,10 +224,7 @@ public class Writer : ReceiverController
 
     private void StoreAccelerometerData(Buffer<Byte> buf, uint index)
     {
-        byte[] tempBuf = new byte[buf.CapacityUtilization];
-        for (ulong i = 0; i < buf.CapacityUtilization; i++)
-            tempBuf[i] = buf.Data[i];
-        string datain = System.Text.Encoding.UTF8.GetString(tempBuf);
+        string datain = Enc.UTF8.GetString(buf.Data,0,(int)buf.CapacityUtilization);
         string[] data = datain.Split();
         //decide if it is the spacial or the accelerometer.
         if (buf.Text == "TODO:whatever the serial number of one of them is...")
@@ -278,10 +250,7 @@ public class Writer : ReceiverController
 
     private void StoreWeatherboardData(Buffer<Byte> buf, uint index)
     {
-        byte[] tempBuf = new byte[buf.CapacityUtilization];
-        for (ulong i = 0; i < buf.CapacityUtilization; i++)
-            tempBuf[i] = buf.Data[i];
-        string datain = System.Text.Encoding.UTF8.GetString(tempBuf);
+        string datain = Enc.UTF8.GetString(buf.Data,0,(int) buf.CapacityUtilization);
         string[] data = datain.Split();
 
         humidity = double.Parse(data[2]);
@@ -307,10 +276,8 @@ public class Writer : ReceiverController
             dat.NIanaloginputs[i] = NIanaloginputs[i];
         dat.UPSstate = UPSstate;
         dat.VCommstate = VCommstate;
-        for (int i = 0; i < 2; i++)
-            for (int x = 0; x < 16; x++)
-                for (int y = 0; y < 12; y++)
-                    dat.WellIntensities[i,x,y] = WellIntensities[i,x,y];
+        Array.Copy(wellIntensities405, dat.WellIntensities405, dat.WellIntensities405.Length);
+        Array.Copy(wellIntensities485, dat.WellIntensities485, dat.WellIntensities485.Length);
         for (int i = 0; i < 3; i++)
             dat.accel1acceleration[i] = accel1acceleration[i];
         for (int i = 0; i < 3; i++)
@@ -329,11 +296,11 @@ public class Writer : ReceiverController
 
         dat.phidgets888state = phidgets888state;
         for (int i = 0; i < 8; i++)
-            dat.phidgetsanalogInputs[i] = phidgetsanalogInputs[i];
+            dat.phidgetsanalogInputs[i] = phidgetsAnalogInputs[i];
         for (int i = 0; i < 8; i++)
-            dat.phidgetsdigitalInputs[i] = phidgetsdigitalInputs[i];
+            dat.phidgetsdigitalInputs[i] = phidgetsDigitalInputs[i];
         for (int i = 0; i < 8; i++)
-            dat.phidgetsdigitalOutputs[i] = phidgetsdigitalOutputs[i];
+            dat.phidgetsdigitalOutputs[i] = phidgetsDigitalOutputs[i];
         dat.phidgetstempstate = phidgetstempstate;
 
         dat.vcommHumidity = humidity;
@@ -343,19 +310,22 @@ public class Writer : ReceiverController
         dat.vcommTemperature2 = temp2;
         dat.vcommTemperature3 = temp3;
        
-        System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
-        long available =  proc.VirtualMemorySize64;
-        long peak = proc.PeakVirtualMemorySize64;
+        //System.Diagnostics.Process proc = System.Diagnostics.Process.GetCurrentProcess();
+        //long available =  proc.VirtualMemorySize64;
+        //long peak = proc.PeakVirtualMemorySize64;
 
-        if (available < peak / 2)//this seems to work well.
-        {
-            if (image405 != null)
-                lock (image405)
-                    dat.image405 = image405;
-            if (image485 != null)
-                lock (image485)
-                    dat.image485 = image485;
-        }
+        //if (available < peak / 2)//this seems to work well.
+        //{
+        //    if (image405 != null)
+        //        lock (image405)
+        //            dat.image405 = image405;
+        //    if (image485 != null)
+        //        lock (image485)
+        //            dat.image485 = image485;
+        //}
+
+        dat.image405 = image405;
+        dat.image485 = image485;
         dat.phidgetTemperature_ProbeTemp = phidgetTemperature_ProbeTemp;
         dat.phidgetTemperature_AmbientTemp = phidgetTemperature_AmbientTemp;
         dat.timestamp = DateTime.Now.Ticks;   

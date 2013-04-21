@@ -9,15 +9,12 @@ namespace clui
 {
     class CLUI : Receiver
     {
-        private CaptureClass cc = new CaptureClass();
-
-        public CLUI() 
+        //private CaptureClass cc = new CaptureClass();
+        public CLUI(string id, bool receiving = true) : base(id, receiving)
         {
         }
 
-        public override void exLogMessage(Receiver r, Message m)
-        {
-            
-        }
+
+
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Timers;
-
 using NationalInstruments;
 using NationalInstruments.DAQmx;
 
@@ -32,18 +31,9 @@ namespace uGCapture
 
         private static Object hardwareMutex = new object();
 
-        public NIController(BufferPool<byte> bp) 
-        : base(bp)
+        public NIController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
-        
-
-
-
         }
-
-
-
-
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
@@ -81,38 +71,37 @@ namespace uGCapture
             buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_NI6008);
             buffer.Text = String.Format("NI6008");
             BufferPool.PostFull(buffer);
-            
-
-
-
-
         }
 
-        public override void init()
+        protected override bool init()
         {
+            bool rval = true;
             try
             {
 
-
-
-
                 AIChannel_X_A = analogInTask_X_A.AIChannels.CreateVoltageChannel(
-                    "dev1/ai0", "AIChannel_X_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                    "dev1/ai0", "AIChannel_X_A", AITerminalConfiguration.Rse, 0, 5,
+                    AIVoltageUnits.Volts);
 
                 AIChannel_Y_A = analogInTask_Y_A.AIChannels.CreateVoltageChannel(
-                    "dev1/ai4", "AIChannel_Y_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                    "dev1/ai4", "AIChannel_Y_A", AITerminalConfiguration.Rse, 0, 5,
+                    AIVoltageUnits.Volts);
 
                 AIChannel_Z_A = analogInTask_Z_A.AIChannels.CreateVoltageChannel(
-                    "dev1/ai1", "AIChannel_Z_A", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                    "dev1/ai1", "AIChannel_Z_A", AITerminalConfiguration.Rse, 0, 5,
+                    AIVoltageUnits.Volts);
 
                 AIChannel_X_T = analogInTask_X_T.AIChannels.CreateVoltageChannel(
-                    "dev1/ai5", "AIChannel_X_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                    "dev1/ai5", "AIChannel_X_T", AITerminalConfiguration.Rse, 0, 5,
+                    AIVoltageUnits.Volts);
 
                 AIChannel_Y_T = analogInTask_Y_T.AIChannels.CreateVoltageChannel(
-                    "dev1/ai2", "AIChannel_Y_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                    "dev1/ai2", "AIChannel_Y_T", AITerminalConfiguration.Rse, 0, 5,
+                    AIVoltageUnits.Volts);
 
                 AIChannel_Z_T = analogInTask_Z_T.AIChannels.CreateVoltageChannel(
-                    "dev1/ai6", "AIChannel_Z_T", AITerminalConfiguration.Rse, 0, 5, AIVoltageUnits.Volts);
+                    "dev1/ai6", "AIChannel_Z_T", AITerminalConfiguration.Rse, 0, 5,
+                    AIVoltageUnits.Volts);
 
                 reader_X_A = new AnalogSingleChannelReader(analogInTask_X_A.Stream);
                 reader_Y_A = new AnalogSingleChannelReader(analogInTask_Y_A.Stream);
@@ -125,10 +114,12 @@ namespace uGCapture
             }
             catch (NationalInstruments.DAQmx.DaqException)
             {
+                rval = false;
                 dp.BroadcastLog(this, "NI-USB-6008 failed to start up...", 1);
-                throw new NIControllerNotInitializedException("NI-USB-6008 failed to start up...");
+                //throw new NIControllerNotInitializedException(
+                //    "NI-USB-6008 failed to start up...");
             }
-
+            return rval;
         }
     }
 

@@ -19,11 +19,11 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -57,9 +57,9 @@
     <Compile Include="Buffer\BufferPool.cs" />
     <Compile Include="Capture.cs" />
     <Compile Include="CirclesFile.cs" />
-    <Compile Include="Controller\AccelerometerController.cs" />
+    <Compile Include="Controller\AccelerometerPhidgetsController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
-    <Compile Include="Controller\SpatialController.cs" />
+    <Compile Include="Controller\SpatialAccelController.cs" />
     <Compile Include="Image\ImageProcessor.cs" />
     <Compile Include="Message\DataRequestMessage.cs" />
     <Compile Include="Message\SetCaptureStateMessage.cs" />
@@ -77,6 +77,7 @@
     <Compile Include="Receiver.cs" />
     <Compile Include="Controller\UPSController.cs" />
     <Compile Include="Controller\VCommController.cs" />
+    <Compile Include="Strings.cs" />
     <Compile Include="Test\MockController.cs" />
     <Compile Include="Writer.cs" />
   </ItemGroup>

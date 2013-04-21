@@ -1,65 +1,61 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-13                                                                      
+// ******************************************************************************
+
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace uGCapture
 {
 
     public abstract class Receiver
     {
-        protected Queue<Message> msgs;
         protected Dispatch dp;
-
+        private bool m_receiving; 
+        private object receivingMutex = new object();
+        
         /// <summary>
         /// True if this Receiver is currently receiving messages.
         /// </summary>
-        public bool Receiving
+        public bool IsReceiving
         {
-            get;
-            set;
-        }
-
-
-        protected Receiver()
-        {
-            msgs = new Queue<Message>();
-            dp = Dispatch.Instance();
-        }
-
-        /// <summary>
-        /// Accept the message and put it in the execution queue if the 
-        /// receiving state of this Receiver is true.
-        /// </summary>
-        /// <param name="m">the message being delivered.</param>
-        public void accept(Message m)
-        {
-            //if (receiving)
-            //{
-            lock (msgs)
-            {
-                msgs.Enqueue(m);
-            }
-            //}
-        }
-        
-        public void ExecuteMessageQueue()
-        {
-            Message m = null;
-
-            if (msgs != null)
-            {
-                while (msgs.Count > 0)
+            get 
+            { 
+                bool rval;
+                lock (receivingMutex)
                 {
-                    lock (msgs)
-                    {
-                        m = msgs.Dequeue();
-                    }
-                    if (m != null)
-                        m.execute(this);
+                    rval = m_receiving;
+                }
+                return rval;
+            }
+
+            set
+            {
+                lock (receivingMutex)
+                {
+                    m_receiving = value;
                 }
             }
         }
-            
-        
+
+        public string Id
+        {
+            get { return m_id; }
+        }
+        private string m_id;
+
+
+        protected Receiver(string id, bool receiving=true)
+        {
+            m_id = id;
+            m_receiving = receiving;
+            dp = Dispatch.Instance();
+        }
+
+
 
         /// <summary>
         /// Any receiver that should respond to the Bite test message should
@@ -68,12 +64,12 @@ namespace uGCapture
         /// This method could generate a BiteTestResultMessage, however the default behavior 
         /// is to do nothing.
         /// </summary>
-        public virtual void exBiteTest(Receiver r, Message m) { ; }
+        public virtual void exBiteTestMessage(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Generate a PhidgetsStatusMessage
         /// </summary>
-        public virtual void exPhidgetsStatus(Receiver r, Message m) { ; }
+        public virtual void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Execute a DataMessage. 
@@ -102,7 +98,7 @@ namespace uGCapture
 
         public override string ToString()
         {
-            return "Base Receiver";
+            return Id;
         }
     }
 }

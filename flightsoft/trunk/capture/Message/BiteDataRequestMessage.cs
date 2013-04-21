@@ -12,7 +12,7 @@ namespace uGCapture
 
         public override void execute(Receiver r)
         {
-            r.exBiteTest(r, this);
+            r.exBiteTestMessage(r, this);
         }
     }
 }
