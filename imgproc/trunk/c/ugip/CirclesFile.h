@@ -41,6 +41,8 @@ public:
     CirclesFile();
     CirclesFile(string fileName);
     ~CirclesFile();
+    //CirclesFile(const CirclesFile &rhs);
+
 
     /** 
     * \brief Write out the circles file.
@@ -77,6 +79,10 @@ private:
     int m_radius;
 
     int parseCirclesFile_helper(int &nCirc);
+
+    int p_Line(string line, int lnum);
+    int p_WellLoc(string wellIdx, string wellCenter, int lnum);
+    int p_ImgInfo(string key, string value, int lnum);
 
     static bool sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs); 
     static bool sortCenterByX(const CenterInfo &lhs, const CenterInfo &rhs);

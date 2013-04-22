@@ -12,9 +12,9 @@ CONFIG -= release
 
 LIBS += -L/usr/lib -L../imgproc \
         -limgproc \
-        -lboost_system-mt \
-        -lboost_program_options-mt \
-        -lboost_filesystem-mt 
+        -lboost_system \
+        -lboost_program_options \
+        -lboost_filesystem 
 
 QMAKE_CXXFLAGS += -std=c++11
 
