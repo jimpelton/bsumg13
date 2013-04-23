@@ -14,7 +14,7 @@ INCDIR:=-I/usr/include/boost
 CXXFLAGS=-g -Wall -fPIC -shared $(INCDIR)
 
 LIBDIR=
-LIBS:=-lboost_thread
+LIBS:=-lboost_thread-mt
 LFLAGS:=$(LIBDIR) $(LIBS)
 
 #OBJS:=$(patsubst %.cpp,%.o,$(wildcard *.cpp))

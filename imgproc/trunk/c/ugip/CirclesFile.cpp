@@ -177,11 +177,6 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
 //return -1 on error, >=0 on success.
 int CirclesFile::open()
 {
-    
-
-    //m_filename = filename;
-    int nCirc, nLines;
-    nCirc=nLines=0;
 
     std::ifstream file(m_filename.c_str(), std::ios::in);
     if (!file.is_open()) {
@@ -189,8 +184,9 @@ int CirclesFile::open()
         return -1;
     }
 
+    int nLines = 0;
     char line[50];
-    while (!file.eof() && nLines < 500) {
+    while (!file.eof() && nLines < 500) { //500 chosen just for sanity.
         memset(line, 0, sizeof(line));
         file.getline(line, 50);
         if (p_Line(line, nLines) == 1){
@@ -199,10 +195,10 @@ int CirclesFile::open()
     }
     file.close();
 
-    return nCirc;
+    return m_centers.size();
 }
 
-
+// parse a line, which is <stuff> ':' <stuff> [','<stuff>]
 int CirclesFile::p_Line(string line, int lnum)
 {
     int rval=1;
@@ -214,22 +210,30 @@ int CirclesFile::p_Line(string line, int lnum)
     split(splitVals, line, boost::is_any_of(":"));  //split on ':'
 
     if (splitVals.size() < 2){
+
         printf("Syntax error in circles file. Is this line incomplete? " \
                "\n\t Line: %d: %s",
                lnum, line.c_str());
-        return 0;
-    }
+        rval = 0;
 
-    trim(splitVals[0]);
-    trim(splitVals[1]);
-    if ( (rval = p_WellLoc(splitVals[0], splitVals[1], lnum)) > 0)
-        return rval;
-    else
-        rval = p_ImgInfo(splitVals[0], splitVals[1], lnum);
+    } else {
+
+        trim(splitVals[0]);
+        trim(splitVals[1]);
+        if ( !(rval = p_WellLoc(splitVals[0], splitVals[1], lnum)) ) 
+        {
+            rval = p_ImgInfo(splitVals[0], splitVals[1], lnum);
+        }
+
+    }
 
     return rval;
 }
 
+// Parse a well location, which is <wellIndex> ':' <x>,<y>
+// This function splits wellCenter on a ',' and fails if there is no
+// comma.
+// Returns 0 on success, 1 on failure.
 int CirclesFile::p_WellLoc(string wellIdx, string wellCenter, int lnum)
 {
     if (wellIdx.empty()) return 0;
@@ -240,7 +244,6 @@ int CirclesFile::p_WellLoc(string wellIdx, string wellCenter, int lnum)
 
     if (splitVals.size() < 2){
         rval=0;
-        fprintf(stdout, "Syntax error near line %d.\n", lnum);
     } else {
         int nvalue, n2value, idx;
         try {
@@ -250,13 +253,13 @@ int CirclesFile::p_WellLoc(string wellIdx, string wellCenter, int lnum)
             idx=stoi(wellIdx);
 
             CenterInfo c(nvalue, n2value);
-            m_centers[idx] = c;
+            m_centers.push_back(c);
 
         }catch (const std::invalid_argument &eek){
             fprintf(stdout, "Syntax error near line: %d.  Expected a number.\n", lnum);
             rval=0;
         }catch (const std::out_of_range &eek){
-            fprintf(stdout, "Syntax error near line: %d.\n", lnum);
+            fprintf(stdout, "Syntax error near line: %d. Expected a number.\n", lnum);
             rval=0;
         }
     }
@@ -267,12 +270,11 @@ int CirclesFile::p_ImgInfo(string key, string value, int lnum)
 {
     int rval = 1;
     try {
-        if ( key == "imgx")
-        {
+        if ( key == "imgx") {
             m_imgx = stoi(value);
         } else if ( key == "imgy" ) {
             m_imgy = stoi(value);
-        } else if (key == "crad"){
+        } else if (key == "crad") {
             m_radius = stoi(value);
         } else {
             fprintf(stdout, "Syntax error in config file on line %d: " \

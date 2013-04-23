@@ -76,6 +76,10 @@ int doCL(int argc, char *argv[])
     stringVector fileVec;
     getDirEntries(inpath, file_extension, fileVec);
     std::cout << "Found " << fileVec.size() << " .raw files.\n";
+    if (fileVec.size() == 0) {
+        std::cout << "Exiting due to lack of files to process.\n";
+        return 0;
+    }
 
     //assume file sizes are all same.
     path proces(fileVec[0]);

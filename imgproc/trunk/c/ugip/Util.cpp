@@ -85,7 +85,7 @@ bool parseArgs( int argc, char **argv )
         std::cerr << "error: " << eek.what() << "\n";
         return false;
     } catch(...) {
-        std::cerr << "Exception of type confusing was thrown, bailing out! Aieeee!!!\n";
+        std::cerr << "Exception of type 'confusing' was thrown, bailing out! Aieeee!!!\n";
     }
 
     return true;
@@ -112,14 +112,16 @@ void getDirEntries( const std::string &dir_path,
             else if (is_directory(p)) {
                 directory_iterator dirIter(p), dirIterEnd;
 
-                while (dirIter != dirIterEnd) {
+                while (dirIter != dirIterEnd) 
+                {
                     isFile( *dirIter, ext, svec );
                     ++dirIter;
                 }
-            } else
+
+            } else 
                 std::cerr << p << " exists, but is not file or directory...confuzzled.\n";
-        } else
-            std::cerr << p << " does not exist. \n";
+        } else 
+            std::cerr << p << " directory does not exist. \n";
     }
     catch(const filesystem_error &ex) {
         std::cerr << ex.what() << '\n';
