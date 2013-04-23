@@ -116,6 +116,7 @@ void uigp2::setCirclesFileName( QString fname )
 void uigp2::addScannedFile( QString fname, float percentDone )
 {
     m_fileNameList.push_back(fname);
+    progressBar->setValue(percentDone*100.0f);
     qDebug() << fname << ' ' << percentDone;
 }
 
@@ -153,33 +154,28 @@ void uigp2::saveCirclesFile(QString fname)
     };
 
     //get all items, then remove non-ellipse items.
-    QVector<CenterInfo> vsauce;
+    QVector<CenterInfo> v;
     QList<QGraphicsItem*> thangs = m_scene->items();
 
     for (int i=0; i < thangs.size(); ++i) {
         QGraphicsItem *item = thangs.at(i);
 
-		//remove any non-ellipse items
+        //remove any non-ellipse items
         if (item->type() == QSelectableEllipse::Type) {
+            QSelectableEllipse *eee =
+                    qgraphicsitem_cast<QSelectableEllipse*>(item);
 
-            QSelectableEllipse *eee = qgraphicsitem_cast<QSelectableEllipse*>(item);
+            if (!eee) { continue; }
 
-			if (!eee) { continue; }
-
-            //TODO: this radius is not correct (always ==0?).
             int rad = eee->rad();
-            CenterInfo c = 
-            {
-                eee->x()+rad,
-                eee->y()+rad,
-                rad
-            };
-
-            vsauce.push_back(c);
+            CenterInfo c(eee->x()+rad,
+                         eee->y()+rad,
+                         rad);
+            v.push_back(c);
         }  
     } // for 
     
-    int rval = m_circlesFile.writeCirclesFile(vsauce.toStdVector(), img );
+    int rval = m_circlesFile.writeCirclesFile(v.toStdVector(), img );
 
     qDebug() << "Wrote " << rval << " circles";
 }
@@ -193,7 +189,7 @@ void uigp2::openCirclesFile()
 
     m_circlesFile = CirclesFile(m_circlesFileName.toStdString());
 
-    if (m_circlesList.size() < m_circlesFile.parseCirclesFile()) {
+    if (m_circlesList.size() < m_circlesFile.open()) {
         m_circlesList.resize(m_circlesFile.getNumCircles());
     }
 

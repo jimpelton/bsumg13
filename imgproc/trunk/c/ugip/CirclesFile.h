@@ -18,6 +18,15 @@ using std::map;
 struct CenterInfo
 {
     int x,y,r;
+
+    CenterInfo()
+        : x(0),y(0),r(0) {}
+
+    CenterInfo(int x, int y)
+        : x(x), y(y), r(0) {}
+
+    CenterInfo(int x, int y, int r)
+        : x(x), y(y), r(r) {}
 };
 
 /**
@@ -33,6 +42,16 @@ struct ImageInfo
 
 /**
   *	\brief Encapsulates a circles file for easy access to the values in the file.
+  *
+  * A CirclesFile has the following grammar:
+  *        line : wellLoc
+  *             | imginfo
+  *
+  *        wellLoc : num ':' num ',' num
+  *
+  *        imginfo : key ':' key
+  *        key  : string
+  *             | num
   */
 class CirclesFile 
 {
@@ -56,7 +75,7 @@ public:
     * \brief Parse the circles file at filename 
 	* \return -1 on error, number of circles parsed on success.
     */
-    int parseCirclesFile();
+    int open();
 
     /**
       *	\brief Get the CenterInfo at idx.
@@ -68,15 +87,15 @@ public:
 
     int getNumCircles() const { return m_centers.size(); }
     int getRadius() const { return m_radius; }
-    int getXdim() const { return m_info.xdim; }
-    int getYdim() const { return m_info.ydim; }
+    int getXdim() const { return m_imgx; }
+    int getYdim() const { return m_imgy; }
 
 private:
     string m_filename;
     vector<CenterInfo> m_centers;
-    map<int, CenterInfo> m_centersMap;    
+    //map<int, CenterInfo> m_centersMap;
     ImageInfo m_info;
-    int m_radius;
+    int m_radius, m_imgx, m_imgy;
 
     int parseCirclesFile_helper(int &nCirc);
 
@@ -87,9 +106,8 @@ private:
     static bool sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs); 
     static bool sortCenterByX(const CenterInfo &lhs, const CenterInfo &rhs);
 
-    /**
-    *	\brief Sort centers into rows, then rows into columns.
-    */
+
+    // Sort centers into rows, then rows into columns.
     static void findRows(vector<CenterInfo> &centers, 
         vector<vector<CenterInfo > > &rows, 
         int dist_thresh);

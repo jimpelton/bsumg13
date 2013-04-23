@@ -2,22 +2,19 @@
 #include "CirclesFile.h"
 
 #include <Imgproc.h>
-
+#include <stdio.h>
 #include <iostream>
 #include <vector>
-#include <map>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <math.h>
 #include <algorithm>
-//#include <regex>
-
+#include <stdexcept>
 #include <boost/algorithm/string.hpp>
 
 using std::string;
 using std::vector;
-
 using namespace boost::algorithm;
 
 typedef std::vector<CenterInfo > centerVector;
@@ -116,7 +113,7 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
 //
 //    try {
 //
-//        //[xx]|[abcd]:[xxxx],[xxxx]
+//        //    xx|abcd:xxxx,xxxx
 //        std::regex reg("^(\d\d?|[a-zA-Z]{4}):([0-9]{1,4})(,([0-9]{0,4}))?$");
 //        std::cmatch cm;
 //        int nLines=0;
@@ -178,13 +175,13 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
 //}
 
 //return -1 on error, >=0 on success.
-int CirclesFile::parseCirclesFile()
+int CirclesFile::open()
 {
     
 
     //m_filename = filename;
     int nCirc, nLines;
-    nCircl=nLines=0;
+    nCirc=nLines=0;
 
     std::ifstream file(m_filename.c_str(), std::ios::in);
     if (!file.is_open()) {
@@ -192,8 +189,9 @@ int CirclesFile::parseCirclesFile()
         return -1;
     }
 
+    char line[50];
     while (!file.eof() && nLines < 500) {
-        char line[50];
+        memset(line, 0, sizeof(line));
         file.getline(line, 50);
         if (p_Line(line, nLines) == 1){
             nLines += 1;
@@ -204,53 +202,63 @@ int CirclesFile::parseCirclesFile()
     return nCirc;
 }
 
+
 int CirclesFile::p_Line(string line, int lnum)
 {
     int rval=1;
-    int nKey;
-    if (line.empty()) {
-        return rval;
-    }
-    trim(line);
-    vector<string> vals;
-    split(vals, line.begin(), boost::is_any_of(":"));
+    if (line.empty()) { return rval; }
 
-    if (vals.size() < 2) {
-        rval = 0;
-    } else if (trim(vals[0])) {
-        rval = p_WellLoc(vals[0], vals[1], lnum);
-    }else {
-        rval = p_ImgInfo(vals[0], vals[1], lnum);
+    trim(line);
+
+    vector<string> splitVals;
+    split(splitVals, line, boost::is_any_of(":"));  //split on ':'
+
+    if (splitVals.size() < 2){
+        printf("Syntax error in circles file. Is this line incomplete? " \
+               "\n\t Line: %d: %s",
+               lnum, line.c_str());
+        return 0;
     }
+
+    trim(splitVals[0]);
+    trim(splitVals[1]);
+    if ( (rval = p_WellLoc(splitVals[0], splitVals[1], lnum)) > 0)
+        return rval;
+    else
+        rval = p_ImgInfo(splitVals[0], splitVals[1], lnum);
 
     return rval;
 }
 
-int CirclesFile::p_WellLoc(string wellIdx,string wellCenter, int lnum)
+int CirclesFile::p_WellLoc(string wellIdx, string wellCenter, int lnum)
 {
+    if (wellIdx.empty()) return 0;
     int rval = 1;
-    trim(wellIdx);
-    trim(wellCenter);
-    vector<string> vals;
 
-    split(vals, wellIdx.begin(), boost::is_any_of(','));
-    if (vals.size() < 2){
-        rval = 0;
-        fprintf(stdout, "Syntax error near line " + lnum + "\n");
-    }else {
+    vector<string> splitVals;
+    split(splitVals, wellCenter, boost::is_any_of(","));
+
+    if (splitVals.size() < 2){
+        rval=0;
+        fprintf(stdout, "Syntax error near line %d.\n", lnum);
+    } else {
         int nvalue, n2value, idx;
-        if (  nvalue=stoi(vals[0])     &&
-              n2value=stoi(vals[1])    &&
-              idx=stoi(wellIdx) ) 
-        {
+        try {
 
-            m_centers[idx] = Center(nvalue, n2value);
-        }
-        else {
-            rval = 0;
-            fprintf(stdout, "Syntax error on line " + lnum + ". Expected 'int':'int','int'.\n");
-        }
+            nvalue=stoi(splitVals[0]);
+            n2value=stoi(splitVals[1]);
+            idx=stoi(wellIdx);
 
+            CenterInfo c(nvalue, n2value);
+            m_centers[idx] = c;
+
+        }catch (const std::invalid_argument &eek){
+            fprintf(stdout, "Syntax error near line: %d.  Expected a number.\n", lnum);
+            rval=0;
+        }catch (const std::out_of_range &eek){
+            fprintf(stdout, "Syntax error near line: %d.\n", lnum);
+            rval=0;
+        }
     }
     return rval;
 }
@@ -261,17 +269,20 @@ int CirclesFile::p_ImgInfo(string key, string value, int lnum)
     try {
         if ( key == "imgx")
         {
-            m_ximg = stoi(value);
+            m_imgx = stoi(value);
         } else if ( key == "imgy" ) {
-            m_yimg = stoi(value);
+            m_imgy = stoi(value);
         } else if (key == "crad"){
-            m_crad = stoi(value);
+            m_radius = stoi(value);
         } else {
-            fprintf("Syntax error in config file on line %d: key: %d value: %d.\n", lnum, key, value);
+            fprintf(stdout, "Syntax error in config file on line %d: " \
+                    "key: %s value: %s.\n", lnum, key.c_str(), value.c_str());
             rval=0;
         }
-    } catch (const invalid_argument &eek) {
-        fprintf("Bad value for integer in config file on line %d, key: %d, value: %d.\n", linu, key, value);
+    } catch (const std::invalid_argument &eek) {
+        rval=0;
+        fprintf(stdout, "Bad value for integer in config file on line %d, key: " \
+                "%s, value: %s.\n", lnum, key.c_str(), value.c_str());
     }
     return rval;
 }
@@ -281,7 +292,7 @@ CenterInfo CirclesFile::getCenter(int idx)
     if (idx < m_centers.size()) {
         return m_centers[idx];
     } else {
-        CenterInfo c = {-1,-1,-1};
+        CenterInfo c(-1,-1,-1);  // = {-1,-1,-1};
         return c;
     }
 }

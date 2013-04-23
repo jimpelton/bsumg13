@@ -65,7 +65,7 @@ int doCL(int argc, char *argv[])
     std::cout << "Circles file: "     << circlesFileName << std::endl;
 
     CirclesFile circlesFile(circlesFileName);
-    int numcirc = circlesFile.parseCirclesFile();
+    int numcirc = circlesFile.open();
     
     if (numcirc < 1) {
         std::cout << "No circles found in the file, or it couldn't be opened.\n";
