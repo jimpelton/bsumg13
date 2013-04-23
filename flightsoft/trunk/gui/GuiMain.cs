@@ -15,7 +15,7 @@ namespace gui
         public GuiUpdater guiUpdater;
         public List<DataPoint> dataFrames = null;
         private static int MAX_DATA_POINTS = 100;
-
+        private string path = "C:\\Data\\";
 
 
         private Form1 mainForm;
@@ -30,12 +30,20 @@ namespace gui
         }
 
        public void Startup_Init()
-       {
-           dataFrames = new List<DataPoint>();
-           guiUpdater = new GuiUpdater(mainForm,this);
-           captureClass = new CaptureClass();
-           captureClass.init();
-       }
+        {
+
+            String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
+            System.IO.Directory.CreateDirectory(path + directoryName);
+
+            dataFrames = new List<DataPoint>();
+            guiUpdater = new GuiUpdater(mainForm, this);
+            captureClass = new CaptureClass()
+            {
+                param_directoryName = directoryName
+            };
+            
+            captureClass.init();
+        }
 
        public bool ToggleCapture()
        {

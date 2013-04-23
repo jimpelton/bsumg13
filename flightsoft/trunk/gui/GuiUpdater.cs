@@ -45,12 +45,16 @@ namespace gui
                 mainform.chart1.Series.Add("Graph1");
              //   mainform.chart1.Series.Add("Graph2");
               //  mainform.chart1.Series.Add("Graph3");
-                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 1024.0;
-                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = 1000.0;
+                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 38.0;
+                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = 35.0;
+                if (frames.Count > 99)
+                {
+                    Color col = System.Drawing.Color.FromArgb(255, (int)Math.Min(255, Math.Max(0, ((frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3))), 0, (int)Math.Min(255, Math.Max(0, ((37 - (frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3)))));
+                    mainform.chart1.Series["Graph1"].Color = col;
+                }
                 //mainform.chart1.ChartAreas["ChartArea2"].AxisY.Maximum = 38.0;
                 //mainform.chart1.ChartAreas["ChartArea2"].AxisY.Minimum = 10.0;
-
-                
+               
                 mainform.chart2.Series.Add("Gravity");
                 mainform.chart2.ChartAreas["ChartArea1"].AxisY.Maximum = 2.0;
                 mainform.chart2.ChartAreas["ChartArea1"].AxisY.Minimum = -1.0;
@@ -61,7 +65,7 @@ namespace gui
                 foreach (DataPoint p in frames)
                 {
                     mainform.chart1.Series["Graph1"].ChartType = SeriesChartType.SplineArea;                
-                    mainform.chart1.Series["Graph1"].Points.AddY(p.vcommIllumination);
+                    mainform.chart1.Series["Graph1"].Points.AddY(p.phidgetTemperature_ProbeTemp);
                     mainform.chart1.Series["Graph1"].ChartArea = "ChartArea1";
 /*
                     mainform.chart1.Series["Graph2"].ChartType = SeriesChartType.SplineArea;
