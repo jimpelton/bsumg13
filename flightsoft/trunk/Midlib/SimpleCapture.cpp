@@ -165,7 +165,7 @@ SimpleCapture::openTransport(int camIdx)
         m_camNM=m_cameraIdx;
     }
 
-    //printShit(); //unprofessional, but accurate. 
+    //printCameraInfo(); 
 
     return 0;
 }
@@ -246,7 +246,7 @@ int SimpleCapture::getWavelength()
 }
 
 void 
-SimpleCapture::printShit()
+SimpleCapture::printCameraInfo()
 {
     printf("======================\n");
     printf("Camera: %d Wavelength: %d info\n", m_cameraIdx, m_camNM);

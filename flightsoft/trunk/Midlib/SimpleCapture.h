@@ -109,7 +109,7 @@ private:
     /** \brief Called from captureFunction to perform the capture. */
 
     int mallocate();
-    void printShit();
+    void printCameraInfo();
 };
 
 public ref class ManagedSimpleCapture{
