@@ -65,20 +65,11 @@
     </Compile>
     <Compile Include="GuiMain.cs" />
     <Compile Include="GuiUpdater.cs" />
-    <Compile Include="ImageDisplay.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ImageDisplay.Designer.cs">
-      <DependentUpon>ImageDisplay.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SeverityColor.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ImageDisplay.resx">
-      <DependentUpon>ImageDisplay.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

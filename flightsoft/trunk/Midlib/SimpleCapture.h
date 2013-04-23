@@ -112,7 +112,7 @@ private:
     void printCameraInfo();
 };
 
-public ref class ManagedSimpleCapture{
+public ref class ManagedSimpleCapture {
     SimpleCapture *native_sc;
 
 public:
@@ -141,11 +141,9 @@ public:
 		return native_sc->getWavelength();
 	}
 
-
-
 	/**
-	  *	\brief CLR wrapper around sensorBufferSize().
-	  */
+	 *	\brief CLR wrapper around sensorBufferSize().
+	 */
     unsigned long managed_SensorBufferSize()
     {
         return native_sc->sensorBufferSize();
@@ -159,7 +157,7 @@ public:
         native_sc->stopTransport();
     }
 
-	/**-
+	/**
 	  *  \brief CLR wrapper around _doCapture.
 	  */
     unsigned char* managed_DoCapture()

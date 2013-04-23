@@ -19,7 +19,7 @@ DWORD WINAPI
 SimpleCapture::captureFunction(LPVOID param)
 {
 	DWORD rv;
-    SimpleCapture *me = (SimpleCapture*)param;
+	SimpleCapture *me = (SimpleCapture*)param;
 	unsigned int currValue;
 
 	while (1) {
@@ -37,17 +37,17 @@ SimpleCapture::captureFunction(LPVOID param)
 			}
 		}
 
-        me->_doCapture();
+		me->_doCapture();
 
 		// if gDone was set by the main thread, then exit
 		if (gDone) {
 			return 0;
 		}
-		
+
 
 	} /* while(1) */
 
-    return 0;
+	return 0;
 }
 
 SimpleCapture::SimpleCapture()
