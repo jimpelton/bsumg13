@@ -32,7 +32,12 @@ IMGPROC_HEADERS=AbstractImageProcessor.h \
 				WellIndexImageProcessor.h \
 				Processor.h \
 				Reader.h \
-				Writer.h 
+				Writer.h \
+				BufferPool.h \
+				Buffer.h \
+				ugTypes.h \
+				Centers.h \
+				Export.h
 
 all: $(IMGPROC_LIBS)
 
@@ -44,6 +49,8 @@ libimgproc.a: $(IMGPROC_OBJS)
 	ranlib $@
 
 install:
+	cp $(IMGPROC_HEADERS) $(INST_INCDIR)/
+	cp $(IMGPROC_LIBS) $(INST_LIBDIR)/
 
 
 clean: 

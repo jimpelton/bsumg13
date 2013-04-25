@@ -71,7 +71,7 @@ void uigp2::circleAdded(QSelectableEllipse *eee)
 
 void uigp2::addSelectedCircle( QSelectableEllipse* eee ) 
 {
-    CenterInfo c;
+    CirclesFile::CenterInfo c;
     c.r = eee->rad();
     c.x = eee->x()+c.r;
     c.y = eee->y()+c.r;
@@ -146,7 +146,7 @@ void uigp2::saveCirclesFile(QString fname)
 
     m_circlesFile = CirclesFile(fname.toStdString());
 
-    ImageInfo img = 
+    CirclesFile::ImageInfo img = 
     { 
         m_currentImage.byteCount(), 
         m_currentImage.width(), 
@@ -154,7 +154,7 @@ void uigp2::saveCirclesFile(QString fname)
     };
 
     //get all items, then remove non-ellipse items.
-    QVector<CenterInfo> v;
+    QVector<CirclesFile::CenterInfo> v;
     QList<QGraphicsItem*> thangs = m_scene->items();
 
     for (int i=0; i < thangs.size(); ++i) {
@@ -168,9 +168,10 @@ void uigp2::saveCirclesFile(QString fname)
             if (!eee) { continue; }
 
             int rad = eee->rad();
-            CenterInfo c(eee->x()+rad,
-                         eee->y()+rad,
-                         rad);
+            CirclesFile::CenterInfo c(
+                    eee->x()+rad,
+                    eee->y()+rad,
+                    rad);
             v.push_back(c);
         }  
     } // for 

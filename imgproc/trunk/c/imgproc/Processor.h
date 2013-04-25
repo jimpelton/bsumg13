@@ -9,7 +9,6 @@
 
 #include "AbstractImageProcessor.h"
 #include "BufferPool.h"
-#include "Export.h"
 #include "ugTypes.h"
 #include "Centers.h"
 
@@ -21,7 +20,10 @@
 namespace uG
 {
     /**
-    *  \brief Processes images with an AbstractImageProcessor.
+    *   \brief Processes images with an AbstractImageProcessor.
+    *
+    * Changelog:
+    *     [2/22/2013 jim] Port to boost mutex and threads.
     */
     class Processor
     {

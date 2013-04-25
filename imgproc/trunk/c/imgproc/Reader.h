@@ -2,9 +2,9 @@
 #ifndef Reader_h__
 #define Reader_h__
 
-#ifdef _WIN32
-#include <Windows.h>
-#endif
+//#ifdef _WIN32
+//#include <Windows.h>
+//#endif
 
 #include "BufferPool.h"
 #include "Buffer.h"
@@ -20,6 +20,9 @@
 namespace uG {
 /**
   *	\brief Reads any file from disc and places the data into a buffer pool of char.
+  *
+  * Changelog:
+  *     [2/22/2013 jim] Port to boost mutex and threads.
  */
 class Reader
 {

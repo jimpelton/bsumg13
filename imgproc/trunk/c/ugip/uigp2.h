@@ -87,7 +87,7 @@ private:
     QString m_circlesFileName;
     QStringList m_fileNameList;
 
-    QVector<CenterInfo> m_circlesList;
+    QVector<CirclesFile::CenterInfo> m_circlesList;
     CirclesFile m_circlesFile;
 
     QImage m_currentImage;

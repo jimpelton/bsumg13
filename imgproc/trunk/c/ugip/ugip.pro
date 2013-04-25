@@ -2,7 +2,7 @@
 TEMPLATE = app
 TARGET = ugip
 
-INCLUDEPATH +=  ../imgproc/
+INCLUDEPATH +=  ../include/
 
 QT += core gui widgets
 
@@ -10,7 +10,7 @@ CONFIG += qt
 CONFIG += debug
 CONFIG -= release
 
-LIBS += -L/usr/lib -L../imgproc \
+LIBS += -L../lib \
         -limgproc \
         -lboost_system \
         -lboost_program_options \

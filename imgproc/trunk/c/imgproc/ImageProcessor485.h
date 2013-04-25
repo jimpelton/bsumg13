@@ -4,7 +4,6 @@
 #define _IMAGEPROCESSOR485_H
 
 #include "AbstractImageProcessor.h"
-#include "Export.h"
 
 namespace uG
 {
