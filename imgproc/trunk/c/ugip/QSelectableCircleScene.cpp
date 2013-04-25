@@ -1,9 +1,6 @@
 #include "QSelectableCircleScene.h"
 
-#include "Centers.h"
 //#include <QDebug>
-
-using namespace uG;
 
 QSelectableCircleScene::QSelectableCircleScene(QObject *parent)
     : QGraphicsScene(parent)

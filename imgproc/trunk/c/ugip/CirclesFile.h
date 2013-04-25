@@ -11,6 +11,28 @@ using std::vector;
 using std::string;
 using std::map;
 
+
+
+
+
+
+/**
+  *	\brief Encapsulates a circles file for easy access to the values in the file.
+  *
+  * A CirclesFile has the following grammar:
+  *        line : wellLoc
+  *             | imginfo
+  *
+  *        wellLoc : num ':' num ',' num
+  *
+  *        imginfo : key ':' key
+  *        key  : string
+  *             | num
+  */
+class CirclesFile 
+{
+public:
+
 /**
   *	\brief Represents a circle center in x,y coordinates, with the
   *        associated radius.
@@ -40,23 +62,8 @@ struct ImageInfo
 };
 
 
-/**
-  *	\brief Encapsulates a circles file for easy access to the values in the file.
-  *
-  * A CirclesFile has the following grammar:
-  *        line : wellLoc
-  *             | imginfo
-  *
-  *        wellLoc : num ':' num ',' num
-  *
-  *        imginfo : key ':' key
-  *        key  : string
-  *             | num
-  */
-class CirclesFile 
-{
+/*** CIRCLES FILE IMPLEMENTATION ***************************************** */
 
-public:
     CirclesFile();
     CirclesFile(string fileName);
     ~CirclesFile();

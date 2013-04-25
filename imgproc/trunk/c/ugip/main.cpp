@@ -3,13 +3,12 @@
 #include "uigp2.h"
 #include "CirclesFile.h"
 
-#include "Centers.h"
-#include "Reader.h"
-#include "Processor.h"
-#include "Writer.h"
-//#include "WorkerThread.h"
-#include "BufferPool.h"
-#include "ugTypes.h"
+#include <Centers.h>
+#include <Reader.h>
+#include <Processor.h>
+#include <Writer.h>
+#include <BufferPool.h>
+#include <ugTypes.h>
 
 #include <QtWidgets/QMainWindow>
 #include <QtCore/QCoreApplication>
@@ -22,7 +21,6 @@ using uG::BufferPool;
 using uG::Processor;
 using uG::Writer;
 using uG::Reader;
-//using uG::WorkerThread;
 
 using std::string;
 using std::vector;
@@ -57,8 +55,8 @@ int doCL(int argc, char *argv[])
 {
     if (!parseArgs(argc, argv)) return 0;
         
-    string inpath(infile); // = string(argv[2]);
-    string outpath(outfile);//  = string(argv[3]);
+    string inpath(infile); 
+    string outpath(outfile);
 
     std::cout << "Input directory: "  << inpath.c_str()  << std::endl;
     std::cout << "Output directory: " << outpath.c_str() << std::endl;
@@ -93,7 +91,7 @@ int doCL(int argc, char *argv[])
     vector<Writer*> writers;
     vector<boost::thread*> workers;    
 
-    uG::ImageBufferPool imgbp(60, szfile);
+    uG::ImageBufferPool imgbp(58, szfile);
     uG::DataBufferPool  datbp(20, numcirc);
     
     //partition file names for Readers
@@ -103,13 +101,14 @@ int doCL(int argc, char *argv[])
         readerFilesVec.at(i%NUM_READERS).push_back(*it);
         ++it; ++i;
     }
-   
+    
+    //create Readers
     for (int i = 0; i < NUM_READERS; ++i) {
         Reader *r = new Reader(readerFilesVec[i], &imgbp);
         readers.push_back(r);
-//        workers.push_back(new WorkerThread(r->do_work, (void*)r));
     }
 
+    //create Processors
     uG::uGProcVars vars;    
     vars.imgh = 1944;
     vars.imgw = 2592;
@@ -117,21 +116,20 @@ int doCL(int argc, char *argv[])
     vars.numWells = numcirc;
     vars.centers = new uG::uGCenter[numcirc];
     for (int i = 0; i < numcirc; ++i) {
-        CenterInfo ci = circlesFile.getCenter(i);
+        CirclesFile::CenterInfo ci = circlesFile.getCenter(i);
         uG::uGCenter ugc = {ci.x, ci.y, ci.r};
         vars.centers[i] = ugc;
     }
-
+    
     for (int i = 0; i < NUM_PROCS; ++i) {
         Processor *p = new Processor(&imgbp, &datbp, &vars);
         procs.push_back(p);
-//        workers.push_back( new WorkerThread(p->do_work, (void*)p) );
     }
 
+    //create Writers
     for (int i = 0; i < NUM_WRITE; ++i) {
         Writer *w = new Writer(outpath, &datbp);
         writers.push_back(w);
-//        workers.push_back(new WorkerThread(w->do_work, (void*)w));
     }
 
     std::cout << "Created: " << readers.size() << " reader threads.\n";
@@ -139,10 +137,12 @@ int doCL(int argc, char *argv[])
     std::cout << "Created: " << writers.size() << " writer threads.\n";
     std::cout << "Starting threads..." << std::endl;
 
-//    vector<WorkerThread*>::iterator worker_iter = workers.begin();
-//    for (; worker_iter != workers.end(); ++worker_iter) {
-//        (*worker_iter)->go();
+//    for (int i = 0; i != procs.size(); ++i) {
+//        (*readers[i])();
+//        (*procs[i])();
+//        (*writers[i])();
 //    }
+
 
 //    worker_iter = workers.begin();
 //    for(; worker_iter != workers.end(); ++worker_iter) {

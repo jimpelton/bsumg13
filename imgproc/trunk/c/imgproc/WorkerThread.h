@@ -7,12 +7,8 @@
 #include <Windows.h>
 #endif
 
-#include "Export.h"
 #include <assert.h>
 #include <boost/thread.hpp>
-
-
-
 
 namespace uG
 {

@@ -8,7 +8,6 @@
 
 #include "BufferPool.h"
 #include "ugTypes.h"
-#include "Export.h"
 
 #include <boost/thread.hpp>
 #include <boost/thread/mutex.hpp>
@@ -18,6 +17,9 @@ namespace uG
 {
     /**
       *	\brief Writes data to disc.
+      *
+      *	Changelog:
+      *	    [2/22/2013 jim] Port to boost mutex and threads.
       */
     class Writer
     {
