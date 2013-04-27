@@ -89,8 +89,8 @@ namespace gui
         public override void exLogMessage(Receiver r, Message m) 
         {
             LogMessage lm = m as LogMessage;
-           // if (lm != null)
-            //    mainform.DebugOutput(lm.message, lm.severity);
+            if (lm != null)
+                mainform.DebugOutput(lm.message, lm.severity);
         }
 
         //TODO: Remove

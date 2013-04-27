@@ -15,6 +15,8 @@ namespace gui
         public GuiUpdater guiUpdater;
         public List<DataPoint> dataFrames = null;
         private static int MAX_DATA_POINTS = 100;
+
+        //Temporary till we load an init file.
         private string path = "C:\\Data\\";
 
 
