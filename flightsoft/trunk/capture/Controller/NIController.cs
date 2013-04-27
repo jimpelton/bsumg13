@@ -28,9 +28,9 @@ namespace uGCapture
         private AnalogSingleChannelReader reader_X_T;
         private AnalogSingleChannelReader reader_Y_T;
         private AnalogSingleChannelReader reader_Z_T;
+
         string[] outs;
-        private Boolean togglepo1 = false;
-        private int count = 0;
+        private String outputData;
         private static Object hardwareMutex = new object();
 
         public NIController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
@@ -39,13 +39,14 @@ namespace uGCapture
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
+            /*
             double analogDataIn_X_A=0;
             double analogDataIn_Y_A=0;
             double analogDataIn_Z_A=0;
             double analogDataIn_X_T=0;
             double analogDataIn_Y_T=0;
             double analogDataIn_Z_T=0;
-
+            */
             try
             {
                 using (Task digitalWriteTask = new Task())
@@ -72,7 +73,7 @@ namespace uGCapture
             }
             catch (DaqException ex)
             {
-                //MessageBox.Show(ex.Message);
+                dp.BroadcastLog(this, ex.Message, 1);
             }
 
             /*
@@ -112,6 +113,7 @@ namespace uGCapture
 
         protected override bool init()
         {
+            outputData = "";
             bool rval = true;
             try
             {
@@ -164,14 +166,37 @@ namespace uGCapture
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
             base.exHeartBeatMessage(r, m);
-            throw new NotImplementedException();
-
+            Buffer<Byte> buffer = BufferPool.PopEmpty();
+            String output = "NIDAQ \n";
+            output += DateTime.Now.Ticks.ToString() + " ";
+            output += outputData;
+            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+            buffer.setData(encoding.GetBytes(output), BufferType.UTF8_NI6008);
+            BufferPool.PostFull(buffer);
+            outputData = "";         
         }
 
         public override void exAccumulateMessage(Receiver r, Message m)
-        {
+        {    
             base.exAccumulateMessage(r, m);
-            throw new NotImplementedException();
+            double analogDataIn_X_A = 0;
+            double analogDataIn_Y_A = 0;
+            double analogDataIn_Z_A = 0;
+            double analogDataIn_X_T = 0;
+            double analogDataIn_Y_T = 0;
+            double analogDataIn_Z_T = 0;
+            analogDataIn_X_A = reader_X_A.ReadSingleSample();
+            analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
+            analogDataIn_Z_A = reader_Z_A.ReadSingleSample();
+            analogDataIn_X_T = reader_X_T.ReadSingleSample();
+            analogDataIn_Y_T = reader_Y_T.ReadSingleSample();
+            analogDataIn_Z_T = reader_Z_T.ReadSingleSample();
+            outputData += analogDataIn_X_A + " ";
+            outputData += analogDataIn_Y_A + " ";
+            outputData += analogDataIn_Z_A + " ";
+            outputData += analogDataIn_X_T + " ";
+            outputData += analogDataIn_Y_T + " ";
+            outputData += analogDataIn_Z_T + " ";
         }
 
 

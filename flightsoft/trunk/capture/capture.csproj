@@ -61,7 +61,9 @@
     <Compile Include="Controller\AptinaController.cs" />
     <Compile Include="Controller\SpatialAccelController.cs" />
     <Compile Include="Image\ImageProcessor.cs" />
+    <Compile Include="Message\AccumulateMessage.cs" />
     <Compile Include="Message\DataRequestMessage.cs" />
+    <Compile Include="Message\HeartBeatMessage.cs" />
     <Compile Include="Message\SetCaptureStateMessage.cs" />
     <Compile Include="Message\DataMessage.cs" />
     <Compile Include="ReceiverController.cs" />

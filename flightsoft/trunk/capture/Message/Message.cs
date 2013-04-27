@@ -25,8 +25,4 @@ namespace uGCapture
 
         public abstract void execute(Receiver r);
     }
-
-
-
-
 }

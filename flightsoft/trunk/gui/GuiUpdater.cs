@@ -16,24 +16,24 @@ namespace gui
         Form1 mainform = null;
         private GuiMain Guimain = null;
         private Series graph1data = null;
-        public GuiUpdater(Form1 f,GuiMain m)
+        public GuiUpdater(Form1 f, GuiMain m)
+            : base("GuiUpdater", true)
         {         
             mainform = f;
             graph1data = new Series("Points");
             Guimain = m;
-            this.Receiving = true;
-            dp.Register(this, "GuiUpdater");
+            dp.Register(this);
         }
 
         public void UpdateGUI(object sender, EventArgs e)
         {
             try
             {
-                ExecuteMessageQueue();              
+                //ExecuteMessageQueue();              
             }
-            catch (NullReferenceException nel)/// temp fix for monday's test. 5 minutes out.
+            catch (NullReferenceException nel)
             {
-                Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at ExecuteMessageQueue();  ");
+                Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at ExecuteMessageQueue();  "+nel.ToString());
  
             }
             mainform.chart1.Series.Clear();
@@ -106,7 +106,8 @@ namespace gui
             dat.NIanaloginputs = dm.NIanaloginputs;
             dat.UPSstate = dm.UPSstate;
             dat.VCommstate = dm.VCommstate;
-            dat.WellIntensities = dm.WellIntensities;
+            dat.WellIntensities405 = dm.WellIntensities405;
+            dat.WellIntensities485 = dm.WellIntensities485;
             dat.accel1acceleration = dm.accel1acceleration;
             dat.accel1rawacceleration = dm.accel1rawacceleration;
             dat.accel1state = dm.accel1state;
@@ -132,27 +133,14 @@ namespace gui
             dat.vcommTemperature3 = dm.vcommTemperature3;
 
             Guimain.insertDataPoint(dat);
-            if(mainform.getImageForm()!=null)
-                if (mainform.getImageForm().Visible)
-                {
-                    if (dat.image405 != null)
-                    {
-                        lock(dat.image405)
-                            mainform.getImageForm().pictureBox1.Image = ConvertCapturedRawImage(dat.image405.Data);
-                    }
-                    if (dat.image485 != null)
-                    {
-                        lock(dat.image485)
-                            mainform.getImageForm().pictureBox2.Image = ConvertCapturedRawImage(dat.image485.Data);
-                    }
-                }
+
         }
 
         public override void exDataRequestMessage(Receiver r, Message m)
         {   
-            int test = 0;
+            
         }
-        
+        /*
         static unsafe public Bitmap ConvertCapturedRawImage(byte[] indata)
         {
             Bitmap bitmap = null;
@@ -181,7 +169,7 @@ namespace gui
             }
             return bitmap;
         }
-
+        */
         public static uint[] ConvertGray16ToRGB(ushort[] grayPixels, int bitsUsed)
         {
             int pixelCount = grayPixels.Length;

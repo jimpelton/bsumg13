@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace uGCapture
 {
-    class AccumulateMessage : Message
+    public class AccumulateMessage : Message
     {     
         public AccumulateMessage(Receiver s)
             : base(s) { ; }

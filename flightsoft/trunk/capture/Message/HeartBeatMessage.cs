@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace uGCapture.Message
+namespace uGCapture
 {
     class HeartBeatMessage : Message
     {
@@ -13,7 +13,7 @@ namespace uGCapture.Message
 
         public override void execute(Receiver r)
         {
-            r.HeartBeatMessage(r, this);
+            r.exHeartBeatMessage(r, this);
         }
     }
 }

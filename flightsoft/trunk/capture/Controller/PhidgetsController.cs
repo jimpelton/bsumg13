@@ -18,30 +18,12 @@ public class PhidgetsController : ReceiverController
 
     private TemperatureSensor phidgetTemperature;
     private InterfaceKit phidgets1018;
-
-    private double phidgetTemperature_AmbientTemp = 0;
-    private double phidgetTemperature_ProbeTemp = 0;
-
-    private bool[] digitalInputs; // = null;
-    private bool[] digitalOutputs; // = null;
-    private int[] analogInputs; // = null;
+    private String outputData;
 
     public PhidgetsController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
     {
-        digitalInputs = new bool[8];
-        digitalOutputs = new bool[8];
-        analogInputs = new int[8];     
+        outputData = "";
     }
-
-
-    //public PhidgetsController(BufferPool<byte> bp) 
-    //    : base(bp)
-    //{
-    //    digitalInputs = new bool[8];
-    //    digitalOutputs = new bool[8];
-    //    analogInputs = new int[8];     
-    //}
-
             
     protected override bool init()
     {
@@ -67,7 +49,6 @@ public class PhidgetsController : ReceiverController
             phidgetTemperature.Attach += tempSensor_Attach;
             phidgetTemperature.Detach += Sensor_Detach;
             phidgetTemperature.Error += Sensor_Error;
-            phidgetTemperature.TemperatureChange += tempSensor_TemperatureChange;
 
             phidgetTemperature.thermocouples[0].Sensitivity = 0.001;
 
@@ -98,11 +79,6 @@ public class PhidgetsController : ReceiverController
             phidgets1018.Attach += ifKit_Attach;
             phidgets1018.Detach += Sensor_Detach;
             phidgets1018.Error += Sensor_Error;
-
-            phidgets1018.InputChange += ifKit_InputChange;
-            phidgets1018.OutputChange += ifKit_OutputChange;
-            phidgets1018.SensorChange += ifKit_SensorChange;
-
             phidgets1018.waitForAttachment(1000);
             dp.BroadcastLog(this, "1018 found", 0);
         }
@@ -134,7 +110,8 @@ public class PhidgetsController : ReceiverController
     {
 
     }
-
+    //TODO: Remove
+    /*
     void tempSensor_TemperatureChange(object sender, TemperatureChangeEventArgs e)
     {
         if (e.Index == 0)
@@ -145,12 +122,14 @@ public class PhidgetsController : ReceiverController
         //debug
         //dp.BroadcastLog(this, String.Format("OMG OMG! Temperature Changed! {0}", e.Temperature), 2);
     }
-
+    */
     void ifKit_Attach(object sender, AttachEventArgs e)
     {
 
     }
 
+    //TODO:Remove
+    /*
     void ifKit_InputChange(object sender, InputChangeEventArgs e)
     {
         digitalInputs[e.Index] = e.Value;
@@ -165,10 +144,11 @@ public class PhidgetsController : ReceiverController
     {
         analogInputs[e.Index] = e.Value;
     }
+    */
 
     public override void DoFrame(object source, ElapsedEventArgs e)
     {
- 
+ /*
         Buffer<Byte> buffer = BufferPool.PopEmpty();
 
         String outputData = "Phidgets\n";
@@ -186,19 +166,35 @@ public class PhidgetsController : ReceiverController
         buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_PHIDGETS);
         buffer.Text = "Phidgets"; // String.Format("Phidgets");
         BufferPool.PostFull(buffer);
+   */
     }
 
     public override void exHeartBeatMessage(Receiver r, Message m)
     {
         base.exHeartBeatMessage(r, m);
-        throw new NotImplementedException();
-
+        Buffer<Byte> buffer = BufferPool.PopEmpty();
+        String output = "Phidgets \n";
+        output += DateTime.Now.Ticks.ToString() + " ";
+        output += outputData;
+        System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+        buffer.setData(encoding.GetBytes(output), BufferType.UTF8_PHIDGETS);
+        BufferPool.PostFull(buffer);
+        outputData = "";        
     }
 
     public override void exAccumulateMessage(Receiver r, Message m)
     {
         base.exAccumulateMessage(r, m);
-        throw new NotImplementedException();
+        //TODO: add checks for if one of these dies we don't throw.
+        outputData += phidgetTemperature.thermocouples[0].Temperature+ " ";
+        outputData += phidgetTemperature.ambientSensor.Temperature + " ";
+
+        for (int i = 0; i < 8; i++)
+        {
+            outputData += phidgets1018.sensors[i].RawValue + " ";
+            outputData += phidgets1018.inputs[i] + " ";
+            outputData += phidgets1018.outputs[i] + " ";
+        }
     }
 
 
