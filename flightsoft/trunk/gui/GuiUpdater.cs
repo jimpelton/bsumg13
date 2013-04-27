@@ -89,10 +89,12 @@ namespace gui
         public override void exLogMessage(Receiver r, Message m) 
         {
             LogMessage lm = m as LogMessage;
-            if (lm != null)
-                mainform.DebugOutput(lm.message, lm.severity);
+           // if (lm != null)
+            //    mainform.DebugOutput(lm.message, lm.severity);
         }
 
+        //TODO: Remove
+        /*
         public override void exDataMessage(Receiver r, Message m)
         {
             DataPoint dat = new DataPoint();
@@ -100,6 +102,7 @@ namespace gui
             DataMessage dm = m as DataMessage;
             if (dm == null) return;
 
+            
             dat.image405 = dm.image405;
             dat.image485 = dm.image485;
 
@@ -135,6 +138,7 @@ namespace gui
             Guimain.insertDataPoint(dat);
 
         }
+        */
 
         public override void exDataRequestMessage(Receiver r, Message m)
         {   
