@@ -13,6 +13,7 @@ namespace gui
     {
         private GuiMain guiMain=null;
         private GuiUpdater guiUpdater=null;
+        private delegate void SetTextCallback(string s, Color col);
 
         public Form1()
         {
@@ -55,14 +56,32 @@ namespace gui
 
         public void DebugOutput(String s, Color col)
         {
-            String s2 = GetTimestamp() + s + "\n";
-            RichTextBox box = rTB_Debug_Output;
-            box.SelectionStart = box.TextLength;
-            box.SelectionLength = 0;
-            box.SelectionColor = col;
-            box.AppendText(s2);
-            box.SelectionColor = box.ForeColor;           
+
+            if (rTB_Debug_Output.InvokeRequired)
+            {
+                SetTextCallback a = new SetTextCallback(setDebugText);
+                this.Invoke(a, new object[] { s, col });
+            }
+            else
+            {
+
+                setDebugText(s, col);
+
+            }
+            
         }
+
+        //TODO: Fix the colors!
+        private void setDebugText(string s, Color col)
+        {           
+            String s2 = GetTimestamp() + s + "\n";
+            //rTB_Debug_Output.SelectionStart = rTB_Debug_Output.TextLength;
+            //rTB_Debug_Output.SelectionLength = 0;
+            //rTB_Debug_Output.SelectionColor = col;
+            rTB_Debug_Output.Text = s2;
+            //rTB_Debug_Output.SelectionColor = rTB_Debug_Output.ForeColor;
+        }
+
 
         private String GetTimestamp()
         {
