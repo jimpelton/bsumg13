@@ -25,6 +25,7 @@ namespace gui
         }
 
         public GuiMain(Form1 mainForm)
+            : base("GuiMain",true)
         {
             this.mainForm = mainForm;
         }
@@ -37,7 +38,7 @@ namespace gui
 
             dataFrames = new List<DataPoint>();
             guiUpdater = new GuiUpdater(mainForm, this);
-            captureClass = new CaptureClass()
+            captureClass = new CaptureClass("CaptureClass")
             {
                 param_directoryName = directoryName
             };

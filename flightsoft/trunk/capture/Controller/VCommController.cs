@@ -16,13 +16,7 @@ namespace uGCapture
     public class VCommController : ReceiverController
     {
         private SerialPort port = null;
-        private double humidity=0;
-        private double temp1=0;
-        private double temp2=0;
-        private double temp3=0;
-        private double pressure=0;
-        private double illumunation=0;
-        private int recordnum=0;
+        private String outputData;
 
         public VCommController(BufferPool<byte> bp, string id, 
             bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
@@ -31,6 +25,7 @@ namespace uGCapture
 
         protected override bool init()
         {
+            outputData = "";
             bool rval = true;
             port = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
             port.DataReceived += sp_DataReceived;
@@ -61,6 +56,7 @@ namespace uGCapture
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
+            /*
             Buffer<byte> buffer = BufferPool.PopEmpty();
 
             String outputData = "Weatherboard\n";
@@ -77,6 +73,7 @@ namespace uGCapture
                 BufferType.UTF8_VCOMM);
             buffer.Text = "Weatherboard"; 
             BufferPool.PostFull(buffer);
+            */
         }
 
         private void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -84,30 +81,26 @@ namespace uGCapture
             if (port.BytesToRead > 64)
             {
                 string data = port.ReadLine();
-                string[] values = data.Split(',');
-                if (values[0].Length > 1)
-                {
-                    values[0] = values[0].Substring(1);
-                    humidity = Double.Parse(values[0]);
-                }
-                if (values[7].Length > 7)
-                {
-                    values[7] = values[7].Substring(0, 6);
-                    recordnum = int.Parse(values[7]);
-                }
-                temp1 = Double.Parse(values[1]);
-                temp2 = Double.Parse(values[2]);
-                temp3 = Double.Parse(values[3]);
-                pressure = Double.Parse(values[4]);
-                illumunation = Double.Parse(values[5]);
+                lock(outputData)
+                    outputData += data;
             }
         }
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
             base.exHeartBeatMessage(r, m);
-            throw new NotImplementedException();
-
+            Buffer<Byte> buffer = BufferPool.PopEmpty();
+            String output = "Weatherboard \n";
+            lock (outputData)
+            {
+                output += DateTime.Now.Ticks.ToString() + " ";
+                output += outputData;
+                outputData = "";
+            }
+            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+            buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
+            BufferPool.PostFull(buffer);
+            
         }
 
 

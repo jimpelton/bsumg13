@@ -16,17 +16,12 @@ namespace uGCapture
     public class SpatialAccelController : ReceiverController
     {
         private Spatial accel;
-        private double[] rawAcceleration;
-        private double[] acceleration;
-        private double[] vibration;
         private int SerialNumber;
-
+        private String outputData;
         public SpatialAccelController(BufferPool<byte> bp, string id, int serial, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
             SerialNumber = serial;
-            rawAcceleration = new double[3];
-            acceleration = new double[3];
-            vibration = new double[3];
+            outputData = "";
         }
 
         protected override bool init()
@@ -47,8 +42,7 @@ namespace uGCapture
                 accel.Attach += accel_Attach;
                 accel.Detach += Sensor_Detach;
                 accel.Error += Sensor_Error;
-                accel.SpatialData += accel_AccelerationChange;
-
+                
                 dp.BroadcastLog(this, "Accelerometer found.", 0);
             }
             catch (PhidgetException ex)
@@ -157,13 +151,26 @@ namespace uGCapture
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
             base.exHeartBeatMessage(r, m);
-            throw new NotImplementedException();
+            if (accel.Attached)
+            {
+                Buffer<Byte> buffer = BufferPool.PopEmpty();
+                String output = "Accel \n";
+
+                output += DateTime.Now.Ticks.ToString() + " ";
+                output += outputData;
+                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                buffer.setData(encoding.GetBytes(output), BufferType.UTF8_SPATIAL);
+                buffer.Text = String.Format(accel.SerialNumber.ToString());
+                BufferPool.PostFull(buffer);
+                outputData = "";
+            }
         }
 
         public override void exAccumulateMessage(Receiver r, Message m)
         {
             base.exAccumulateMessage(r, m);
-            throw new NotImplementedException();
+            for (int i = 0; i < 3; i++)
+                outputData += accel.accelerometerAxes[i].Acceleration + " ";
         }
 
 

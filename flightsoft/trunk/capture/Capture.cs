@@ -13,7 +13,12 @@ namespace uGCapture
 {
     public class CaptureClass : Receiver
     {
-        private String directoryName;
+        public string param_directoryName
+        {
+            set {directoryName = value;}
+            get {return directoryName;}
+        }
+        private string directoryName;
         private bool boolCapturing = false;
         
         private BufferPool<byte> m_bufferPool;
@@ -35,9 +40,9 @@ namespace uGCapture
 
         public CaptureClass(string id) : base(id)
         {
-            //TODO: move datetime and directory creation into GUI.
-            directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
-            System.IO.Directory.CreateDirectory("C:\\Data\\"+directoryName);
+
+            //messages = new Queue<Message>();
+
         }
 
         public void init()
