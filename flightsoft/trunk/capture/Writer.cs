@@ -269,8 +269,11 @@ public class Writer : ReceiverController
         //WriteData();
     }
 
+    //TODO: Remove
+    /*
     public override void exDataRequestMessage(Receiver r, Message m)
     {
+
         DataMessage dat = new DataMessage(r);
         for (int i = 0; i < 6;i++ )
             dat.NIanaloginputs[i] = NIanaloginputs[i];
@@ -332,6 +335,6 @@ public class Writer : ReceiverController
         
         dp.Broadcast(dat);
     }
-
+    */
 }
 }

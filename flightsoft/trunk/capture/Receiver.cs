@@ -74,7 +74,8 @@ namespace uGCapture
         /// <summary>
         /// Execute a DataMessage. 
         /// </summary>
-        public virtual void exDataMessage(Receiver r, Message m) { ; }
+        //TODO: Remove
+        //public virtual void exDataMessage(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Execute a DataRequestMessage.

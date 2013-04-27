@@ -8,7 +8,8 @@ namespace uGCapture
 {
     public class DataMessage : Message
     {
-
+        //TODO: Remove
+        /*
         public long timestamp;
         public bool[] phidgetsdigitalInputs;
         public bool[] phidgetsdigitalOutputs;
@@ -41,10 +42,12 @@ namespace uGCapture
         public long[] WellIntensities405;
         public long[] WellIntensities485;
 
-
+        */
         public DataMessage(Receiver s)
             : base(s)
         {
+
+            /*
 	    WellIntensities405 = new long[192];
 	    WellIntensities485 = new long[192];
             phidgetsdigitalInputs = new bool[8];
@@ -58,11 +61,13 @@ namespace uGCapture
             accel2acceleration = new double[3];
             NIanaloginputs = new double[6];
             timestamp = 0;
+             */
         }
 
         public override void execute(Receiver r)
         {
-            r.exDataMessage(r, this);
+            //TODO: Remove
+            //r.exDataMessage(r, this);
         }
     }
 }
