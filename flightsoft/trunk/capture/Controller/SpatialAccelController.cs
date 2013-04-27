@@ -86,8 +86,9 @@ namespace uGCapture
             }
         }
 
+        //TODO: Remove
         //gets an raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise. (wip)
-        void accel_AccelerationChange(object sender, SpatialDataEventArgs e)
+        /*void accel_AccelerationChange(object sender, SpatialDataEventArgs e)
         {
             lock(rawAcceleration)//also used as a mutex for accel and vib since they are always changed together.               
                 for (int i = 0; i < 3; i++)
@@ -98,7 +99,7 @@ namespace uGCapture
                     acceleration[i] *= 0.99;
                     rawAcceleration[i] = acc; 
                 }
-        }
+        }*/
 
         void Sensor_Detach(object sender, DetachEventArgs e)
         {
@@ -122,7 +123,7 @@ namespace uGCapture
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-            if (accel.Attached)
+          /*  if (accel.Attached)
             {
                 lock (rawAcceleration)// we dont use this here but we use this as the mutex for modifying accel and vib.
                 {
@@ -149,9 +150,22 @@ namespace uGCapture
                 BufferPool.PostFull(buffer);
             }
 
-            }
+            }*/
 
         }
+
+        public override void exHeartBeatMessage(Receiver r, Message m)
+        {
+            base.exHeartBeatMessage(r, m);
+            throw new NotImplementedException();
+        }
+
+        public override void exAccumulateMessage(Receiver r, Message m)
+        {
+            base.exAccumulateMessage(r, m);
+            throw new NotImplementedException();
+        }
+
 
     }
 

@@ -34,16 +34,6 @@ namespace uGCapture
             vibration = new double[3];
         }
 
-
-        //public AccelerometerPhidgetsController(BufferPool<byte> bp, int serial)
-        //    : base(bp)
-        //{
-        //    SerialNumber = serial;
-        //    rawacceleration = new double[3];
-        //    acceleration = new double[3];
-        //    vibration = new double[3];
-        //}
-
         protected override bool init()
         {
             return openAccel();
@@ -94,8 +84,9 @@ namespace uGCapture
             }
         }
 
+        //TODO: remove
         //gets n raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise. (wip)
-        private void accel_AccelerationChange(object sender, AccelerationChangeEventArgs e)
+  /*      private void accel_AccelerationChange(object sender, AccelerationChangeEventArgs e)
         {
             //create a mutex. these have a weak identity.
             lock (rawacceleration)
@@ -112,7 +103,7 @@ namespace uGCapture
                     acceleration[e.Index] *= 0.99;//remove one tenth of the accumulated past acceleration.
                 }
             }
-        }
+        }*/
 
         private void Sensor_Detach(object sender, DetachEventArgs e)
         {
@@ -132,7 +123,7 @@ namespace uGCapture
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-            if (accel.Attached)
+            /*if (accel.Attached)
             {
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 String outputData = "Accel \n";
@@ -151,8 +142,23 @@ namespace uGCapture
                 buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_ACCEL);
                 buffer.Text = String.Format(accel.SerialNumber.ToString());
                 BufferPool.PostFull(buffer);
-            }
+            }*/
         }
+
+        public override void exHeartBeatMessage(Receiver r, Message m)
+        {
+            base.exHeartBeatMessage(r, m);
+            throw new NotImplementedException();
+
+        }
+
+        public override void exAccumulateMessage(Receiver r, Message m)
+        {
+            base.exAccumulateMessage(r, m);
+            throw new NotImplementedException();
+        }
+
+
     }
 
     public class AccelerometerControllerNotInitializedException : Exception

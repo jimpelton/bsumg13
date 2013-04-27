@@ -13,7 +13,6 @@ namespace gui
     {
         private GuiMain guiMain=null;
         private GuiUpdater guiUpdater=null;
-        private ImageDisplay guiImageDisplay=null;
 
         public Form1()
         {
@@ -82,16 +81,8 @@ namespace gui
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (guiImageDisplay == null)
-                guiImageDisplay = new ImageDisplay();
-            if(guiImageDisplay.Visible)
-                guiImageDisplay.Hide();
-            else
-                guiImageDisplay.Show();
+
         }
-        public ImageDisplay getImageForm()
-        {
-            return guiImageDisplay;
-        }
+
     }
 }

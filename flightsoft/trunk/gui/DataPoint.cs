@@ -9,7 +9,11 @@ namespace gui
     public class DataPoint
     {
         public long timestamp;
-        public long[, ,] WellIntensities;
+
+        public long[] WellIntensities405;
+        public long[] WellIntensities485;
+
+
         public bool[] phidgetsdigitalInputs;
         public bool[] phidgetsdigitalOutputs;
         public int[] phidgetsanalogInputs;
@@ -41,7 +45,8 @@ namespace gui
 
         public DataPoint()
         {           
-            WellIntensities = new long[2, 16, 12];
+            WellIntensities405 = new long[16*12];
+            WellIntensities485 = new long[16 * 12];
             phidgetsdigitalInputs = new bool[8];
             phidgetsdigitalOutputs = new bool[8];
             phidgetsanalogInputs = new int[8];

@@ -92,6 +92,16 @@ namespace uGCapture
         public virtual void exSetCaptureStateMessage(Receiver r, Message m) { ; }
 
         /// <summary>
+        /// Act upon given AptinaStatusMessage
+        /// </summary>
+        public virtual void exAccumulateMessage(Receiver r, Message m) { ; }
+
+        /// <summary>
+        /// Generate a SetCaptureStateMessage
+        /// </summary>
+        public virtual void exHeartBeatMessage(Receiver r, Message m) { ; }
+
+        /// <summary>
         /// Act on given LogMessage.
         /// </summary>
         public virtual void exLogMessage(Receiver r, Message m) { ; }

@@ -188,6 +188,19 @@ public class PhidgetsController : ReceiverController
         BufferPool.PostFull(buffer);
     }
 
+    public override void exHeartBeatMessage(Receiver r, Message m)
+    {
+        base.exHeartBeatMessage(r, m);
+        throw new NotImplementedException();
+
+    }
+
+    public override void exAccumulateMessage(Receiver r, Message m)
+    {
+        base.exAccumulateMessage(r, m);
+        throw new NotImplementedException();
+    }
+
 
 }
 public class PhidgetsControllerNotInitializedException : Exception

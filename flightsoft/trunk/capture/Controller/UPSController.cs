@@ -15,6 +15,13 @@ namespace uGCapture
             throw new NotImplementedException();
         }
 
+        public override void exHeartBeatMessage(Receiver r, Message m)
+        {
+            base.exHeartBeatMessage(r, m);
+            throw new NotImplementedException();
+
+        }
+
         protected override bool init()
         {
             return false;
