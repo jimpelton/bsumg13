@@ -181,6 +181,13 @@ public class AptinaController : ReceiverController
     {
         throw new NotImplementedException("The method or operation is not implemented.");
     }
+
+    public override void exHeartBeatMessage(Receiver r, Message m)
+    {
+        base.exHeartBeatMessage(r, m);
+        throw new NotImplementedException();
+
+    }
 }
 
     public class AptinaControllerNotInitializedException : Exception

@@ -103,6 +103,14 @@ namespace uGCapture
             }
         }
 
+        public override void exHeartBeatMessage(Receiver r, Message m)
+        {
+            base.exHeartBeatMessage(r, m);
+            throw new NotImplementedException();
+
+        }
+
+
     }
     public class VCommControllerNotInitializedException : Exception
     {
