@@ -18,6 +18,7 @@ namespace uGCapture
     {
         public int SleepMax { get; set; }
         public int SleepMin { get; set; }
+        public int LastSizeBytes { get; set; }
 
         private int m_maxDataBytes;
         private Random m_rand;
@@ -54,9 +55,28 @@ namespace uGCapture
             BufferPool.PostFull(buffer);
         }
 
+        /// <summary>
+        /// Pops an empty buffer and fills it, then sleeps for a random amount
+        /// of time between SleepMin and SleepMax, and finally posts the
+        /// full buffer to the buffer pool.
+        ///
+        /// This is a convenience method for initiating the pop, fill, push
+        /// sequence without relying on the heartbeat message.
+        /// </summary>
+        public void ManualPushData()
+        {
+            Buffer<byte> buffer = BufferPool.PopEmpty();
+            byte[] data = makeData();
+            buffer.setData(data, BufferType.USHORT_IMAGE405);
+            data = null;
+            Thread.Sleep(m_rand.Next(SleepMin, SleepMax));
+            BufferPool.PostFull(buffer);
+        }
+
         private byte[] makeData()
         {
             int size = m_rand.Next(1, m_maxDataBytes);
+            LastSizeBytes = size;
             byte[] rval = new byte[size];
             m_rand.NextBytes(rval);
             return rval;

@@ -16,26 +16,39 @@ namespace uGCapture
     /// </summary>
     public class Buffer<T>
     {
-
-        private BufferType m_type;
+	
+	/// <summary>
+	/// Gets this buffers BufferType.
+	/// </summary>
         public BufferType Type
         {
             get { return m_type; }
             private set { m_type = Type; }
         }
+        private BufferType m_type;
 
+	/// <summary>
+	/// The number of elements in this Buffers backing array.
+	/// </summary>
         public int Length
         {
             get { return m_data.Length; }
         }
 
-        private String m_text;
+	/// <summary>
+	/// A string identifier for this buffer. Could be used to uniquely
+        /// identify this buffer.
+	/// </summary>
         public String Text
         {
             get { return m_text;  }
             set { m_text = value; }
         }
+        private String m_text;
 
+	/// <summary>
+	/// The number of filled elements in this buffer.
+	/// </summary>
         private ulong m_capacityUtilization;
         public ulong CapacityUtilization
         {
@@ -43,17 +56,24 @@ namespace uGCapture
             private set { m_capacityUtilization = value; }
         }
 
+	/// <summary>
+	/// The backing array for this Buffer.
+	/// </summary>
         private T[] m_data;
         public T[] Data
         {
             get { return m_data; }
             private set { m_data = value; }
         }
-    
-        /*
-         * setData
-         * copies passed data into the buffers memory.
-         */
+
+	/// <summary>
+	/// Copies all elements of input into this buffer starting at an offset of 0 in
+        /// both this buffer and the input array. 
+	/// ty should be one of the enumerated types in BuffeType and should be
+        /// correct in the sense of the data the contents of input represents.
+	/// </summary>
+	/// <param name="input">Data to copy into this buffer.</param>
+	/// <param name="ty">The type of the data contained in input.</param>
         public void setData(T[] input, BufferType ty)
         {
             m_type = ty;

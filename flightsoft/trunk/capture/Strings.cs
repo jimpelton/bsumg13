@@ -23,7 +23,7 @@ namespace uGCapture
         INIT_OK_PHID_ACCEL,
         INIT_OK_NI_6008,
         INIT_OK_APTINA,
-        INIT_OK_VCOMM
+        INIT_OK_VCOMM,
     }
 
     enum IdStr
@@ -31,13 +31,12 @@ namespace uGCapture
         ID_WRITER,          
         ID_APTINA_ONE,      
         ID_APTINA_TWO,      
-        ID_PHIDGETS_DAQ,    
+        ID_PHIDGETS_1018,    
         ID_PHIDGETS_ACCEL,  
         ID_PHIDGETS_SPATIAL,
         ID_VCOMM,    
         ID_NI_DAQ           
     }
-
 
     class Str
     {
@@ -91,7 +90,7 @@ namespace uGCapture
                 case IdStr.ID_WRITER: return "Writer"; 
                 case IdStr.ID_APTINA_ONE: return "Aptina_One"; 
                 case IdStr.ID_APTINA_TWO: return "Aptina_Two"; 
-                case IdStr.ID_PHIDGETS_DAQ: return "Phidgets"; 
+                case IdStr.ID_PHIDGETS_1018: return "Phidgets"; 
                 case IdStr.ID_PHIDGETS_ACCEL: return "Phidgets_Accel"; 
                 case IdStr.ID_PHIDGETS_SPATIAL: return "Phidgets_Spatial"; 
                 case IdStr.ID_VCOMM: return "Weatherboard"; 

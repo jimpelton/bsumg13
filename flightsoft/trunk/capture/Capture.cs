@@ -13,17 +13,16 @@ namespace uGCapture
 {
     public class CaptureClass : Receiver
     {
-        public string param_directoryName
+        private string _storageDir;
+        public string StorageDir
         {
-            set {directoryName = value;}
-            get {return directoryName;}
+            get { return _storageDir; }
+            set { _storageDir = value; }
         }
-        private string directoryName;
         private bool boolCapturing = false;
         
-        private BufferPool<byte> m_bufferPool;
+        private BufferPool<byte> bufferPool;
 
-        private Timer m_timer;
         private PhidgetsController phidgetsController;
         private AccelerometerPhidgetsController accelControler; 
         private SpatialAccelController spatialController;
@@ -40,19 +39,19 @@ namespace uGCapture
 
         public CaptureClass(string id) : base(id)
         {
-
-            //messages = new Queue<Message>();
-
+            //TODO: move datetime and directory creation into GUI.
+            _storageDir = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
+            System.IO.Directory.CreateDirectory("C:\\Data\\"+_storageDir);
         }
 
         public void init()
         {
-            m_timer = new Timer(FRAME_TIME);
-            m_timer.Elapsed += DoFrame;
+            //m_timer = new Timer(FRAME_TIME);
+            //m_timer.Elapsed += DoFrame;
 
-            m_bufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
+            bufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
 
-            writer = new Writer(m_bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { DirectoryName = directoryName };
+            writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { DirectoryName = _storageDir };
             writer.Initialize();
             wrtThread = new Thread(() => Writer.WriteData(writer));
 
@@ -63,17 +62,16 @@ namespace uGCapture
             initWeatherBoard();
             initNI6008Controller();
 
-            m_timer.Enabled = false;
+            //m_timer.Enabled = false;
             dp.Register(this);
         }
 
-        public void DoFrame(object source, ElapsedEventArgs e)
-        {
-        }
+        public void DoFrame(object source, ElapsedEventArgs e) { }
 
+	
         private void initAptina()
         {
-            ac1 = new AptinaController(m_bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE));
+            ac1 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE));
             if (ac1.Initialize())
             {
                 acThread1 = new Thread(() => AptinaController.go(ac1));
@@ -81,12 +79,11 @@ namespace uGCapture
             }
             else
             {
-                dp.BroadcastLog(this,
-                                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.",
-                                100);
+                dp.BroadcastLog(this, 
+                    Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.", 100);
             }
 
-            ac2 = new AptinaController(m_bufferPool, Str.GetIdStr(IdStr.ID_APTINA_TWO));
+            ac2 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_TWO));
             if (ac2.Initialize())
             {
                 acThread2 = new Thread(() => AptinaController.go(ac2));
@@ -95,14 +92,13 @@ namespace uGCapture
             else
             {
                 dp.BroadcastLog(this,
-                                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 2.",
-                                100);
+			Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 2.", 100);
             }
         }
 
         private void initPhidgets()
         {
-            phidgetsController = new PhidgetsController(m_bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_DAQ));
+            phidgetsController = new PhidgetsController(bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_1018));
             if (phidgetsController.Initialize())
             {
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_1018);
@@ -121,7 +117,7 @@ namespace uGCapture
 
         private void initAccelController()
         {
-            accelControler = new AccelerometerPhidgetsController(m_bufferPool, 
+            accelControler = new AccelerometerPhidgetsController(bufferPool, 
                 Str.GetIdStr(IdStr.ID_PHIDGETS_ACCEL), 159352);
             if (accelControler.Initialize())
             {
@@ -139,7 +135,7 @@ namespace uGCapture
 
         private void initSpatialController()
         {
-            spatialController = new SpatialAccelController(m_bufferPool, 
+            spatialController = new SpatialAccelController(bufferPool, 
                 Str.GetIdStr(IdStr.ID_PHIDGETS_SPATIAL), 169140);
 
             if (spatialController.Initialize())
@@ -158,7 +154,7 @@ namespace uGCapture
 
         private void initWeatherBoard()
         {
-            weatherboard = new VCommController(m_bufferPool, 
+            weatherboard = new VCommController(bufferPool, 
                 Str.GetIdStr(IdStr.ID_VCOMM));
 
             if (weatherboard.Initialize())
@@ -177,7 +173,7 @@ namespace uGCapture
 
         private void initNI6008Controller()
         {
-            ni6008 = new NIController(m_bufferPool, 
+            ni6008 = new NIController(bufferPool, 
                 Str.GetIdStr(IdStr.ID_NI_DAQ));
 
             if (ni6008.Initialize())
@@ -199,32 +195,6 @@ namespace uGCapture
             SetCaptureStateMessage lm = m as SetCaptureStateMessage;
             if (lm == null) return;
             boolCapturing = lm.running;
-
-            if (boolCapturing)
-            {
-                //acThread1.Start();
-                //acThread2.Start();
-                //wrtThread.Start();
-
-                //phidgetsController.TickerEnabled = true;
-                //accelControler.TickerEnabled = true;
-                //spatialController.TickerEnabled = true;
-                //writer.TickerEnabled = true;
-                //weatherboard.TickerEnabled = true;
-                // ni6008.TickerEnabled = true;
-            }
-            else
-            {
-                //ac1.stop();
-                //ac2.stop();
-
-                //phidgetsController.TickerEnabled = false;
-                //accelControler.TickerEnabled = false;
-                //spatialController.TickerEnabled = false;
-                //writer.TickerEnabled = false;
-                //weatherboard.TickerEnabled = false;
-                //ni6008.TickerEnabled = false;
-            }
         }
     }
 }

@@ -21,7 +21,6 @@ namespace uGCapture
     /// </summary>
     internal class ReceiverIdPair
     {
-
         public Receiver Receiver
         {
             get { return m_rec; }
@@ -56,9 +55,8 @@ namespace uGCapture
 
         /// <summary>
         /// Dequeue a message from the message queue.
-        /// 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The message dequeued.</returns>
         public Message Dequeue()
         {
             Message rval;
@@ -85,6 +83,9 @@ namespace uGCapture
         private ConcurrentDictionary<string, ReceiverIdPair> m_receiversMap;
         private static Dispatch me;
 
+	/// <summary>
+	/// Millis to wait until thread joins timeout.
+	/// </summary>
         public int ThreadJoinTimeoutIntervalMillis
         {
             set { m_joinTimeOutInterval = value; }

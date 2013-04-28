@@ -20,11 +20,14 @@ public class PhidgetsController : ReceiverController
     private InterfaceKit phidgets1018;
     private String outputData;
 
-    public PhidgetsController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
+    public PhidgetsController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) 
+        : base(bp, id, receiving, frame_time)
     {
         outputData = "";
     }
-            
+
+
+   
     protected override bool init()
     {
         bool initSuccess = openTempSenser() && openDAQ();
