@@ -103,6 +103,7 @@ namespace uGCapture
             return m_centers.Count;
         }
         
+
         private int p_Line(string line, int lnum)
         {
             int rval = 1;
