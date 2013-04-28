@@ -17,6 +17,7 @@ namespace uGCapture
     {
         private SerialPort port = null;
         private String outputData;
+        private bool hasNewData;
 
         public VCommController(BufferPool<byte> bp, string id, 
             bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
@@ -81,21 +82,33 @@ namespace uGCapture
             if (port.BytesToRead > 64)
             {
                 string data = port.ReadLine();
-                lock(outputData)
-                    outputData += data;
+                lock (outputData)
+                {
+                    outputData = data;
+                    hasNewData = true;
+                }                              
             }
         }
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
-            base.exHeartBeatMessage(r, m);
+            
             Buffer<Byte> buffer = BufferPool.PopEmpty();
             String output = "Weatherboard \n";
+
             lock (outputData)
             {
-                output += DateTime.Now.Ticks.ToString() + " ";
-                output += outputData;
-                outputData = "";
+                if (hasNewData)
+                {
+                    output += DateTime.Now.Ticks.ToString() + " ";
+                    output += outputData;                
+                    hasNewData = false;
+                }
+                else
+                {
+                    output += DateTime.Now.Ticks.ToString() + " ";
+                    output += outputData;                 
+                }
             }
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
