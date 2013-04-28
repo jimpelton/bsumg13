@@ -55,7 +55,7 @@ public class AptinaController : ReceiverController
                 return running;
             }
         }
-        set
+        private set
         {
             lock (runningMutex)
             {
@@ -155,20 +155,20 @@ public class AptinaController : ReceiverController
             }
             Console.WriteLine("Aptina Controller Capture {0} begin. Time: {1:g}", me.tnum, DateTime.Now.TimeOfDay);
 
-            me.runningMutex.WaitOne();
+            //me.runningMutex.WaitOne();
             if (!me.IsRunning)
             {
                 
-                me.runningMutex.ReleaseMutex();
+                //me.runningMutex.ReleaseMutex();
 
                 string mes = "Aptina controller " + me.tnum + " exiting"; 
                 Console.WriteLine(mes);
 
                 me.dp.BroadcastLog(me, mes, 3);
-                barrierSemaphore.Release(1);  // this throws a semaphore full exception
+                barrierSemaphore.Release(1);  
                 return;
             }
-            me.runningMutex.ReleaseMutex();
+            //me.runningMutex.ReleaseMutex();
 
             unsafe
             {
@@ -201,7 +201,7 @@ public class AptinaController : ReceiverController
     public override void exHeartBeatMessage(Receiver r, Message m)
     {
         base.exHeartBeatMessage(r, m);
-        throw new NotImplementedException();
+       // throw new NotImplementedException();
 
     }
 }

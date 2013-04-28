@@ -111,37 +111,37 @@ namespace uGCapture
                     {
                         case (BufferType.UTF8_VCOMM):
                             w.WriteOutput(fulbuf, "Barometer_",
-                                          Math.Min(w.index405, w.index485), ".txt");
+                                          Math.Max(w.index405, w.index485), ".txt");
                             //w.WriteWeatherboardOutput(fulbuf, Math.Min(w.index405, w.index485));
                             break;
                         case (BufferType.UTF8_PHIDGETS):
                             //w.WritePhidgetsOutput(fulbuf, ", Math.Min(w.index405, w.index485));
-                            w.WriteOutput(fulbuf, "Phidgets_", Math.Min(w.index405, w.index485),
+                            w.WriteOutput(fulbuf, "Phidgets_", Math.Max(w.index405, w.index485),
                                           ".txt");
                             break;
                         case (BufferType.UTF8_ACCEL):
                             w.WriteOutput(fulbuf, "Accel_",
-                                          Math.Min(w.index405, w.index485), ".txt");
+                                          Math.Max(w.index405, w.index485), ".txt");
                             //w.WriteAccelerometerOutput(fulbuf, Math.Min(w.index405, w.index485));
                             break;
                         case (BufferType.UTF8_SPATIAL):
                             w.WriteOutput(fulbuf, "Spatial_",
-                                          Math.Min(w.index405, w.index485), ".txt");
+                                          Math.Max(w.index405, w.index485), ".txt");
                             //w.WriteAccelerometerOutput(fulbuf, Math.Min(w.index405, w.index485));
                             break;
                         case (BufferType.UTF8_NI6008):
                             w.WriteOutput(fulbuf, "NI6008_",
-                                          Math.Min(w.index405, w.index485), ".txt");
+                                          Math.Max(w.index405, w.index485), ".txt");
                             //w.WriteNI6008Output(fulbuf, Math.Min(w.index405, w.index485));
                             break;
                         case (BufferType.USHORT_IMAGE405):
                             w.WriteOutput(fulbuf, "Camera405_",
-                                          Math.Min(w.index405, w.index485), ".raw");
+                                          w.index405++, ".raw");
                             //w.WriteImageOutput(fulbuf, w.index405++);
                             break;
                         case (BufferType.USHORT_IMAGE485):
                             w.WriteOutput(fulbuf, "Camera485_",
-                                          Math.Min(w.index405, w.index485), ".raw");
+                                          w.index485++, ".raw");
                             //w.WriteImageOutput(fulbuf, w.index485++);
                             break;
                         default:

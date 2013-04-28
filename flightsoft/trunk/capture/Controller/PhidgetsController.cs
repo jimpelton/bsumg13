@@ -31,6 +31,7 @@ public class PhidgetsController : ReceiverController
    
     protected override bool init()
     {
+       
         bool initSuccess = openTempSenser() && openDAQ();
         if (initSuccess)
         {
@@ -177,7 +178,7 @@ public class PhidgetsController : ReceiverController
     {
         base.exHeartBeatMessage(r, m);
         Buffer<Byte> buffer = BufferPool.PopEmpty();
-        String output = "Phidgets \n";
+        String output = "Phidgets \r\n";
         output += DateTime.Now.Ticks.ToString() + " ";
         output += outputData;
         UTF8Encoding encoding = new UTF8Encoding();
@@ -189,6 +190,7 @@ public class PhidgetsController : ReceiverController
     public override void exAccumulateMessage(Receiver r, Message m)
     {
         base.exAccumulateMessage(r, m);
+        outputData += "\r\n";
         //TODO: add checks for if one of these dies we don't throw.
         outputData += phidgetTemperature.thermocouples[0].Temperature+ " ";
         outputData += phidgetTemperature.ambientSensor.Temperature + " ";
@@ -199,6 +201,7 @@ public class PhidgetsController : ReceiverController
             outputData += phidgets1018.inputs[i] + " ";
             outputData += phidgets1018.outputs[i] + " ";
         }
+        
     }
 
 
