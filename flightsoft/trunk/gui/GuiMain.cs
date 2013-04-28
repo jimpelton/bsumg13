@@ -39,7 +39,6 @@ namespace gui
 
         public GuiMain(Form1 mainForm, string id, bool receiving = true)
             : base(id, receiving)
-            : base("GuiMain",true)
         {
             this.mainForm = mainForm;
         }
@@ -55,7 +54,7 @@ namespace gui
             guiUpdater = new GuiUpdater(mainForm, this, "GuiUpdater");
             captureClass = new CaptureClass("CaptureClass")
             {
-                DirectoryName = directoryName
+                StorageDir = directoryName
             };
             
             captureClass.init();
