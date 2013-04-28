@@ -5,11 +5,7 @@
 // ******************************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 using Enc = System.Text.Encoding;
 
@@ -35,11 +31,9 @@ namespace uGCapture
                 }
             }
         }
-
         private string m_directoryName;
 
         private object isRunningMutex = new object();
-
         public bool IsRunning
         {
             get
@@ -62,35 +56,7 @@ namespace uGCapture
         private bool m_isRunning = false;
 
 
-        //This is the last written data stored temp so that we can send it to anyone who sends a data request.
-        //private bool[] phidgetsDigitalInputs;
-        //private bool[] phidgetsDigitalOutputs;
-        //private int[] phidgetsAnalogInputs;
-        //private double phidgetTemperature_ProbeTemp;
-        //private double phidgetTemperature_AmbientTemp;
-        //private double[] accel1rawacceleration;
-        //private double[] accel1acceleration;
-        //private double[] accel1vibration;
-        //private double[] accel2rawacceleration;
-        //private double[] accel2acceleration;
-        //private double[] accel2vibration;
-        //private double[] NIanaloginputs;
-        //private double humidity = 0;
-        //private double temp1 = 0;
-        //private double temp2 = 0;
-        //private double temp3 = 0;
-        //private double pressure = 0;
-        //private double illumunation = 0;
-        //public int accel1state = 0;
-        //public int accel2state = 0;
-        //public int phidgets888state = 0;
-        //public int phidgetstempstate = 0;
-        //public int UPSstate = 0;
-        //public int VCommstate = 0;
-        //private Buffer<byte> image405 = null;
-        //private Buffer<byte> image485 = null;
-        //private long[] wellIntensities405;
-        //private long[] wellIntensities485;
+    
 
 
 
@@ -122,7 +88,6 @@ namespace uGCapture
      * Writes data to the disk.
      * returns false if an error occurs.
      */
-
         public static void WriteData(Writer w)
         {
             if (w.IsRunning)
@@ -151,7 +116,7 @@ namespace uGCapture
                             break;
                         case (BufferType.UTF8_PHIDGETS):
                             //w.WritePhidgetsOutput(fulbuf, ", Math.Min(w.index405, w.index485));
-                            w.WriteOutput(fulbuf, "", Math.Min(w.index405, w.index485),
+                            w.WriteOutput(fulbuf, "Phidgets_", Math.Min(w.index405, w.index485),
                                           ".txt");
                             break;
                         case (BufferType.UTF8_ACCEL):
@@ -183,7 +148,6 @@ namespace uGCapture
                             break;
                     }
                     w.BufferPool.PostEmpty(fulbuf);
-
                 }
                 catch (Exception e)
                 {
@@ -414,3 +378,33 @@ namespace uGCapture
 
     }
 }
+
+    //This is the last written data stored temp so that we can send it to anyone who sends a data request.
+        //private bool[] phidgetsDigitalInputs;
+        //private bool[] phidgetsDigitalOutputs;
+        //private int[] phidgetsAnalogInputs;
+        //private double phidgetTemperature_ProbeTemp;
+        //private double phidgetTemperature_AmbientTemp;
+        //private double[] accel1rawacceleration;
+        //private double[] accel1acceleration;
+        //private double[] accel1vibration;
+        //private double[] accel2rawacceleration;
+        //private double[] accel2acceleration;
+        //private double[] accel2vibration;
+        //private double[] NIanaloginputs;
+        //private double humidity = 0;
+        //private double temp1 = 0;
+        //private double temp2 = 0;
+        //private double temp3 = 0;
+        //private double pressure = 0;
+        //private double illumunation = 0;
+        //public int accel1state = 0;
+        //public int accel2state = 0;
+        //public int phidgets888state = 0;
+        //public int phidgetstempstate = 0;
+        //public int UPSstate = 0;
+        //public int VCommstate = 0;
+        //private Buffer<byte> image405 = null;
+        //private Buffer<byte> image485 = null;
+        //private long[] wellIntensities405;
+        //private long[] wellIntensities485;

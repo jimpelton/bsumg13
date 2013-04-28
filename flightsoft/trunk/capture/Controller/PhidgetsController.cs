@@ -5,6 +5,7 @@
 // ******************************************************************************
 
 using System;
+using System.Text;
 using System.Threading;
 using System.Timers;
 using Phidgets;
@@ -179,7 +180,7 @@ public class PhidgetsController : ReceiverController
         String output = "Phidgets \n";
         output += DateTime.Now.Ticks.ToString() + " ";
         output += outputData;
-        System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+        UTF8Encoding encoding = new UTF8Encoding();
         buffer.setData(encoding.GetBytes(output), BufferType.UTF8_PHIDGETS);
         BufferPool.PostFull(buffer);
         outputData = "";        
@@ -191,7 +192,7 @@ public class PhidgetsController : ReceiverController
         //TODO: add checks for if one of these dies we don't throw.
         outputData += phidgetTemperature.thermocouples[0].Temperature+ " ";
         outputData += phidgetTemperature.ambientSensor.Temperature + " ";
-
+        
         for (int i = 0; i < 8; i++)
         {
             outputData += phidgets1018.sensors[i].RawValue + " ";

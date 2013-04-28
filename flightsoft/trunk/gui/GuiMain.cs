@@ -15,11 +15,11 @@ namespace gui
         private static int MAX_DATA_POINTS = 100;
 
         private GuiUpdater guiUpdater;
-	    public gui.GuiUpdater GuiUpdater
-	    {
-		    get { return guiUpdater; }
-		    set { guiUpdater = value; }
-	    }
+	public gui.GuiUpdater GuiUpdater
+	{
+		get { return guiUpdater; }
+		set { guiUpdater = value; }
+	}
 
         private Form1 mainForm;
         public Form1 MainForm
@@ -28,11 +28,11 @@ namespace gui
         }
 
         private List<DataPoint> dataFrames;
-	    public List<DataPoint> DataFrames
-	    {
-		    get { return dataFrames; }
-		    set { dataFrames = value; }
-	    }
+	public List<DataPoint> DataFrames
+	{
+		get { return dataFrames; }
+		set { dataFrames = value; }
+	}
 
         public GuiMain(Form1 mainForm, string id, bool receiving = true)
             : base(id, receiving)
@@ -52,7 +52,7 @@ namespace gui
             guiUpdater = new GuiUpdater(mainForm, this, "GuiUpdater");
             captureClass = new CaptureClass("CaptureClass")
             {
-                StorageDir = directoryName
+                StorageDir = path
             };
             
             captureClass.init();
@@ -105,6 +105,13 @@ namespace gui
                 dataFrames.RemoveAt(0);
         }
 
+        /// <summary>
+        /// Broadcasts the ReceiverCleanupMessage() from the Guimain instance.
+        /// </summary>
+        public void Shutdown()
+        {
+            Dispatch.Instance().Broadcast(new ReceiverCleanupMessage(this));
+        }
        // public int getMaxDataPoints()
        // {
        //     return MAX_DATA_POINTS;

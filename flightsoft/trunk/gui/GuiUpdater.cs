@@ -83,7 +83,7 @@ namespace gui
                     mainform.chart2.Series["Gravity"].ChartArea = "ChartArea1";
                 }
             }
-            dp.Broadcast(new DataRequestMessage(this));
+            //dp.Broadcast(new DataRequestMessage(this));
         }
 
         public override void exLogMessage(Receiver r, Message m) 
