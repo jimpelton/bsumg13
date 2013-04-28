@@ -14,15 +14,12 @@ namespace gui
         private bool boolCapturing = false;
         private static int MAX_DATA_POINTS = 100;
 
-        //Temporary till we load an init file.
-        private string path = "C:\\Data\\";
-
         private GuiUpdater guiUpdater;
-	public gui.GuiUpdater GuiUpdater
-	{
-		get { return guiUpdater; }
-		set { guiUpdater = value; }
-	}
+	    public gui.GuiUpdater GuiUpdater
+	    {
+		    get { return guiUpdater; }
+		    set { guiUpdater = value; }
+	    }
 
         private Form1 mainForm;
         public Form1 MainForm
@@ -31,11 +28,11 @@ namespace gui
         }
 
         private List<DataPoint> dataFrames;
-	public List<DataPoint> DataFrames
-	{
-		get { return dataFrames; }
-		set { dataFrames = value; }
-	}
+	    public List<DataPoint> DataFrames
+	    {
+		    get { return dataFrames; }
+		    set { dataFrames = value; }
+	    }
 
         public GuiMain(Form1 mainForm, string id, bool receiving = true)
             : base(id, receiving)
@@ -46,9 +43,10 @@ namespace gui
 
        public void Startup_Init()
         {
+            ConfigData config = ConfigLoader.LoadConfig("..\\..\\Config.ini");
 
             String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
-            System.IO.Directory.CreateDirectory(path + directoryName);
+            System.IO.Directory.CreateDirectory(config.Path + directoryName);
 
             dataFrames = new List<DataPoint>();
             guiUpdater = new GuiUpdater(mainForm, this, "GuiUpdater");
