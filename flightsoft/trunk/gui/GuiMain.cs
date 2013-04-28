@@ -45,6 +45,11 @@ namespace gui
         {
             ConfigData config = ConfigLoader.LoadConfig("..\\..\\Config.ini");
 
+           string path = config.Path.Trim();
+           if (! path.EndsWith(@"\"))
+           {
+                path = path + @"\";
+           }
             String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
             System.IO.Directory.CreateDirectory(config.Path + directoryName);
 
@@ -52,7 +57,7 @@ namespace gui
             guiUpdater = new GuiUpdater(mainForm, this, "GuiUpdater");
             captureClass = new CaptureClass("CaptureClass")
             {
-                StorageDir = path
+                StorageDir = path + directoryName
             };
             
             captureClass.init();
