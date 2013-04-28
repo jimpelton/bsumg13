@@ -77,6 +77,7 @@
     <Compile Include="BiteCASPanel.Designer.cs">
       <DependentUpon>BiteCASPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConfigLoader.cs" />
     <Compile Include="DataPoint.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -115,6 +116,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="Config.ini" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
