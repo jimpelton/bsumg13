@@ -17,13 +17,14 @@ namespace uGCapture
         public string StorageDir
         {
             get { return _storageDir; }
-            set { 
+            set 
+            { 
                 _storageDir = value;
                 _storageDir = _storageDir.Trim();
-		if (! _storageDir.EndsWith(@"\"))
-		{
-		    _storageDir += @"\";
-		}
+                if (!_storageDir.EndsWith(@"\"))
+                {
+                    _storageDir += @"\";
+                }
             }
         }
 
