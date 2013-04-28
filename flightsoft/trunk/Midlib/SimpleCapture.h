@@ -16,11 +16,8 @@
 
 #define MAX_CAMS 2
 
-/*
- *	Captures images. 
- *	Pass captureFunction to a win32 thread for greatest happiness.
- *	
- *	Modified from the SimpleCapture example provided by Aptina.
+/**
+ *	\brief Modified from the SimpleCapture example provided by Aptina.
  */
 class __declspec(dllexport)  SimpleCapture
 {
@@ -42,7 +39,7 @@ public:
     /**
      * \brief Pass to worker thread for performing the capture.
      */
-    static DWORD WINAPI captureFunction(LPVOID args);
+    //static DWORD WINAPI captureFunction(LPVOID args);
 
   /************************************************************************/
   /* PUBLIC MEMBERS                                                       */
@@ -75,14 +72,21 @@ public:
      *	\brief Open the midlib2 transport for the given camera index.
      *	
      *	initMidLib2() must be called prior to calling openTransport(). The
-     *	value passed into camidx sets the index value for this camera.
+     *	parameter camidx sets is index for the camera that will have its
+     *  transport opened. camidx must be less than or equal to the number of 
+     *  cameras that were initialized by initMidLib2().
+     * 
+     *  
+     *  
 	 *  The return value is the MI_CAMERA_* error code.
      *	
      *	\param camidx The camera index to open transport for. Must be <= to the number
      *	of cameras that midlib2 found.
      *
-     *  \return -1 if initmidlib was never called, -2 if no cameras were found, 
-	 *           0 on success, > 0 on error.
+     *  \return -1 if initmidlib() was never called before the call to openTransport(), 
+     *          -2 if no cameras were found, 
+	 *           0 on success, 
+     *           otherwise an MI_CAMERA_* error code is returned.
      *  
      */
     int  openTransport(int camidx); 
@@ -92,8 +96,12 @@ public:
      */
     void stopTransport();
 
+    /**
+      *	\brief Returns the size of the image data buffers being used by MidLib2.
+      * These buffers contain the image data, and are large enough to contain the
+      * entire raw data from a single camera capture.
+      */
     unsigned long sensorBufferSize();
-
 
     unsigned char* _doCapture();
 
@@ -102,16 +110,17 @@ public:
   /************************************************************************/ 
 private:
 
-    int m_cameraIdx;
-    int m_nextFrameIdx;
-    int m_camNM;
-    
-    /** \brief Called from captureFunction to perform the capture. */
-
+    int m_cameraIdx;         //< this camera's index into gCameras.
+    int m_nextFrameIdx;      //< unused.
+    int m_camNM;             //< This camera's filter wavelength.
+    char *iniFilePath;
     int mallocate();
     void printCameraInfo();
 };
 
+/************************************************************************/
+/* Begin class ManagedSimpleCapture                                     */
+/************************************************************************/
 public ref class ManagedSimpleCapture {
     SimpleCapture *native_sc;
 
@@ -121,45 +130,49 @@ public:
     ~ManagedSimpleCapture() { delete native_sc; }
 
     /**
-     *	\brief CLR Wrapper function around openTransport
-	 * 
-     *	\param camidx The camera index to open transport for. Must be <= to the number
-     *	of cameras that midlib2 found.
-	 * 
-     *  \return 1 on error, 0 on success.
-     */
-	int managed_OpenTransport(int camidx)
+    *	\brief CLR Wrapper function around openTransport
+    * 
+    *	\param camidx The camera index to open transport for. Must be <= to the number
+    *	of cameras that midlib2 found.
+    * 
+    *  \return 1 on error, 0 on success.
+    */
+    int managed_OpenTransport(int camidx)
     {
         return native_sc->openTransport(camidx);
     }
 
-	  /**
-	  *	\brief Get the wave
-	  */
-	int managed_GetWavelength()
-	{
-		return native_sc->getWavelength();
-	}
+    /**
+    *	\brief Get the wave
+    */
+    int managed_GetWavelength()
+    {
+        return native_sc->getWavelength();
+    }
 
-	/**
-	 *	\brief CLR wrapper around sensorBufferSize().
-	 */
+    /**
+    *	\brief CLR wrapper around sensorBufferSize().
+    */
     unsigned long managed_SensorBufferSize()
     {
         return native_sc->sensorBufferSize();
     }
 
-	/**
-	  *	\brief CLR wrapper around stopTransport.
-	  */
+    void managed_setIniPath(char *pathName)
+    {
+	   	 	
+    }
+    /**
+    *	\brief CLR wrapper around stopTransport.
+    */
     void managed_StopTransport()
     {
         native_sc->stopTransport();
     }
 
-	/**
-	  *  \brief CLR wrapper around _doCapture.
-	  */
+    /**
+    *  \brief CLR wrapper around _doCapture.
+    */
     unsigned char* managed_DoCapture()
     {
         return native_sc->_doCapture();

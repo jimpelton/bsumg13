@@ -7,48 +7,48 @@
 using std::string;
 
 mi_camera_t *gCameras[MAX_CAMS]; 
-bool gDone = FALSE;						// Set to cause all workers to exit
-HANDLE gBarrierSemaphore;				// Synchronization object for all threads
-volatile unsigned int gWaitingCount;	// Number of waiters, start next loop when this reaches 4
+//bool gDone = FALSE;						// Set to cause all workers to exit
+//HANDLE gBarrierSemaphore;				// Synchronization object for all threads
+//volatile unsigned int gWaitingCount;	// Number of waiters, start next loop when this reaches 4
 
 int SimpleCapture::num_cameras=0;
 bool SimpleCapture::isMidLibInit=false;
 
 
-DWORD WINAPI 
-SimpleCapture::captureFunction(LPVOID param)
-{
-	DWORD rv;
-	SimpleCapture *me = (SimpleCapture*)param;
-	unsigned int currValue;
-
-	while (1) {
-		currValue = InterlockedIncrement(&gWaitingCount);		// Atomic increment
-		if (currValue == NUM_WORKER_THREADS) {
-			// I'm the last thread here so I don't need to sleep, just wake up others and go
-			gWaitingCount = 0;
-			// Releasing the semaphore NUM_WORKER_THREADS times unblocks that many threads
-			ReleaseSemaphore(gBarrierSemaphore, NUM_WORKER_THREADS - 1, 0);	// Minus 1 because this thread doesn't sleep
-		} else {
-			rv = WaitForSingleObject(gBarrierSemaphore, INFINITE);	// Other threads wait for main thread to start
-			if (rv != WAIT_OBJECT_0) {
-				printf("Wait failed (%d)\n", GetLastError());
-				return 1;
-			}
-		}
-
-		me->_doCapture();
-
-		// if gDone was set by the main thread, then exit
-		if (gDone) {
-			return 0;
-		}
-
-
-	} /* while(1) */
-
-	return 0;
-}
+//DWORD WINAPI 
+//SimpleCapture::captureFunction(LPVOID param)
+//{
+//	DWORD rv;
+//	SimpleCapture *me = (SimpleCapture*)param;
+//	unsigned int currValue;
+//
+//	while (1) {
+//		currValue = InterlockedIncrement(&gWaitingCount);		// Atomic increment
+//		if (currValue == NUM_WORKER_THREADS) {
+//			// I'm the last thread here so I don't need to sleep, just wake up others and go
+//			gWaitingCount = 0;
+//			// Releasing the semaphore NUM_WORKER_THREADS times unblocks that many threads
+//			ReleaseSemaphore(gBarrierSemaphore, NUM_WORKER_THREADS - 1, 0);	// Minus 1 because this thread doesn't sleep
+//		} else {
+//			rv = WaitForSingleObject(gBarrierSemaphore, INFINITE);	// Other threads wait for main thread to start
+//			if (rv != WAIT_OBJECT_0) {
+//				printf("Wait failed (%d)\n", GetLastError());
+//				return 1;
+//			}
+//		}
+//
+//		me->_doCapture();
+//
+//		// if gDone was set by the main thread, then exit
+//		if (gDone) {
+//			return 0;
+//		}
+//
+//
+//	} /* while(1) */
+//
+//	return 0;
+//}
 
 SimpleCapture::SimpleCapture()
     : m_cameraIdx(-1)
@@ -66,19 +66,19 @@ SimpleCapture::initMidLib2(int nCamsReq)
 {
     if (isMidLibInit) return 0;
 
-	//TODO: possible memory leak here?
-	gBarrierSemaphore = CreateSemaphore(NULL, 0, 1024, TEXT("Barrier Semaphore"));
-	gWaitingCount=0;
+	//TODO: this line leaks memory if initMidLib2 is called multiple times
+	//gBarrierSemaphore = CreateSemaphore(NULL, 0, 1024, TEXT("Barrier Semaphore"));
+	//gWaitingCount=0;
     
     if (nCamsReq <= 0) {
         printf("You requested %d cams!" \
-            "That is not a good amount of cams to request!\n", 
+            "That is not a good number of cams to request!\n", 
             nCamsReq);
         return 1;
     }
 
     mi_s32 errval = mi_OpenCameras(gCameras, 
-		&SimpleCapture::num_cameras, mi_SensorData());
+                    &SimpleCapture::num_cameras, mi_SensorData());
     
  /*   if (num_cameras < nCamsReq) {
         printf("Could not initialize %d camera(s). Found %d. \n",
@@ -108,7 +108,8 @@ SimpleCapture::openTransport(int camIdx)
 
     m_cameraIdx=camIdx;
     pCamera = 0==m_cameraIdx ? gCameras[0] : gCameras[1];
-	if (pCamera == NULL) { return -2; }
+    if (pCamera == NULL) { return -2; }
+
     if( (rval = pCamera->startTransport(pCamera)) != MI_CAMERA_SUCCESS ) {
         printf("Start Transport Unsuccessful.\n");
         mi_CloseCameras();
@@ -119,15 +120,11 @@ SimpleCapture::openTransport(int camIdx)
     mi_GetErrorLogFileName(errorFileName);
     printf("Log file: %s \n", errorFileName);
 
-    //std::stringstream iniFilePath;
-    //char lpCwdBuf[100];
-    //GetCurrentDirectory(100, lpCwdBuf);
-	//iniFilePath << lpCwdBuf << "\\MicrogravityImager.ini";
-	//std::string iniDir = iniFilePath.str();
-	std::string iniFilePath("C:\\MicrogravityImager.ini");
-	const char* presetName = "Demo Initialization Mono";
+    //@@@ iniFilePath, and presetName needs to be passed in from managed code.
+	const char* iniFilePath = "C:\\MicrogravityImager.ini";     //path to .ini file.
+	const char* presetName = "Demo Initialization Mono";       //settings preset loaded from ini file.
     
-	mi_s32 errnum = mi_LoadINIPreset(pCamera, iniFilePath.c_str(), presetName);
+	mi_s32 errnum = mi_LoadINIPreset(pCamera, iniFilePath, presetName);
     switch(errnum) {
     case MI_INI_KEY_NOT_SUPPORTED:
         printf("%d: MI_INI_KEY_NOT_SUPPORTED\n", MI_INI_KEY_NOT_SUPPORTED);
@@ -139,6 +136,7 @@ SimpleCapture::openTransport(int camIdx)
         printf("%d: MI_INI_POLLREG_TIMEOUT\n", MI_INI_POLLREG_TIMEOUT);
         return errnum;
     }
+
     //switch logging OFF for some reason...
     pCamera->setMode(pCamera, MI_ERROR_LOG_TYPE, MI_NO_ERROR_LOG);
 
@@ -147,6 +145,7 @@ SimpleCapture::openTransport(int camIdx)
         nHeight    = pCamera->sensor->height;
     }
 
+    
     pCamera->sensor->imageType = MI_PNG;
     pCamera->updateFrameSize(pCamera, nWidth, nHeight, PIXELBITS,0);
      
@@ -174,36 +173,23 @@ SimpleCapture::openTransport(int camIdx)
 unsigned char * 
 SimpleCapture::_doCapture()
 {
-    //char fname[30];
-    //sprintf(fname, "Camera%d_%d.raw", m_camNM, m_nextFrameIdx++);
-    //imfile = fopen(fname,"wb");
-    //TODO: error checking for open file!
-    // 
-    //grabFrame 
-    //printf("Grabbing frame: %s\n", fname);
+    //TODO: remove this loop because num_frames should always be 1.
     for (frame = 0; frame < num_frames; frame++) {
         int    nRet;
-        //mi_u8  tempByte;
-        //int    i;
-
-        /* Skip frames until a good frame is found.  */
         int count=0;
-        nRet = pCamera->grabFrame(pCamera, pGrabframeBuff, pCamera->sensor->bufferSize); //this throws a null pointer exception if a camera is not connected.
+        nRet = pCamera->grabFrame(pCamera, pGrabframeBuff, pCamera->sensor->bufferSize); 
         if (nRet != MI_CAMERA_SUCCESS) {
             return NULL;
         }
         memcpy(pCameraBuff, pGrabframeBuff, frameSize);
-        //fwrite(pCameraBuff, frameSize, 1, imfile);
     }
-    //printf("[done]\n");
-    //fclose(imfile); 
     return pCameraBuff;
 }
 
 void
 SimpleCapture::stopTransport()
 {
-    //stop the camera and clean up
+    //close the camera and clean up
     pCamera->stopTransport(pCamera);
     mi_CloseCameras();
     free(pGrabframeBuff);
@@ -222,11 +208,10 @@ SimpleCapture::mallocate()
 {
     //Allocate a buffer to store the images
     pCameraBuff  = (unsigned char *)malloc(frameSize);
-    if (pCameraBuff==NULL) {
+    if (pCameraBuff == NULL) {
         printf("Error trying to create a buffer of size %d to capture %d frames.\n", 
-               frameSize, num_frames);
+            frameSize, num_frames);
         mi_CloseCameras();
-
         return 1;
     }
     //Allocate a buffer to store the images
