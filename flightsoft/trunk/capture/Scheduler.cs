@@ -15,6 +15,8 @@ namespace uGCapture
 
         Timer baseClock;
         private DateTime lastBeat;
+        private DateTime lastAccum;
+
         public Scheduler(string id, bool receiving = true) 
             : base(id, receiving)
         {
@@ -29,15 +31,16 @@ namespace uGCapture
         {
             int dt = (DateTime.Now - lastBeat).Milliseconds;
             
-            if (dt >= 500)
+            if (dt >= 450)
             {
                 dp.Broadcast(new HeartBeatMessage(this));
+                lastBeat = DateTime.Now;
             }
             if (dt >= 10)
             {
                 dp.Broadcast(new AccumulateMessage(this));
+                lastAccum = DateTime.Now;
             }
-            lastBeat = DateTime.Now;
         }
     }
 }
