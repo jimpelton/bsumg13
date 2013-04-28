@@ -27,6 +27,14 @@ namespace gui
             //TODO: make an alternative thread-safe way to do this.
             //it likes it when the timer is in here...
             DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);
+
+            var childForm = new BiteCASPanel() { TopLevel = false, Visible = true };
+            
+            Tab_Control_Main.TabPages[2].Controls.Add(childForm);
+
+            childForm.SetBounds(0, 400, this.Width - 6, this.Height - 6);
+            
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
