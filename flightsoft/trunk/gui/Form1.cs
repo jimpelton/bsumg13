@@ -14,13 +14,14 @@ namespace gui
         private GuiMain guiMain=null;
         private GuiUpdater guiUpdater=null;
         private delegate void SetTextCallback(string s, Color col);
+        private ImageDisplay guiImageDisplay = null;
 
         public Form1()
         {
             InitializeComponent();
-            guiMain = new GuiMain(this);
+            guiMain = new GuiMain(this, "GuiMain");
             guiMain.Startup_Init();
-            guiUpdater = guiMain.guiUpdater;
+            guiUpdater = guiMain.GuiUpdater;
 
             Tab_Control_Main.SelectedIndex=4;
             //TODO: this updating should be handled externally to the form.
