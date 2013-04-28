@@ -16,8 +16,8 @@ namespace gui
         Form1 mainform = null;
         private GuiMain Guimain = null;
         private Series graph1data = null;
-        public GuiUpdater(Form1 f, GuiMain m)
-            : base("GuiUpdater", true)
+        public GuiUpdater(Form1 f,GuiMain m, string id, bool receiving=true) 
+            : base(id, receiving)
         {         
             mainform = f;
             graph1data = new Series("Points");
@@ -27,18 +27,18 @@ namespace gui
 
         public void UpdateGUI(object sender, EventArgs e)
         {
-            try
-            {
-                //ExecuteMessageQueue();              
-            }
-            catch (NullReferenceException nel)
-            {
-                Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at ExecuteMessageQueue();  "+nel.ToString());
+            //try
+            //{
+            //    ExecuteMessageQueue();              
+            //}
+            //catch (NullReferenceException nel)/// temp fix for monday's test. 5 minutes out.
+            //{
+            //    Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at ExecuteMessageQueue();  ");
  
-            }
+            //}
             mainform.chart1.Series.Clear();
             mainform.chart2.Series.Clear();
-            List<DataPoint> frames = Guimain.getDataPoints();
+            List<DataPoint> frames = Guimain.DataFrames;
             if (frames.Count > 0)
             {
 
@@ -109,8 +109,9 @@ namespace gui
             dat.NIanaloginputs = dm.NIanaloginputs;
             dat.UPSstate = dm.UPSstate;
             dat.VCommstate = dm.VCommstate;
+            //dat.WellIntensities = dm.WellIntensities;
             dat.WellIntensities405 = dm.WellIntensities405;
-            dat.WellIntensities485 = dm.WellIntensities485;
+            dat.WellIntensities485 = dm.WellIntensities405;
             dat.accel1acceleration = dm.accel1acceleration;
             dat.accel1rawacceleration = dm.accel1rawacceleration;
             dat.accel1state = dm.accel1state;

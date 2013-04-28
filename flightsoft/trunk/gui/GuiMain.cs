@@ -12,13 +12,17 @@ namespace gui
     {
         private CaptureClass captureClass;
         private bool boolCapturing = false;
-        public GuiUpdater guiUpdater;
-        public List<DataPoint> dataFrames = null;
         private static int MAX_DATA_POINTS = 100;
 
         //Temporary till we load an init file.
         private string path = "C:\\Data\\";
 
+        private GuiUpdater guiUpdater;
+	public gui.GuiUpdater GuiUpdater
+	{
+		get { return guiUpdater; }
+		set { guiUpdater = value; }
+	}
 
         private Form1 mainForm;
         public Form1 MainForm
@@ -26,11 +30,20 @@ namespace gui
             get { return mainForm; }
         }
 
-        public GuiMain(Form1 mainForm)
+        private List<DataPoint> dataFrames;
+	public List<DataPoint> DataFrames
+	{
+		get { return dataFrames; }
+		set { dataFrames = value; }
+	}
+
+        public GuiMain(Form1 mainForm, string id, bool receiving = true)
+            : base(id, receiving)
             : base("GuiMain",true)
         {
             this.mainForm = mainForm;
         }
+
 
        public void Startup_Init()
         {
@@ -39,10 +52,10 @@ namespace gui
             System.IO.Directory.CreateDirectory(path + directoryName);
 
             dataFrames = new List<DataPoint>();
-            guiUpdater = new GuiUpdater(mainForm, this);
+            guiUpdater = new GuiUpdater(mainForm, this, "GuiUpdater");
             captureClass = new CaptureClass("CaptureClass")
             {
-                param_directoryName = directoryName
+                DirectoryName = directoryName
             };
             
             captureClass.init();
@@ -93,11 +106,6 @@ namespace gui
             dataFrames.Add(p);
             if (dataFrames.Count > MAX_DATA_POINTS)
                 dataFrames.RemoveAt(0);
-        }
-
-        public List<DataPoint> getDataPoints()
-        {
-            return dataFrames;
         }
 
        // public int getMaxDataPoints()
