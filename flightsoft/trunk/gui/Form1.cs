@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using uGCapture;
 
 namespace gui
 {
@@ -110,6 +111,11 @@ namespace gui
         private void button1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            guiMain.Shutdown();
         }
 
     }

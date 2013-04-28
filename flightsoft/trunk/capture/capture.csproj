@@ -83,6 +83,7 @@
     <Compile Include="Message\AccumulateMessage.cs" />
     <Compile Include="Message\DataRequestMessage.cs" />
     <Compile Include="Message\HeartBeatMessage.cs" />
+    <Compile Include="Message\ReceiverCleanupMessage.cs" />
     <Compile Include="Message\SetCaptureStateMessage.cs" />
     <Compile Include="Message\DataMessage.cs" />
     <Compile Include="ReceiverController.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Receiver.cs" />
     <Compile Include="Controller\UPSController.cs" />
     <Compile Include="Controller\VCommController.cs" />
+    <Compile Include="Scheduler.cs" />
     <Compile Include="Strings.cs" />
     <Compile Include="Test\MockController.cs" />
     <Compile Include="Writer.cs" />
@@ -110,6 +112,10 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace uGCapture
 {
-    class HeartBeatMessage : Message
+    public class ReceiverCleanupMessage : Message
     {
-        public HeartBeatMessage(Receiver sender)
-            : base(sender) { ; }
+        public ReceiverCleanupMessage(Receiver sender) : base(sender)
+        {
+        }
 
         public override void execute(Receiver r)
         {
-            r.exHeartBeatMessage(r, this);
+            r.exReceiverCleanUpMessage(r, this);
         }
     }
 }

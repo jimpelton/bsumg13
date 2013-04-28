@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.TabPage_Debug = new System.Windows.Forms.TabPage();
             this.Btn_ShowImages = new System.Windows.Forms.Button();
             this.rTB_Debug_Output = new System.Windows.Forms.RichTextBox();
@@ -46,11 +46,11 @@
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.btn_Go = new System.Windows.Forms.Button();
             this.Tab_Control_Main = new System.Windows.Forms.TabControl();
-            this.DebugUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.TabPage_BITE = new System.Windows.Forms.TabPage();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.b_Execute_BITE_Test = new System.Windows.Forms.Button();
+            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.DebugUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.TabPage_Debug.SuspendLayout();
             this.TabPage_Capture.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
@@ -125,42 +125,42 @@
             // 
             // chart2
             // 
-            chartArea3.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.chart2.Legends.Add(legend3);
+            chartArea1.Name = "ChartArea1";
+            this.chart2.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chart2.Legends.Add(legend1);
             this.chart2.Location = new System.Drawing.Point(1016, 0);
             this.chart2.Name = "chart2";
-            series4.ChartArea = "ChartArea1";
-            series4.Legend = "Legend1";
-            series4.Name = "Series1";
-            this.chart2.Series.Add(series4);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chart2.Series.Add(series1);
             this.chart2.Size = new System.Drawing.Size(132, 682);
             this.chart2.TabIndex = 2;
             this.chart2.Text = "chart2";
             // 
             // chart1
             // 
-            chartArea4.Area3DStyle.Enable3D = true;
-            chartArea4.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
-            chartArea4.BackColor = System.Drawing.Color.Gray;
-            chartArea4.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.Center;
-            chartArea4.BackSecondaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea4.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            this.chart1.Legends.Add(legend4);
+            chartArea2.Area3DStyle.Enable3D = true;
+            chartArea2.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
+            chartArea2.BackColor = System.Drawing.Color.Gray;
+            chartArea2.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.Center;
+            chartArea2.BackSecondaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            chartArea2.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.chart1.Legends.Add(legend2);
             this.chart1.Location = new System.Drawing.Point(6, 192);
             this.chart1.Name = "chart1";
-            series5.ChartArea = "ChartArea1";
-            series5.Legend = "Legend1";
-            series5.Name = "Series1";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bar;
-            series6.Legend = "Legend1";
-            series6.Name = "BarChart";
-            this.chart1.Series.Add(series5);
-            this.chart1.Series.Add(series6);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bar;
+            series3.Legend = "Legend1";
+            series3.Name = "BarChart";
+            this.chart1.Series.Add(series2);
+            this.chart1.Series.Add(series3);
             this.chart1.Size = new System.Drawing.Size(1004, 500);
             this.chart1.TabIndex = 1;
             this.chart1.Text = "chart1";
@@ -190,11 +190,6 @@
             this.Tab_Control_Main.Size = new System.Drawing.Size(1162, 721);
             this.Tab_Control_Main.TabIndex = 0;
             // 
-            // DebugUpdateTimer
-            // 
-            this.DebugUpdateTimer.Enabled = true;
-            this.DebugUpdateTimer.Interval = 501;
-            // 
             // TabPage_BITE
             // 
             this.TabPage_BITE.BackColor = System.Drawing.Color.DimGray;
@@ -208,15 +203,14 @@
             this.TabPage_BITE.TabIndex = 2;
             this.TabPage_BITE.Text = "BITE";
             // 
-            // richTextBox1
+            // b_Execute_BITE_Test
             // 
-            this.richTextBox1.BackColor = System.Drawing.Color.Black;
-            this.richTextBox1.ForeColor = System.Drawing.Color.White;
-            this.richTextBox1.Location = new System.Drawing.Point(6, 6);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(564, 264);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
+            this.b_Execute_BITE_Test.Location = new System.Drawing.Point(449, 276);
+            this.b_Execute_BITE_Test.Name = "b_Execute_BITE_Test";
+            this.b_Execute_BITE_Test.Size = new System.Drawing.Size(256, 80);
+            this.b_Execute_BITE_Test.TabIndex = 2;
+            this.b_Execute_BITE_Test.Text = "Execute BITE Test";
+            this.b_Execute_BITE_Test.UseVisualStyleBackColor = true;
             // 
             // richTextBox2
             // 
@@ -228,14 +222,20 @@
             this.richTextBox2.TabIndex = 1;
             this.richTextBox2.Text = "Built In Test Equipment (BITE) Starting Up...";
             // 
-            // b_Execute_BITE_Test
+            // richTextBox1
             // 
-            this.b_Execute_BITE_Test.Location = new System.Drawing.Point(449, 276);
-            this.b_Execute_BITE_Test.Name = "b_Execute_BITE_Test";
-            this.b_Execute_BITE_Test.Size = new System.Drawing.Size(256, 80);
-            this.b_Execute_BITE_Test.TabIndex = 2;
-            this.b_Execute_BITE_Test.Text = "Execute BITE Test";
-            this.b_Execute_BITE_Test.UseVisualStyleBackColor = true;
+            this.richTextBox1.BackColor = System.Drawing.Color.Black;
+            this.richTextBox1.ForeColor = System.Drawing.Color.White;
+            this.richTextBox1.Location = new System.Drawing.Point(6, 6);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(564, 264);
+            this.richTextBox1.TabIndex = 0;
+            this.richTextBox1.Text = "";
+            // 
+            // DebugUpdateTimer
+            // 
+            this.DebugUpdateTimer.Enabled = true;
+            this.DebugUpdateTimer.Interval = 501;
             // 
             // Form1
             // 
@@ -246,6 +246,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Boise State Microgravity Experiment Control";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.TabPage_Debug.ResumeLayout(false);
             this.TabPage_Capture.ResumeLayout(false);

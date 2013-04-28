@@ -150,7 +150,6 @@ namespace uGCapture
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
-            base.exHeartBeatMessage(r, m);
             if (accel.Attached)
             {
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
@@ -158,9 +157,9 @@ namespace uGCapture
 
                 output += DateTime.Now.Ticks.ToString() + " ";
                 output += outputData;
-                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_SPATIAL);
-                buffer.Text = String.Format(accel.SerialNumber.ToString());
+                buffer.Text = accel.SerialNumber.ToString(); //String.Format(accel.SerialNumber.ToString());
                 BufferPool.PostFull(buffer);
                 outputData = "";
             }
@@ -168,7 +167,6 @@ namespace uGCapture
 
         public override void exAccumulateMessage(Receiver r, Message m)
         {
-            base.exAccumulateMessage(r, m);
             for (int i = 0; i < 3; i++)
                 outputData += accel.accelerometerAxes[i].Acceleration + " ";
         }

@@ -93,12 +93,12 @@ namespace uGCapture
         public virtual void exSetCaptureStateMessage(Receiver r, Message m) { ; }
 
         /// <summary>
-        /// Act upon given AptinaStatusMessage
+        /// Act on an AccumulateMessage.
         /// </summary>
         public virtual void exAccumulateMessage(Receiver r, Message m) { ; }
 
         /// <summary>
-        /// Generate a SetCaptureStateMessage
+        /// Act on a HeartBeatMessage.
         /// </summary>
         public virtual void exHeartBeatMessage(Receiver r, Message m) { ; }
 
@@ -107,9 +107,26 @@ namespace uGCapture
         /// </summary>
         public virtual void exLogMessage(Receiver r, Message m) { ; }
 
+        /// <summary>
+        /// Act on a ReceiverCleanUpMessage().
+        /// 
+        /// The parent method Receiver.exReceiverCleanUpMessage needs to be called or
+        /// none of the threads will get IsReceiving=false, or you need to set IsReceiving=false
+        /// everywhere exReceiverCleanUpMessage is reimplemented.
+        /// 
+        /// On the next heartbeat sleeping threads will cycle and break out of there worker loop.
+        /// </summary>
+        public virtual void exReceiverCleanUpMessage(Receiver r, Message m)
+        {
+            IsReceiving = false;
+        }
+
+        public virtual void exTest(Receiver r, Message m) { ; }
+
         public override string ToString()
         {
             return Id;
         }
+
     }
 }

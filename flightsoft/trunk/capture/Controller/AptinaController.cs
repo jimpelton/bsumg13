@@ -18,6 +18,7 @@ public class AptinaController : ReceiverController
     private int tnum;
     //destination buffer for data from ManagedSimpleCapture
     private byte[] dest;
+
     //true if another thread is using this class
     private bool running=false;
 
@@ -30,6 +31,8 @@ public class AptinaController : ReceiverController
     private ManagedSimpleCapture msc;
     private static int numcams = 2;
 
+
+    //TODO: move up to ReceiverController?
     public int Errno
     {
         get { return m_errno ; }
@@ -42,6 +45,25 @@ public class AptinaController : ReceiverController
         get { return m_iniFilePath;  }
         set { m_iniFilePath = value; }
     }
+
+    public bool IsRunning
+    {
+        get
+        {
+            lock (runningMutex)
+            {
+                return running;
+            }
+        }
+        set
+        {
+            lock (runningMutex)
+            {
+                running = value;
+            }
+        }
+    }
+
     private string m_iniFilePath;
 
     public AptinaController(BufferPool<byte> bp, string id, bool receiving = true,
@@ -71,8 +93,6 @@ public class AptinaController : ReceiverController
         else
         {
             rval = false;
-            //throw new AptinaControllerNotInitializedException(
-            //    "AptinaController failed init: InitMidLib failed.");
         }
 
         if (r == 0)
@@ -82,8 +102,6 @@ public class AptinaController : ReceiverController
         else
         {
             rval = false;
-            //throw new AptinaControllerNotInitializedException(
-            //    "AptinaController failed init: OpenTransport failed for controller: "+tnum);
         }
 
         if (size != 0)
@@ -93,8 +111,6 @@ public class AptinaController : ReceiverController
         else
         {
             rval = false;
-            //throw new AptinaControllerNotInitializedException(
-            //    "AptinaController failed init: SensorBufferSize() returned 0 size for controller: "+tnum);
         }
 
         
@@ -109,21 +125,21 @@ public class AptinaController : ReceiverController
     public void stop()
     {
         runningMutex.WaitOne();
-        running = false;
+        IsRunning = false;
         runningMutex.ReleaseMutex();
     }
 
     public static void go(AptinaController me)
     {
         int curval;
-        me.runningMutex.WaitOne();
-        if (me.running || !me.IsInit)
+        //me.runningMutex.WaitOne();
+        if (me.IsRunning || !me.IsInit)
         {
-            me.runningMutex.ReleaseMutex();
+            //me.runningMutex.ReleaseMutex();
             return;
         }
-        me.running = true;
-        me.runningMutex.ReleaseMutex();
+        me.IsRunning = true;
+        //me.runningMutex.ReleaseMutex();
 
         while (true)
         {
@@ -140,7 +156,7 @@ public class AptinaController : ReceiverController
             Console.WriteLine("Aptina Controller Capture {0} begin. Time: {1:g}", me.tnum, DateTime.Now.TimeOfDay);
 
             me.runningMutex.WaitOne();
-            if (!me.running)
+            if (!me.IsRunning)
             {
                 
                 me.runningMutex.ReleaseMutex();

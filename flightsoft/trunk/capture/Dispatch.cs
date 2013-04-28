@@ -38,19 +38,19 @@ namespace uGCapture
         }
         private BlockingCollection<Message> m_mesWait;
 
+        public Thread T { get; set; }
+
         public ReceiverIdPair(Receiver rec)
         {
             m_rec = rec;
             m_mesWait = new BlockingCollection<Message>();
         }
 
-        public Thread T { get; set; }
-
         public void Enqueue(Message m)
         {
             m_mesWait.Add(m);
-            Console.WriteLine("Enqueued message: type [{0}], Sender [{1}] Receiver [{2}].", 
-                m.GetType(), m.Sender.Id, Id);
+            //Console.WriteLine("Enqueued message: type [{0}], Sender [{1}] Receiver [{2}].", 
+            //    m.GetType(), m.Sender.Id, Id);
         }
 
         /// <summary>
@@ -62,13 +62,11 @@ namespace uGCapture
             Message rval;
             rval = m_mesWait.Take(); 
 
-            Console.WriteLine("Dequeued message: type [{0}], Sender [{1}] Receiver [{2}].", 
-                rval.GetType(), rval.Sender.Id, Id);
+            //Console.WriteLine("Dequeued message: type [{0}], Sender [{1}] Receiver [{2}].", 
+            //    rval.GetType(), rval.Sender.Id, Id);
 
             return rval;
         }
-
-
     }
 
     /// <summary>
@@ -82,10 +80,11 @@ namespace uGCapture
     {
         private ConcurrentDictionary<string, ReceiverIdPair> m_receiversMap;
         private static Dispatch me;
+        private static Scheduler m_sch;
 
-	/// <summary>
-	/// Millis to wait until thread joins timeout.
-	/// </summary>
+        /// <summary>
+        /// Millis to wait until thread joins timeout.
+        /// </summary>
         public int ThreadJoinTimeoutIntervalMillis
         {
             set { m_joinTimeOutInterval = value; }
@@ -103,6 +102,7 @@ namespace uGCapture
             if (me == null)
             {
                 me = new Dispatch();
+                m_sch = new Scheduler("Scheduler", false);
                 Console.WriteLine("Dispatch Created.");
             }
             return me;
@@ -118,14 +118,6 @@ namespace uGCapture
             p.T = new Thread(() => ExecuteMessageQueue(r));
             p.T.Start();
 
-            //try
-            //{
-            //    Parallel.Invoke(() => Receiver.ExecuteMessageQueue(r));
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.StackTrace);
-            //}
             Console.WriteLine("Dispatch: Registered Id: [{0}]", r.Id);
         }
 
@@ -159,6 +151,7 @@ namespace uGCapture
             }
         }
 
+        //TODO: CleanUpThreads() is never called.
         public void CleanUpThreads()
         {
             ICollection<ReceiverIdPair> rips = m_receiversMap.Values;
@@ -258,10 +251,12 @@ namespace uGCapture
             {
                 if (!r.IsReceiving)
                 {
-                    break;
+                    return;
                 }
-                Instance().Next(r.Id).execute(r);
-                Console.WriteLine("Receiver: {0} Executed {1}", r.Id, r.GetType());
+                Message m = Instance().Next(r.Id);
+                m.execute(r);
+                //Instance().Next(r.Id).execute(r);
+                //Console.WriteLine("Receiver: {0} Executed {1}", r.Id, m.GetType());
             }
         }
 

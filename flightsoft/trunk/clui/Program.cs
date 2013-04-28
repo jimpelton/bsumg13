@@ -10,6 +10,8 @@ namespace clui
     {
         static void Main(string[] args)
         {
+            CLUI clui = new CLUI("clui");
+            clui.init();
         }
     }
 }

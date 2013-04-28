@@ -17,8 +17,16 @@ namespace uGCapture
         public string StorageDir
         {
             get { return _storageDir; }
-            set { _storageDir = value; }
+            set { 
+                _storageDir = value;
+                _storageDir = _storageDir.Trim();
+		if (! _storageDir.EndsWith(@"\"))
+		{
+		    _storageDir += @"\";
+		}
+            }
         }
+
         private bool boolCapturing = false;
         
         private BufferPool<byte> bufferPool;
@@ -39,22 +47,14 @@ namespace uGCapture
 
         public CaptureClass(string id) : base(id)
         {
-            //TODO: move datetime and directory creation into GUI.
-            _storageDir = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
-            System.IO.Directory.CreateDirectory("C:\\Data\\"+_storageDir);
         }
 
         public void init()
         {
-            //m_timer = new Timer(FRAME_TIME);
-            //m_timer.Elapsed += DoFrame;
 
             bufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
 
-            writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { DirectoryName = _storageDir };
-            writer.Initialize();
-            wrtThread = new Thread(() => Writer.WriteData(writer));
-
+            initWriter();
             initAptina();
             initPhidgets();
             initAccelController();
@@ -68,7 +68,25 @@ namespace uGCapture
 
         public void DoFrame(object source, ElapsedEventArgs e) { }
 
+	private void initWriter()
+	{
+        writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { DirectoryName = _storageDir };
+	    if (writer.Initialize())
+	    {
+	        wrtThread = new Thread(() => Writer.WriteData(writer));
+	        //	    writer.IsRunning = true;
+	        wrtThread.Start();
+	        dp.Register(writer);
+	    }
+	    else
+	    {
+	        string s = Str.GetErrStr(ErrStr.INIT_FAIL_WRITER);
+	        dp.BroadcastLog(this, s , 100);
+            Console.WriteLine(s);
+	    }
+	}
 	
+	//Aptina cameras.
         private void initAptina()
         {
             ac1 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE));
@@ -76,6 +94,7 @@ namespace uGCapture
             {
                 acThread1 = new Thread(() => AptinaController.go(ac1));
                 dp.Register(ac1);
+                acThread1.Start();
             }
             else
             {
@@ -88,22 +107,27 @@ namespace uGCapture
             {
                 acThread2 = new Thread(() => AptinaController.go(ac2));
                 dp.Register(ac2);
+                acThread2.Start();
             }
             else
             {
                 dp.BroadcastLog(this,
-			Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 2.", 100);
+                     Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 2.", 100);
             }
+
         }
 
+	// 1018 DAQ and Temperature
         private void initPhidgets()
         {
             phidgetsController = new PhidgetsController(bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_1018));
             if (phidgetsController.Initialize())
             {
+                dp.Register(phidgetsController);
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_1018);
                 dp.BroadcastLog(this,s,100);
                 Console.Error.WriteLine(s);
+
             }
             else
             {
@@ -111,10 +135,9 @@ namespace uGCapture
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
-
         }
 
-
+	// Phidgits Accellerometer.
         private void initAccelController()
         {
             accelControler = new AccelerometerPhidgetsController(bufferPool, 
@@ -133,6 +156,7 @@ namespace uGCapture
             }
         }
 
+	// Phidgits Spatial Accellerometer.
         private void initSpatialController()
         {
             spatialController = new SpatialAccelController(bufferPool, 
@@ -141,6 +165,7 @@ namespace uGCapture
             if (spatialController.Initialize())
             {
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_SPTL);
+                dp.Register(spatialController);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -152,6 +177,7 @@ namespace uGCapture
             }
         }
 
+	// Sparkfun weatherboard through virtual com port.
         private void initWeatherBoard()
         {
             weatherboard = new VCommController(bufferPool, 
@@ -160,6 +186,7 @@ namespace uGCapture
             if (weatherboard.Initialize())
             {
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_VCOMM);
+                dp.Register(weatherboard);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -171,6 +198,7 @@ namespace uGCapture
             }
         }
 
+	// NI-6008 DAQ.
         private void initNI6008Controller()
         {
             ni6008 = new NIController(bufferPool, 

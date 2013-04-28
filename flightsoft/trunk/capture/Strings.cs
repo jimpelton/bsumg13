@@ -13,7 +13,8 @@ namespace uGCapture
         INIT_FAIL_PHID_ACCEL,
         INIT_FAIL_NI_6008,
         INIT_FAIL_APTINA,
-        INIT_FAIL_VCOMM
+        INIT_FAIL_VCOMM,
+        INIT_FAIL_WRITER
     }
 
     enum MsgStr
@@ -57,6 +58,8 @@ namespace uGCapture
                     return "Aptina camera failed to initialize.";
                 case ErrStr.INIT_FAIL_VCOMM:
                     return "Weatherboard failed to initialize.";
+                case ErrStr.INIT_FAIL_WRITER:
+                    return "Writer failed to initialize.";
                 default:
                     return "Unknown Error.";
             }
