@@ -188,7 +188,7 @@ namespace uGCapture
             analogDataIn_X_A = reader_X_A.ReadSingleSample();
             analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
             analogDataIn_Z_A = reader_Z_A.ReadSingleSample();
-            analogDataIn_X_T = reader_X_T.ReadSingleSample();
+            analogDataIn_X_T = reader_X_T.ReadSingleSample(); //Daqexception was unhandled( upon pulling the cable)
             analogDataIn_Y_T = reader_Y_T.ReadSingleSample();
             analogDataIn_Z_T = reader_Z_T.ReadSingleSample();
             outputData += analogDataIn_X_A + " ";
