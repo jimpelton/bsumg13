@@ -208,6 +208,7 @@ namespace uGCapture
             if (ni6008.Initialize())
             {
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_NI_6008);
+                dp.Register(ni6008);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
