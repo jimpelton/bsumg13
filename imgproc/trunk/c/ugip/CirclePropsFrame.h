@@ -19,6 +19,8 @@ public:
 
 	~CirclePropsFrame(void){}
 
+
+
 public slots:
 	void on_horizontalSlider_valueChanged( int v )
 	{

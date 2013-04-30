@@ -69,7 +69,13 @@ public slots:
     /// display image idx in the list of image files.
     void displayImage(int idx);
 
+    /// draw debug circles from imgproc
+    void drawDebugCircles(bool tog);
+
 private:
+
+   void displayImageBytes(unsigned char *raw16bit, size_t szAlloc);
+   void displayImageFromImage(QImage img);
 
 /************************************************************************/
 /* GUI COMPONENTS REFS                                                  */
@@ -77,7 +83,7 @@ private:
     QSelectableCircleScene *m_scene;
     SaveShowFrame *m_saveShowFrame;
     InputFrame *m_inputFrame;
-	CirclePropsFrame *m_circlePropsFrame;
+    CirclePropsFrame *m_circlePropsFrame;
 
 /************************************************************************/
 /* STUFFS and THINGS                                                    */
@@ -91,6 +97,7 @@ private:
     CirclesFile m_circlesFile;
 
     QImage m_currentImage;
+    QImage m_lastImage;
 };
 
 #endif // UIGP2_H

@@ -7,6 +7,9 @@
 
 #include "CirclesFile.h"
 
+#include <Imgproc.h>
+#include <Centers.h>
+
 #include <QtCore/QDebug>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QSizePolicy>
@@ -55,7 +58,9 @@ uigp2::uigp2(QWidget *parent)
 
     connect(m_saveShowFrame, SIGNAL(saveCircles(QString)),
         this, SLOT(saveCirclesFile(QString)));
-    
+
+    connect(m_saveShowFrame, SIGNAL(showDebugCircles(bool)),
+        this, SLOT(drawDebugCircles(bool)));
 }
 
 uigp2::~uigp2() { }
@@ -82,7 +87,7 @@ void uigp2::addSelectedCircle( QSelectableEllipse* eee )
 
 void uigp2::removedExistingCircle(QGraphicsItem *eee)
 {
-	qDebug() << "Removed item: " << eee->x() << " " << eee->y();	
+    //	qDebug() << "Removed item: " << eee->x() << " " << eee->y();
 }
 
 void uigp2::changeCircleRadius(int r)
@@ -107,17 +112,14 @@ void uigp2::setCirclesFileName( QString fname )
 {
     m_circlesFileName = fname;
     qDebug() << "setCirclesFileName: " << fname;
-    //int errnum = parseCirclesFile(fname.toStdString());
-    //if (errnum < 0){
-    //    qDebug() << "parseCirclesFile() returned -1.";
-    //}
+    openCirclesFile();
 }
 
 void uigp2::addScannedFile( QString fname, float percentDone )
 {
     m_fileNameList.push_back(fname);
     progressBar->setValue(percentDone*100.0f);
-    qDebug() << fname << ' ' << percentDone;
+//    qDebug() << fname << ' ' << percentDone;
 }
 
 void uigp2::startProcessing()
@@ -139,7 +141,6 @@ void uigp2::startProcessing()
 void uigp2::saveCirclesFile(QString fname)
 {
     if (fname.isEmpty()) {
-        //TODO: write with default filename.
         qDebug() << "No circles file name given to save to.";
         return;
     }
@@ -178,7 +179,9 @@ void uigp2::saveCirclesFile(QString fname)
     
     int rval = m_circlesFile.writeCirclesFile(v.toStdVector(), img );
 
-    qDebug() << "Wrote " << rval << " circles";
+    qDebug() << "Wrote " << rval << " circles" ;
+
+    //TODO: open newly saved circles dialog and display circles.
 }
 
 void uigp2::openCirclesFile()
@@ -189,25 +192,55 @@ void uigp2::openCirclesFile()
     } 
 
     m_circlesFile = CirclesFile(m_circlesFileName.toStdString());
+    int numCirc = m_circlesFile.open();
+    if (!m_circlesFile.isOpen()){
+        qDebug() << "openCirclesFile: CirclesFile reported it could not open the given circles file.";
 
-    if (m_circlesList.size() < m_circlesFile.open()) {
-        m_circlesList.resize(m_circlesFile.getNumCircles());
+        return;
     }
 
-    for (int i = 0; i < m_circlesFile.getNumCircles(); ++i) {
+    m_scene->clear();
+    m_scene->update();
+
+    if (m_circlesList.size() < numCirc) {
+        m_circlesList.resize(numCirc);
+    }
+
+    for (int i = 0; i < numCirc; ++i) {
         m_circlesList.replace(i, m_circlesFile.getCenter(i));
     }
 
-    //TODO: draw circles?
+    int rad = m_circlesFile.getRadius();
+    for (int i = 0; i < m_circlesList.size(); ++i)
+    {
+        CirclesFile::CenterInfo info = m_circlesList[i];
+
+        QSelectableEllipse *circle =
+                new QSelectableEllipse(0, 0, 2*rad, 2*rad);
+
+        circle->setPen(QPen(Qt::green));
+        circle->setZValue(100);
+        circle->setVisible(true);
+        m_scene->addItem(circle);
+
+        circle->setPos(info.x - rad, info.y - rad);
+    }
+
+    m_scene->update();
+
+    m_scene->rGetRadius() = rad;
+    m_circlePropsFrame->horizontalSlider->setValue(rad);
+    m_circlePropsFrame->spinBox->setValue(rad);
+    m_saveShowFrame->showGreenCirclesCheckbox->setChecked(true);
 }
 
 void uigp2::displayImage( int idx )
 {
-	if (m_fileNameList.isEmpty())
-	{
-		qDebug() << "Filename list is empty, can't display image.";
-		return;
-	}
+    if (m_fileNameList.isEmpty())
+    {
+        qDebug() << "Filename list is empty, can't display image.";
+        return;
+    }
     if (idx >= m_fileNameList.size() || idx < 0) {
         qDebug() << "Invalid index given to display image: " << idx;
         return;
@@ -225,32 +258,91 @@ void uigp2::displayImage( int idx )
 
     //read image into byte array
     QByteArray byteAray= img.readAll();
+    img.close();
+
     size_t szAlloc = byteAray.length();
     if (szAlloc <= 0)   { 
         //fileNotRead(fileName); 
-        img.close(); 
         return; 
     }
-    
-    //convert 16bit data to 8bit 
-    unsigned char *data8bit = new unsigned char[szAlloc/2];
-    unsigned short *dsauce = (unsigned short*) byteAray.data();
-    for (int i = 0; i<szAlloc/2; ++i) {
-        data8bit[i] = (unsigned char) (dsauce[i]>>8);
-    }
-    
-    //give graphics view a pixmap to display as background.
-    m_currentImage = QImage(data8bit, 2592, 1944, QImage::Format_Indexed8);
-    m_scene->setSceneRect(m_currentImage.rect());
-    graphicsView->setBackgroundBrush(QPixmap::fromImage(m_currentImage));
 
-    delete [] data8bit;
+    unsigned char *grey_16 = (unsigned char *)byteAray.data();
+    displayImageBytes(grey_16, szAlloc);
+
 }
 
 void uigp2::doneScan()
 {
     qDebug() << "Done scan.";
+
     displayImage(0);
 }
 
+void uigp2::drawDebugCircles(bool tog)
+{
+    if (!m_circlesFile.isOpen()){
+        openCirclesFile();
+        if (!m_circlesFile.isOpen()){
+            qDebug() << "Can't draw debug circles because the circles " \
+                        "file reported that it wasn't open.";
+            return;
+        }
+    }
 
+    //TODO: toggle debug circles off.
+
+    uG::Imgproc img;
+    int ncirc = m_circlesFile.getNumCircles();
+    uG::uGProcVars *vars = img.newProcVars(ncirc);
+    vars->imgh = 1944;
+    vars->imgw = 2592;
+    vars->radius = m_circlesFile.getRadius();
+    vars->numWells = ncirc;
+    vars->procType = uG::DEBUG_CIRCLES;
+    for (int i = 0; i < vars->numWells; ++i) {
+        CirclesFile::CenterInfo ci = m_circlesFile.getCenter(i);
+        uG::uGCenter ugc = {ci.x, ci.y, ci.r};
+        vars->centers[i] = ugc;
+    }
+
+    unsigned char *buf=NULL;
+    string f = m_fileNameList[0].toStdString();
+    size_t szAlloc = img.getBlackCirclesImage(f, *vars, &buf);
+
+    QFile imgout("rawfile.raw");
+    imgout.open(QIODevice::WriteOnly);
+    imgout.write((char*)buf, szAlloc);
+    imgout.close();
+
+
+    displayImageBytes(buf, szAlloc);
+
+
+    qDebug() << "Draw debug circles.";
+}
+
+
+void uigp2::displayImageBytes(unsigned char *raw16bit, size_t szAlloc)
+{
+     //convert 16bit data to 8bit
+    unsigned char *data8bit = new unsigned char[szAlloc/2];
+    unsigned short *dsauce = (unsigned short*) raw16bit;
+    for (int i = 0; i<szAlloc/2; ++i) {
+        data8bit[i] = (unsigned char) (dsauce[i]>>8);
+    }
+
+    QImage img(data8bit,2592,1944, QImage::Format_Indexed8);
+    displayImageFromImage(img);
+
+    delete [] data8bit;
+}
+
+void uigp2::displayImageFromImage(QImage img)
+{
+    m_lastImage = m_currentImage;
+    m_currentImage = img;
+    graphicsView->setBackgroundBrush(QPixmap::fromImage(img));
+    graphicsView->update();
+    m_scene->update(m_scene->sceneRect());
+
+}

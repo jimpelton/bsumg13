@@ -7,8 +7,8 @@ INCLUDEPATH +=  ../include/
 QT += core gui widgets
 
 CONFIG += qt 
-CONFIG += debug
-CONFIG -= release
+#CONFIG += debug
+#CONFIG -= release
 
 LIBS += -L../lib \
         -limgproc \

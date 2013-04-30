@@ -17,6 +17,8 @@ LIBDIR=
 LIBS:=-lboost_thread-mt
 LFLAGS:=$(LIBDIR) $(LIBS)
 
+TESTDIR=Test
+
 #OBJS:=$(patsubst %.cpp,%.o,$(wildcard *.cpp))
 
 IMGPROC_LIBS=libimgproc.so 
@@ -26,7 +28,8 @@ IMGPROC_OBJS=AbstractImageProcessor.o \
 			 Processor.o \
 			 Reader.o \
 			 WellIndexImageProcessor.o \
-			 Writer.o
+			 Writer.o \
+			 Imgproc.o
 
 IMGPROC_HEADERS=AbstractImageProcessor.h \
 				WellIndexImageProcessor.h \
@@ -37,7 +40,11 @@ IMGPROC_HEADERS=AbstractImageProcessor.h \
 				Buffer.h \
 				ugTypes.h \
 				Centers.h \
-				Export.h
+				Export.h \
+				Imgproc.h
+
+IMGPROC_TEST=$(TESTDIR)/ReaderTest.o 
+
 
 all: $(IMGPROC_LIBS)
 
@@ -48,9 +55,13 @@ libimgproc.a: $(IMGPROC_OBJS)
 	$(AR)  rcv $@ $(IMGPROC_OBJS)
 	ranlib $@
 
+test: $(IMGPROC_TEST)
+	$(CC) $(CXXFLAGS) -o $@ $(IMGPROC_TEST) $(LFLAGS)
+
+
 install:
-	cp $(IMGPROC_HEADERS) $(INST_INCDIR)/
-	cp $(IMGPROC_LIBS) $(INST_LIBDIR)/
+	cp $(IMGPROC_HEADERS) ../$(INST_INCDIR)/
+	cp $(IMGPROC_LIBS) ../$(INST_LIBDIR)/
 
 
 clean: 

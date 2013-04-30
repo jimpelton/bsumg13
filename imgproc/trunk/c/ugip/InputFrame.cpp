@@ -20,27 +20,20 @@ InputFrame::~InputFrame() { }
 
 void InputFrame::on_imageDirButton_clicked()
 {
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::Directory);
-    dialog.setOption(QFileDialog::ShowDirsOnly);
+    QString dir = QFileDialog:: getExistingDirectory(this,
+        "Select a folder with RAW files in it.",
+         QDir::homePath(), QFileDialog::ShowDirsOnly);
 
-    QStringList files;
-    if (dialog.exec())
-        files = dialog.selectedFiles();
+    QDir qdir(dir);
 
-    if (files.size() > 0) {
-        QDir dir(files.first());
-        if (dir.exists()) {
-            m_imageDir = dir.absolutePath();
-            imageDirLineEdit->setText(m_imageDir);
-            scanFilesDirectoryButton->setEnabled(true);
-            //m_haveValidImageDir=true;
-            emit imageDir(m_imageDir);
-        } else {
-            scanFilesDirectoryButton->setEnabled(false);
-            //m_haveValidImageDir=false;
-            QMessageBox::information(NULL, "Invalid directory.", "The directory doesn't exist.");
-        }
+    if (qdir.exists()){
+        m_imageDir = qdir.absolutePath();
+        imageDirLineEdit->setText(m_imageDir);
+        scanFilesDirectoryButton->setEnabled(true);
+        emit imageDir(m_imageDir);
+    } else {
+        scanFilesDirectoryButton->setEnabled(false);
+        QMessageBox::information(NULL, "Invalid directory.", "The directory doesn't exist.");
     }
 }
 
@@ -91,18 +84,16 @@ void InputFrame::on_scanFilesDirectoryButton_clicked()
 
 void InputFrame::on_circlesFileButton_clicked()
 {
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    
-    QStringList file;
-    if (dialog.exec())
-        file = dialog.selectedFiles();
-
-    if (file.size() > 0) {
-        m_circlesFileName = file.front();
-        circlesFileLineEdit->setText(m_circlesFileName);
-        emit circlesFileName(m_circlesFileName);
+    QString file = QFileDialog::getOpenFileName(this, "Select circles file",
+        QDir::homePath(), "Circles Files (*.txt)");
+    if (file.isEmpty())
+    {
+        qDebug() << "No .txt file selected for circles file.";
+        return;
     }
+    m_circlesFileName = file;
+    circlesFileLineEdit->setText(m_circlesFileName);
+    emit circlesFileName(m_circlesFileName);
 }
 
 void InputFrame::on_beginProcessingButton_clicked()

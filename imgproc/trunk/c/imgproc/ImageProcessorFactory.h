@@ -10,9 +10,6 @@
 
 #include <string>
 
-//class WellIndexImageProcessor;
-//class CircleDrawingImageProcessor;
-
 namespace uG
 {
     /**
@@ -35,13 +32,20 @@ namespace uG
         AbstractImageProcessor* newProc(uGProcVars *vars)
         {
             AbstractImageProcessor *rval = NULL;
-            //if (uG_DEBUG){
-            //    rval = new CircleDrawingImageProcessor();
-            //} else {
-                rval = new WellIndexImageProcessor();
-            //}
+            switch (vars->procType){
+                case(DEBUG_CIRCLES):
+                    rval = new CircleDrawingImageProcessor();
+                    break;
+                case(WELL_INDEX):
+                    rval = new WellIndexImageProcessor();
+                    break;
+                default: break;
+            }
 
-            rval->setVars(vars);
+            if (rval != NULL) {
+                rval->setVars(vars);
+            }
+
             return rval;
         }
 

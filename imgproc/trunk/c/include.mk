@@ -1,6 +1,6 @@
 
-INST_INCDIR=../include/
-INST_LIBDIR=../lib/
+INST_INCDIR=include/
+INST_LIBDIR=lib/
 
 
 

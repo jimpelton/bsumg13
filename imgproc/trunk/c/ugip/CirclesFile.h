@@ -12,10 +12,6 @@ using std::string;
 using std::map;
 
 
-
-
-
-
 /**
   *	\brief Encapsulates a circles file for easy access to the values in the file.
   *
@@ -74,7 +70,9 @@ struct ImageInfo
     * \brief Write out the circles file.
     *
     * The circles are sorted by into rows, then the rows
-    * are sorted into columns via findRows(). 
+    * are sorted into columns via findRows().
+    *
+    * \return -1 on error, else the number of circles written.
     */
     int writeCirclesFile(vector<CenterInfo> centers, ImageInfo img);
 
@@ -97,11 +95,15 @@ struct ImageInfo
     int getXdim() const { return m_imgx; }
     int getYdim() const { return m_imgy; }
 
+    bool isOpen() { return m_isOpen; }
+
 private:
     string m_filename;
     vector<CenterInfo> m_centers;
-    //map<int, CenterInfo> m_centersMap;
     ImageInfo m_info;
+
+    bool m_isOpen;
+
     int m_radius, m_imgx, m_imgy;
 
     int parseCirclesFile_helper(int &nCirc);
@@ -110,9 +112,10 @@ private:
     int p_WellLoc(string wellIdx, string wellCenter, int lnum);
     int p_ImgInfo(string key, string value, int lnum);
 
+
+
     static bool sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs); 
     static bool sortCenterByX(const CenterInfo &lhs, const CenterInfo &rhs);
-
 
     // Sort centers into rows, then rows into columns.
     static void findRows(vector<CenterInfo> &centers, 

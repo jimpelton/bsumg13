@@ -56,6 +56,7 @@ public:
     void setMode(Mode m)  { m_mode = m; }
     Mode getMode() const  { return m_mode; }
     int getRadius() const { return m_radius; }
+    int& rGetRadius() { return m_radius; }
     void setRadius(int r);
 
 private:

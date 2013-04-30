@@ -54,6 +54,9 @@ public:
 /* Accessors                                                            */
 /************************************************************************/
 
+    const unsigned char* getData()           { return m_data; }
+
+
     void setInput(const unsigned char *d)    { m_data = d; }
     void setOutput(long long *outdat)        { m_wellValues = outdat; }
     void setCenters(const uGCenter *centers) { m_centers = centers; }

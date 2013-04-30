@@ -8,15 +8,22 @@
 
 namespace uG
 {
-	class CircleDrawingImageProcessor : public WellIndexImageProcessor
-	{
+class CircleDrawingImageProcessor : public WellIndexImageProcessor
+{
 
-	public:
-	    CircleDrawingImageProcessor(void);
-	    virtual ~CircleDrawingImageProcessor(void);
+public:
+    CircleDrawingImageProcessor(void);
+    virtual ~CircleDrawingImageProcessor(void);
 
-	};
-	
+    virtual void process();
+
+protected:
+    virtual long long accumulate(int startx, int starty, int centerx, int centery, 
+        int endx, int end);
+    
+
+};
+
 } // namespace uG
 
 #endif // CircleDrawingImageProcessor_h__

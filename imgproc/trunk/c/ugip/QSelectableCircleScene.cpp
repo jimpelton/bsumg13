@@ -1,6 +1,6 @@
 #include "QSelectableCircleScene.h"
 
-//#include <QDebug>
+#include <QDebug>
 
 QSelectableCircleScene::QSelectableCircleScene(QObject *parent)
     : QGraphicsScene(parent)
@@ -76,18 +76,18 @@ void QSelectableCircleScene::removeSelected()
 void QSelectableCircleScene::setRadius( int r )
 {
 	m_radius = r;
-	//foreach (QGraphicsItem *item, items())
-	//{
-	//	QGraphicsEllipseItem *eee = 
-	//		qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
-	//	if (eee){
-	//		qDebug() << "setting radius...";
-	//		QRectF rectangle = eee->rect();
-	//		rectangle.setWidth(2*r);
-	//		rectangle.setHeight(2*r);
-	//		eee->setRect(rectangle);
-	//	}
-	//}
+    foreach (QGraphicsItem *item, items())
+    {
+        QGraphicsEllipseItem *eee =
+            qgraphicsitem_cast<QGraphicsEllipseItem*>(item);
+        if (eee){
+            qDebug() << "setting radius...";
+            QRectF rectangle = eee->rect();
+            rectangle.setWidth(2*r);
+            rectangle.setHeight(2*r);
+            eee->setRect(rectangle);
+        }
+    }
 }
 
 

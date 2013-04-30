@@ -137,6 +137,7 @@ int doCL(int argc, char *argv[])
     std::cout << "Created: " << writers.size() << " writer threads.\n";
     std::cout << "Starting threads..." << std::endl;
 
+    
 //    for (int i = 0; i != procs.size(); ++i) {
 //        (*readers[i])();
 //        (*procs[i])();

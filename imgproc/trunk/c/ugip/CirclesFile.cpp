@@ -24,11 +24,13 @@ typedef std::vector<CenterInfo > centerVector;
 CirclesFile::CirclesFile()
     : m_filename()
     , m_centers()
+    , m_isOpen(false)
 {}
 
 CirclesFile::CirclesFile(string filename)
     : m_filename(filename)
     , m_centers()
+    , m_isOpen(false)
 {}
 
 CirclesFile::~CirclesFile() {}
@@ -111,6 +113,7 @@ int CirclesFile::open()
     std::ifstream file(m_filename.c_str(), std::ios::in);
     if (!file.is_open()) {
         std::cerr << "Couldn't open given circles file: " << m_filename << std::endl;
+        m_isOpen = false;
         return -1;
     }
 
@@ -124,6 +127,14 @@ int CirclesFile::open()
         } else break;
     }
     file.close();
+
+    m_isOpen = true;
+
+   vector<CenterInfo>::iterator it = m_centers.begin();
+    for(; it != m_centers.end(); ++it)
+    {
+        it->r = m_radius;
+    }
 
     return m_centers.size();
 }
