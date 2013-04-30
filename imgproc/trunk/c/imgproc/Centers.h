@@ -23,6 +23,13 @@ struct uGVars
     uGCenter *centers;
 };
 
+enum ProcType
+{
+    DEBUG_CIRCLES,
+    WELL_INDEX
+};
+
+
 /// Contains information needed by an AbstractImageProcessor
 struct uGProcVars 
 {
@@ -30,6 +37,7 @@ struct uGProcVars
     int numWells;
     int imgw;
     int imgh;
+    ProcType procType;
     uGCenter *centers;
 };
 

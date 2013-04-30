@@ -39,3 +39,5 @@ void SaveShowFrame::on_showGreenCirclesCheckbox_toggled( bool tog )
 {
     emit showPickedCircles(tog);
 }
+
+

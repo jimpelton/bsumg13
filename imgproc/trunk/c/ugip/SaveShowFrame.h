@@ -37,7 +37,8 @@ private slots:
     void on_saveImageButton_clicked();
     void on_showDebugCirclesCheckbox_toggled(bool);
     void on_showGreenCirclesCheckbox_toggled(bool);
-    
+
+
 
     
 };
