@@ -29,7 +29,7 @@ class ugDataWriter():
         :param filename:
         :param gravList:
         """
-        print('Writing gravity values: {}'.format(filename))
+        print('Writing values: {}'.format(filename))
         f = open(filename, 'w')
         f.write('\n'.join(' '.join(str(cell) for cell in row) for row in gravList))
         f.close()
@@ -54,7 +54,7 @@ class ugDataWriter():
         """
         print('Writing {} values: {}'.format(len(valuesList), filename))
         with open(filename, 'w') as filewriter:
-            cf = csv.writer(filewriter, deslimiter=' ')
+            cf = csv.writer(filewriter, delimiter=' ')
             for row in valuesList:
                 cf.writerow(row)
 

@@ -6,51 +6,67 @@ import unittest
 
 
 class MyTestCase(unittest.TestCase):
+    def setupDataFile(self):
+        df = ugDataFile.ugDataFile(layout='testdata/28April2013_plate_layout_transposed_flipped.csv',
+                                   outdir="testdata/dirout/",
+                                   dir405="testdata/dir405/",
+                                   dir485="testdata/dir485/",
+                                   dirgrav="testdata/dirgrav/")
+        return df
 
     def test_datafile(self):
-        dir405="testdat/dir405"
-        dir485="testdat/dir485"
-        dirgrav="testdat/dirgrav"
-        dirout="testdat/dirout"
+        dir405 = "testdata/dir405"
+        dir485 = "testdata/dir485"
+        # dirgrav = "testdata/dirgrav"
+        dirout = "testdata/dirout"
 
-        df=ugDataFile.ugDataFile(dir405,dir485,dirgrav,dirout)
+        df = self.setupDataFile()
         df.update()
 
-        self.assertEqual(len(df.fileNames("405")),  100)
-        self.assertEqual(len(df.fileNames("485")),  100)
-        self.assertEqual(len(df.fileNames("grav")), 100)
-        self.assertEqual(df.sIdx(), 0)
-        self.assertEqual(df.eIdx(), 99)
-        self.assertEqual(df.length(), 100)
+        self.assertTrue(df.fileNames("dir405") is not None)
+        self.assertTrue(df.fileNames("dir485") is not None)
+        self.assertTrue(df.fileNames("dirgrav") is not None)
+        self.assertTrue(df.fileNames("") is not None)
+
+        self.assertEqual(len(df.fileNames("dir405")), 46)
+        self.assertEqual(len(df.fileNames("dir485")), 46)
+        self.assertEqual(len(df.fileNames("dirgrav")), 0)
+        # self.assertEqual(df.sIdx(), 0)
+        # self.assertEqual(df.eIdx(), 45)
+        # self.assertEqual(df.length(), 46)
 
     def test_datafileFromTo(self):
-        dir405="testdat/dir405"
-        dir485="testdat/dir485"
-        dirgrav="testdat/dirgrav"
-        dirout="testdat/dirout"
+        df = self.setupDataFile()
 
-        df=ugDataFile.ugDataFile(dir405,dir485,dirgrav,dirout)
-        df.fromTo(0,10)
+        df.fromTo(0, 10)
         df.update()
 
-        self.assertEqual(df.sIdx(),0)
-        self.assertEqual(df.eIdx(),10)
-        self.assertTrue(len(df.fileNames("405")), 11)
-        self.assertTrue(len(df.fileNames("485")), 11)
-        self.assertTrue(len(df.fileNames("grav")), 11)
+        self.assertEqual(df.sIdx(), 0)
+        self.assertEqual(df.eIdx(), 10)
+        self.assertEqual(len(df.fileNames("dir405")), 11)
+        self.assertEqual(len(df.fileNames("dir485")), 11)
+        self.assertEqual(len(df.fileNames("dirgrav")), 0)
 
+    def test_accessors(self):
+        df = self.setupDataFile()
+        df.update()
 
-    def test_sanitize(self):
-        dir405="testdat/dir405"
-        dir485="testdat/dir485/"
-        dirgrav="testdat/dirgrav/"
-        dirout="testdat/dir"
+        self.assertEqual("testdata/dirout/", df.dirout())
+        self.assertEqual("testdata/dir405/", df.dir405())
+        self.assertEqual("testdata/dir485/", df.dir485())
+        self.assertEqual("testdata/dirgrav/", df.dirgrav())
+        self.assertEqual()
 
-        with self.assertRaises(Exception) as eek:
-            print(eek)
-            df=ugDataFile.ugDataFile(dir405,dir485,dirgrav,dirout)
-            df.update()
-
+        # def test_sanitize(self):
+        #     dir405 = "testdata/dir405"
+        #     dir485 = "testdata/dir485/"
+        #     dirgrav = "testdata/dirgrav/"
+        #     dirout = "testdata/dir"
+        #
+        #     with self.assertRaises(Exception) as eek:
+        #         print(eek)
+        #         df = ugDataFile.ugDataFile(dir405=dir405, dir485=dir485, dirgrav=dirgrav, outdir=dirout)
+        #         df.update()
 
 
 if __name__ == '__main__':
