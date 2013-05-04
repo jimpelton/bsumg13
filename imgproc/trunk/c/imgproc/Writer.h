@@ -30,13 +30,19 @@ namespace uG
 
         void operator()();
 
+        void (Writer::*cb_msg)(void);
+        void set_cb(void (Writer::*cb)(void)) {
+            cb_msg = cb;
+        }
+
+        
         void writeFile(Buffer<long long> *);
 
         void requestStop()
         {
-
+            m_mutex.lock();
             m_stopRequested=true;
-
+            m_mutex.unlock();
         }
 
     private:

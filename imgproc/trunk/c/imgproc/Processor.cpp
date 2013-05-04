@@ -21,11 +21,6 @@ namespace uG
         : m_imagePool(imagePool)
         , m_dataPool(dataPool)
     { 
-
-        m_stopRequested = false;
-        m_imgproc = ImageProcessorFactory::getInstance()->newProc(vars);
-
-//        m_tid = 0;
         m_stopRequested = false;
         m_imgproc = ImageProcessorFactory::getInstance()->newProc(vars);
     }
@@ -39,10 +34,14 @@ namespace uG
     void Processor::operator() ()
     {
         while (true) {
-            //EnterCriticalSection(&(me->m_criticalSection));
-            //    if (me->m_stopRequested) break;
-            //LeaveCriticalSection(&(me->m_criticalSection));
     
+            m_mutex.lock();
+            if (m_stopRequested) {
+                m_mutex.unlock();
+                break;
+            }
+            m_mutex.unlock();
+
             Buffer<unsigned char> *imgbuf = m_imagePool->getFullBuffer();
             Buffer<long long> *longbuf = m_dataPool->getFreeBuffer();
             longbuf->id = imgbuf->id; //copy file name.
@@ -52,7 +51,6 @@ namespace uG
 
             m_imagePool->returnEmptyBuffer(imgbuf);
             m_dataPool->postFullBuffer(longbuf);
-            //delete [] aip;
         }
     }
 

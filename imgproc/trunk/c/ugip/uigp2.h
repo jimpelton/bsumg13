@@ -28,19 +28,22 @@ public:
     uigp2(QWidget *parent = 0);
     ~uigp2();
 
+/*****************************************************************************
+  PUBLIC SLOTS
+******************************************************************************/
 public slots:
-	/// responds to a circle being inserted into the scene.
-	void circleAdded(QSelectableEllipse *eee);
+    /// responds to a circle being inserted into the scene.
+    void circleAdded(QSelectableEllipse *eee);
 
     /// makes a CenterInfo from the given QSelectableEllipse and adds it
 	/// to the m_circlesList.
     void addSelectedCircle(QSelectableEllipse* eee);
     
-	/// Receives the just removed QGraphicsItem.
-	void removedExistingCircle(QGraphicsItem *eee);
+    /// Receives the just removed QGraphicsItem.
+    void removedExistingCircle(QGraphicsItem *eee);
 
-	/// Changes the radius of all circles in the scene.
-	void changeCircleRadius(int r);
+    /// Changes the radius of all circles in the scene.
+    void changeCircleRadius(int r);
 
     /// set m_imageDir to the given QString dir.
     void setImageDir(QString dir);
@@ -72,9 +75,13 @@ public slots:
     /// draw debug circles from imgproc
     void drawDebugCircles(bool tog);
 
+
+/************************************************************************/
+/* PRIVATE MEMBERS                                                      */
+/************************************************************************/
 private:
 
-   void displayImageBytes(unsigned char *raw16bit, size_t szAlloc);
+   void displayImageFromBytes(unsigned char *raw16bit, size_t szAlloc);
    void displayImageFromImage(QImage img);
 
 /************************************************************************/

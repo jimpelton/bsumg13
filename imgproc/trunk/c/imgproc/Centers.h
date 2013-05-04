@@ -26,7 +26,9 @@ struct uGVars
 enum ProcType
 {
     DEBUG_CIRCLES,
-    WELL_INDEX
+    WELL_INDEX,
+    REG_AVG,
+    UNKNOWN
 };
 
 

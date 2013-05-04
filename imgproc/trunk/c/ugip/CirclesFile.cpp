@@ -84,7 +84,7 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
 
     //sort circles file.
     vector<vector<CenterInfo > > rows;
-    findRows(centers, rows, 60);
+    findRows(centers, rows, 30);
 
     int i=0;
     vector<centerVector >::const_iterator rowsEnd = rows.cend();

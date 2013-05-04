@@ -33,7 +33,10 @@ void Reader::operator()()
 
     while (it != itEnd) {
         m_mutex.lock();
-            if (m_stopRequested) break;
+        if (m_stopRequested) {
+            m_mutex.unlock();
+            break;
+        }
         m_mutex.unlock();
 
         ImageBuffer *imgbuf = m_imagePool->getFreeBuffer();
@@ -45,7 +48,7 @@ void Reader::operator()()
         }
 
         m_imagePool->postFullBuffer(imgbuf);
-   //     std::cout << me->m_tid << ": Reader posted full buffer." << std::endl;
+        std::cout << boost::this_thread::get_id() << ": Reader posted full buffer." << std::endl;
         ++it;
     }
 }

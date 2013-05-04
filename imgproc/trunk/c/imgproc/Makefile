@@ -14,7 +14,7 @@ INCDIR:=-I/usr/include/boost
 CXXFLAGS=-g -Wall -fPIC -shared $(INCDIR)
 
 LIBDIR=
-LIBS:=-lboost_thread-mt
+LIBS:=-lboost_thread
 LFLAGS:=$(LIBDIR) $(LIBS)
 
 TESTDIR=Test
@@ -33,6 +33,7 @@ IMGPROC_OBJS=AbstractImageProcessor.o \
 
 IMGPROC_HEADERS=AbstractImageProcessor.h \
 				WellIndexImageProcessor.h \
+				RegionalAveragingImageProcessor.h \
 				Processor.h \
 				Reader.h \
 				Writer.h \

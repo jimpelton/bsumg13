@@ -7,6 +7,7 @@
 #include "AbstractImageProcessor.h"
 #include "WellIndexImageProcessor.h"
 #include "CircleDrawingImageProcessor.h"
+#include "RegionalAveragingImageProcessor.h"
 
 #include <string>
 
@@ -38,6 +39,9 @@ namespace uG
                     break;
                 case(WELL_INDEX):
                     rval = new WellIndexImageProcessor();
+                    break;
+                case(REG_AVG):
+                    rval = new RegionalAveragingImageProcessor();
                     break;
                 default: break;
             }

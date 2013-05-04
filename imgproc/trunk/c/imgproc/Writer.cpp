@@ -26,17 +26,23 @@ namespace uG
     Writer::~Writer()
     { }
 
+
     void Writer::operator()()
     {
         while (true) {
             m_mutex.lock();
-                if (m_stopRequested) break;
+            if (m_stopRequested){
+                m_mutex.unlock();
+                break;
+            }
             m_mutex.unlock();
 
             DataBuffer *buf = m_pool->getFullBuffer();
             writeFile(buf);
             m_pool->returnEmptyBuffer(buf);
-            //cout << m_tid << " " << buf->id << " Writer returned empty buffer.\n";
+
+            cout << boost::this_thread::get_id() << " " << buf->id << 
+                " Writer returned empty buffer.\n";
         }
     }
 
@@ -50,13 +56,14 @@ namespace uG
         ofstream ofile(outfile.c_str(), std::ios::out);
 
         if (!ofile.is_open()) {
-            cerr << outfile << " never opened for output! Can't write output file!" 
+            cerr << outfile << 
+                " never opened for output! Can't write output file!" 
                  << endl;
             return;
         }
 
         stringstream filetext;
-        for(int i = 0; i < 96; i++) {
+        for(uint i = 0; i < buf->nElements; i++) {
             filetext << i << ":" << buf->data[i] << '\n';
         }
         ofile << filetext.str();

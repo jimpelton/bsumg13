@@ -6,11 +6,12 @@
 # 2012-2013 Boise State University Microgravity Team
 #########################################################################
 
-
+include include.mk
 
 all: imgproc_dir ugip_dir 
 
 imgproc_dir:
+	mkdir -p $(INST_INCDIR) $(INST_LIBDIR)
 	cd imgproc; make; make install
 
 ugip_dir:
@@ -21,6 +22,7 @@ clean:
 	cd ugip; make clean
 
 install:
+	mkdir -p $(INST_INCDIR) $(INST_LIBDIR)
 	cd imgproc; make; make install
 	cd ugip; make; make install
 
