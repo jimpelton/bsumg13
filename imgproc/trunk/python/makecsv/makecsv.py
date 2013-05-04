@@ -8,7 +8,6 @@ import numpy as np
 from ugDataFile import ugDataFile
 
 
-
 def getArgs():
     """
     Get command line arguments.
@@ -19,6 +18,7 @@ def getArgs():
     parser.add_argument("-d405", "--Directory405", help="405 Data Files Directory")
     parser.add_argument("-gd", "--DirectoryGrav", help="Gravity files directory")
     parser.add_argument("-dout", "--DirectoryOut", help="Output Directory")
+    parser.add_argument("-pl", "--PlateLayout", help="Plate layout file as csv file in excel dialect.")
     parser.add_argument("-s", "--Start", type=str, help="Starting index")
     parser.add_argument("-e", "--End", type=str, help="Ending index")
 
@@ -36,22 +36,25 @@ def getArgs():
         "485 Data Files Directory: {}\n"
         "Gravity Directory:        {}\n"
         "Output Directory:         {}\n"
+        "Plate Layout:             {}\n"
         "Starting Index:           {}\n"
         "Ending Index:             {}"
         .format
             (
             args.Directory405, args.Directory485,
             args.DirectoryGrav, args.DirectoryOut,
+            args.PlateLayout,
             args.Start, args.End
         )
     )
 
     #Wait for user to check dirs
     yesno = input("Is the above information correct? [y/N]")
-    if yesno == 'y':
+    if yesno == 'y' or yesno == 'Y':
         return args
     else:
         return None
+
 
 def ccSlice(source):
     """
@@ -62,7 +65,7 @@ def ccSlice(source):
     """
     w = range(96)
     ccvals = source[w[0:4], w[12:16], w[24:28], w[36:40],
-                            w[48:52], w[60:64], w[72:76]]
+                    w[48:52], w[60:64], w[72:76]]
     return ccvals
 
 # def mcSlice(source):
@@ -99,25 +102,30 @@ def main():
     basedir405 = args.Directory405
     gravDir = args.DirectoryGrav
     outDir = args.DirectoryOut
+    plateLayout = args.PlateLayout
     start = str(args.Start).zfill(5)
     end = str(args.End).zfill(5)
 
-    dataFile = ugDataFile(basedir405, basedir485, gravDir, outDir)
+    dataFile = ugDataFile(dir405=basedir405, dir485=basedir485,
+                          dirgrav=gravDir,
+                          outdir=outDir, layout=plateLayout)
     dataFile.fromTo(int(start), int(end))
     dataFile.update()
     dataReader = ugDataReader.ugDataReader(dataFile)
     dataReader.update()
 
-    slice405 = dataReader.valuesList("405")
-    slice485 = dataReader.valuesList("485")
+    slice405 = dataReader.valuesList("dir405")
+    slice485 = dataReader.valuesList("dir485")
     ratios = calculateRatios(slice405, slice485)
     cars = conc.calculateConcentrations(ratios, slice405, slice485)
 
 
-    
+
     # write data files
     dw = ugDataWriter.ugDataWriter(dataFile)
-    
+    dw.writeGravity(dataFile.dirout() + 'Data405.dat', slice405)
+    dw.writeGravity(dataFile.dirout() + 'Data485.dat', slice485)
+    dw.writeGravity(dataFile.dirout() + 'rat.dat', ratios)
     dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
     dw.writeValues(dataFile.dirout() + 'cars.dat', cars.Concs)
     dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', cars.F485MaxVals)

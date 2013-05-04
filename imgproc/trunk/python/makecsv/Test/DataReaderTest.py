@@ -5,23 +5,41 @@ import unittest
 import ugDataReader
 import ugDataFile
 
+
 class MyTestCase(unittest.TestCase):
+    def setupDataFile(self):
+        diroutput = "testdata/dirout/"
+        csvfile = 'testdata/28April2013_plate_layout_transposed_flipped.csv'
+
+        df = ugDataFile.ugDataFile(layout='testdata/28April2013_plate_layout_transposed_flipped.csv',
+                                   outdir="testdata/dirout/",
+                                   dir405="testdata/dir405",
+                                   dir485="testdata/dir485/",
+                                   dirgrav="testdata/dirgrav/")
+        return df
 
     def test_read(self):
-        dir405="testdat/dir405"
-        dir485="testdat/dir485/"
-        dirgrav="testdat/dirgrav/"
-        dirout="testdat/dirout/"
+        df = self.setupDataFile()
+        df.fromTo(0, 45)
 
-        df=ugDataFile.ugDataFile(dir405,dir485,dirgrav,dirout)
         df.update()
 
-        dr=ugDataReader.ugDataReader(df)
+        dr = ugDataReader.ugDataReader(df)
+
         dr.update()
 
-        self.assertEqual(len(dr.valuesList("405")), 100)
-        self.assertEqual(len(dr.valuesList("485")), 100)
-        self.assertEqual(len(dr.valuesList("grav")), 100)
+        self.assertEqual(dr.valuesList("dir405").size, 46 * 96)
+        self.assertEqual(dr.valuesList("dir485").size, 46 * 96)
+        # self.assertEqual(dr.valuesList("dirgrav"))
+
+
+    def test_csvread(self):
+        df = self.setupDataFile()
+        df.update()
+        dr = ugDataReader.ugDataReader(df)
+        dr.update()
+        layout = dr.layout()
+        i = 0
 
 
 if __name__ == '__main__':

@@ -1,55 +1,85 @@
 __author__ = 'jim'
 
 from math import sqrt
-import ugDataFile
 
 import numpy as np
+import csv
+
 
 NUM_WELLS = 96
 
 
 class ugDataReader():
     def __init__(self, datafile=None):
-
-        if datafile is None:
-            self.df = None
-        else:
-            self.df = datafile
-
+        """
+        :param datafile: a ugDataFile object.
+        """
+        self.df = datafile
         dflen = self.df.length()
         self.values405 = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
         self.values485 = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
         self.valuesgrav = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
+        self._layout = dict()
 
 
     def update(self):
+        """
+        Update this data reader and read the files provided by the
+        ugDataFile object.
+        :return: nothing, returns nothing.
+        """
         self.df.update()
         print("DataReader doing update.\n")
         self._readall(self.df)
 
-    def _readall(self, df):
-        self._read405Files_reversed(df.fileNames("405"))
-        self._read485Files(df.fileNames("485"))
-        self._readGravityFiles(df.fileNames("grav"))
+
+    def layout(self):
+        return self._layout
 
     def valuesList(self, typeString):
         """
-        Get the list for the given type (405, 485, grav).
+        Get the values list for the given type (405, 485, grav).
         :param typeString:
         :return:
         """
-        if typeString == "405":
+
+        if typeString == "dir405":
             return self.values405
-        elif typeString == "485":
+        elif typeString == "dir485":
             return self.values485
-        elif typeString == "grav":
+        elif typeString == "dirgrav":
             return self.valuesgrav
         else:
-            return None
+            return np.zeros((0, 0))
+
+    def _readall(self, df):
+        reader = {
+            "dir405": self._read405Files_reversed,
+            "dir485": self._read485Files,
+            "dirgrav": self._readGravityFiles,
+            "dirphid": self._readPhid,
+            "dirbaro": self._readBaro,
+            "dirni": self._readNI
+        }
+
+        fd = self.df.filesDict()
+        for key in fd.keys():
+            reader[key](fd[key][1])
+
+        self._readPlateLayout()
+
+    def _readBaro(self, baro_list):
+        pass
+
+    def _readPhid(self, phid_list):
+        pass
+
+    def _readNI(self, ni_list):
+        pass
 
     def _read405Files_reversed(self, files405_list):
         """
-        Read 405 files. Each file contains lines formated as: "well#:val".
+        Read 405 files. Each file contains lines formatted as: "well#:val".
         Note: adds to the row backwards, having a reversing effect, so that the
             well patterns match that of the 485 well values.
         :param dir405: Path to 405 data files (expected to be sorted).
@@ -71,7 +101,7 @@ class ugDataReader():
             for s in lines:
                 strs = s.split(':')
                 val = int(strs[1].strip())
-                self.values405[timeIdx][colIdx] = val
+                self.values405[timeIdx][colIdx] = val  #add to list backwards
                 colIdx -= 1
 
             timeIdx += 1
@@ -133,4 +163,30 @@ class ugDataReader():
         print('{}'.format(timeIdx))
 
 
+    def _readPlateLayout(self):
+        """
+        Collect the well plate layout into the "layout" dictionary of this
+        instance of ugDataReader.
 
+        The values in the dictionary are the list of well plate indexes
+        that each type of well can be found in.
+        """
+        if self.df.plateLayout() is None:
+            return
+
+        linear = []
+        with open(self.df.plateLayout(), 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile, dialect='excel', delimiter=',')
+            for row in reader:
+                for cell in row:
+                    linear.append(cell)
+        i = 0
+        for cell in linear:
+            if cell == '':
+                continue
+            if cell in self._layout:
+                self._layout[cell].append(i)
+            else:
+                self._layout[cell] = []
+                self._layout[cell].append(i)
+            i += 1
