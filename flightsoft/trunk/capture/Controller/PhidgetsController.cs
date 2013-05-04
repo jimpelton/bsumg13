@@ -85,6 +85,7 @@ public class PhidgetsController : ReceiverController
             phidgets1018.Detach += Sensor_Detach;
             phidgets1018.Error += Sensor_Error;
             phidgets1018.waitForAttachment(1000);
+            
             dp.BroadcastLog(this, "1018 found", 0);
         }
         catch (PhidgetException ex)

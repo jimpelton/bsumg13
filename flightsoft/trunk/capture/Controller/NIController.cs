@@ -8,6 +8,7 @@ namespace uGCapture
 {
     public class NIController : ReceiverController
     {
+        //analog in
         private Task analogInTask_X_A = new Task();
         private Task analogInTask_Y_A = new Task();
         private Task analogInTask_Z_A = new Task();
@@ -29,13 +30,28 @@ namespace uGCapture
         private AnalogSingleChannelReader reader_Y_T;
         private AnalogSingleChannelReader reader_Z_T;
 
-        string[] outs;
+        //digital out
+        private DOChannel doChannel1;
+        private DOChannel doChannel2;
+        private DOChannel doChannel3;
+        private DigitalSingleChannelWriter writer1;
+        private DigitalSingleChannelWriter writer2;
+        private DigitalSingleChannelWriter writer3;
+
+        private Task digitalWriteTask;
+
+        private string[] outs;
         private String outputData;
         private static Object hardwareMutex = new object();
+
+        public enum Outputs {NI_LIGHT1_OUT,NI_LIGHT2_OUT,NI_HEATER_OUT};
+        public enum State   {ON,OFF};
 
         public NIController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
         }
+
+
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
@@ -47,12 +63,13 @@ namespace uGCapture
             double analogDataIn_Y_T=0;
             double analogDataIn_Z_T=0;
             */
+
             try
             {
                 using (Task digitalWriteTask = new Task())
                 {                                    
                     
-            /*        digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "",
+            /*      digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "",
                         ChannelLineGrouping.OneChannelForAllLines);
                     digitalWriteTask.Start();
                    
@@ -151,6 +168,21 @@ namespace uGCapture
                 reader_Y_T = new AnalogSingleChannelReader(analogInTask_Y_T.Stream);
                 reader_Z_T = new AnalogSingleChannelReader(analogInTask_Z_T.Stream);
 
+
+                //set up the digital outs
+                digitalWriteTask = new Task();
+                doChannel1 = digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "Chan1",
+                    ChannelLineGrouping.OneChannelForAllLines);
+                writer1 = new DigitalSingleChannelWriter(digitalWriteTask.Stream); 
+                doChannel2 = digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line1", "Chan2",
+                    ChannelLineGrouping.OneChannelForAllLines);                
+                writer2 = new DigitalSingleChannelWriter(digitalWriteTask.Stream); 
+                doChannel3 = digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line2", "Chan3",
+                    ChannelLineGrouping.OneChannelForAllLines);
+                writer3 = new DigitalSingleChannelWriter(digitalWriteTask.Stream);
+
+                digitalWriteTask.Start();
+                SetOutputState(Outputs.NI_LIGHT1_OUT, State.ON);
                 dp.BroadcastLog(this, "NI-USB-6008 started up...", 1);
             }
             catch (NationalInstruments.DAQmx.DaqException)
@@ -177,30 +209,82 @@ namespace uGCapture
         }
 
         public override void exAccumulateMessage(Receiver r, Message m)
-        {    
-            base.exAccumulateMessage(r, m);
-            double analogDataIn_X_A = 0;
-            double analogDataIn_Y_A = 0;
-            double analogDataIn_Z_A = 0;
-            double analogDataIn_X_T = 0;
-            double analogDataIn_Y_T = 0;
-            double analogDataIn_Z_T = 0;
-            analogDataIn_X_A = reader_X_A.ReadSingleSample();
-            analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
-            analogDataIn_Z_A = reader_Z_A.ReadSingleSample();
-            analogDataIn_X_T = reader_X_T.ReadSingleSample(); //Daqexception was unhandled( upon pulling the cable)
-            analogDataIn_Y_T = reader_Y_T.ReadSingleSample();
-            analogDataIn_Z_T = reader_Z_T.ReadSingleSample();
-            outputData += analogDataIn_X_A + " ";
-            outputData += analogDataIn_Y_A + " ";
-            outputData += analogDataIn_Z_A + " ";
-            outputData += analogDataIn_X_T + " ";
-            outputData += analogDataIn_Y_T + " ";
-            outputData += analogDataIn_Z_T + " ";
+        {
+            try
+            {
+                if (DaqSystem.Local.Devices.Length > 0)//we have a (the) NI device connected
+                {
+                    base.exAccumulateMessage(r, m);
+                    double analogDataIn_X_A = 0;
+                    double analogDataIn_Y_A = 0;
+                    double analogDataIn_Z_A = 0;
+                    double analogDataIn_X_T = 0;
+                    double analogDataIn_Y_T = 0;
+                    double analogDataIn_Z_T = 0;
+                    analogDataIn_X_A = reader_X_A.ReadSingleSample();
+                    analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
+                    analogDataIn_Z_A = reader_Z_A.ReadSingleSample();
+                    analogDataIn_X_T = reader_X_T.ReadSingleSample(); //throws Daqexception upon pulling the cable
+                    analogDataIn_Y_T = reader_Y_T.ReadSingleSample();
+                    analogDataIn_Z_T = reader_Z_T.ReadSingleSample();
+                    outputData += analogDataIn_X_A + " ";
+                    outputData += analogDataIn_Y_A + " ";
+                    outputData += analogDataIn_Z_A + " ";
+                    outputData += analogDataIn_X_T + " ";
+                    outputData += analogDataIn_Y_T + " ";
+                    outputData += analogDataIn_Z_T + " ";
+                }
+            }
+            catch (NationalInstruments.DAQmx.DaqException eeeee)
+            {
+                //lets reset it
+                Reset();
+            }
+
         }
 
+        public void SetOutputState(Outputs o, State s)
+        {
+            try
+            {
+                if (DaqSystem.Local.Devices.Length > 0)//we have a (the) NI device connected
+                {
+                    switch (o)
+                    {
+                        case (Outputs.NI_LIGHT1_OUT):
+                            writer1.WriteSingleSampleSingleLine(true, (s == State.ON) ? true : false);
+                            break;
+                        case (Outputs.NI_LIGHT2_OUT):
+                            writer2.WriteSingleSampleSingleLine(true, (s == State.ON) ? true : false);
+                            break;
+                        case (Outputs.NI_HEATER_OUT):
+                            writer3.WriteSingleSampleSingleLine(true, (s == State.ON) ? true : false);
+                            break;
+                    }
+                }
+            }
+            catch (NationalInstruments.DAQmx.DaqException eeeee)
+            {
+                //lets reset it
+                Reset();
+            }
+        }
 
+        private void Reset()
+        {
+            try
+            {
+                Device dev = DaqSystem.Local.LoadDevice("dev1");
+                dev.Reset();
+                init();
+            }
+            catch (NationalInstruments.DAQmx.DaqException eeeee)
+            {
+                //probably not connected at this point. Try again next time.
+            }
+        }
     }
+
 
     public class NIControllerNotInitializedException : Exception
     {
