@@ -14,7 +14,8 @@ LIBS += -L../lib \
         -limgproc \
         -lboost_system \
         -lboost_program_options \
-        -lboost_filesystem 
+        -lboost_filesystem \
+        -lboost_thread
 
 QMAKE_CXXFLAGS += -std=c++11
 

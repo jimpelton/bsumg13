@@ -105,12 +105,7 @@ BufferPool< _Ty >::BufferPool(size_t nbufs, size_t bufsize, float loadfactor)
     , m_bufsize(bufsize)
     , m_stopRequested(false)
 {
-    //InitializeCriticalSection(&m_BufferPoolLock);
-    //InitializeCriticalSection(&m_FullBufferPoolLock);
-    //InitializeConditionVariable(&m_FreeBuffersAvailable);
-    //InitializeConditionVariable(&m_FullBuffersAvailable);
-    //InitializeConditionVariable(&m_FullBufferPoolOpen);
-    
+
     if (loadfactor < 0.f || loadfactor > 1.f) { loadfactor=1.f; }
     m_nMinFillCount = loadfactor * m_nbufs;
 

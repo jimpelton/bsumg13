@@ -132,7 +132,8 @@ void uigp2::startProcessing()
     }
     if (m_circlesList.size() < 1) {
         qDebug() << "Ahnooo...No circles in the list.";
-        QMessageBox::information(NULL, "No circles.", "Please select an input circles file.");
+        QMessageBox::information(NULL, "No circles.",
+                    "Please select an input circles file.");
     }
     //TODO: put circles into imgproc system.
     //TODO: setup imgproc pipeline.
@@ -147,14 +148,14 @@ void uigp2::saveCirclesFile(QString fname)
 
     m_circlesFile = CirclesFile(fname.toStdString());
 
-    CirclesFile::ImageInfo img = 
+    CirclesFile::ImageInfo imgInfo =
     { 
         m_currentImage.byteCount(), 
         m_currentImage.width(), 
         m_currentImage.height() 
     };
 
-    //get all items, then remove non-ellipse items.
+    //get all items from scene, then remove non-ellipse items.
     QVector<CirclesFile::CenterInfo> v;
     QList<QGraphicsItem*> thangs = m_scene->items();
 
@@ -177,7 +178,7 @@ void uigp2::saveCirclesFile(QString fname)
         }  
     } // for 
     
-    int rval = m_circlesFile.writeCirclesFile(v.toStdVector(), img );
+    int rval = m_circlesFile.writeCirclesFile(v.toStdVector(), imgInfo);
 
     qDebug() << "Wrote " << rval << " circles" ;
 
@@ -194,7 +195,8 @@ void uigp2::openCirclesFile()
     m_circlesFile = CirclesFile(m_circlesFileName.toStdString());
     int numCirc = m_circlesFile.open();
     if (!m_circlesFile.isOpen()){
-        qDebug() << "openCirclesFile: CirclesFile reported it could not open the given circles file.";
+        qDebug() << "openCirclesFile: CirclesFile reported it could not" \
+                    " open the given circles file.";
 
         return;
     }
@@ -257,7 +259,7 @@ void uigp2::displayImage( int idx )
     }
 
     //read image into byte array
-    QByteArray byteAray= img.readAll();
+    QByteArray byteAray = img.readAll();
     img.close();
 
     size_t szAlloc = byteAray.length();
@@ -267,14 +269,14 @@ void uigp2::displayImage( int idx )
     }
 
     unsigned char *grey_16 = (unsigned char *)byteAray.data();
-    displayImageBytes(grey_16, szAlloc);
+    displayImageFromBytes(grey_16, szAlloc);
 
 }
 
 void uigp2::doneScan()
 {
     qDebug() << "Done scan.";
-
+    m_fileNameList.sort();
     displayImage(0);
 }
 
@@ -309,20 +311,16 @@ void uigp2::drawDebugCircles(bool tog)
     string f = m_fileNameList[0].toStdString();
     size_t szAlloc = img.getBlackCirclesImage(f, *vars, &buf);
 
-    QFile imgout("rawfile.raw");
-    imgout.open(QIODevice::WriteOnly);
-    imgout.write((char*)buf, szAlloc);
-    imgout.close();
 
 
-    displayImageBytes(buf, szAlloc);
+    displayImageFromBytes(buf, szAlloc);
 
 
     qDebug() << "Draw debug circles.";
 }
 
 
-void uigp2::displayImageBytes(unsigned char *raw16bit, size_t szAlloc)
+void uigp2::displayImageFromBytes(unsigned char *raw16bit, size_t szAlloc)
 {
      //convert 16bit data to 8bit
     unsigned char *data8bit = new unsigned char[szAlloc/2];
@@ -346,3 +344,4 @@ void uigp2::displayImageFromImage(QImage img)
     m_scene->update(m_scene->sceneRect());
 
 }
+

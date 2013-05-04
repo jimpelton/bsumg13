@@ -24,6 +24,7 @@ string infile;
 string outfile;
 int sidx;
 int eidx;
+string imgProcType;
 
 bool parseArgs( int argc, char **argv )
 {
@@ -31,13 +32,17 @@ bool parseArgs( int argc, char **argv )
        
         po::options_description desc("ugip options");
         desc.add_options()
-            ("help", "produce help message")
-            ("text", "enter command line mode")
+            ("help,h", "produce help message")
+            ("text,t", "enter command line mode")
             ("circles-file,c", po::value<string>(), "Set circles file")
             ("input-dir,i", po::value<string>(), "Set input directory")
             ("output-dir,o", po::value<string>(), "Set output directory")
 			("start-idx,s", po::value<string>(), "Starting Index")
 			("end-idx,e", po::value<string>(), "Ending Index")
+           // ("reader-threads", po::value<string>(), "Number of Reader threads (default 1).")
+           // ("writer-threads", po::value<string>(), "Number of Writer threads (default 1).")
+           // ("proc-threads", po::value<string>(), "Number of Processor threads(default 1).")
+            ("imgproc-type,p", po::value<string>(), "Image processor type (debug-circles, well-index, reg-avg.")
         ;
 
         po::variables_map vm;
@@ -80,6 +85,13 @@ bool parseArgs( int argc, char **argv )
 			eidx = -1;
 			std::cout << "No ending index given, assuming ending idx as last file.\n";
 		}
+
+        if (vm.count("imgproc-type")){
+            imgProcType = vm["imgproc-type"].as<string>();
+        } else {
+            imgProcType = -1;
+            std::cout << "No image processing type given, assuming WellIndex type.\n";
+        }
 
     } catch(std::exception &eek) {
         std::cerr << "error: " << eek.what() << "\n";

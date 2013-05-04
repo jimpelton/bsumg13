@@ -46,6 +46,7 @@ public:
 
     /**
     * \brief Define the processing behavior of the AIP.
+    * Called once per image.
     */
     virtual void process() = 0;
 

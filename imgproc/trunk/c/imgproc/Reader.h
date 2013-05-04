@@ -32,6 +32,11 @@ public:
     
     void operator()(); 
 
+    void (Reader::*cb_msg)(void);
+    void set_cb(void (Reader::*cb)(void)) {
+        cb_msg = cb;
+    }
+
     static size_t openImage(const std::string &fname, unsigned char **rawData);
 
     void requestStop()

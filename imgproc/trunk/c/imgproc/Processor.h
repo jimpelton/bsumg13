@@ -33,6 +33,12 @@ namespace uG
 
         void operator()();
 
+        void (Processor::*cb_msg)();
+
+        void set_cb(void (Processor::*cb)()) {
+            cb_msg = cb;
+        }
+
         void requestStop()
         {
             m_mutex.lock();
