@@ -34,13 +34,17 @@ class ugDataReader():
 
 
     def layout(self):
+        """
+        Returns the plate layout as a dictionary.
+        :return: dict
+        """
         return self._layout
 
     def valuesList(self, typeString):
         """
         Get the values list for the given type (405, 485, grav).
-        :param typeString:
-        :return:
+        :param: typeString:
+        :return: narray
         """
 
         if typeString == "dir405":
@@ -181,6 +185,7 @@ class ugDataReader():
                 for cell in row:
                     linear.append(cell)
         i = 0
+
         for cell in linear:
             if cell == '':
                 continue
