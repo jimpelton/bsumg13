@@ -221,7 +221,7 @@ namespace uGCapture
                 Console.Error.WriteLine(s);
             }
         }
-
+    // APC UPS Data Getter
         private void initUPSController()
         {
             UPS = new UPSController(bufferPool,
