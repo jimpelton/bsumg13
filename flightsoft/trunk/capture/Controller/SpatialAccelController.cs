@@ -65,13 +65,13 @@ namespace uGCapture
 
         void accel_Attach(object sender, AttachEventArgs e)
         {
-            Accelerometer attached = sender as Accelerometer;
+            Spatial attached = sender as Spatial;
             if (attached == null) return;
             try
             {
-                attached.axes[0].Sensitivity = 0;
-                attached.axes[1].Sensitivity = 0;
-                attached.axes[2].Sensitivity = 0;
+                Phidget phid = sender as Phidget;
+                if (phid == null) return;
+                dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
             }
             catch (PhidgetException ex)
             {

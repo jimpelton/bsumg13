@@ -158,8 +158,8 @@ namespace uGCapture
                 reader_Y_T = new AnalogSingleChannelReader(analogInTask_Y_T.Stream);
                 reader_Z_T = new AnalogSingleChannelReader(analogInTask_Z_T.Stream);
 
-                SetOutputState(Outputs.NI_HEATER_OUT, State.OFF);
-                SetOutputState(Outputs.NI_LIGHT11_OUT, State.OFF);
+                SetOutputState(Outputs.NI_HEATER_OUT, State.ON);
+                SetOutputState(Outputs.NI_LIGHT11_OUT, State.ON);
                 SetOutputState(Outputs.NI_LIGHT12_OUT, State.ON);
                 SetOutputState(Outputs.NI_LIGHT21_OUT, State.ON);
                 SetOutputState(Outputs.NI_LIGHT22_OUT, State.ON);
@@ -178,15 +178,26 @@ namespace uGCapture
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
-            base.exHeartBeatMessage(r, m);
-            Buffer<Byte> buffer = BufferPool.PopEmpty();
-            String output = "NIDAQ \n";
-            output += DateTime.Now.Ticks.ToString() + " ";
-            output += outputData;
-            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            buffer.setData(encoding.GetBytes(output), BufferType.UTF8_NI6008);
-            BufferPool.PostFull(buffer);
-            outputData = "";         
+            try
+            {
+                if (DaqSystem.Local.Devices.Length > 0)//we have a (the) NI device connected
+                {
+                    Buffer<Byte> buffer = BufferPool.PopEmpty();
+                    String output = "NIDAQ \n";
+                    output += DateTime.Now.Ticks.ToString() + " ";
+                    output += outputData;
+                    System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                    buffer.setData(encoding.GetBytes(output), BufferType.UTF8_NI6008);
+                    BufferPool.PostFull(buffer);
+                    outputData = "";
+                }
+            }
+            catch (NationalInstruments.DAQmx.DaqException eeeee)
+            {
+                //lets reset it
+                Reset();
+            }
+
         }
 
         public override void exAccumulateMessage(Receiver r, Message m)
@@ -202,7 +213,7 @@ namespace uGCapture
                     double analogDataIn_X_T = 0;
                     double analogDataIn_Y_T = 0;
                     double analogDataIn_Z_T = 0;
-                    analogDataIn_X_A = reader_X_A.ReadSingleSample();
+                    analogDataIn_X_A = reader_X_A.ReadSingleSample(); //throws a null reference exception if we start with it unplugged and then plug it in.
                     analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
                     analogDataIn_Z_A = reader_Z_A.ReadSingleSample();
                     analogDataIn_X_T = reader_X_T.ReadSingleSample(); //throws Daqexception upon pulling the cable
@@ -219,6 +230,10 @@ namespace uGCapture
             catch (NationalInstruments.DAQmx.DaqException eeeee)
             {
                 //lets reset it
+                Reset();
+            }
+            catch (NullReferenceException Squeee)
+            {
                 Reset();
             }
 
