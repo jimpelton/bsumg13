@@ -88,7 +88,7 @@ namespace gui
             //rTB_Debug_Output.SelectionStart = rTB_Debug_Output.TextLength;
             //rTB_Debug_Output.SelectionLength = 0;
             //rTB_Debug_Output.SelectionColor = col;
-            rTB_Debug_Output.Text = s2;
+            rTB_Debug_Output.Text += s2;
             //rTB_Debug_Output.SelectionColor = rTB_Debug_Output.ForeColor;
         }
 
