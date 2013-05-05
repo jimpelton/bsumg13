@@ -17,10 +17,10 @@ namespace gui
         private delegate void SetTextCallback(string s, Color col);
         private ImageDisplay guiImageDisplay = null;
 
-        public Form1()
+        public Form1(String config)
         {
             InitializeComponent();
-            guiMain = new GuiMain(this, "GuiMain");
+            guiMain = new GuiMain(this, "GuiMain",config );
             guiMain.Startup_Init();
             guiUpdater = guiMain.GuiUpdater;
 
