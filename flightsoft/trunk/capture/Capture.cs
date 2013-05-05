@@ -125,8 +125,7 @@ namespace uGCapture
         {
             phidgetsController = new PhidgetsController(bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_1018));
             if (phidgetsController.Initialize())
-            {
-                dp.Register(phidgetsController);
+            {              
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_1018);
                 dp.BroadcastLog(this,s,100);
                 Console.Error.WriteLine(s);
@@ -138,6 +137,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
+            dp.Register(phidgetsController);
         }
 
 	// Phidgits Accellerometer.
@@ -157,6 +157,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
+            dp.Register(accelControler);
         }
 
 	// Phidgits Spatial Accellerometer.
@@ -167,8 +168,7 @@ namespace uGCapture
 
             if (spatialController.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_SPTL);
-                dp.Register(spatialController);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_SPTL);              
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -178,6 +178,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
+            dp.Register(spatialController);
         }
 
 	// Sparkfun weatherboard through virtual com port.
@@ -188,8 +189,7 @@ namespace uGCapture
 
             if (weatherboard.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_VCOMM);
-                dp.Register(weatherboard);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_VCOMM);              
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -199,6 +199,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
+            dp.Register(weatherboard);
         }
 
 	// NI-6008 DAQ.
@@ -209,8 +210,7 @@ namespace uGCapture
 
             if (ni6008.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_NI_6008);
-                dp.Register(ni6008);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_NI_6008);              
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -220,6 +220,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
+            dp.Register(ni6008);
         }
     // APC UPS Data Getter
         private void initUPSController()
@@ -229,8 +230,7 @@ namespace uGCapture
 
             if (UPS.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_UPS);
-                dp.Register(UPS);
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_UPS);                
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -240,6 +240,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
+            dp.Register(UPS);
         }
 
         public override void exSetCaptureStateMessage(Receiver r, Message m)

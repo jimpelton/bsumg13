@@ -32,7 +32,9 @@ public class PhidgetsController : ReceiverController
     protected override bool init()
     {
        
-        bool initSuccess = openTempSenser() && openDAQ();
+        bool initSuccess = openTempSenser();
+        initSuccess &= openDAQ();
+
         if (initSuccess)
         {
             dp.BroadcastLog(this, "Phidgets started up...", 1);
@@ -114,7 +116,9 @@ public class PhidgetsController : ReceiverController
 
     void tempSensor_Attach(object sender, AttachEventArgs e)
     {
-
+        Phidget phid = sender as Phidget;
+        if (phid == null) return;
+        dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Attached", phid.Name), 5);
     }
     //TODO: Remove
     /*
@@ -131,7 +135,9 @@ public class PhidgetsController : ReceiverController
     */
     void ifKit_Attach(object sender, AttachEventArgs e)
     {
-
+        Phidget phid = sender as Phidget;
+        if (phid == null) return;
+        dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Attached", phid.Name), 5);
     }
 
     //TODO:Remove
@@ -177,27 +183,32 @@ public class PhidgetsController : ReceiverController
 
     public override void exHeartBeatMessage(Receiver r, Message m)
     {
-        base.exHeartBeatMessage(r, m);
-        Buffer<Byte> buffer = BufferPool.PopEmpty();
-        String output = "Phidgets \r\n";
-        output += DateTime.Now.Ticks.ToString() + " ";
-        output += outputData;
-        UTF8Encoding encoding = new UTF8Encoding();
-        buffer.setData(encoding.GetBytes(output), BufferType.UTF8_PHIDGETS);
-        BufferPool.PostFull(buffer);
-        outputData = "";        
+        if ((phidgetTemperature.Attached) | (phidgets1018.Attached))
+        {
+            Buffer<Byte> buffer = BufferPool.PopEmpty();
+            String output = "Phidgets \r\n";
+            output += DateTime.Now.Ticks.ToString() + " ";
+            output += outputData;
+            UTF8Encoding encoding = new UTF8Encoding();
+            buffer.setData(encoding.GetBytes(output), BufferType.UTF8_PHIDGETS);
+            BufferPool.PostFull(buffer);
+            outputData = "";
+        }
     }
 
     public override void exAccumulateMessage(Receiver r, Message m)
     {
-        //TODO: Send messages to the gui if  these are not attached.
 
+        outputData += "\r\n";
         if (phidgetTemperature.Attached)
-        {
-            outputData += "\r\n";
+        {          
             //TODO: add checks for if one of these dies we don't throw.
             outputData += phidgetTemperature.thermocouples[0].Temperature + " ";
             outputData += phidgetTemperature.ambientSensor.Temperature + " ";
+        }
+        else
+        {
+            outputData += "0 0 ";
         }
 
         if (phidgets1018.Attached)
@@ -207,6 +218,13 @@ public class PhidgetsController : ReceiverController
                 outputData += phidgets1018.sensors[i].RawValue + " ";
                 outputData += phidgets1018.inputs[i] + " ";
                 outputData += phidgets1018.outputs[i] + " ";
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                outputData += "0 0 0 ";
             }
         }
     }

@@ -120,8 +120,7 @@ namespace uGCapture
             {
                 Reset();
             }
-
-            Buffer<Byte> buffer = BufferPool.PopEmpty();
+           
             String output = "Weatherboard \n";
  
             lock (outputData)
@@ -134,13 +133,18 @@ namespace uGCapture
                 }
                 else
                 {
-                    output += DateTime.Now.Ticks.ToString() + " ";
-                    output += outputData;
+                    output = "";
                 }
             }
-            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
-            BufferPool.PostFull(buffer);
+
+            //break this out here to minimize the time in the lock.
+            if (output.Length > 0)
+            {
+                Buffer<Byte> buffer = BufferPool.PopEmpty();
+                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
+                BufferPool.PostFull(buffer);
+            }
 
         }
 

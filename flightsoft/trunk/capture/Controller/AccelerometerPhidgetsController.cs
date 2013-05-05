@@ -70,6 +70,9 @@ namespace uGCapture
                 attached.axes[0].Sensitivity = 0;
                 attached.axes[1].Sensitivity = 0;
                 attached.axes[2].Sensitivity = 0;
+                Phidget phid = sender as Phidget;
+                if (phid == null) return;
+                dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
             }
             catch (PhidgetException ex)
             {
