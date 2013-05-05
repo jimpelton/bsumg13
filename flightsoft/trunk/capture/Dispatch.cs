@@ -259,45 +259,5 @@ namespace uGCapture
                 //Console.WriteLine("Receiver: {0} Executed {1}", r.Id, m.GetType());
             }
         }
-
-        //we need to deliver the messages. At the moment it is bound to a timer. Should we do it this way?
-        //private void ProcessMessages(object source, ElapsedEventArgs e)
-        //{
-        //    deliver();
-        //}
-
-        //private void deliver()      
-        //{
-
-        //            foreach (ReceiverIdPair r in m_receiversMap.Values)
-
-        //            {
-        //                foreach (Message m in mesWait)
-        //                {
-        //                    r.rec.accept(m);
-        //                }
-        //            }
-
-        //            mesWait.Clear(); // after we send them out once lets not send them again.
-        //        }
-        //    }
-        //    catch (InvalidOperationException e)
-        //    {
-        //        Console.WriteLine(e.StackTrace);
-        //    }
-        //}
-
-        /// <summary>
-        /// Broadcast Message m to receiver specified by string.
-        /// </summary>
-        /// <param name="m">The message to broadcast.</param>
-        /// <param name="receiverId">The receiver of the message.</param>
-        //public void Broadcast(Message m, string receiverId)
-        //{
-        //    singleReceiverBroadcastMutex.WaitOne(TimeSpan.FromMilliseconds(100.0));
-        //    Receiver r = m_receiversMap[receiverId].rec;
-        //    r.accept(m);
-        //    singleReceiverBroadcastMutex.ReleaseMutex();
-        //}
     }
 }

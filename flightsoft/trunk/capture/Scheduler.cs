@@ -1,4 +1,9 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-04-27                                                                      
+// ******************************************************************************
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +28,6 @@ namespace uGCapture
             baseClock = new Timer();
             baseClock.Enabled = true;
             baseClock.Interval = 10;
-            //baseClock.SynchronizingObject = null;
             baseClock.Elapsed += beat;
         }
 

@@ -1,4 +1,11 @@
-﻿using System;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-05-05                                                                      
+// ******************************************************************************
+
+using System;
+using System.Text;
 using System.Threading;
 using System.Timers;
 using NationalInstruments;
@@ -34,13 +41,26 @@ namespace uGCapture
         private String outputData;
         private static Object hardwareMutex = new object();
 
-        public enum Outputs {NI_LIGHT11_OUT,NI_LIGHT21_OUT,NI_LIGHT12_OUT,NI_LIGHT22_OUT,NI_HEATER_OUT};
-        public enum State   {ON,OFF};
+        public enum Outputs
+        {
+            NI_LIGHT11_OUT,
+            NI_LIGHT21_OUT,
+            NI_LIGHT12_OUT,
+            NI_LIGHT22_OUT,
+            NI_HEATER_OUT
+        };
 
-        public NIController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
+        public enum State
+        {
+            ON,
+            OFF
+        };
+
+        public NIController(BufferPool<byte> bp, string id, bool receiving = true,
+                            int frame_time = 500)
+            : base(bp, id, receiving, frame_time)
         {
         }
-
 
 
         public override void DoFrame(object source, ElapsedEventArgs e)
@@ -57,9 +77,8 @@ namespace uGCapture
             try
             {
                 using (Task digitalWriteTask = new Task())
-                {                                    
-                    
-            /*      digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "",
+                {
+                    /*      digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "",
                         ChannelLineGrouping.OneChannelForAllLines);
                     digitalWriteTask.Start();
                    
@@ -69,13 +88,12 @@ namespace uGCapture
                     writer.WriteSingleSampleSingleLine(true, togglepo1);
                     
                     */
-                    
-                    
-                    
-                   // togglepo1 = !togglepo1;
+
+
+                    // togglepo1 = !togglepo1;
                     //DOChannel myChannel = digitalWriteTask.DOChannels.CreateChannel("Dev1/port0/line1", "", ChannelLineGrouping.OneChannelForAllLines);
                     //myChannel.OutputDriveType = DOOutputDriveType.ActiveDrive;
-                   // myChannel.InvertLines = true;
+                    // myChannel.InvertLines = true;
                 }
             }
             catch (DaqException ex)
@@ -113,9 +131,6 @@ namespace uGCapture
             BufferPool.PostFull(buffer);
 
             */
-
-
-
         }
 
         protected override bool init()
@@ -124,8 +139,8 @@ namespace uGCapture
             bool rval = true;
             try
             {
-
-                outs = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.DOLine, PhysicalChannelAccess.External);
+                outs = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.DOLine,
+                                                           PhysicalChannelAccess.External);
 
                 AIChannel_X_A = analogInTask_X_A.AIChannels.CreateVoltageChannel(
                     "dev1/ai0", "AIChannel_X_A", AITerminalConfiguration.Rse, 0, 5,
@@ -170,8 +185,6 @@ namespace uGCapture
             {
                 rval = false;
                 dp.BroadcastLog(this, "NI-USB-6008 failed to start up...", 1);
-                //throw new NIControllerNotInitializedException(
-                //    "NI-USB-6008 failed to start up...");
             }
             return rval;
         }
@@ -180,13 +193,14 @@ namespace uGCapture
         {
             try
             {
-                if (DaqSystem.Local.Devices.Length > 0)//we have a (the) NI device connected
+                if (DaqSystem.Local.Devices.Length > 0)
+                    //we have a (the) NI device connected
                 {
                     Buffer<Byte> buffer = BufferPool.PopEmpty();
                     String output = "NIDAQ \n";
                     output += DateTime.Now.Ticks.ToString() + " ";
                     output += outputData;
-                    System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                    UTF8Encoding encoding = new UTF8Encoding();
                     buffer.setData(encoding.GetBytes(output), BufferType.UTF8_NI6008);
                     BufferPool.PostFull(buffer);
                     outputData = "";
@@ -197,14 +211,14 @@ namespace uGCapture
                 //lets reset it
                 Reset();
             }
-
         }
 
         public override void exAccumulateMessage(Receiver r, Message m)
         {
             try
             {
-                if (DaqSystem.Local.Devices.Length > 0)//we have a (the) NI device connected
+                if (DaqSystem.Local.Devices.Length > 0)
+                    //we have a (the) NI device connected
                 {
                     base.exAccumulateMessage(r, m);
                     double analogDataIn_X_A = 0;
@@ -213,10 +227,12 @@ namespace uGCapture
                     double analogDataIn_X_T = 0;
                     double analogDataIn_Y_T = 0;
                     double analogDataIn_Z_T = 0;
-                    analogDataIn_X_A = reader_X_A.ReadSingleSample(); //throws a null reference exception if we start with it unplugged and then plug it in.
+                    analogDataIn_X_A = reader_X_A.ReadSingleSample();
+                        //throws a null reference exception if we start with it unplugged and then plug it in.
                     analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
                     analogDataIn_Z_A = reader_Z_A.ReadSingleSample();
-                    analogDataIn_X_T = reader_X_T.ReadSingleSample(); //throws Daqexception upon pulling the cable
+                    analogDataIn_X_T = reader_X_T.ReadSingleSample();
+                        //throws Daqexception upon pulling the cable
                     analogDataIn_Y_T = reader_Y_T.ReadSingleSample();
                     analogDataIn_Z_T = reader_Z_T.ReadSingleSample();
                     outputData += analogDataIn_X_A + " ";
@@ -236,31 +252,31 @@ namespace uGCapture
             {
                 Reset();
             }
-
         }
 
         public void SetOutputState(Outputs o, State s)
         {
             try
             {
-                if (DaqSystem.Local.Devices.Length > 0)//we have a (the) NI device connected
+                if (DaqSystem.Local.Devices.Length > 0)
+                    //we have a (the) NI device connected
                 {
                     switch (o)
                     {
                         case (Outputs.NI_HEATER_OUT):
-                            WriteState("Dev1/port0/line0",(s == State.ON) ? true : false);
+                            WriteState("Dev1/port0/line0", (s == State.ON) ? true : false);
                             break;
                         case (Outputs.NI_LIGHT11_OUT):
-                            WriteState("Dev1/port0/line1",(s == State.ON) ? true : false);
+                            WriteState("Dev1/port0/line1", (s == State.ON) ? true : false);
                             break;
                         case (Outputs.NI_LIGHT12_OUT):
-                            WriteState("Dev1/port0/line2",(s == State.ON) ? true : false);
+                            WriteState("Dev1/port0/line2", (s == State.ON) ? true : false);
                             break;
                         case (Outputs.NI_LIGHT21_OUT):
-                            WriteState("Dev1/port0/line3",(s == State.ON) ? true : false);
+                            WriteState("Dev1/port0/line3", (s == State.ON) ? true : false);
                             break;
                         case (Outputs.NI_LIGHT22_OUT):
-                            WriteState("Dev1/port0/line4",(s == State.ON) ? true : false);
+                            WriteState("Dev1/port0/line4", (s == State.ON) ? true : false);
                             break;
                     }
                 }
@@ -271,25 +287,26 @@ namespace uGCapture
                 Reset();
             }
         }
+
         private void WriteState(String sline, Boolean state)
         {
             try
             {
                 using (Task digitalWriteTask = new Task())
-                {                                                        
+                {
                     digitalWriteTask.DOChannels.CreateChannel(sline, "",
-                        ChannelLineGrouping.OneChannelForAllLines);                      
-                    DigitalSingleChannelWriter writer = new DigitalSingleChannelWriter(digitalWriteTask.Stream);
+                                                              ChannelLineGrouping
+                                                                  .OneChannelForAllLines);
+                    DigitalSingleChannelWriter writer =
+                        new DigitalSingleChannelWriter(digitalWriteTask.Stream);
                     writer.WriteSingleSampleSingleLine(true, state);
                     digitalWriteTask.Start();
-
                 }
             }
             catch (DaqException ex)
             {
                 dp.BroadcastLog(this, ex.Message, 1);
             }
-
         }
 
         private void Reset()
@@ -315,9 +332,4 @@ namespace uGCapture
         {
         }
     }
-
-
-
-
-
 }

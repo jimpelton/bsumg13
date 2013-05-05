@@ -18,7 +18,8 @@ namespace uGCapture
         private Spatial accel;
         private int SerialNumber;
         private String outputData;
-        public SpatialAccelController(BufferPool<byte> bp, string id, int serial, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
+        public SpatialAccelController(BufferPool<byte> bp, string id, int serial, bool receiving = true, int frame_time = 500) 
+            : base(bp, id, receiving, frame_time)
         {
             SerialNumber = serial;
             outputData = "";
@@ -27,6 +28,11 @@ namespace uGCapture
         protected override bool init()
         {
             return openAccel();
+        }
+
+        public override void DoFrame(object source, ElapsedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -80,20 +86,6 @@ namespace uGCapture
             }
         }
 
-        //TODO: Remove
-        //gets an raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise. (wip)
-        /*void accel_AccelerationChange(object sender, SpatialDataEventArgs e)
-        {
-            lock(rawAcceleration)//also used as a mutex for accel and vib since they are always changed together.               
-                for (int i = 0; i < 3; i++)
-                {
-                    double acc = e.spatialData[0].Acceleration[i];
-                    vibration[i] += Math.Abs(acc - rawAcceleration[i]);
-                    acceleration[i] = rawAcceleration[i]*0.01;
-                    acceleration[i] *= 0.99;
-                    rawAcceleration[i] = acc; 
-                }
-        }*/
 
         void Sensor_Detach(object sender, DetachEventArgs e)
         {
@@ -110,43 +102,6 @@ namespace uGCapture
             dp.BroadcastLog(this, String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
         }
 
-
-        /******************************************************
-        * DoFrame()
-        *******************************************************/
-
-        public override void DoFrame(object source, ElapsedEventArgs e)
-        {
-          /*  if (accel.Attached)
-            {
-                lock (rawAcceleration)// we dont use this here but we use this as the mutex for modifying accel and vib.
-                {
-
-                Buffer<Byte> buffer = BufferPool.PopEmpty();
-                String outputData = "Accel \n";
-
-                //TODO: maybe change these concatenations to StringBuilder, 
-                //      to ease string copies and GC-ing.
-                outputData += DateTime.Now.Ticks.ToString() + " ";
-                for (int i = 0; i < 3; i++)
-                    outputData += rawAcceleration[i] + " ";
-
-                for (int i = 0; i < 3; i++)
-                    outputData += acceleration[i] + " ";
-
-                for (int i = 0; i < 3; i++)
-                    outputData += vibration[i] + " ";
-
-              
-                buffer.setData(new UTF8Encoding().GetBytes(outputData),
-                    BufferType.UTF8_ACCEL);
-                buffer.Text = String.Format(accel.SerialNumber.ToString());
-                BufferPool.PostFull(buffer);
-            }
-
-            }*/
-
-        }
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
