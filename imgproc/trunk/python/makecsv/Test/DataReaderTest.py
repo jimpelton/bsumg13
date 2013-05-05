@@ -38,8 +38,50 @@ class MyTestCase(unittest.TestCase):
         df.update()
         dr = ugDataReader.ugDataReader(df)
         dr.update()
-        layout = dr.layout()
-        i = 0
+
+        layout_dict = dr.layout()
+        self.assertEqual(layout_dict['400 uL MC3T3'], [49, 50])
+
+        print(layout_dict)
+# '5': [18]
+#  '4': [25]
+#  '7': [16]
+#  '6': [17]
+#  '1': [46]
+#  '25 uL MC3T3': [21 22]
+#  '3': [32]
+#  '2': [39]
+#  'Co-culture on cytopore no dye': [11]
+#  '25 uL MLOY4': [19 20]
+#  '8': [15]
+#  '100 uL MLOY4': [33 34]
+#  '200 uL co culture': [44 45]
+#  '50 uL MLOY4': [26 27]
+#  '200 uL MLOY4': [40 41]
+#  'MC3T3 on cytopore no dye': [10]
+#  '400 uL MLOY4': [47 48]
+#  '200 uL MC3T3': [42 43]
+#  '400 uL MC3T3': [49 50]
+#  '100 uL MC3T3': [35 36]
+#  '100 uL co culture': [37 38]
+#  'MLO-Y4 on cytopore no dye': [9]
+#  '50 uL MC3T3': [28 29]
+#  'H': [0]
+#  'E': [3]
+#  'D': [4]
+#  'G': [1]
+#  'F': [2]
+#  'A': [7]
+#  '11': [12]
+#  'C': [5]
+#  'B': [6]
+#  '400 uL co culture': [51 52]
+#  '50uL co cilture': [30 31]
+#  '25 uL co culture': [23 24]
+#  '12': [8]
+#  '9': [14]
+#  '10': [13]
+
 
 
 if __name__ == '__main__':

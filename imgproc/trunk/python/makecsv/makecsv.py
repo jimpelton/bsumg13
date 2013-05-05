@@ -7,6 +7,7 @@ import ugDataWriter
 import numpy as np
 from ugDataFile import ugDataFile
 
+NUM_WELLS = 96
 
 def getArgs():
     """
@@ -63,7 +64,7 @@ def ccSlice(source):
     :param source: numpy array of 96 well values.
     :return: one row of 20 columns of the values for the cc wells.
     """
-    w = range(96)
+    w = range(NUM_WELLS)
     ccvals = source[w[0:4], w[12:16], w[24:28], w[36:40],
                     w[48:52], w[60:64], w[72:76]]
     return ccvals
@@ -86,9 +87,9 @@ def calculateRatios(values405, values485):
     """
     print("Calculating Ratios...")
     shortest = min(len(values405), len(values485))
-    rats = np.zeros((shortest, 96), dtype=np.float64)
+    rats = np.zeros((shortest, NUM_WELLS), dtype=np.float64)
     for row in range(shortest):
-        for col in range(96):
+        for col in range(NUM_WELLS):
             rats[row][col] = values405[row][col] / values485[row][col]
     return rats
 
@@ -117,7 +118,7 @@ def main():
     slice405 = dataReader.valuesList("dir405")
     slice485 = dataReader.valuesList("dir485")
     ratios = calculateRatios(slice405, slice485)
-    cars = conc.calculateConcentrations(ratios, slice405, slice485)
+    # cars = conc.calculateConcentrations(ratios, slice405, slice485)
 
 
 
@@ -126,17 +127,17 @@ def main():
     dw.writeGravity(dataFile.dirout() + 'Data405.dat', slice405)
     dw.writeGravity(dataFile.dirout() + 'Data485.dat', slice485)
     dw.writeGravity(dataFile.dirout() + 'rat.dat', ratios)
-    dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
-    dw.writeValues(dataFile.dirout() + 'cars.dat', cars.Concs)
-    dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', cars.F485MaxVals)
-    dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', cars.F405MaxVals)
-    dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', cars.F485MinVals)
-    dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', cars.F405MinVals)
-    dw.writeValues(dataFile.dirout() + 'QVals.dat', cars.QVals)
-    dw.writeValues(dataFile.dirout() + 'RminVals.dat', cars.RminVals)
-    dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', cars.RmaxVals)
-    dw.writeValues(dataFile.dirout() + 'NumVals.dat', cars.NumVals)
-    dw.writeValues(dataFile.dirout() + 'DenVals.dat', cars.DenVals)
+    # dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
+    # dw.writeValues(dataFile.dirout() + 'cars.dat', cars.Concs)
+    # dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', cars.F485MaxVals)
+    # dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', cars.F405MaxVals)
+    # dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', cars.F485MinVals)
+    # dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', cars.F405MinVals)
+    # dw.writeValues(dataFile.dirout() + 'QVals.dat', cars.QVals)
+    # dw.writeValues(dataFile.dirout() + 'RminVals.dat', cars.RminVals)
+    # dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', cars.RmaxVals)
+    # dw.writeValues(dataFile.dirout() + 'NumVals.dat', cars.NumVals)
+    # dw.writeValues(dataFile.dirout() + 'DenVals.dat', cars.DenVals)
 
 
 if __name__ == '__main__':

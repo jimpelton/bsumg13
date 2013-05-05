@@ -12,6 +12,7 @@ class ugDataFile:
     Reads directories and stores a list of the filenames for each file
     in the list.
     """
+
     def __init__(self,
                  layout=None, dir405=None, dir485=None,
                  dirgrav=None, dirbaro=None, dirphid=None,
@@ -59,14 +60,12 @@ class ugDataFile:
         else:
             return None
 
-
     def update(self):
         if self._needsUpdate:
             print("DataFile doing update.")
             self._readNames()
             self._shortest = min([len(v[1]) for v in self._filesDict.values()])
             self._needsUpdate = False
-
 
     def fileNames(self, typeString):
         """
@@ -79,7 +78,6 @@ class ugDataFile:
             return d[1][self._startingIndex:self._endingIndex + 1]
         else:
             return []
-
 
     def fromTo(self, sIdx=0, eIdx=0):
         """
@@ -100,15 +98,13 @@ class ugDataFile:
         return [int(k) if k.isdigit() else k for k in re.split(self._NumReg, s)]
 
     def _readNames(self):
-
-
-            for item in self._filesDict.values():
-                if not os.path.isdir(item[0]):
-                    print("{0} does not appear to be directory.".format(item[0]))
-                    continue
-                for x in os.listdir(item[0]):
-                    item[1].append(x)
-                item[1].sort(key=self.human_sort)
+        for item in self._filesDict.values():
+            if not os.path.isdir(item[0]):
+                print("{0} does not appear to be directory.".format(item[0]))
+                continue
+            for x in os.listdir(item[0]):
+                item[1].append(x)
+            item[1].sort(key=self.human_sort)
 
             # if self._startingIndex == self._endingIndex:
             #      self._findStartingIndex()
