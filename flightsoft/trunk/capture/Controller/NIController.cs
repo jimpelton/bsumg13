@@ -30,21 +30,11 @@ namespace uGCapture
         private AnalogSingleChannelReader reader_Y_T;
         private AnalogSingleChannelReader reader_Z_T;
 
-        //digital out
-        private DOChannel doChannel1;
-        private DOChannel doChannel2;
-        private DOChannel doChannel3;
-        private DigitalSingleChannelWriter writer1;
-        private DigitalSingleChannelWriter writer2;
-        private DigitalSingleChannelWriter writer3;
-
-        private Task digitalWriteTask;
-
         private string[] outs;
         private String outputData;
         private static Object hardwareMutex = new object();
 
-        public enum Outputs {NI_LIGHT1_OUT,NI_LIGHT2_OUT,NI_HEATER_OUT};
+        public enum Outputs {NI_LIGHT11_OUT,NI_LIGHT21_OUT,NI_LIGHT12_OUT,NI_LIGHT22_OUT,NI_HEATER_OUT};
         public enum State   {ON,OFF};
 
         public NIController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
@@ -168,21 +158,12 @@ namespace uGCapture
                 reader_Y_T = new AnalogSingleChannelReader(analogInTask_Y_T.Stream);
                 reader_Z_T = new AnalogSingleChannelReader(analogInTask_Z_T.Stream);
 
+                SetOutputState(Outputs.NI_HEATER_OUT, State.OFF);
+                SetOutputState(Outputs.NI_LIGHT11_OUT, State.OFF);
+                SetOutputState(Outputs.NI_LIGHT12_OUT, State.ON);
+                SetOutputState(Outputs.NI_LIGHT21_OUT, State.ON);
+                SetOutputState(Outputs.NI_LIGHT22_OUT, State.ON);
 
-                //set up the digital outs
-                digitalWriteTask = new Task();
-                doChannel1 = digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "Chan1",
-                    ChannelLineGrouping.OneChannelForAllLines);
-                writer1 = new DigitalSingleChannelWriter(digitalWriteTask.Stream); 
-                doChannel2 = digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line1", "Chan2",
-                    ChannelLineGrouping.OneChannelForAllLines);                
-                writer2 = new DigitalSingleChannelWriter(digitalWriteTask.Stream); 
-                doChannel3 = digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line2", "Chan3",
-                    ChannelLineGrouping.OneChannelForAllLines);
-                writer3 = new DigitalSingleChannelWriter(digitalWriteTask.Stream);
-
-                digitalWriteTask.Start();
-                SetOutputState(Outputs.NI_LIGHT1_OUT, State.ON);
                 dp.BroadcastLog(this, "NI-USB-6008 started up...", 1);
             }
             catch (NationalInstruments.DAQmx.DaqException)
@@ -251,14 +232,20 @@ namespace uGCapture
                 {
                     switch (o)
                     {
-                        case (Outputs.NI_LIGHT1_OUT):
-                            writer1.WriteSingleSampleSingleLine(true, (s == State.ON) ? true : false);
-                            break;
-                        case (Outputs.NI_LIGHT2_OUT):
-                            writer2.WriteSingleSampleSingleLine(true, (s == State.ON) ? true : false);
-                            break;
                         case (Outputs.NI_HEATER_OUT):
-                            writer3.WriteSingleSampleSingleLine(true, (s == State.ON) ? true : false);
+                            WriteState("Dev1/port0/line0",(s == State.ON) ? true : false);
+                            break;
+                        case (Outputs.NI_LIGHT11_OUT):
+                            WriteState("Dev1/port0/line1",(s == State.ON) ? true : false);
+                            break;
+                        case (Outputs.NI_LIGHT12_OUT):
+                            WriteState("Dev1/port0/line2",(s == State.ON) ? true : false);
+                            break;
+                        case (Outputs.NI_LIGHT21_OUT):
+                            WriteState("Dev1/port0/line3",(s == State.ON) ? true : false);
+                            break;
+                        case (Outputs.NI_LIGHT22_OUT):
+                            WriteState("Dev1/port0/line4",(s == State.ON) ? true : false);
                             break;
                     }
                 }
@@ -268,6 +255,26 @@ namespace uGCapture
                 //lets reset it
                 Reset();
             }
+        }
+        private void WriteState(String sline, Boolean state)
+        {
+            try
+            {
+                using (Task digitalWriteTask = new Task())
+                {                                                        
+                    digitalWriteTask.DOChannels.CreateChannel(sline, "",
+                        ChannelLineGrouping.OneChannelForAllLines);                      
+                    DigitalSingleChannelWriter writer = new DigitalSingleChannelWriter(digitalWriteTask.Stream);
+                    writer.WriteSingleSampleSingleLine(true, state);
+                    digitalWriteTask.Start();
+
+                }
+            }
+            catch (DaqException ex)
+            {
+                dp.BroadcastLog(this, ex.Message, 1);
+            }
+
         }
 
         private void Reset()

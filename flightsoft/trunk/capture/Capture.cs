@@ -40,6 +40,7 @@ namespace uGCapture
         private AptinaController ac2;
         private VCommController weatherboard;
         private NIController ni6008;
+        private UPSController UPS;
 
         private Thread acThread1;
         private Thread acThread2;
@@ -62,6 +63,7 @@ namespace uGCapture
             initSpatialController();
             initWeatherBoard();
             initNI6008Controller();
+            initUPSController();
 
             //m_timer.Enabled = false;
             dp.Register(this);
@@ -215,6 +217,26 @@ namespace uGCapture
             else
             {
                 string s = Str.GetErrStr(ErrStr.INIT_FAIL_NI_6008);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
+            }
+        }
+
+        private void initUPSController()
+        {
+            UPS = new UPSController(bufferPool,
+                Str.GetIdStr(IdStr.ID_UPS));
+
+            if (UPS.Initialize())
+            {
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_UPS);
+                dp.Register(UPS);
+                dp.BroadcastLog(this, s, 100);
+                Console.Error.WriteLine(s);
+            }
+            else
+            {
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_UPS);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }

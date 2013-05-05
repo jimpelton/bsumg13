@@ -15,6 +15,10 @@ namespace uGCapture
     {
         private uint index485 = 0;
         private uint index405 = 0;
+        private uint indexbarometer = 0;
+        private uint index1018 = 0;
+        
+
 
         public string DirectoryName
         {
@@ -111,7 +115,7 @@ namespace uGCapture
                     {
                         case (BufferType.UTF8_VCOMM):
                             w.WriteOutput(fulbuf, "Barometer_",
-                                          Math.Max(w.index405, w.index485), ".txt");
+                                          w.indexbarometer++, ".txt");
                             //w.WriteWeatherboardOutput(fulbuf, Math.Min(w.index405, w.index485));
                             break;
                         case (BufferType.UTF8_PHIDGETS):

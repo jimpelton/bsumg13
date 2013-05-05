@@ -75,7 +75,6 @@ public class AptinaController : ReceiverController
         }
 
         runningMutex = new Mutex();
-
         barrierCounter = 0;
         tnum = nextIdx;
         nextIdx += 1;
@@ -112,7 +111,7 @@ public class AptinaController : ReceiverController
         {
             rval = false;
         }
-
+        
         
         ////IsReceiving = r == 0 && size != 0;
         //IsReceiving = true;
@@ -180,7 +179,7 @@ public class AptinaController : ReceiverController
                 }
                 Marshal.Copy(new IntPtr(data), me.dest, 0, (int) me.size);
             }
-
+            
             Buffer<Byte> imagebuffer = me.BufferPool.PopEmpty();
 
             BufferType bufferType = me.msc.managed_GetWavelength() == 405 ? 
@@ -188,6 +187,9 @@ public class AptinaController : ReceiverController
 
             imagebuffer.setData(me.dest, bufferType);
             imagebuffer.Text = DateTime.Now.Millisecond.ToString();
+
+
+
             me.BufferPool.PostFull(imagebuffer);
             
         }   
