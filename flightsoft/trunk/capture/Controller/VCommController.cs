@@ -36,7 +36,6 @@ namespace uGCapture
             {
                 port.Close();
             }
-
             try
             {
                 port.Open();
@@ -49,7 +48,7 @@ namespace uGCapture
             catch (UnauthorizedAccessException e)
             {
                 Console.WriteLine(e.StackTrace);
-                port.Close();
+                port.Close();              
                 rval = false;
             }
             return rval;
@@ -79,41 +78,70 @@ namespace uGCapture
 
         private void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if (port.BytesToRead > 64)
+            try
             {
-                string data = port.ReadLine();
-                lock (outputData)
+                if (port.BytesToRead > 64)
                 {
-                    outputData = data;
-                    hasNewData = true;
-                }                              
+                    string data = port.ReadLine();
+                    lock (outputData)
+                    {
+                        outputData = data;
+                        hasNewData = true;
+                    }
+                }
             }
+            catch (System.InvalidOperationException err) 
+            {
+                Reset();
+            }
+            catch (System.TimeoutException err) 
+            {
+                Reset();
+            }
+
+        }
+
+        private void Reset()
+        {
+            init();
         }
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
-            
+            //test the port.
+            try
+            {
+                if (!port.IsOpen)
+                {
+                    Reset();
+                } 
+            }
+            catch (System.UnauthorizedAccessException err)
+            {
+                Reset();
+            }
+
             Buffer<Byte> buffer = BufferPool.PopEmpty();
             String output = "Weatherboard \n";
-
+ 
             lock (outputData)
             {
                 if (hasNewData)
                 {
                     output += DateTime.Now.Ticks.ToString() + " ";
-                    output += outputData;                
+                    output += outputData;
                     hasNewData = false;
                 }
                 else
                 {
                     output += DateTime.Now.Ticks.ToString() + " ";
-                    output += outputData;                 
+                    output += outputData;
                 }
             }
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
             BufferPool.PostFull(buffer);
-            
+
         }
 
 

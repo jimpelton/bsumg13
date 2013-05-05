@@ -167,8 +167,11 @@ namespace uGCapture
 
         public override void exAccumulateMessage(Receiver r, Message m)
         {
-            for (int i = 0; i < 3; i++)
-                outputData += accel.accelerometerAxes[i].Acceleration + " ";
+            if (accel.Attached)
+            {
+                for (int i = 0; i < 3; i++)
+                    outputData += accel.accelerometerAxes[i].Acceleration + " ";
+            }
         }
 
 

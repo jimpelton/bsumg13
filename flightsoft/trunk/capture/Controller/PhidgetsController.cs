@@ -190,19 +190,25 @@ public class PhidgetsController : ReceiverController
 
     public override void exAccumulateMessage(Receiver r, Message m)
     {
-        base.exAccumulateMessage(r, m);
-        outputData += "\r\n";
-        //TODO: add checks for if one of these dies we don't throw.
-        outputData += phidgetTemperature.thermocouples[0].Temperature+ " ";
-        outputData += phidgetTemperature.ambientSensor.Temperature + " ";
-        
-        for (int i = 0; i < 8; i++)
+        //TODO: Send messages to the gui if  these are not attached.
+
+        if (phidgetTemperature.Attached)
         {
-            outputData += phidgets1018.sensors[i].RawValue + " ";
-            outputData += phidgets1018.inputs[i] + " ";
-            outputData += phidgets1018.outputs[i] + " ";
+            outputData += "\r\n";
+            //TODO: add checks for if one of these dies we don't throw.
+            outputData += phidgetTemperature.thermocouples[0].Temperature + " ";
+            outputData += phidgetTemperature.ambientSensor.Temperature + " ";
         }
-        
+
+        if (phidgets1018.Attached)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                outputData += phidgets1018.sensors[i].RawValue + " ";
+                outputData += phidgets1018.inputs[i] + " ";
+                outputData += phidgets1018.outputs[i] + " ";
+            }
+        }
     }
 
 
