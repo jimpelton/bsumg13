@@ -108,13 +108,16 @@ namespace uGCapture
         public virtual void exLogMessage(Receiver r, Message m) { ; }
 
         /// <summary>
-        /// Act on a ReceiverCleanUpMessage().
+        /// Act on a ReceiverCleanUpMessage(). Default behavior of 
+        /// Receiver.exReceiverCleanUpMessage() is to set IsReceiving=false,
+        ///  causing the message processing thread for this Receiver to exit 
+        /// on the next heart beat.
         /// 
         /// The parent method Receiver.exReceiverCleanUpMessage needs to be called or
-        /// none of the threads will get IsReceiving=false, or you need to set IsReceiving=false
-        /// everywhere exReceiverCleanUpMessage is reimplemented.
+        /// none of the threads will get IsReceiving=false, or you need to set 
+        /// IsReceiving=false manually.
         /// 
-        /// On the next heartbeat sleeping threads will cycle and break out of there worker loop.
+        /// On the next heartbeat sleeping threads will cycle and break out of the worker loop.
         /// </summary>
         public virtual void exReceiverCleanUpMessage(Receiver r, Message m)
         {

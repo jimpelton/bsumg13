@@ -3,7 +3,7 @@ using NUnit.Framework;
 using uGCapture;
 using System.Threading;
 
-namespace CaptureTest
+namespace captureTest
 {
     [TestFixture]
     public class AptinaControllerTest

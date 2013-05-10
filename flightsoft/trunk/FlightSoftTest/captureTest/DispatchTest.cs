@@ -9,57 +9,6 @@ namespace captureTest
     [TestFixture]
     public class DispatchTest
     {
-        internal class TinyMockMessage : Message
-        {
-            public TinyMockMessage(Receiver sender) : base(sender)
-            {
-            }
-
-            public override void execute(Receiver r)
-            {
-                r.exTest(r, this);
-            }
-        }
-
-        internal class TinyMockReceiver : Receiver
-        {
-            
-            public TinyMockReceiver(string id, bool receiving = true) 
-                : base(id, receiving)
-            {
-            }
-
-            public void init()
-            {
-                dp.Register(this);
-            }
-
-            private int msgCount = 0;
-            public int MsgCount
-            {
-                get { return msgCount; }
-                set { msgCount = value; }
-            }
-
-            public override void exTest(Receiver r, Message m)
-            {
-                MsgCount++;
-                Console.WriteLine("Received! " + MsgCount);
-            }
-        }
-
-        internal class TinyMockSender : Receiver
-        {
-            public TinyMockSender(string id, bool receiving = true) : base(id, receiving)
-            {
-            }
-            
-            public void SendTinyMockMessage(Receiver from)
-            {
-                dp.Broadcast(new TinyMockMessage(from));
-            }
-
-        }
 
         [Test]
         public void SimpleMessageDispatchTest()

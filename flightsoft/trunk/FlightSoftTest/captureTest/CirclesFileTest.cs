@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using uGCapture;
 
-namespace CaptureTest
+namespace captureTest
 {
     public class CirclesFileTest
     {

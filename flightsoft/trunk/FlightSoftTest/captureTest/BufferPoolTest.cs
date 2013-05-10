@@ -3,7 +3,7 @@ using NUnit.Framework;
 using uGCapture;
 using System.Collections.Generic;
 
-namespace CaptureTest
+namespace captureTest
 {
     [TestFixture]
     public class BufferPoolTest
@@ -71,17 +71,17 @@ namespace CaptureTest
             CollectionAssert.AreEqual(expected, actual.Data);
         }
 
-        [Test]
-        public void PopEmpty_Test()
-        {
-            BufferPool<byte> bp = new BufferPool<byte>();
-            Assert.IsNull(bp.PopEmpty());
-            int numelem = 10;
-            int numbuffs = 2;
-            bp = new BufferPool<byte>(numbuffs, numelem);
-            Buffer<byte> emptyBuff = bp.PopEmpty();
-            Assert.IsNotNull(emptyBuff);
-        }
+        //[Test]
+        //public void PopEmpty_Test()
+        //{
+        //    BufferPool<byte> bp = new BufferPool<byte>();
+        //    Assert.IsNull(bp.PopEmpty());
+        //    int numelem = 10;
+        //    int numbuffs = 2;
+        //    bp = new BufferPool<byte>(numbuffs, numelem);
+        //    Buffer<byte> emptyBuff = bp.PopEmpty();
+        //    Assert.IsNotNull(emptyBuff);
+        //}
 
         [Test]
         public void PopFull_Test()

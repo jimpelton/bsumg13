@@ -130,19 +130,15 @@ public class AptinaController : ReceiverController
 
     public static void go(AptinaController me)
     {
-        int curval;
-        //me.runningMutex.WaitOne();
         if (me.IsRunning || !me.IsInit)
         {
-            //me.runningMutex.ReleaseMutex();
             return;
         }
         me.IsRunning = true;
-        //me.runningMutex.ReleaseMutex();
 
         while (true)
         {
-            curval = Interlocked.Increment(ref barrierCounter);
+            int curval = Interlocked.Increment(ref barrierCounter);
             if (curval == numcams)
             {
                 barrierCounter = 0;
@@ -152,22 +148,17 @@ public class AptinaController : ReceiverController
             {
                 barrierSemaphore.WaitOne();
             }
-            Console.WriteLine("Aptina Controller Capture {0} begin. Time: {1:g}", me.tnum, DateTime.Now.TimeOfDay);
+            //Console.WriteLine("Aptina Controller Capture {0} begin. Time: {1:g}", me.tnum, DateTime.Now.TimeOfDay);
 
-            //me.runningMutex.WaitOne();
             if (!me.IsRunning)
             {
-                
-                //me.runningMutex.ReleaseMutex();
-
                 string mes = "Aptina controller " + me.tnum + " exiting"; 
-                Console.WriteLine(mes);
 
+                Console.WriteLine(mes);
                 me.dp.BroadcastLog(me, mes, 3);
                 barrierSemaphore.Release(1);  
                 return;
             }
-            //me.runningMutex.ReleaseMutex();
 
             unsafe
             {
@@ -187,11 +178,7 @@ public class AptinaController : ReceiverController
 
             imagebuffer.setData(me.dest, bufferType);
             imagebuffer.Text = DateTime.Now.Millisecond.ToString();
-
-
-
             me.BufferPool.PostFull(imagebuffer);
-            
         }   
     }
 
@@ -199,19 +186,5 @@ public class AptinaController : ReceiverController
     {
         throw new NotImplementedException("The method or operation is not implemented.");
     }
-
-    public override void exHeartBeatMessage(Receiver r, Message m)
-    {
-        base.exHeartBeatMessage(r, m);
-       // throw new NotImplementedException();
-
-    }
 }
-
-    public class AptinaControllerNotInitializedException : Exception
-    {
-        public AptinaControllerNotInitializedException(string message) : base(message)
-        {
-        }
-    }
 }

@@ -31,9 +31,10 @@ public class PhidgetsController : ReceiverController
    
     protected override bool init()
     {
-       
-        bool initSuccess = openTempSenser();
-        initSuccess &= openDAQ();
+        bool initSuccess = openTempSenser() && openDAQ();
+        //initSuccess &= openDAQ(); // bitwise & will shortcircuit and openDAQ() 
+	                            // will not get called if openTempSensor() returns false.
+	                            // is this what you wanted?  --JP
 
         if (initSuccess)
         {
@@ -160,25 +161,7 @@ public class PhidgetsController : ReceiverController
 
     public override void DoFrame(object source, ElapsedEventArgs e)
     {
- /*
-        Buffer<Byte> buffer = BufferPool.PopEmpty();
 
-        String outputData = "Phidgets\n";
-        outputData += DateTime.Now.Ticks.ToString() + " ";
-        outputData += phidgetTemperature_ProbeTemp + " ";
-        outputData += phidgetTemperature_AmbientTemp + " ";
-        for (int i = 0; i < 8; i++)
-        {
-            outputData += analogInputs[i].ToString() + " ";
-            outputData += digitalInputs[i].ToString() + " ";
-            outputData += digitalOutputs[i].ToString() + " ";
-        }
-
-        System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-        buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_PHIDGETS);
-        buffer.Text = "Phidgets"; // String.Format("Phidgets");
-        BufferPool.PostFull(buffer);
-   */
     }
 
     public override void exHeartBeatMessage(Receiver r, Message m)
@@ -228,16 +211,8 @@ public class PhidgetsController : ReceiverController
             }
         }
     }
-
-
 }
-public class PhidgetsControllerNotInitializedException : Exception
-{
-    public PhidgetsControllerNotInitializedException(string message)
-        : base(message)
-    {
-    }
-}
+
 
 }
 

@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using uGCapture;
 
-namespace CaptureTest
+namespace captureTest
 {
     [TestFixture]
     public class MockDataTest

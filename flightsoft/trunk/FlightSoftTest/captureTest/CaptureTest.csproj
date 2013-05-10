@@ -61,6 +61,8 @@
     <Compile Include="MockDataTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DispatchTest.cs" />
+    <Compile Include="TinyMock.cs" />
+    <Compile Include="StagingTest.cs" />
     <Compile Include="WriterTest.cs" />
   </ItemGroup>
   <ItemGroup>

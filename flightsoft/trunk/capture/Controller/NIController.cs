@@ -181,7 +181,7 @@ namespace uGCapture
 
                 dp.BroadcastLog(this, "NI-USB-6008 started up...", 1);
             }
-            catch (NationalInstruments.DAQmx.DaqException)
+            catch (DaqException)
             {
                 rval = false;
                 dp.BroadcastLog(this, "NI-USB-6008 failed to start up...", 1);
@@ -206,7 +206,7 @@ namespace uGCapture
                     outputData = "";
                 }
             }
-            catch (NationalInstruments.DAQmx.DaqException eeeee)
+            catch (DaqException eeeee)
             {
                 //lets reset it
                 Reset();
@@ -321,15 +321,6 @@ namespace uGCapture
             {
                 //probably not connected at this point. Try again next time.
             }
-        }
-    }
-
-
-    public class NIControllerNotInitializedException : Exception
-    {
-        public NIControllerNotInitializedException(string message)
-            : base(message)
-        {
         }
     }
 }

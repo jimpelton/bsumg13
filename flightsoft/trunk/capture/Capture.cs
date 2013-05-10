@@ -7,7 +7,6 @@
 using System;
 using System.Threading;
 using System.Timers;
-using Timer = System.Timers.Timer;
 
 namespace uGCapture 
 {
@@ -65,7 +64,6 @@ namespace uGCapture
             initNI6008Controller();
             initUPSController();
 
-            //m_timer.Enabled = false;
             dp.Register(this);
         }
 
@@ -77,19 +75,18 @@ namespace uGCapture
 	    if (writer.Initialize())
 	    {
 	        wrtThread = new Thread(() => Writer.WriteData(writer));
-	        //	    writer.IsRunning = true;
 	        wrtThread.Start();
 	        dp.Register(writer);
 	    }
 	    else
 	    {
 	        string s = Str.GetErrStr(ErrStr.INIT_FAIL_WRITER);
-	        dp.BroadcastLog(this, s , 100);
+	        dp.BroadcastLog(this, s, 100);
             Console.WriteLine(s);
 	    }
 	}
-	
-	//Aptina cameras.
+
+    //Aptina cameras.
         private void initAptina()
         {
             ac1 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE));
@@ -143,8 +140,9 @@ namespace uGCapture
 	// Phidgits Accellerometer.
         private void initAccelController()
         {
+            const int accelerometer_serial_number = 159352;
             accelControler = new AccelerometerPhidgetsController(bufferPool, 
-                Str.GetIdStr(IdStr.ID_PHIDGETS_ACCEL), 159352);
+                Str.GetIdStr(IdStr.ID_PHIDGETS_ACCEL), accelerometer_serial_number);
             if (accelControler.Initialize())
             {
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_ACCEL);
@@ -163,8 +161,9 @@ namespace uGCapture
 	// Phidgits Spatial Accellerometer.
         private void initSpatialController()
         {
+            const int spatial_serial_number = 169140;
             spatialController = new SpatialAccelController(bufferPool, 
-                Str.GetIdStr(IdStr.ID_PHIDGETS_SPATIAL), 169140);
+                Str.GetIdStr(IdStr.ID_PHIDGETS_SPATIAL), spatial_serial_number);
 
             if (spatialController.Initialize())
             {
@@ -222,7 +221,8 @@ namespace uGCapture
             }
             dp.Register(ni6008);
         }
-    // APC UPS Data Getter
+
+        // APC UPS Data Getter
         private void initUPSController()
         {
             UPS = new UPSController(bufferPool,
@@ -248,6 +248,14 @@ namespace uGCapture
             SetCaptureStateMessage lm = m as SetCaptureStateMessage;
             if (lm == null) return;
             boolCapturing = lm.running;
+        }
+
+        public override void exReceiverCleanUpMessage(Receiver r, Message m)
+        {
+            ac1.stop();
+            ac2.stop();
+            writer.stop();
+            base.exReceiverCleanUpMessage(r, m);
         }
     }
 }
