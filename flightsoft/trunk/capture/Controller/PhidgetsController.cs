@@ -31,11 +31,11 @@ public class PhidgetsController : ReceiverController
    
     protected override bool init()
     {
-        bool initSuccess = openTempSenser() && openDAQ();
-        //initSuccess &= openDAQ(); // bitwise & will shortcircuit and openDAQ() 
-	                            // will not get called if openTempSensor() returns false.
-	                            // is this what you wanted?  --JP
+        bool temp_res = openTempSenser();
+        bool daq_res = openDAQ();
 
+        bool initSuccess = temp_res && daq_res;
+	    
         if (initSuccess)
         {
             dp.BroadcastLog(this, "Phidgets started up...", 1);
