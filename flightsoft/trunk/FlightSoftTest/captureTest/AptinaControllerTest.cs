@@ -11,7 +11,8 @@ namespace CaptureTest
         [Test]
         public void InitMidlibTest()
         {
-            BufferPool<byte> bp = new BufferPool<byte>(10, 16777216);
+            const int pool_size_bytes = 16777216;
+            BufferPool<byte> bp = new BufferPool<byte>(10, pool_size_bytes);
             AptinaController ac = new AptinaController(bp, "Ac1");
             ac.Initialize();
 
