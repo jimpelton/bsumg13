@@ -61,11 +61,11 @@ namespace captureTest
         [TearDown]
         public void After()
         {
-	    //cycle the buffer pool one last time to kill its worker thread.
+            //cycle the buffer pool one last time to kill its worker thread.
             testWriter.IsRunning = false;
             Buffer<byte> b = bufPool.PopEmpty();
-	    b.Type = BufferType.EMPTY_CYCLE;
-	    bufPool.PostFull(b);
+            b.Type = BufferType.EMPTY_CYCLE;
+            bufPool.PostFull(b);
 	    
             try
             {
