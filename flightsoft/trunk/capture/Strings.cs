@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-05-05                                                                      
+// ******************************************************************************
 
 namespace uGCapture
 {
@@ -29,6 +29,10 @@ namespace uGCapture
         INIT_OK_UPS
     }
 
+    /// <summary>
+    /// Id's unique to each receiver.
+    /// Use these in conjunction with Str.GetMsgStr()
+    /// </summary>
     enum IdStr
     {
         ID_WRITER,          
@@ -39,7 +43,7 @@ namespace uGCapture
         ID_PHIDGETS_SPATIAL,
         ID_VCOMM,    
         ID_NI_DAQ,
-        ID_UPS   
+        ID_UPS,
     }
 
     class Str
@@ -93,9 +97,9 @@ namespace uGCapture
             }
         }
 
-        public static string GetIdStr(IdStr msg)
+        public static string GetIdStr(IdStr id)
         {
-            switch (msg)
+            switch (id)
             {
                 case IdStr.ID_WRITER: return "Writer"; 
                 case IdStr.ID_APTINA_ONE: return "Aptina_One"; 
@@ -105,7 +109,7 @@ namespace uGCapture
                 case IdStr.ID_PHIDGETS_SPATIAL: return "Phidgets_Spatial"; 
                 case IdStr.ID_VCOMM: return "Weatherboard"; 
                 case IdStr.ID_NI_DAQ: return "NI6008";
-                case IdStr.ID_UPS: return "UPS"; 
+                case IdStr.ID_UPS: return "UPS";
                 default: return "UnknownId";
             }
         }

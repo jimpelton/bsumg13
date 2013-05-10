@@ -102,6 +102,7 @@
     <Compile Include="Controller\UPSController.cs" />
     <Compile Include="Controller\VCommController.cs" />
     <Compile Include="Scheduler.cs" />
+    <Compile Include="Buffer\Staging.cs" />
     <Compile Include="Strings.cs" />
     <Compile Include="Test\MockController.cs" />
     <Compile Include="Writer.cs" />

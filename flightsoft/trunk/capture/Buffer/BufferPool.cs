@@ -48,6 +48,12 @@ namespace uGCapture
             get { return fullBufs.Count; }
         }
 
+        public Staging<T> Staging
+        {
+            get { return m_staging; }
+        }
+        private readonly Staging<T> m_staging; 
+
         /// <summary>
         /// Get the number of empty buffers available.
         /// </summary>
@@ -82,6 +88,31 @@ namespace uGCapture
         /// <param name="nElem"> Number of elements for each buffer.</param>
         public BufferPool(int nBuffs, int nElem)
         {
+	    makeBuffers(nBuffs,nElem); 
+            m_numBufs = nBuffs;
+            m_bufElem = nElem;
+            m_staging = null;
+        }
+
+        /// <summary>
+        /// Instantiate a new BufferPool with nBuffs empty
+        /// buffers initially.
+        /// If nBuffs==0 then no buffers are allocated.
+        /// </summary>
+        /// <param name="nBuffs">Number of buffers to allocate.</param>
+        /// <param name="nElem"> Number of elements for each buffer.</param>
+        /// <param name="st">A staging area for the gui data.</param>
+        public BufferPool(int nBuffs, int nElem, Staging<T> st)
+        {
+	    makeBuffers(nBuffs, nElem);
+            m_bufElem = nElem;
+            m_numBufs = nBuffs;
+            m_staging = st;
+        }
+
+        private void makeBuffers(int nBuffs, int nElem)
+        {
+
             if (nBuffs > 0)
             {
                 fullBufs = new Queue<Buffer<T>>(nBuffs);
@@ -91,13 +122,11 @@ namespace uGCapture
                     emptyBufs.Push(new Buffer<T>(nElem));
                 }
             }
-            else 
-            { 
+            else
+            {
                 fullBufs = new Queue<Buffer<T>>();
                 emptyBufs = new Stack<Buffer<T>>();
             }
-            m_numBufs = nBuffs;
-            m_bufElem = nElem;
         }
 
         /// <summary>
@@ -107,6 +136,12 @@ namespace uGCapture
         /// <param name="b">The buffer to post.</param>
         public void PostFull(Buffer<T> b)
         {
+            //TODO: remove this when we quit using the old constructor.
+            if (m_staging != null)
+            {
+                m_staging.Inspect(b);
+            }
+
             lock(fullBufs)
             {
                 fullBufs.Enqueue(b);
@@ -140,10 +175,7 @@ namespace uGCapture
                 {
                     Monitor.Wait(fullBufs);
                 }
-                //if (fullBufs.Count > 0)
-                //{
-                    b = fullBufs.Dequeue();
-                //}
+                b = fullBufs.Dequeue();
             }
             return b;
         }
@@ -161,10 +193,7 @@ namespace uGCapture
                 {
                     Monitor.Wait(emptyBufs);
                 }
-                //if (emptyBufs.Count > 0)
-                //{
-                    b = emptyBufs.Pop();
-                //}
+                b = emptyBufs.Pop();
             }
             return b;
         }
@@ -182,12 +211,10 @@ namespace uGCapture
                 {
                     Monitor.Wait(fullBufs);
                 }
-                //if (fullBufs.Count > 0)
-                //{
-                    b = new Buffer<T>(fullBufs.Peek());
-                //}
+                b = new Buffer<T>(fullBufs.Peek());
             }
             return b;
         }
+
     }
 }

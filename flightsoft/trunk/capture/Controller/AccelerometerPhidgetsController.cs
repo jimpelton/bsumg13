@@ -55,7 +55,7 @@ namespace uGCapture
             {
                 rval = false;
                 dp.BroadcastLog( this, 
-                    "Error waiting for Acceler-o-meter: "+ex.Description,
+                    "Error waiting for Accelerometer: "+ex.Description,
                     100 );
             }
             return rval;
@@ -70,6 +70,7 @@ namespace uGCapture
                 attached.axes[0].Sensitivity = 0;
                 attached.axes[1].Sensitivity = 0;
                 attached.axes[2].Sensitivity = 0;
+
                 Phidget phid = sender as Phidget;
                 if (phid == null) return;
                 dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
@@ -154,13 +155,12 @@ namespace uGCapture
 
                 output += DateTime.Now.Ticks.ToString() + " ";
                 output += outputData;
-                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_ACCEL);
                 buffer.Text = String.Format(accel.SerialNumber.ToString());
                 BufferPool.PostFull(buffer);
                 outputData = "";
             }
-
         }
 
         public override void exAccumulateMessage(Receiver r, Message m)
@@ -175,11 +175,5 @@ namespace uGCapture
 
     }
 
-    public class AccelerometerControllerNotInitializedException : Exception
-    {
-        public AccelerometerControllerNotInitializedException(string message)
-            : base(message)
-        {
-        }
-    }
+
 }

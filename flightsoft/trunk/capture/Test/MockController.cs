@@ -14,7 +14,7 @@ using System.Timers;
 
 namespace uGCapture
 {
-    public class MockController : ReceiverController 
+    public class MockController : ReceiverController
     {
         public int SleepMax { get; set; }
         public int SleepMin { get; set; }
@@ -22,6 +22,7 @@ namespace uGCapture
 
         private int m_maxDataBytes;
         private Random m_rand;
+        private byte[] lastData;
 
         /// <summary>
         /// Instantiate a MockController with a default simulated work time of
@@ -31,11 +32,15 @@ namespace uGCapture
         /// <param name="id">identifier for this mockcontroller</param>
         /// <param name="receiving">start receiving messages</param>
         /// <param name="frame_time">default time between calls to DoFrame</param>
-        public MockController(BufferPool<byte> bp, string id, 
-            bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
+        public MockController(BufferPool<byte> bp, string id,
+                              bool receiving = true, int frame_time = 500)
+            : base(bp, id, receiving, frame_time)
         {
-            m_maxDataBytes = bp.BufElem; //the bufferpool in this case is always bytes, so the number of bytes
-                                         //in the pool = number of elements in the buffer.
+            m_maxDataBytes = bp.BufElem;
+	    lastData = new byte[m_maxDataBytes];
+
+            //the bufferpool in this case is always bytes, so the number of bytes
+            //in the pool = number of elements in the buffer.
             SleepMin = 5;
             SleepMax = 500;
         }
@@ -48,11 +53,12 @@ namespace uGCapture
 
         public override void DoFrame(object source, ElapsedEventArgs e)
         {
-            Buffer<byte> buffer = BufferPool.PopEmpty();
-            byte[] data = makeData();
-            buffer.setData(data, BufferType.USHORT_IMAGE405);
-            Thread.Sleep(m_rand.Next(SleepMin, SleepMax));
-            BufferPool.PostFull(buffer);
+            throw new NotSupportedException();
+            //Buffer<byte> buffer = BufferPool.PopEmpty();
+            //byte[] data = makeData();
+            //buffer.setData(data, BufferType.USHORT_IMAGE405);
+            //Thread.Sleep(m_rand.Next(SleepMin, SleepMax));
+            //BufferPool.PostFull(buffer);
         }
 
         /// <summary>
@@ -66,20 +72,25 @@ namespace uGCapture
         public void ManualPushData()
         {
             Buffer<byte> buffer = BufferPool.PopEmpty();
-            byte[] data = makeData();
-            buffer.setData(data, BufferType.USHORT_IMAGE405);
-            data = null;
-            Thread.Sleep(m_rand.Next(SleepMin, SleepMax));
+            makeData();
+            buffer.setData(lastData, BufferType.USHORT_IMAGE405);
             BufferPool.PostFull(buffer);
         }
 
-        private byte[] makeData()
+        public byte[] LastData()
+        {
+            byte[] rval;
+            rval = new byte[LastSizeBytes];
+            Array.Copy(lastData, rval, LastSizeBytes);
+            return rval;
+        }
+
+        private void makeData()
         {
             int size = m_rand.Next(1, m_maxDataBytes);
             LastSizeBytes = size;
-            byte[] rval = new byte[size];
-            m_rand.NextBytes(rval);
-            return rval;
+            lastData = new byte[size];
+            m_rand.NextBytes(lastData);
         }
     }
 }

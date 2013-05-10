@@ -23,7 +23,7 @@ namespace uGCapture
         public BufferType Type
         {
             get { return m_type; }
-            private set { m_type = Type; }
+            set { m_type = Type; }
         }
         private BufferType m_type;
 
@@ -70,7 +70,7 @@ namespace uGCapture
 	/// Copies all elements of input into this buffer starting at an offset of 0 in
         /// both this buffer and the input array. 
 	/// ty should be one of the enumerated types in BuffeType and should be
-        /// correct in the sense of the data the contents of input represents.
+        /// correct in the sense of the content of this buffer fill.
 	/// </summary>
 	/// <param name="input">Data to copy into this buffer.</param>
 	/// <param name="ty">The type of the data contained in input.</param>
