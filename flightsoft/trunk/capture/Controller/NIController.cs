@@ -74,32 +74,32 @@ namespace uGCapture
             double analogDataIn_Z_T=0;
             */
 
-            try
-            {
-                using (Task digitalWriteTask = new Task())
-                {
-                    /*      digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "",
-                        ChannelLineGrouping.OneChannelForAllLines);
-                    digitalWriteTask.Start();
+            //try
+            //{
+            //    using (Task digitalWriteTask = new Task())
+            //    {
+            //        /*      digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "",
+            //            ChannelLineGrouping.OneChannelForAllLines);
+            //        digitalWriteTask.Start();
                    
-                    DigitalSingleChannelWriter writer = new DigitalSingleChannelWriter(digitalWriteTask.Stream);
-                    togglepo1=((count++/10)%2==1);
-                    //togglepo1 = true;
-                    writer.WriteSingleSampleSingleLine(true, togglepo1);
+            //        DigitalSingleChannelWriter writer = new DigitalSingleChannelWriter(digitalWriteTask.Stream);
+            //        togglepo1=((count++/10)%2==1);
+            //        //togglepo1 = true;
+            //        writer.WriteSingleSampleSingleLine(true, togglepo1);
                     
-                    */
+            //        */
 
 
-                    // togglepo1 = !togglepo1;
-                    //DOChannel myChannel = digitalWriteTask.DOChannels.CreateChannel("Dev1/port0/line1", "", ChannelLineGrouping.OneChannelForAllLines);
-                    //myChannel.OutputDriveType = DOOutputDriveType.ActiveDrive;
-                    // myChannel.InvertLines = true;
-                }
-            }
-            catch (DaqException ex)
-            {
-                dp.BroadcastLog(this, ex.Message, 1);
-            }
+            //        // togglepo1 = !togglepo1;
+            //        //DOChannel myChannel = digitalWriteTask.DOChannels.CreateChannel("Dev1/port0/line1", "", ChannelLineGrouping.OneChannelForAllLines);
+            //        //myChannel.OutputDriveType = DOOutputDriveType.ActiveDrive;
+            //        // myChannel.InvertLines = true;
+            //    }
+            //}
+            //catch (DaqException ex)
+            //{
+            //    dp.BroadcastLog(this, ex.Message, 1);
+            //}
 
             /*
 

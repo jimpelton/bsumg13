@@ -8,7 +8,7 @@ using System;
 using System.Threading;
 using System.Timers;
 
-namespace uGCapture 
+namespace uGCapture
 {
     public class CaptureClass : Receiver
     {
@@ -16,8 +16,8 @@ namespace uGCapture
         public string StorageDir
         {
             get { return _storageDir; }
-            set 
-            { 
+            set
+            {
                 _storageDir = value;
                 _storageDir = _storageDir.Trim();
                 if (!_storageDir.EndsWith(@"\"))
@@ -28,11 +28,11 @@ namespace uGCapture
         }
 
         private bool boolCapturing = false;
-        
+
         private BufferPool<byte> bufferPool;
 
         private PhidgetsController phidgetsController;
-        private AccelerometerPhidgetsController accelControler; 
+        private AccelerometerPhidgetsController accelControler;
         private SpatialAccelController spatialController;
         private Writer writer;
         private AptinaController ac1;
@@ -46,14 +46,15 @@ namespace uGCapture
         private Thread wrtThread;
         private const double FRAME_TIME = 500;
 
-        public CaptureClass(string id) : base(id)
+        public CaptureClass(string id)
+            : base(id)
         {
         }
 
         public void init()
         {
 
-            bufferPool = new BufferPool<byte>(10,(int)Math.Pow(2,24));
+            bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24));
 
             initWriter();
             initAptina();
@@ -69,24 +70,24 @@ namespace uGCapture
 
         public void DoFrame(object source, ElapsedEventArgs e) { }
 
-	private void initWriter()
-	{
-        writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { DirectoryName = _storageDir };
-	    if (writer.Initialize())
-	    {
-	        wrtThread = new Thread(() => Writer.WriteData(writer));
-	        wrtThread.Start();
-	        dp.Register(writer);
-	    }
-	    else
-	    {
-	        string s = Str.GetErrStr(ErrStr.INIT_FAIL_WRITER);
-	        dp.BroadcastLog(this, s, 100);
-            Console.WriteLine(s);
-	    }
-	}
+        private void initWriter()
+        {
+            writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { DirectoryName = _storageDir };
+            if (writer.Initialize())
+            {
+                wrtThread = new Thread(() => Writer.WriteData(writer));
+                wrtThread.Start();
+                dp.Register(writer);
+            }
+            else
+            {
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_WRITER);
+                dp.BroadcastLog(this, s, 100);
+                Console.WriteLine(s);
+            }
+        }
 
-    //Aptina cameras.
+        //Aptina cameras.
         private void initAptina()
         {
             ac1 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE));
@@ -98,7 +99,7 @@ namespace uGCapture
             }
             else
             {
-                dp.BroadcastLog(this, 
+                dp.BroadcastLog(this,
                     Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.", 100);
             }
 
@@ -117,14 +118,14 @@ namespace uGCapture
 
         }
 
-	// 1018 DAQ and Temperature
+        // 1018 DAQ and Temperature
         private void initPhidgets()
         {
             phidgetsController = new PhidgetsController(bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_1018));
             if (phidgetsController.Initialize())
-            {              
+            {
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_1018);
-                dp.BroadcastLog(this,s,100);
+                dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
 
             }
@@ -137,16 +138,16 @@ namespace uGCapture
             dp.Register(phidgetsController);
         }
 
-	// Phidgits Accellerometer.
+        // Phidgits Accellerometer.
         private void initAccelController()
         {
             const int accelerometer_serial_number = 159352;
-            accelControler = new AccelerometerPhidgetsController(bufferPool, 
+            accelControler = new AccelerometerPhidgetsController(bufferPool,
                 Str.GetIdStr(IdStr.ID_PHIDGETS_ACCEL), accelerometer_serial_number);
             if (accelControler.Initialize())
             {
                 string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_ACCEL);
-                dp.BroadcastLog(this,s,100);
+                dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
             else
@@ -158,16 +159,16 @@ namespace uGCapture
             dp.Register(accelControler);
         }
 
-	// Phidgits Spatial Accellerometer.
+        // Phidgits Spatial Accellerometer.
         private void initSpatialController()
         {
             const int spatial_serial_number = 169140;
-            spatialController = new SpatialAccelController(bufferPool, 
+            spatialController = new SpatialAccelController(bufferPool,
                 Str.GetIdStr(IdStr.ID_PHIDGETS_SPATIAL), spatial_serial_number);
 
             if (spatialController.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_SPTL);              
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_SPTL);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -180,15 +181,15 @@ namespace uGCapture
             dp.Register(spatialController);
         }
 
-	// Sparkfun weatherboard through virtual com port.
+        // Sparkfun weatherboard through virtual com port.
         private void initWeatherBoard()
         {
-            weatherboard = new VCommController(bufferPool, 
+            weatherboard = new VCommController(bufferPool,
                 Str.GetIdStr(IdStr.ID_VCOMM));
 
             if (weatherboard.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_VCOMM);              
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_VCOMM);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -201,15 +202,15 @@ namespace uGCapture
             dp.Register(weatherboard);
         }
 
-	// NI-6008 DAQ.
+        // NI-6008 DAQ.
         private void initNI6008Controller()
         {
-            ni6008 = new NIController(bufferPool, 
+            ni6008 = new NIController(bufferPool,
                 Str.GetIdStr(IdStr.ID_NI_DAQ));
 
             if (ni6008.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_NI_6008);              
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_NI_6008);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -222,7 +223,7 @@ namespace uGCapture
             dp.Register(ni6008);
         }
 
-        // APC UPS Data Getter
+        // APC UTF8_UPS Data Getter
         private void initUPSController()
         {
             UPS = new UPSController(bufferPool,
@@ -230,7 +231,7 @@ namespace uGCapture
 
             if (UPS.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_UPS);                
+                string s = Str.GetMsgStr(MsgStr.INIT_OK_UPS);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }

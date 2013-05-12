@@ -11,6 +11,7 @@ namespace uGCapture
         INIT_FAIL_PHID_1018,
         INIT_FAIL_PHID_SPTL,
         INIT_FAIL_PHID_ACCEL,
+	INIT_FAIL_PHID_TEMP,
         INIT_FAIL_NI_6008,
         INIT_FAIL_APTINA,
         INIT_FAIL_VCOMM,
@@ -35,7 +36,7 @@ namespace uGCapture
     /// </summary>
     enum IdStr
     {
-        ID_WRITER,          
+        ID_WRITER=0,          
         ID_APTINA_ONE,      
         ID_APTINA_TWO,      
         ID_PHIDGETS_1018,    
@@ -109,7 +110,7 @@ namespace uGCapture
                 case IdStr.ID_PHIDGETS_SPATIAL: return "Phidgets_Spatial"; 
                 case IdStr.ID_VCOMM: return "Weatherboard"; 
                 case IdStr.ID_NI_DAQ: return "NI6008";
-                case IdStr.ID_UPS: return "UPS";
+                case IdStr.ID_UPS: return "UTF8_UPS";
                 default: return "UnknownId";
             }
         }
