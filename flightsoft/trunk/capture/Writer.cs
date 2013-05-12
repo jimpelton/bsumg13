@@ -17,6 +17,24 @@ namespace uGCapture
         private uint indexbarometer = 0;
         private uint index1018 = 0;
 
+        private const string niDir = "NI6008/";
+	private const string phidDir = "Phidgets/";
+        private const string accelDir = "Accel/";
+        private const string spatDir = "Spatial/";
+	private const string baroDir = "Barometer/";
+	private const string cam405Dir = "Camera405/";
+	private const string cam485Dir = "Camera485/";
+        private const string upsDir = "UPS/";
+
+        private const string niPrfx = "NI6008_";
+        private const string phidPrfx = "Phidgets_";
+        private const string accelPrfx = "Accel_";
+        private const string SpatialPrfx = "Spatial_";
+        private const string baroPrfx = "Barometer_";
+        private const string cam405Prfx = "Camera405_";
+        private const string cam485Prfx = "Camera485_";
+        private const string upsPrfx = "UPS_";
+
         public string DirectoryName
         {
             get { return m_directoryName; }
@@ -29,10 +47,8 @@ namespace uGCapture
                 }
             }
         }
-
         private string m_directoryName;
 
-        private object isRunningMutex = new object();
 
         public bool IsRunning
         {
@@ -52,8 +68,8 @@ namespace uGCapture
                 }
             }
         }
-
         private bool m_isRunning = false;
+        private object isRunningMutex = new object();
 
         public Writer(BufferPool<byte> bp, string id, bool receiving = true,
                       int frame_time = 500)
@@ -105,32 +121,32 @@ namespace uGCapture
                     switch (fulbuf.Type)
                     {
                         case (BufferType.UTF8_VCOMM):
-                            w.WriteOutput(fulbuf, "Barometer_",
+                            w.WriteOutput(fulbuf, baroDir+baroPrfx,
                                           w.indexbarometer++, ".txt");
                             break;
                         case (BufferType.UTF8_PHIDGETS):
-                            w.WriteOutput(fulbuf, "Phidgets_",
+                            w.WriteOutput(fulbuf, phidDir+phidPrfx,
                                           Math.Max(w.index405, w.index485),
                                           ".txt");
                             break;
                         case (BufferType.UTF8_ACCEL):
-                            w.WriteOutput(fulbuf, "Accel_",
+                            w.WriteOutput(fulbuf, accelDir+accelPrfx,
                                           Math.Max(w.index405, w.index485), ".txt");
                             break;
                         case (BufferType.UTF8_SPATIAL):
-                            w.WriteOutput(fulbuf, "Spatial_",
+                            w.WriteOutput(fulbuf, spatDir+SpatialPrfx,
                                           Math.Max(w.index405, w.index485), ".txt");
                             break;
                         case (BufferType.UTF8_NI6008):
-                            w.WriteOutput(fulbuf, "NI6008_",
+                            w.WriteOutput(fulbuf, niDir+niPrfx,
                                           Math.Max(w.index405, w.index485), ".txt");
                             break;
                         case (BufferType.USHORT_IMAGE405):
-                            w.WriteOutput(fulbuf, "Camera405_",
+                            w.WriteOutput(fulbuf, cam405Dir+cam405Prfx,
                                           w.index405++, ".raw");
                             break;
                         case (BufferType.USHORT_IMAGE485):
-                            w.WriteOutput(fulbuf, "Camera485_",
+                            w.WriteOutput(fulbuf, cam485Dir+cam485Prfx,
                                           w.index485++, ".raw");
                             break;
                         case (BufferType.EMPTY_CYCLE):

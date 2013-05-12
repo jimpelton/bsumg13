@@ -69,11 +69,11 @@ namespace uGCapture
         /// This is a convenience method for initiating the pop, fill, push
         /// sequence without relying on the heartbeat message.
         /// </summary>
-        public void ManualPushData()
+        public void ManualPushData(BufferType bt)
         {
             Buffer<byte> buffer = BufferPool.PopEmpty();
             makeData();
-            buffer.setData(lastData, BufferType.USHORT_IMAGE405);
+            buffer.setData(lastData, bt);
             BufferPool.PostFull(buffer);
         }
 
@@ -92,5 +92,6 @@ namespace uGCapture
             lastData = new byte[size];
             m_rand.NextBytes(lastData);
         }
+
     }
 }
