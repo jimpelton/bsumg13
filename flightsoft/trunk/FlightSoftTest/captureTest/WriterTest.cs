@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using NUnit.Framework;
@@ -10,55 +11,73 @@ namespace captureTest
     public class WriterTest
     {
 
+       
 
         private const int NUM_BUFFERS = 10;
+
         private string testdir = @"C:\TestData\";
+
         private BufferPool<byte> bufPool;
         private Dispatch dp;
         private Writer testWriter;
         private Thread t;
         private TinyMockSender sender;
+        private MockController controller;
 
-        [SetUp]
+        [TestFixtureSetUp]
         public void Setup()
         {
             bufPool = new BufferPool<byte>(NUM_BUFFERS, (int)Math.Pow(2,24));
-            if (!Directory.Exists(testdir))
+            if (Directory.Exists(testdir))
             {
-                Directory.CreateDirectory(testdir);
+                Directory.Delete(testdir, true);
             }
+
+            Directory.CreateDirectory(testdir);
+            Directory.CreateDirectory(testdir + "NI6008");
+            Directory.CreateDirectory(testdir + "Phidgets");
+            Directory.CreateDirectory(testdir + "Accel");
+            Directory.CreateDirectory(testdir + "Spatial");
+            Directory.CreateDirectory(testdir + "Barometer");
+            Directory.CreateDirectory(testdir + "Camera405");
+            Directory.CreateDirectory(testdir + "Camera485");
+
             testWriter = new Writer(bufPool, "TestWriter")
                 {
                     DirectoryName = testdir
                 };
-	    
 
             dp = Dispatch.Instance();
 	    dp.Register(testWriter);
+
+            controller = new MockController(bufPool, "MockController");
+            controller.Initialize();
+	    dp.Register(controller);
 
             t = new Thread(() => Writer.WriteData(testWriter));
             t.Start();
         }
 
-        [Test]
-        public void MockDataWritingTest()
+        [TestCase(BufferType.UTF8_PHIDGETS, "Phidgets\\", "Phidgets_0.txt")]
+        [TestCase(BufferType.UTF8_ACCEL, "Accel\\", "Accel_0.txt")]
+        [TestCase(BufferType.UTF8_SPATIAL, "Spatial\\", "Spatial_0.txt")]
+        [TestCase(BufferType.UTF8_VCOMM, "Barometer\\", "Barometer_0.txt")]
+        [TestCase(BufferType.USHORT_IMAGE405, "Camera405\\", "Camera405_0.raw")]
+        [TestCase(BufferType.UTF8_NI6008, "NI6008\\", "NI6008_0.txt")]
+        [TestCase(BufferType.USHORT_IMAGE485, "Camera485\\", "Camera485_0.raw")]
+        public void MockDataWritingTestTxt(BufferType bt, string dir, string fpfx)
         {
-            MockController mc = new MockController(bufPool, "MockController");
-            mc.Initialize();
-
-	    dp.Register(mc);
-
-            mc.ManualPushData();
-            byte[] expected = mc.LastData();
+            controller.ManualPushData(bt);
+            byte[] expected = controller.LastData();
 
             //give the writer plenty of time to write and close file before we open it.
-	    Thread.Sleep(1000); 
+	    Thread.Sleep(250);
 
-            byte[] actual = File.ReadAllBytes(testdir + "Camera405_0.raw");
+            byte[] actual = File.ReadAllBytes(testdir + "\\" + dir + fpfx);
             Assert.AreEqual(expected, actual);
         }
 
-        [TearDown]
+        [TestFixtureTearDown]
         public void After()
         {
             //cycle the buffer pool one last time to kill its worker thread.
@@ -76,6 +95,7 @@ namespace captureTest
                 Console.WriteLine(eek.StackTrace);
             }
         }
+
 
         //[Test]
         //public void PhidgetsFileWritingTest1()
