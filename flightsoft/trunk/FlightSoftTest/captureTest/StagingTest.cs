@@ -21,23 +21,35 @@ namespace captureTest
         r = new Random();
     }
 
-	[TestCase(BufferType.USHORT_IMAGE405)]
-	[TestCase(BufferType.USHORT_IMAGE485)]
-	[TestCase(BufferType.UTF8_ACCEL)]
-	[TestCase(BufferType.UTF8_NI6008)]
-	[TestCase(BufferType.UTF8_PHIDGETS)]
-	[TestCase(BufferType.UTF8_SPATIAL)]
-	[TestCase(BufferType.UTF8_VCOMM)]
-    public void TestStagingWithBufferPool(BufferType bt)
-	{
-	    Buffer<byte> b = bufPool.PopEmpty();
-	    int sz = r.Next(1, bufPool.BufElem);
-	    byte[] data = new byte[sz];
-	    r.NextBytes(data);
-	    b.setData(data, bt);
-	    bufPool.PostFull(b);
-	    byte[] actual = st.ImageData(0);
-	    Assert.AreEqual(data, actual);
-	}
+    [TestCase(BufferType.UTF8_ACCEL)]
+    [TestCase(BufferType.UTF8_NI6008)]
+    [TestCase(BufferType.UTF8_PHIDGETS)]
+    [TestCase(BufferType.UTF8_SPATIAL)]
+    [TestCase(BufferType.UTF8_VCOMM)]
+    public void TestStagingWithText(BufferType bt)
+    {
+        Buffer<byte> b = bufPool.PopEmpty();
+        byte[] data = new byte[4096];
+        r.NextBytes(data);
+        b.setData(data, bt);
+        bufPool.PostFull(b);
+        DataSet<byte> ds = st.GetLastData();
+        Assert.AreEqual(data, ds.lastData[(int)bt]);
+    }
+
+    [TestCase(BufferType.USHORT_IMAGE405)]
+    [TestCase(BufferType.USHORT_IMAGE485)]
+    public void TestStagingImageBuffers(BufferType bt)
+    {
+        Buffer<byte> b = bufPool.PopEmpty();
+        byte[] data = new byte[2*2592*1944];
+        r.NextBytes(data);
+        b.setData(data, bt);
+        bufPool.PostFull(b);
+        DataSet<byte> ds = st.GetLastData();
+        byte[] dtron = ds.lastData[(int) bt];
+        Assert.AreEqual(data, dtron);
+    }
+
 }
 }

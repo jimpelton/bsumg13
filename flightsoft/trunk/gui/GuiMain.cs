@@ -41,7 +41,6 @@ namespace gui
             this.mainForm = mainForm;
         }
 
-
         public void Startup_Init()
         {
             ConfigData config = ConfigLoader.LoadConfig(configPath);

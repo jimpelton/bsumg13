@@ -9,15 +9,14 @@
     /// </summary>
     public enum BufferType
     {
-        ERROR,            //does nothing, the buffer loop will cycle once.
-        USHORT_IMAGE405,  
-        USHORT_IMAGE485,  
-        UTF8_ACCEL,
-        UTF8_SPATIAL,
-        UTF8_PHIDGETS,
-        UTF8_NI6008,
-        UPS,
-        UTF8_VCOMM,
-	EMPTY_CYCLE  //cycle the writer once, not writing anything.
+        USHORT_IMAGE405=0,  
+        USHORT_IMAGE485=1,  
+        UTF8_ACCEL=2,
+        UTF8_SPATIAL=3,
+        UTF8_PHIDGETS=4,
+        UTF8_NI6008=5,
+        UTF8_UPS=6,
+        UTF8_VCOMM=7,
+	EMPTY_CYCLE=8  //cycle the writer once, not writing anything.
     }
 }

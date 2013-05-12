@@ -108,41 +108,33 @@ namespace uGCapture
                             w.WriteOutput(fulbuf, "Barometer_",
                                           w.indexbarometer++, ".txt");
                             break;
-
                         case (BufferType.UTF8_PHIDGETS):
                             w.WriteOutput(fulbuf, "Phidgets_",
                                           Math.Max(w.index405, w.index485),
                                           ".txt");
                             break;
-
                         case (BufferType.UTF8_ACCEL):
                             w.WriteOutput(fulbuf, "Accel_",
                                           Math.Max(w.index405, w.index485), ".txt");
                             break;
-
                         case (BufferType.UTF8_SPATIAL):
                             w.WriteOutput(fulbuf, "Spatial_",
                                           Math.Max(w.index405, w.index485), ".txt");
                             break;
-
                         case (BufferType.UTF8_NI6008):
                             w.WriteOutput(fulbuf, "NI6008_",
                                           Math.Max(w.index405, w.index485), ".txt");
                             break;
-
                         case (BufferType.USHORT_IMAGE405):
                             w.WriteOutput(fulbuf, "Camera405_",
                                           w.index405++, ".raw");
                             break;
-
                         case (BufferType.USHORT_IMAGE485):
                             w.WriteOutput(fulbuf, "Camera485_",
                                           w.index485++, ".raw");
                             break;
-
                         case (BufferType.EMPTY_CYCLE):
                             break;
-
                         default:
                             break;
                     }

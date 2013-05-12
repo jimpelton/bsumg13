@@ -136,7 +136,7 @@ namespace uGCapture
         /// <param name="b">The buffer to post.</param>
         public void PostFull(Buffer<T> b)
         {
-            //TODO: remove this when we quit using the old constructor.
+            //TODO: remove this null check when we quit using the old constructor.
             if (m_staging != null)
             {
                 m_staging.Inspect(b);
