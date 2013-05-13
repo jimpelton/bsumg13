@@ -74,6 +74,7 @@ namespace uGCapture
             Buffer<byte> buffer = BufferPool.PopEmpty();
             makeData();
             buffer.setData(lastData, bt);
+            buffer.Text = Convert.ToString(DateTime.Now.Millisecond);
             BufferPool.PostFull(buffer);
         }
 
