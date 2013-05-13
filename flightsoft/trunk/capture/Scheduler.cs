@@ -46,7 +46,7 @@ namespace uGCapture
         public override void exReceiverCleanUpMessage(Receiver r, Message m)
         {
 	    // overriden to do nothing (we don't want the parent method's behavior 
-	    // in the Scheduler.
+	    // in the Scheduler. --JP
         }
     }
 }

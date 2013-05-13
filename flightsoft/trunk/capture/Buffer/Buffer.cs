@@ -56,8 +56,8 @@ namespace uGCapture
 	/// <summary>
 	/// The number of filled elements in this buffer.
 	/// </summary>
-        private ulong m_capacityUtilization;
-        public ulong CapacityUtilization
+        private int m_capacityUtilization;
+        public int CapacityUtilization
         {
             get { return m_capacityUtilization; }
             private set { m_capacityUtilization = value; }
@@ -91,7 +91,7 @@ namespace uGCapture
                 {
                     m_data[i] = input[i];
                 }
-                CapacityUtilization = (ulong)i;
+                CapacityUtilization = i;
             }
         }
 

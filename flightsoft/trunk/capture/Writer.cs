@@ -58,7 +58,7 @@ namespace uGCapture
         {
             get
             {
-                lock (isRunningMutex)
+                lock (m_isRunningMutex)
                 {
                     return m_isRunning;
                 }
@@ -66,14 +66,14 @@ namespace uGCapture
 
             set
             {
-                lock (isRunningMutex)
+                lock (m_isRunningMutex)
                 {
                     m_isRunning = value;
                 }
             }
         }
         private bool m_isRunning = false;
-        private object isRunningMutex = new object();
+        private object m_isRunningMutex = new object();
 
         public Writer(BufferPool<byte> bp, string id, bool receiving = true,
                       int frame_time = 500)
@@ -98,11 +98,11 @@ namespace uGCapture
             BufferPool.PostFull(b);
         }
 
-
-        /**
-     * Writes data to the disk.
-     * returns false if an error occurs.
-     */
+	/// <summary>
+	/// Writes data to the disk.
+	/// returns false if an error occurs.
+	/// </summary>
+	/// <param name="w"></param>
         public static void WriteData(Writer w)
         {
             if (w.IsRunning)

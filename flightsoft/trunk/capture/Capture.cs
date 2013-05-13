@@ -244,6 +244,11 @@ namespace uGCapture
             dp.Register(UPS);
         }
 
+        public DataSet<byte> GetLastData()
+        {
+            return bufferPool.Staging.GetLastData();
+        } 
+
         public override void exSetCaptureStateMessage(Receiver r, Message m)
         {
             SetCaptureStateMessage lm = m as SetCaptureStateMessage;
