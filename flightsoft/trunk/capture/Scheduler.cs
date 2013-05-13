@@ -4,10 +4,6 @@
 //  Date: 2013-04-27                                                                      
 // ******************************************************************************
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 
 namespace uGCapture
@@ -45,6 +41,12 @@ namespace uGCapture
                 dp.Broadcast(new AccumulateMessage(this));
                 lastAccum = DateTime.Now;
             }
+        }
+
+        public override void exReceiverCleanUpMessage(Receiver r, Message m)
+        {
+	    // overriden to do nothing (we don't want the parent method's behavior 
+	    // in the Scheduler.
         }
     }
 }
