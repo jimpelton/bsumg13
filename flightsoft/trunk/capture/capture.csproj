@@ -83,6 +83,7 @@
     <Compile Include="Controller\SpatialAccelController.cs" />
     <Compile Include="DataSet.cs" />
     <Compile Include="Image\ImageProcessor.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Message\AccumulateMessage.cs" />
     <Compile Include="Message\DataRequestMessage.cs" />
     <Compile Include="Message\HeartBeatMessage.cs" />

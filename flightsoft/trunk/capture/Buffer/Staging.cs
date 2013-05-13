@@ -33,7 +33,12 @@ namespace uGCapture
                 lock (data_mutex)
                 {
                     T[] dest = lastDataSet.lastData[(int)buf.Type];
-                    Array.Copy(buf.Data, dest, dest.Length);
+                    int sz = dest.Length;
+                    if (buf.CapacityUtilization >= sz)
+                    {
+                        sz = buf.CapacityUtilization;
+                    }
+                    Array.Copy(buf.Data, dest, sz);
                 }
             }
             catch (Exception e)
@@ -50,10 +55,10 @@ namespace uGCapture
 
         public DataSet<T> GetLastData()
         {
-	    lock (data_mutex)
-	    {
+            lock (data_mutex)
+            {
                 return new DataSet<T>(lastDataSet);	 //deep copy       
-	    }
+            }
         }
     }
 }

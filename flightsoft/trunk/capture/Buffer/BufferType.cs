@@ -17,6 +17,7 @@
         UTF8_NI6008=5,
         UTF8_UPS=6,
         UTF8_VCOMM=7,
-	EMPTY_CYCLE=8  //cycle the writer once, not writing anything.
+	EMPTY_CYCLE=8,
+	UTF8_LOG=9  //cycle the writer once, not writing anything.
     }
 }
