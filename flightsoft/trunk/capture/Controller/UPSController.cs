@@ -50,7 +50,11 @@ namespace uGCapture
 
         protected override bool init()
         {
-            //Do what? Nothing...
+            System.Management.ObjectQuery query = new ObjectQuery("Select * FROM Win32_Battery");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
+            ManagementObjectCollection collection = searcher.Get();
+            if(collection.Count==0)
+                dp.BroadcastLog(this, "UPS Battery not detected.", 0);
             return true;
         }
     }
