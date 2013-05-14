@@ -12,32 +12,35 @@ namespace uGCapture
 {
     public class Writer : ReceiverController
     {
-        private uint         index485       = 0;
-        private uint         index405       = 0;
-        private uint         indexNI6008    = 0;
-        private uint         indexPhidgets  = 0;
-        private uint         indexAccel     = 0;
-        private uint         indexSpatial   = 0;
-        private uint         indexBarometer = 0;
-        private uint         indexUPS       = 0;
+        private uint index485 = 0;
+        private uint index405 = 0;
+        private uint indexNI6008 = 0;
+        private uint indexPhidgets = 0;
+        private uint indexAccel = 0;
+        private uint indexSpatial = 0;
+        private uint indexBarometer = 0;
+        private uint indexUPS = 0;
+        private uint indexLog = 0;
 
-        private const string niDir          = "NI6008\\";
-	private const string phidDir        = "Phidgets\\";
-        private const string accelDir       = "Accel\\";
-        private const string spatDir        = "Spatial\\";
-	private const string baroDir        = "Barometer\\";
-	private const string cam405Dir      = "Camera405\\";
-	private const string cam485Dir      = "Camera485\\";
-        private const string upsDir         = "UPS\\";
+        private const string niDir = "NI6008\\";
+        private const string phidDir = "Phidgets\\";
+        private const string accelDir = "Accel\\";
+        private const string spatDir = "Spatial\\";
+        private const string baroDir = "Barometer\\";
+        private const string cam405Dir = "Camera405\\";
+        private const string cam485Dir = "Camera485\\";
+        private const string upsDir = "UPS\\";
+        private const string logDir = "Log\\";
 
-        private const string niPrfx         = "NI6008";
-        private const string phidPrfx       = "Phidgets";
-        private const string accelPrfx      = "Accel";
-        private const string SpatialPrfx    = "Spatial";
-        private const string baroPrfx       = "Barometer";
-        private const string cam405Prfx     = "Camera405";
-        private const string cam485Prfx     = "Camera485";
-        private const string upsPrfx        = "UPS";
+        private const string niPrfx = "NI6008";
+        private const string phidPrfx = "Phidgets";
+        private const string accelPrfx = "Accel";
+        private const string spatialPrfx = "Spatial";
+        private const string baroPrfx = "Barometer";
+        private const string cam405Prfx = "Camera405";
+        private const string cam485Prfx = "Camera485";
+        private const string upsPrfx = "UPS";
+        private const string logPrfx = "Log";
 
         public string DirectoryName
         {
@@ -83,26 +86,60 @@ namespace uGCapture
 
         protected override bool init()
         {
-            return true;
+            bool rval = true;
+            try
+            {
+                if (!Directory.Exists(DirectoryName))
+                {
+                    Directory.CreateDirectory(DirectoryName);
+                }
+            }
+            catch (System.Exception e)
+            {
+                Console.Error.WriteLine(e.StackTrace);
+                dp.BroadcastLog(this, "Top level data directory " + DirectoryName + " could not be created\r\n" +
+                    e.StackTrace, 100);
+                rval = false;
+            }
+
+            foreach (string s in Str.Dirs.Values)
+            {
+                try
+                {
+                    if (!Directory.Exists(DirectoryName + s))
+                    {
+                        Directory.CreateDirectory(DirectoryName + s);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine(e.StackTrace);
+                    dp.BroadcastLog(this, "Data subdirectory " + DirectoryName + " could not be created\r\n" +
+                                    e.StackTrace, 100);
+                    rval = false;
+                }
+            }
+            return rval;
         }
 
-	/// <summary>
-	/// Sets is running to false and cycles the writer loop 
-	/// one last time if it is stuck waiting for new full buffers.
-	/// </summary>
+        /// <summary>
+        /// Sets is running to false and cycles the writer loop 
+        /// one last time if it is stuck waiting for new full buffers.
+        /// </summary>
         public void stop()
         {
             IsRunning = false;
-            Buffer<byte> b = BufferPool.PopEmpty();
+            //Buffer<byte> b = BufferPool.PopEmpty();
+            Buffer<byte> b = new Buffer<byte>();
             b.Type = BufferType.EMPTY_CYCLE;
             BufferPool.PostFull(b);
         }
 
-	/// <summary>
-	/// Writes data to the disk.
-	/// returns false if an error occurs.
-	/// </summary>
-	/// <param name="w"></param>
+        /// <summary>
+        /// Writes data to the disk.
+        /// returns false if an error occurs.
+        /// </summary>
+        /// <param name="w"></param>
         public static void WriteData(Writer w)
         {
             if (w.IsRunning)
@@ -125,33 +162,67 @@ namespace uGCapture
                     switch (fulbuf.Type)
                     {
                         case (BufferType.UTF8_VCOMM):
-                            w.WriteOutput(fulbuf, baroDir+baroPrfx, w.indexBarometer, ".txt");
+                            w.WriteOutput(fulbuf,
+                                          Str.Dirs[DirStr.DIR_VCOMM] + baroPrfx,
+                                          w.indexBarometer,
+                                          ".txt");
                             w.indexBarometer += 1;
                             break;
+
                         case (BufferType.UTF8_PHIDGETS):
-                            w.WriteOutput(fulbuf, phidDir+phidPrfx, w.indexPhidgets, ".txt");
+                            w.WriteOutput(fulbuf,
+                                          Str.Dirs[DirStr.DIR_PHIDGETS] + phidPrfx,
+                                          w.indexPhidgets,
+                                          ".txt");
                             w.indexPhidgets += 1;
                             break;
+
                         case (BufferType.UTF8_ACCEL):
-                            w.WriteOutput(fulbuf, accelDir+accelPrfx, w.indexAccel, ".txt");
-			    w.indexAccel += 1;
+                            w.WriteOutput(fulbuf,
+                                          Str.Dirs[DirStr.DIR_ACCEL] + accelPrfx,
+                                          w.indexAccel,
+                                          ".txt");
+                            w.indexAccel += 1;
                             break;
+
                         case (BufferType.UTF8_SPATIAL):
-                            w.WriteOutput(fulbuf, spatDir+SpatialPrfx, w.indexSpatial, ".txt");
+                            w.WriteOutput(fulbuf,
+                                          Str.Dirs[DirStr.DIR_SPATIAL] + spatialPrfx,
+                                          w.indexSpatial,
+                                          ".txt");
                             w.indexSpatial += 1;
                             break;
+
                         case (BufferType.UTF8_NI6008):
-                            w.WriteOutput(fulbuf, niDir+niPrfx, w.indexNI6008, ".txt");
+                            w.WriteOutput(fulbuf,
+                                          Str.Dirs[DirStr.DIR_NI_DAQ] + niPrfx,
+                                          w.indexNI6008,
+                                          ".txt");
                             w.indexNI6008 += 1;
                             break;
+
                         case (BufferType.USHORT_IMAGE405):
-                            w.WriteImageOutput(fulbuf, cam405Dir+cam405Prfx, w.index405, ".raw");
+                            w.WriteImageOutput(fulbuf,
+                                               Str.Dirs[DirStr.DIR_CAMERA405] + cam405Prfx,
+                                               w.index405,
+                                               ".raw");
                             w.index405 += 1;
                             break;
+
                         case (BufferType.USHORT_IMAGE485):
-                            w.WriteImageOutput(fulbuf, cam485Dir+cam485Prfx, w.index485, ".raw");
+                            w.WriteImageOutput(fulbuf,
+                                               Str.Dirs[DirStr.DIR_CAMERA485] + cam485Prfx,
+                                               w.index485,
+                                               ".raw");
                             w.index485 += 1;
                             break;
+
+                        case (BufferType.UTF8_LOG):
+                            w.WriteOutput(fulbuf,
+                            Str.Dirs[DirStr.DIR_LOGGER] + logPrfx, w.indexLog, ".txt");
+                            w.indexLog += 1;
+                            break;
+
                         case (BufferType.EMPTY_CYCLE):
                             break;
                         default:
@@ -167,29 +238,31 @@ namespace uGCapture
             } // while...
         }
 
-        private void WriteOutput(Buffer<byte> buf, string fnamePfx, 
+        private void WriteOutput(Buffer<byte> buf, string fnamePfx,
             uint index, string fnameExt)
         {
             String filename = String.Format(
                 "{0}{1}_{2}{3}", DirectoryName, fnamePfx, index, fnameExt);
-            FileStream fs = File.Create(filename, (int) buf.CapacityUtilization,
+
+            FileStream fs = File.Create(filename, (int)buf.CapacityUtilization,
                                         FileOptions.None);
             BinaryWriter bw = new BinaryWriter(fs);
-            bw.Write(buf.Data, 0, (int) buf.CapacityUtilization);
+            bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
             bw.Close();
             fs.Close();
         }
 
-	// similar to WriteOutput, but inserts the buffer's filltime into the filename.
-        private void WriteImageOutput(Buffer<byte> buf, string fnamePfx, 
+        // similar to WriteOutput, but inserts the buffer's filltime into the filename.
+        private void WriteImageOutput(Buffer<byte> buf, string fnamePfx,
             uint index, string fnameExt)
         {
             String filename = String.Format(
                 "{0}{1}_{2}_{3}{4}", DirectoryName, fnamePfx, index, buf.FillTime, fnameExt);
-            FileStream fs = File.Create(filename, (int) buf.CapacityUtilization,
+
+            FileStream fs = File.Create(filename, (int)buf.CapacityUtilization,
                                         FileOptions.None);
             BinaryWriter bw = new BinaryWriter(fs);
-            bw.Write(buf.Data, 0, (int) buf.CapacityUtilization);
+            bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
             bw.Close();
             fs.Close();
         }
