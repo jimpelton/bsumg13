@@ -122,6 +122,10 @@ namespace gui
         //     return MAX_DATA_POINTS;
         // }
 
+        public DataSet<byte> getLatestData()
+        {
+            return captureClass.GetLastData();
+        }
 
 
     }

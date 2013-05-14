@@ -84,12 +84,17 @@
     <Compile Include="DataSet.cs" />
     <Compile Include="Image\ImageProcessor.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Message\AccelStatusMessage.cs" />
     <Compile Include="Message\AccumulateMessage.cs" />
     <Compile Include="Message\DataRequestMessage.cs" />
     <Compile Include="Message\HeartBeatMessage.cs" />
+    <Compile Include="Message\NI6008StatusMessage.cs" />
     <Compile Include="Message\ReceiverCleanupMessage.cs" />
     <Compile Include="Message\SetCaptureStateMessage.cs" />
     <Compile Include="Message\DataMessage.cs" />
+    <Compile Include="Message\SpatialStatusMessage.cs" />
+    <Compile Include="Message\UPSStatusMessage.cs" />
+    <Compile Include="Message\VcommStatusMessage.cs" />
     <Compile Include="ReceiverController.cs" />
     <Compile Include="Dispatch.cs" />
     <Compile Include="Message\BiteTestMessage.cs" />

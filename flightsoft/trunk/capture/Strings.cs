@@ -8,18 +8,46 @@ using System.IO;
 using System.Collections.Generic;
 namespace uGCapture
 {
+
+    enum StatusStr
+    {
+        STAT_ERR,
+        STAT_FAIL,
+        STAT_GOOD,
+        STAT_FAIL_PHID_1018,
+        STAT_DISC_PHID_1018,
+        STAT_ATCH_PHID_1018,
+        STAT_GOOD_PHID_1018,
+        STAT_FAIL_PHID_TEMP,
+        STAT_DISC_PHID_TEMP,
+        STAT_ATCH_PHID_TEMP,
+        STAT_GOOD_PHID_TEMP,
+        STAT_FAIL_PHID_ACCL,
+        STAT_DISC_PHID_ACCL,
+        STAT_ATCH_PHID_ACCL,
+        STAT_GOOD_PHID_ACCL,
+        STAT_FAIL_PHID_SPTL,
+        STAT_DISC_PHID_SPTL,
+        STAT_ATCH_PHID_SPTL,
+        STAT_GOOD_PHID_SPTL,
+        STAT_FAIL_NI6008DAQ,
+        STAT_DISC_NI6008DAQ,
+        STAT_ATCH_NI6008DAQ,
+        STAT_GOOD_NI6008DAQ
+    }
+
     enum ErrStr 
     {
         INIT_FAIL_PHID_1018,
         INIT_FAIL_PHID_SPTL,
         INIT_FAIL_PHID_ACCEL,
-	INIT_FAIL_PHID_TEMP,  //unused
+	    INIT_FAIL_PHID_TEMP,
         INIT_FAIL_NI_6008,
         INIT_FAIL_APTINA,
         INIT_FAIL_VCOMM,
         INIT_FAIL_WRITER,
         INIT_FAIL_UPS,
-	INIT_FAIL_LOGGER
+	    INIT_FAIL_LOGGER
     }
 
     enum MsgStr
@@ -27,12 +55,12 @@ namespace uGCapture
         INIT_OK_PHID_1018,
         INIT_OK_PHID_SPTL,
         INIT_OK_PHID_ACCEL,
-	INIT_OK_PHID_TEMP,  //unused
+	    INIT_OK_PHID_TEMP,
         INIT_OK_NI_6008,
         INIT_OK_APTINA,
         INIT_OK_VCOMM,
         INIT_OK_UPS,
-	INIT_OK_LOGGER
+	    INIT_OK_LOGGER
     }
 
     /// <summary>

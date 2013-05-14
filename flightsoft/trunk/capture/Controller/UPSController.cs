@@ -43,6 +43,10 @@ namespace uGCapture
                     if (property.Name.Equals("Status"))
                     {
                         //property.Value//"OK""Error""Degraded""Unknown""Starting""Stopping""Service""Stressed""NonRecover""No Contact""Lost Comm"
+                        if(property.Value=="Error")
+                            dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
+                        else if(property.Value=="OK")
+                            dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_GOOD));
                     }
                 }
             }
@@ -53,8 +57,11 @@ namespace uGCapture
             System.Management.ObjectQuery query = new ObjectQuery("Select * FROM Win32_Battery");
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
             ManagementObjectCollection collection = searcher.Get();
-            if(collection.Count==0)
+            if (collection.Count == 0)
+            {
                 dp.BroadcastLog(this, "UPS Battery not detected.", 0);
+                dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_FAIL));
+            }
             return true;
         }
     }

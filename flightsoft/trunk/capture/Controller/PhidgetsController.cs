@@ -61,6 +61,7 @@ public class PhidgetsController : ReceiverController
             phidgetTemperature.thermocouples[0].Sensitivity = 0.001;
 
 
+            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_GOOD_PHID_TEMP));
             dp.BroadcastLog(this, "Temperature Sensor found", 0);
         }
         catch (PhidgetException ex)
@@ -72,6 +73,7 @@ public class PhidgetsController : ReceiverController
                     String.Format("Error waiting for temperature sensor: {0}", ex.Description), 
                     100
                 );
+            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_FAIL_PHID_TEMP));
         }
         return success;
     }
@@ -88,13 +90,15 @@ public class PhidgetsController : ReceiverController
             phidgets1018.Detach += Sensor_Detach;
             phidgets1018.Error += Sensor_Error;
             phidgets1018.waitForAttachment(1000);
-            
+
+            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_GOOD_PHID_1018));
             dp.BroadcastLog(this, "1018 found", 0);
         }
         catch (PhidgetException ex)
         {
             success = false;
-            dp.BroadcastLog(this, String.Format("Error opening Phidgets DAQ {0}", ex.Description), 6);    
+            dp.BroadcastLog(this, String.Format("Error opening Phidgets DAQ {0}", ex.Description), 6);
+            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_FAIL_PHID_1018));
         }
         return success;
     }
@@ -105,6 +109,7 @@ public class PhidgetsController : ReceiverController
         Phidget phid = sender as Phidget;
         if (phid == null) return;
         dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Detached", phid.Name), 5);
+        dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_DISC_PHID_1018));
     }
 
     void Sensor_Error(object sender, ErrorEventArgs e)
@@ -113,6 +118,7 @@ public class PhidgetsController : ReceiverController
         if (phid == null) return;
 
         dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Error: {1}", phid.Name, e.Description), 5);
+        dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_FAIL_PHID_1018));
     }
 
     void tempSensor_Attach(object sender, AttachEventArgs e)
@@ -120,6 +126,7 @@ public class PhidgetsController : ReceiverController
         Phidget phid = sender as Phidget;
         if (phid == null) return;
         dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Attached", phid.Name), 5);
+        dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_ATCH_PHID_TEMP));
     }
     //TODO: Remove
     /*
@@ -139,6 +146,7 @@ public class PhidgetsController : ReceiverController
         Phidget phid = sender as Phidget;
         if (phid == null) return;
         dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Attached", phid.Name), 5);
+        dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_ATCH_PHID_1018));
     }
 
     //TODO:Remove

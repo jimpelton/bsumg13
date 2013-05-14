@@ -44,12 +44,14 @@ namespace uGCapture
             {
                 Console.WriteLine(e.StackTrace);
                 rval = false;
+                dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
             }
             catch (UnauthorizedAccessException e)
             {
                 Console.WriteLine(e.StackTrace);
                 port.Close();              
                 rval = false;
+                dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
             }
             return rval;
         }
@@ -88,11 +90,13 @@ namespace uGCapture
                         outputData = data;
                         hasNewData = true;
                     }
+                    dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_GOOD));
                 }
             }
             catch (System.InvalidOperationException err) 
             {
                 Reset();
+                dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
             }
             catch (System.TimeoutException err) 
             {
@@ -119,6 +123,7 @@ namespace uGCapture
             catch (System.UnauthorizedAccessException err)
             {
                 Reset();
+                dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
             }
            
             String output = "Weatherboard \n";

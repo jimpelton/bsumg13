@@ -69,23 +69,12 @@ namespace uGCapture
         /// <summary>
         /// Generate a PhidgetsStatusMessage
         /// </summary>
-        public virtual void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
-
-        /// <summary>
-        /// Execute a DataMessage. 
-        /// </summary>
-        //TODO: Remove
-        //public virtual void exDataMessage(Receiver r, Message m) { ; }
+        
 
         /// <summary>
         /// Execute a DataRequestMessage.
         /// </summary>
         public virtual void exDataRequestMessage(Receiver r, Message m) { ; }
-
-        /// <summary>
-        /// Act upon given AptinaStatusMessage
-        /// </summary>
-        public virtual void exAptinaStatusMessage(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Generate a SetCaptureStateMessage
@@ -106,6 +95,15 @@ namespace uGCapture
         /// Act on given LogMessage.
         /// </summary>
         public virtual void exLogMessage(Receiver r, Message m) { ; }
+
+        // Updates given to the gui for updating as messages are passed throug the following:
+        public virtual void exUPSStatusMessage(Receiver r, Message m) { ; }
+        public virtual void exAccelStatusMessage(Receiver r, Message m) { ; }
+        public virtual void exVcommStatusMessage(Receiver r, Message m) { ; }
+        public virtual void exNI6008StatusMessage(Receiver r, Message m) { ; }
+        public virtual void exAptinaStatusMessage(Receiver r, Message m) { ; }
+        public virtual void exSpatialStatusMessage(Receiver r, Message m) { ; }
+        public virtual void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
 
         /// <summary>
         /// Act on a ReceiverCleanUpMessage(). Default behavior of 
