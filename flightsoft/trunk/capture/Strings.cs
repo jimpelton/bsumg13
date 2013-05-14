@@ -1,9 +1,11 @@
-﻿// ******************************************************************************
+﻿
+// ******************************************************************************
 //  BSU Microgravity Team 2013                                                 
 //  In-Flight Data Capture Software                                            
 //  Date: 2013-05-05                                                                      
 // ******************************************************************************
-
+using System.IO;
+using System.Collections.Generic;
 namespace uGCapture
 {
     enum ErrStr 
@@ -11,12 +13,13 @@ namespace uGCapture
         INIT_FAIL_PHID_1018,
         INIT_FAIL_PHID_SPTL,
         INIT_FAIL_PHID_ACCEL,
-	INIT_FAIL_PHID_TEMP,
+	INIT_FAIL_PHID_TEMP,  //unused
         INIT_FAIL_NI_6008,
         INIT_FAIL_APTINA,
         INIT_FAIL_VCOMM,
         INIT_FAIL_WRITER,
-        INIT_FAIL_UPS
+        INIT_FAIL_UPS,
+	INIT_FAIL_LOGGER
     }
 
     enum MsgStr
@@ -24,10 +27,12 @@ namespace uGCapture
         INIT_OK_PHID_1018,
         INIT_OK_PHID_SPTL,
         INIT_OK_PHID_ACCEL,
+	INIT_OK_PHID_TEMP,  //unused
         INIT_OK_NI_6008,
         INIT_OK_APTINA,
         INIT_OK_VCOMM,
-        INIT_OK_UPS
+        INIT_OK_UPS,
+	INIT_OK_LOGGER
     }
 
     /// <summary>
@@ -45,11 +50,25 @@ namespace uGCapture
         ID_VCOMM,    
         ID_NI_DAQ,
         ID_UPS,
+	ID_LOGGER
+    }
+    
+    enum DirStr
+    {
+        DIR_WRITER,
+        DIR_CAMERA405,
+        DIR_CAMERA485,
+        DIR_PHIDGETS,
+        DIR_SPATIAL,
+        DIR_VCOMM,
+        DIR_NI_DAQ,
+        DIR_UPS,
+        DIR_LOGGER,
+        DIR_ACCEL
     }
 
     class Str
-    {
-        
+    {  
         public static string GetErrStr(ErrStr msg)
         {
             switch (msg)
@@ -110,10 +129,29 @@ namespace uGCapture
                 case IdStr.ID_PHIDGETS_SPATIAL: return "Phidgets_Spatial"; 
                 case IdStr.ID_VCOMM: return "Weatherboard"; 
                 case IdStr.ID_NI_DAQ: return "NI6008";
-                case IdStr.ID_UPS: return "UTF8_UPS";
+                case IdStr.ID_UPS: return "Ups";
+		        case IdStr.ID_LOGGER: return "Logger";
                 default: return "UnknownId";
             }
         }
+
+        public static readonly Dictionary<DirStr, string> Dirs = new Dictionary<DirStr, string>()
+        {
+            { DirStr.DIR_CAMERA405,   "Camera405\\" }, 
+            { DirStr.DIR_CAMERA485,   "Camera485\\" }, 
+            { DirStr.DIR_PHIDGETS,    "Phidgets\\"  }, 
+            { DirStr.DIR_SPATIAL,     "Spatial\\"   },
+            { DirStr.DIR_ACCEL,       "Accel\\"     },
+            { DirStr.DIR_VCOMM,       "Barometer\\" },
+            { DirStr.DIR_NI_DAQ,      "NI6008\\"    }, 
+            { DirStr.DIR_UPS,         "Ups\\"       },
+            { DirStr.DIR_LOGGER,      "Log\\"       },
+        };
+
+        //public static string GetDirStr(DirStr dir)
+        //{
+        //    return Dirs[dir];
+        //}
     }
 }
 
