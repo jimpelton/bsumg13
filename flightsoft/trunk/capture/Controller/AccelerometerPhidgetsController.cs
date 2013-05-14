@@ -50,6 +50,7 @@ namespace uGCapture
                 accel.Error += Sensor_Error;
                 
                 dp.BroadcastLog(this, "Accelerometer found", 0);
+                dp.Broadcast(new AccelStatusMessage(this,StatusStr.STAT_GOOD_PHID_ACCL));
             }
             catch (PhidgetException ex)
             {
@@ -57,6 +58,7 @@ namespace uGCapture
                 dp.BroadcastLog( this, 
                     "Error waiting for Accelerometer: "+ex.Description,
                     100 );
+                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL_PHID_ACCL));
             }
             return rval;
         }
@@ -74,12 +76,15 @@ namespace uGCapture
                 Phidget phid = sender as Phidget;
                 if (phid == null) return;
                 dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
+                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_ATCH_PHID_ACCL));
             }
             catch (PhidgetException ex)
             {
                 dp.BroadcastLog(this,
                                 String.Format("Error while attaching accelerometer: {0}",
                                               ex.Description), 100);
+                //we are probably already holding a bad state. but lets make sure
+                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL_PHID_ACCL));
             }
         }
 
@@ -109,6 +114,7 @@ namespace uGCapture
             Phidget phid = sender as Phidget;
             if (phid == null) return;
             dp.BroadcastLog(this, String.Format("{0} Detached", phid.Name), 5);
+            dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_DISC_PHID_ACCL));
         }
 
         private void Sensor_Error(object sender, ErrorEventArgs e)
@@ -118,6 +124,7 @@ namespace uGCapture
 
             dp.BroadcastLog(this,
                 String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
+            dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL_PHID_ACCL));
         }
 
         public override void DoFrame(object source, ElapsedEventArgs e)

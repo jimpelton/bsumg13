@@ -27,6 +27,7 @@ namespace gui
 
         public void UpdateGUI(object sender, EventArgs e)
         {
+            updateCASPanel();
             //try
             //{
             //    ExecuteMessageQueue();              
@@ -85,6 +86,14 @@ namespace gui
             }
             //dp.Broadcast(new DataRequestMessage(this));
         }
+
+        private void updateCASPanel()
+        {
+            DataSet<byte> dat = Guimain.getLatestData();
+
+            dat.lastData.
+        }
+
 
         public override void exLogMessage(Receiver r, Message m) 
         {
