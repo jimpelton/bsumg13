@@ -257,7 +257,7 @@ namespace uGCapture
             uint index, string fnameExt)
         {
             String filename = String.Format(
-                "{0}{1}_{2}_{3}{4}", DirectoryName, fnamePfx, index, buf.FillTime, fnameExt);
+                "{0}{1}_{2,8:D8}_{3,18:D18}{4}", DirectoryName, fnamePfx, index, buf.FillTime, fnameExt);
 
             FileStream fs = File.Create(filename, (int)buf.CapacityUtilization,
                                         FileOptions.None);

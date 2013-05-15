@@ -246,7 +246,9 @@ namespace uGCapture
 
         public DataSet<byte> GetLastData()
         {
-            return bufferPool.Staging.GetLastData();
+            if(bufferPool.Staging!=null)
+                return bufferPool.Staging.GetLastData();
+            return null;
         } 
 
         public override void exSetCaptureStateMessage(Receiver r, Message m)

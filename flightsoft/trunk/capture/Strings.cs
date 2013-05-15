@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace uGCapture
 {
 
-    enum StatusStr
+    public enum StatusStr
     {
         STAT_ERR,
         STAT_FAIL,
