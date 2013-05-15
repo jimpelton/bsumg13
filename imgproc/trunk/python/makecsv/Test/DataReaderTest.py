@@ -23,11 +23,11 @@ class MyTestCase(unittest.TestCase):
         df.fromTo(0, 45)
 
         df.update()
-
         dr = ugDataReader.ugDataReader(df)
-
         dr.update()
 
+        #the df loaded 46 files, each with 96 well values.
+        #(see df.fromTo(0, 45) line above)
         self.assertEqual(dr.valuesList("dir405").size, 46 * 96)
         self.assertEqual(dr.valuesList("dir485").size, 46 * 96)
         # self.assertEqual(dr.valuesList("dirgrav"))
@@ -38,11 +38,15 @@ class MyTestCase(unittest.TestCase):
         df.update()
         dr = ugDataReader.ugDataReader(df)
         dr.update()
+        actual_dict = {'200 uL co culture': [44, 45], 'MLO-Y4 on cytopore no dye': [9], '25 uL MLOY4': [19, 20], '25 uL co culture': [23, 24], '50 uL MC3T3': [28, 29], 'MC3T3 on cytopore no dye': [10], '100 uL MLOY4': [33, 34], '100 uL co culture': [37, 38], '400 uL co culture': [51, 52],  '50uL co cilture': [30, 31], 'Co-culture on cytopore no dye': [11], '200 uL MLOY4': [40, 41], '400 uL MC3T3': [49, 50],  '50 uL MLOY4': [26, 27], '100 uL MC3T3': [35, 36], '25 uL MC3T3': [21, 22], '400 uL MLOY4': [47, 48], '200 uL MC3T3': [42, 43]}
 
         layout_dict = dr.layout()
-        self.assertEqual(layout_dict['400 uL MC3T3'], [49, 50])
+        self.assertDictEqual(layout_dict, actual_dict)
 
         print(layout_dict)
+
+
+# plate layout from April 28, 2013:
 # '5': [18]
 #  '4': [25]
 #  '7': [16]

@@ -1,7 +1,7 @@
 __author__ = 'jim'
 
 from math import sqrt
-
+import operator
 import numpy as np
 import csv
 
@@ -20,13 +20,13 @@ class ugDataReader():
         self.values485 = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
         self.valuesgrav = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
         self._layout = dict()
+        self._linearLayout = []
 
 
     def update(self):
         """
         Update this data reader and read the files provided by the
         ugDataFile object.
-        :return: nothing, returns nothing.
         """
         self.df.update()
         print("DataReader doing update.\n")
@@ -39,6 +39,13 @@ class ugDataReader():
         :return: dict
         """
         return self._layout
+
+    def linearLayout(self):
+        """
+        Returns the entire plate layout as a linear list.
+        :return: list
+        """
+        return self._linearLayout
 
     def valuesList(self, typeString):
         """
@@ -178,20 +185,43 @@ class ugDataReader():
         if self.df.plateLayout() is None:
             return
 
-        linear = []
+        totalCells = 0
+        rowCnt = 0
+        colCnt = 0
+
         with open(self.df.plateLayout(), 'r', newline='') as csvfile:
             reader = csv.reader(csvfile, dialect='excel', delimiter=',')
             for row in reader:
+                rowCnt += 1
                 for cell in row:
-                    linear.append(cell)
-        i = 0
+                    totalCells += 1
+                    self._linearLayout.append(cell)
+        try:
+            colCnt = int(totalCells / rowCnt)
+        except ZeroDivisionError as e:
+            print(e)
 
-        for cell in linear:
-            if cell == '':
+        # indexes for first row, and first column.
+        firstRow = self._linearLayout[0:colCnt]
+
+        firstCol = []
+        firstColIdxs = [x for x in range(totalCells)[0:totalCells:colCnt]]
+        for x in firstColIdxs:
+            firstCol.append(self._linearLayout[x])
+
+        i = 0
+        for cell in self._linearLayout:
+            if cell is '':
                 continue
+
+            if cell in firstRow or cell in firstCol:
+                continue
+
             if cell in self._layout:
                 self._layout[cell].append(i)
             else:
                 self._layout[cell] = []
                 self._layout[cell].append(i)
             i += 1
+
+        return
