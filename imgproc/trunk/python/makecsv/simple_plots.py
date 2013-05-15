@@ -5,14 +5,18 @@ from pylab import *
 import numpy as np
 
 
-
 def human_sort(self, s):
     return [int(k) if k.isdigit() else k for k in re.split(self._NumReg, s)]
 
 
 def main(argv):
-    file = argv[0]
+    """
+    :param argv:
+    """
+    file = argv[1]
+    plot_title = argv[2]
     plots_dir = os.getcwd() + os.sep + "plots/"
+
     if not os.path.exists(plots_dir):
         try:
             os.mkdir(plots_dir)
@@ -22,28 +26,23 @@ def main(argv):
             else:
                 print(plots_dir + " could not be created.")
 
-    data = np.file
-    # files = os.listdir(files_dir)
-    # files.sort(key=human_sort)
+    data = np.loadtxt(file, dtype=float)
+    t = arange(0.0, float(len(data)), 1, np.float32)
 
-    # for f in files:
-    # with open(file, 'r') as data:
-    #     i = 0
-    #     for row in data:
-    #         values = row.split(' ')
-    #         t = arange(0.0, float(len(values)), 1)
-    #         plot(t, values, linewidth=1.0)
-    #
-    #         xlabel('time (1/2 seconds)')
-    #         ylabel('Well Value')
-    #         title('thangs')
-    #         grid(True)
-    #         savefig(plots_dir + os.path.basename(file) + "_" + str(i) + ".png")
-    #         i += 1
+    fig = figure(figsize=(32, 18), dpi=200)
+    for i in range(96):
+        plot(t, data[:, i], linewidth=1.0)
+        xlabel('Time (1/2 seconds)')
+        ylabel('Well Intensity')
+        title(plot_title)
+        grid(True)
+        savefig(plots_dir + os.path.basename(file) + "_" + str(i) + ".png")
+        clf()
+        # show()
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv)
 
 
 
