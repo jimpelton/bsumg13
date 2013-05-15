@@ -55,7 +55,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual("testdata/dir405/", df.dir405())
         self.assertEqual("testdata/dir485/", df.dir485())
         self.assertEqual("testdata/dirgrav/", df.dirgrav())
-        self.assertEqual()
+
 
         # def test_sanitize(self):
         #     dir405 = "testdata/dir405"
