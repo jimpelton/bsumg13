@@ -108,12 +108,12 @@ class ugDataReader():
             lines = thisfile.readlines()
             thisfile.close()
 
-            colIdx = NUM_WELLS - 1
+            colIdx = 0 #NUM_WELLS - 1
             for s in lines:
                 strs = s.split(':')
                 val = int(strs[1].strip())
                 self.values405[timeIdx][colIdx] = val  #add to list backwards
-                colIdx -= 1
+                colIdx += 1
 
             timeIdx += 1
 
