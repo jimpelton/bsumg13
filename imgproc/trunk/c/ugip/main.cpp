@@ -170,22 +170,21 @@ int doCL(int argc, char *argv[])
     }
     
     Reader r1(readerFilesVec[0], &imgbp);
-//    r1.set_cb(&cb_reader);
     boost::thread th_r1(boost::ref(r1));
 
 //    Reader r2(readerFilesVec[1], &imgbp);
-////    r2.set_cb(&cb_reader);
 //    boost::thread th_r2(boost::ref(r2));
 //
 //    Reader r3(readerFilesVec[2], &imgbp);
 //    boost::thread th_r3(boost::ref(r3));
+//
+//    Reader r4(readerFilesVec[3], &imgbp);
+//    boost::thread th_r4(boost::ref(r4));
 
     Processor p1(&imgbp, &datbp, vars);
-//    p1.set_cb(&cb_proces);
     boost::thread th_p1(boost::ref(p1));
 
     Writer w1(outpath, &datbp);
-//    w1.set_cb(&cb_writer);
     boost::thread th_w1(boost::ref(w1));
 
 //    for (int i = 0; i < NUM_PROCS; ++i) {
@@ -214,6 +213,7 @@ int doCL(int argc, char *argv[])
     th_r1.join();
 //    th_r2.join();
 //    th_r3.join();
+//    th_r4.join();
     th_p1.join();
     th_w1.join();
 
