@@ -177,7 +177,8 @@ public class AptinaController : ReceiverController
                 BufferType.USHORT_IMAGE405 : BufferType.USHORT_IMAGE485;
 
             imagebuffer.setData(me.dest, bufferType);
-            imagebuffer.Text = DateTime.Now.Millisecond.ToString();
+            //imagebuffer.FillTime = (ulong)DateTime.Now.Millisecond;//No.
+            imagebuffer.FillTime = (ulong)DateTime.Now.Ticks;
             me.BufferPool.PostFull(imagebuffer);
         }   
     }

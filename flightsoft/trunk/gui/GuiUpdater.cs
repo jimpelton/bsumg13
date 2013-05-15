@@ -16,10 +16,15 @@ namespace gui
         Form1 mainform = null;
         private GuiMain Guimain = null;
         private Series graph1data = null;
-        public GuiUpdater(Form1 f,GuiMain m, string id, bool receiving=true) 
+        private BiteCASPanel CAS = null;
+        private Queue<uGCapture.StatusStr> CASQueue = null;
+
+
+        public GuiUpdater(Form1 f,GuiMain m, BiteCASPanel c, string id, bool receiving=true) 
             : base(id, receiving)
         {         
             mainform = f;
+            CAS = c;
             graph1data = new Series("Points");
             Guimain = m;
             dp.Register(this);
@@ -91,7 +96,7 @@ namespace gui
         {
             DataSet<byte> dat = Guimain.getLatestData();
 
-            dat.lastData.
+            //dat.lastData.
         }
 
 
@@ -197,5 +202,30 @@ namespace gui
             }
             return (rgbPixels);
         }
+
+
+
+        
+        override public void exUPSStatusMessage(Receiver r, Message m) 
+        {
+            UPSStatusMessage msg = (UPSStatusMessage)m;
+            if (msg.getState() == uGCapture.StatusStr.STAT_FAIL)
+            {
+
+            }
+        }
+        override public void exAccelStatusMessage(Receiver r, Message m) { ; }
+        override public void exVcommStatusMessage(Receiver r, Message m) { ; }
+        override public void exNI6008StatusMessage(Receiver r, Message m) { ; }
+        override public void exAptinaStatusMessage(Receiver r, Message m) { ; }
+        override public void exSpatialStatusMessage(Receiver r, Message m) { ; }
+        override public void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
+
+
+
+
+
+
+
     }
 }

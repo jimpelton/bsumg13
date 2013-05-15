@@ -15,10 +15,18 @@ namespace gui
         private static int MAX_DATA_POINTS = 100;
         private string configPath;
         private GuiUpdater guiUpdater;
+       
         public gui.GuiUpdater GuiUpdater
         {
             get { return guiUpdater; }
             set { guiUpdater = value; }
+        }
+
+        private gui.BiteCASPanel CAS;
+        public gui.BiteCASPanel guiCAS
+        {
+            get { return CAS; }
+            set { CAS = value; }
         }
 
         private Form1 mainForm;
@@ -54,7 +62,7 @@ namespace gui
             System.IO.Directory.CreateDirectory(config.Path + directoryName);
 
             dataFrames = new List<DataPoint>();
-            guiUpdater = new GuiUpdater(mainForm, this, "GuiUpdater");
+            guiUpdater = new GuiUpdater(mainForm, this, CAS, "GuiUpdater");
             captureClass = new CaptureClass("CaptureClass")
             {
                 StorageDir = path + directoryName
