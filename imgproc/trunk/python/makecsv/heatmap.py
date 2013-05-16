@@ -1,4 +1,3 @@
-from IPython.core.pylabtools import figsize
 from matplotlib import colorbar
 
 __author__ = 'jim'
@@ -15,7 +14,7 @@ def main(argv):
     :return:
     """
 
-    file = argv[1]
+    file_name = argv[1]
     out_name = argv[2]
     plots_dir = os.getcwd() + os.sep + "plots/"
 
@@ -28,26 +27,26 @@ def main(argv):
             else:
                 print(plots_dir + " could not be created.")
 
-    data = np.loadtxt(file, dtype=float)
+    data = np.loadtxt(file_name, dtype=float)
 
-    X = arange(0, len(data[1, :]))
-    Y = arange(0, len(data[:, 1]))
-
+#    X = arange(0, len(data[1, :]))
+#    Y = arange(0, len(data[:, 1]))
+    X = arange(0,8);
+    Y = arange(0,12);
     X, Y = meshgrid(X, Y)
-    # Z = resize(data[1, :], (len(X), len(Y)))
 
-    fig = figure(figsize=(10,10), dpi=200)
-    ylabel("Time (1/2 seconds)")
-    xlabel("405nm Well Index (Matched to Excel Columns A-CS)")
-    title("Well Intensities (405nm Camera) for Duration of May 5th Test")
-
-    pcolormesh(X, Y, data)
-
-    cbar = colorbar()
-    cbar.set_label("405nm Well Intensities")
-
-
-    savefig(out_name)
+    fig = figure(figsize=(5, 5), dpi=200)
+    for i in range(len(data[:,1])):
+        Z = resize(data[i, :], (len(X), len(Y)))
+        image_file_name = plots_dir + out_name + str(i)
+    #    ylabel("Time (1/2 seconds)")
+    #    xlabel("405nm Well Index (Matched to Excel Columns A-CS)")
+    #    title("Well Intensities (405nm Camera) for Duration of May 5th Test")
+        pcolormesh(X, Y, Z)
+        cbar = colorbar();
+        cbar.set_label("Well Intensities")
+        savefig(image_file_name)
+        clf()
 
 
 if __name__ == '__main__':
