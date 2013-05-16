@@ -161,6 +161,14 @@ namespace uGCapture
                     fulbuf = w.BufferPool.PopFull();
                     switch (fulbuf.Type)
                     {
+                        case (BufferType.UTF8_UPS):
+                            w.WriteOutput(fulbuf,
+                                          Str.Dirs[DirStr.DIR_UPS] + upsPrfx,
+                                          w.indexUPS,
+                                          ".txt");
+                            w.indexUPS += 1;
+                            break;
+
                         case (BufferType.UTF8_VCOMM):
                             w.WriteOutput(fulbuf,
                                           Str.Dirs[DirStr.DIR_VCOMM] + baroPrfx,
