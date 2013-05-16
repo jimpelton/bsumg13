@@ -11,7 +11,7 @@ namespace uGCapture
         private String outputData;
         private const UInt32 MAX_LOG_FILE_LENGTH =1048576; // One megabyte.
 
-        protected Logger(String id, bool receiving = true) : base(id, receiving)
+        public Logger(String id, bool receiving = true) : base(id, receiving)
         {
             // Set output data buffer to empty to begin.
             outputData = "";

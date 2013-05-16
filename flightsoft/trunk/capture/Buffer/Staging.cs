@@ -21,9 +21,9 @@ namespace uGCapture
 
         public Staging(int imgSize)
         {
-	    size405 = 0;
+            size405 = 0;
             size485 = 0;
-	    lastDataSet = new DataSet<T>(imgSize);
+            lastDataSet = new DataSet<T>(imgSize);
         }
 
         public void Inspect(Buffer<T> buf) 

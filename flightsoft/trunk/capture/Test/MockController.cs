@@ -37,7 +37,7 @@ namespace uGCapture
             : base(bp, id, receiving, frame_time)
         {
             m_maxDataBytes = bp.BufElem;
-	    lastData = new byte[m_maxDataBytes];
+	        lastData = new byte[m_maxDataBytes];
 
             //the bufferpool in this case is always bytes, so the number of bytes
             //in the pool = number of elements in the buffer.
@@ -94,5 +94,18 @@ namespace uGCapture
             m_rand.NextBytes(lastData);
         }
 
+        /// <summary>
+        /// Convenience method to use this MockController's
+        ///  random number generator to generate a new array of random data. 
+        /// The data is returned to the caller with no effects on this MockController.
+        /// </summary>
+        /// <returns>Array of random bytes.</returns>
+        public byte[] GetRandomData()
+        {
+            int size = m_rand.Next(1, m_maxDataBytes);
+            byte[] rval = new byte[size];
+            m_rand.NextBytes(rval);
+            return rval;
+        }
     }
 }

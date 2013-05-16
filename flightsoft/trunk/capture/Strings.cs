@@ -4,7 +4,6 @@
 //  In-Flight Data Capture Software                                            
 //  Date: 2013-05-05                                                                      
 // ******************************************************************************
-using System.IO;
 using System.Collections.Generic;
 namespace uGCapture
 {
@@ -42,7 +41,7 @@ namespace uGCapture
         STAT_GOOD_NI6008DAQ
     }
 
-    enum ErrStr 
+    public enum ErrStr 
     {
         INIT_FAIL_PHID_1018,
         INIT_FAIL_PHID_SPTL,
@@ -56,12 +55,12 @@ namespace uGCapture
 	    INIT_FAIL_LOGGER
     }
 
-    enum MsgStr
+    public enum MsgStr
     {
         INIT_OK_PHID_1018,
         INIT_OK_PHID_SPTL,
         INIT_OK_PHID_ACCEL,
-	    INIT_OK_PHID_TEMP,
+	    INIT_OK_PHID_TEMP,  //unused
         INIT_OK_NI_6008,
         INIT_OK_APTINA,
         INIT_OK_VCOMM,
@@ -73,7 +72,7 @@ namespace uGCapture
     /// Id's unique to each receiver.
     /// Use these in conjunction with Str.GetMsgStr()
     /// </summary>
-    enum IdStr
+    public enum IdStr
     {
         ID_WRITER=0,          
         ID_APTINA_ONE,      
@@ -87,7 +86,7 @@ namespace uGCapture
 	ID_LOGGER
     }
     
-    enum DirStr
+    public enum DirStr
     {
         DIR_WRITER,
         DIR_CAMERA405,
@@ -101,7 +100,7 @@ namespace uGCapture
         DIR_ACCEL
     }
 
-    class Str
+    public class Str
     {  
         public static string GetErrStr(ErrStr msg)
         {
@@ -179,9 +178,22 @@ namespace uGCapture
             { DirStr.DIR_VCOMM,       "Barometer\\" },
             { DirStr.DIR_NI_DAQ,      "NI6008\\"    }, 
             { DirStr.DIR_UPS,         "Ups\\"       },
-            { DirStr.DIR_LOGGER,      "Log\\"       },
+            { DirStr.DIR_LOGGER,      "Log\\"       }
         };
-                
+
+        public static readonly Dictionary<DirStr, string> Pfx = new Dictionary<DirStr, string>()
+            {
+              { DirStr.DIR_CAMERA405,  "Camera405"    },
+              { DirStr.DIR_CAMERA485,  "Camera485"  },
+              { DirStr.DIR_PHIDGETS,   "Phidgets"     },
+              { DirStr.DIR_SPATIAL,    "Spatial"   },
+              { DirStr.DIR_ACCEL,      "Accel" },
+              { DirStr.DIR_VCOMM,      "Barometer" },
+              { DirStr.DIR_NI_DAQ,     "NI6008" },
+              { DirStr.DIR_UPS,        "UPS"       },
+              { DirStr.DIR_LOGGER,     "Log"       }
+        };
+
 
 
         //public static string GetDirStr(DirStr dir)

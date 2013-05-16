@@ -22,39 +22,30 @@ namespace uGCapture
         private uint indexUPS = 0;
         private uint indexLog = 0;
 
-        private const string niDir = "NI6008\\";
-        private const string phidDir = "Phidgets\\";
-        private const string accelDir = "Accel\\";
-        private const string spatDir = "Spatial\\";
-        private const string baroDir = "Barometer\\";
-        private const string cam405Dir = "Camera405\\";
-        private const string cam485Dir = "Camera485\\";
-        private const string upsDir = "UPS\\";
-        private const string logDir = "Log\\";
+        private string m_niPath;
+        private string m_accelPath;
+        private string m_spatPath;
+        private string m_baroPath;
+        private string m_cam405Path;
+        private string m_cam485Path;
+        private string m_upsPath;
+        private string m_loggerPath;
+        private string m_phidPath;
 
-        private const string niPrfx = "NI6008";
-        private const string phidPrfx = "Phidgets";
-        private const string accelPrfx = "Accel";
-        private const string spatialPrfx = "Spatial";
-        private const string baroPrfx = "Barometer";
-        private const string cam405Prfx = "Camera405";
-        private const string cam485Prfx = "Camera485";
-        private const string upsPrfx = "UPS";
-        private const string logPrfx = "Log";
-
-        public string DirectoryName
+        public string BasePath
         {
-            get { return m_directoryName; }
+            get { return m_basePath; }
             set
             {
-                m_directoryName = value.Trim();
-                if (!m_directoryName.EndsWith(@"\"))
+                m_basePath = value.Trim();
+                if (!m_basePath.EndsWith(@"\"))
                 {
-                    m_directoryName += @"\";
+                    m_basePath += @"\";
                 }
             }
         }
-        private string m_directoryName;
+
+        private string m_basePath;
 
 
         public bool IsRunning
@@ -75,8 +66,10 @@ namespace uGCapture
                 }
             }
         }
+
         private bool m_isRunning = false;
         private object m_isRunningMutex = new object();
+
 
         public Writer(BufferPool<byte> bp, string id, bool receiving = true,
                       int frame_time = 500)
@@ -87,17 +80,20 @@ namespace uGCapture
         protected override bool init()
         {
             bool rval = true;
+            makePaths(BasePath);
             try
             {
-                if (!Directory.Exists(DirectoryName))
+                if (!Directory.Exists(BasePath))
                 {
-                    Directory.CreateDirectory(DirectoryName);
+                    Directory.CreateDirectory(BasePath);
                 }
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Console.Error.WriteLine(e.StackTrace);
-                dp.BroadcastLog(this, "Top level data directory " + DirectoryName + " could not be created\r\n" +
+                dp.BroadcastLog(this,
+                                "Top level data directory " + BasePath +
+                                " could not be created\r\n" +
                     e.StackTrace, 100);
                 rval = false;
             }
@@ -106,20 +102,53 @@ namespace uGCapture
             {
                 try
                 {
-                    if (!Directory.Exists(DirectoryName + s))
+                    if (!Directory.Exists(BasePath + s))
                     {
-                        Directory.CreateDirectory(DirectoryName + s);
+                        Directory.CreateDirectory(BasePath + s);
                     }
                 }
                 catch (Exception e)
                 {
                     Console.Error.WriteLine(e.StackTrace);
-                    dp.BroadcastLog(this, "Data subdirectory " + DirectoryName + " could not be created\r\n" +
+                    dp.BroadcastLog(this,
+                                    "Data subdirectory " + s +
+                                    " could not be created\r\n" +
                                     e.StackTrace, 100);
                     rval = false;
                 }
             }
             return rval;
+        }
+
+
+        private void makePaths(string basePath)
+        {
+            m_niPath =
+                basePath + Str.Dirs[DirStr.DIR_NI_DAQ] + Str.Pfx[DirStr.DIR_NI_DAQ];
+
+            m_phidPath =
+                basePath + Str.Dirs[DirStr.DIR_PHIDGETS] + Str.Pfx[DirStr.DIR_PHIDGETS];
+
+            m_accelPath =
+                basePath + Str.Dirs[DirStr.DIR_ACCEL] + Str.Pfx[DirStr.DIR_ACCEL];
+
+            m_spatPath =
+                basePath + Str.Dirs[DirStr.DIR_SPATIAL] + Str.Pfx[DirStr.DIR_SPATIAL];
+
+            m_baroPath =
+                basePath + Str.Dirs[DirStr.DIR_VCOMM] + Str.Pfx[DirStr.DIR_VCOMM];
+
+            m_cam405Path =
+                basePath + Str.Dirs[DirStr.DIR_CAMERA405] + Str.Pfx[DirStr.DIR_CAMERA405];
+
+            m_cam485Path =
+                basePath + Str.Dirs[DirStr.DIR_CAMERA485] + Str.Pfx[DirStr.DIR_CAMERA485];
+
+            m_upsPath =
+                basePath + Str.Dirs[DirStr.DIR_UPS] + Str.Pfx[DirStr.DIR_UPS];
+
+            m_loggerPath =
+                basePath + Str.Dirs[DirStr.DIR_LOGGER] + Str.Pfx[DirStr.DIR_LOGGER];
         }
 
         /// <summary>
@@ -130,8 +159,7 @@ namespace uGCapture
         {
             IsRunning = false;
             //Buffer<byte> b = BufferPool.PopEmpty();
-            Buffer<byte> b = new Buffer<byte>();
-            b.Type = BufferType.EMPTY_CYCLE;
+            Buffer<byte> b = new Buffer<byte> {Type = BufferType.EMPTY_CYCLE};
             BufferPool.PostFull(b);
         }
 
@@ -148,7 +176,6 @@ namespace uGCapture
             }
             w.IsRunning = true;
 
-            Buffer<Byte> fulbuf;
             while (true)
             {
                 if (!w.IsRunning)
@@ -156,83 +183,70 @@ namespace uGCapture
                     return;
                 }
 
+                DoWrite(w);
+            } // while...
+        }
+
+        /// <summary>
+        /// Pops a single full buffer from the pool and writes it 
+        /// to disk in the appropriate location.
+        /// </summary>
+        /// <param name="w">The writer which should do the writing.</param>
+        public static void DoWrite(Writer w)
+        {
                 try
                 {
-                    fulbuf = w.BufferPool.PopFull();
+                    Buffer<byte> fulbuf = w.BufferPool.PopFull();
                     switch (fulbuf.Type)
                     {
                         case (BufferType.UTF8_UPS):
-                            w.WriteOutput(fulbuf,
-                                          Str.Dirs[DirStr.DIR_UPS] + upsPrfx,
-                                          w.indexUPS,
-                                          ".txt");
+                            w.WriteOutput(fulbuf, w.m_upsPath, w.indexUPS, ".txt");
                             w.indexUPS += 1;
                             break;
 
                         case (BufferType.UTF8_VCOMM):
-                            w.WriteOutput(fulbuf,
-                                          Str.Dirs[DirStr.DIR_VCOMM] + baroPrfx,
-                                          w.indexBarometer,
-                                          ".txt");
+                            w.WriteOutput(fulbuf, w.m_baroPath, w.indexBarometer, ".txt");
                             w.indexBarometer += 1;
                             break;
 
                         case (BufferType.UTF8_PHIDGETS):
-                            w.WriteOutput(fulbuf,
-                                          Str.Dirs[DirStr.DIR_PHIDGETS] + phidPrfx,
-                                          w.indexPhidgets,
-                                          ".txt");
+                        w.WriteOutput(fulbuf, w.m_phidPath, w.indexPhidgets, ".txt");
                             w.indexPhidgets += 1;
                             break;
 
                         case (BufferType.UTF8_ACCEL):
-                            w.WriteOutput(fulbuf,
-                                          Str.Dirs[DirStr.DIR_ACCEL] + accelPrfx,
-                                          w.indexAccel,
-                                          ".txt");
+                        w.WriteOutput(fulbuf, w.m_accelPath, w.indexAccel, ".txt");
                             w.indexAccel += 1;
                             break;
 
                         case (BufferType.UTF8_SPATIAL):
-                            w.WriteOutput(fulbuf,
-                                          Str.Dirs[DirStr.DIR_SPATIAL] + spatialPrfx,
-                                          w.indexSpatial,
-                                          ".txt");
+                        w.WriteOutput(fulbuf, w.m_spatPath, w.indexSpatial, ".txt");
                             w.indexSpatial += 1;
                             break;
 
                         case (BufferType.UTF8_NI6008):
-                            w.WriteOutput(fulbuf,
-                                          Str.Dirs[DirStr.DIR_NI_DAQ] + niPrfx,
-                                          w.indexNI6008,
-                                          ".txt");
+                        w.WriteOutput(fulbuf, w.m_niPath, w.indexNI6008, ".txt");
                             w.indexNI6008 += 1;
                             break;
 
                         case (BufferType.USHORT_IMAGE405):
-                            w.WriteImageOutput(fulbuf,
-                                               Str.Dirs[DirStr.DIR_CAMERA405] + cam405Prfx,
-                                               w.index405,
-                                               ".raw");
+                        w.WriteImageOutput(fulbuf, w.m_cam405Path, w.index405, ".raw");
                             w.index405 += 1;
                             break;
 
                         case (BufferType.USHORT_IMAGE485):
-                            w.WriteImageOutput(fulbuf,
-                                               Str.Dirs[DirStr.DIR_CAMERA485] + cam485Prfx,
-                                               w.index485,
-                                               ".raw");
+                        w.WriteImageOutput(fulbuf, w.m_cam485Path, w.index485, ".raw");
                             w.index485 += 1;
                             break;
 
                         case (BufferType.UTF8_LOG):
-                            w.WriteOutput(fulbuf,
-                            Str.Dirs[DirStr.DIR_LOGGER] + logPrfx, w.indexLog, ".txt");
+                        w.WriteOutput(fulbuf, w.m_loggerPath, w.indexLog, ".txt");
                             w.indexLog += 1;
                             break;
 
                         case (BufferType.EMPTY_CYCLE):
                             break;
+
                         default:
                             break;
                     }
@@ -243,19 +257,17 @@ namespace uGCapture
                     Console.WriteLine(e.StackTrace);
                     //return ;
                 }
-            } // while...
         }
-        
+
         private void WriteOutput(Buffer<byte> buf, string fnamePfx,
             uint index, string fnameExt)
         {
             String filename = String.Format(
-                "{0}{1}_{2,8:D8}{3}", DirectoryName, fnamePfx, index, fnameExt);
+                "{0}_{1}{2}", fnamePfx, index, fnameExt);
 
-            FileStream fs = File.Create(filename, (int)buf.CapacityUtilization,
-                                        FileOptions.None);
+            FileStream fs = File.Create(filename, buf.CapacityUtilization, FileOptions.None);
             BinaryWriter bw = new BinaryWriter(fs);
-            bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
+            bw.Write(buf.Data, 0, buf.CapacityUtilization);
             bw.Close();
             fs.Close();
         }
@@ -265,15 +277,14 @@ namespace uGCapture
             uint index, string fnameExt)
         {
             String filename = String.Format(
-                "{0}{1}_{2,8:D8}_{3,18:D18}{4}", DirectoryName, fnamePfx, index, buf.FillTime, fnameExt);
-
-            FileStream fs = File.Create(filename, (int)buf.CapacityUtilization,
-                                        FileOptions.None);
+                "{0}_{1,8:D8}_{2,18:D18}{3}", fnamePfx, index, buf.FillTime, fnameExt);
+            FileStream fs = File.Create(filename, buf.CapacityUtilization, FileOptions.None);
             BinaryWriter bw = new BinaryWriter(fs);
-            bw.Write(buf.Data, 0, (int)buf.CapacityUtilization);
+            bw.Write(buf.Data, 0, buf.CapacityUtilization);
             bw.Close();
             fs.Close();
         }
+
         public override void exReceiverCleanUpMessage(Receiver r, Message m)
         {
             base.exReceiverCleanUpMessage(r, m);
