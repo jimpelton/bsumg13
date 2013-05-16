@@ -21,8 +21,8 @@ public class PhidgetsController : ReceiverController
     private InterfaceKit phidgets1018;
     private String outputData;
 
-    public PhidgetsController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) 
-        : base(bp, id, receiving, frame_time)
+    public PhidgetsController(BufferPool<byte> bp, string id, bool receiving = true) 
+        : base(bp, id, receiving)
     {
         outputData = "";
     }
@@ -128,19 +128,7 @@ public class PhidgetsController : ReceiverController
         dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Attached", phid.Name), 5);
         dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_ATCH_PHID_TEMP));
     }
-    //TODO: Remove
-    /*
-    void tempSensor_TemperatureChange(object sender, TemperatureChangeEventArgs e)
-    {
-        if (e.Index == 0)
-            phidgetTemperature_ProbeTemp = e.Temperature;
 
-        phidgetTemperature_AmbientTemp = phidgetTemperature.ambientSensor.Temperature;
-
-        //debug
-        //dp.BroadcastLog(this, String.Format("OMG OMG! Temperature Changed! {0}", e.Temperature), 2);
-    }
-    */
     void ifKit_Attach(object sender, AttachEventArgs e)
     {
         Phidget phid = sender as Phidget;
@@ -149,28 +137,6 @@ public class PhidgetsController : ReceiverController
         dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_ATCH_PHID_1018));
     }
 
-    //TODO:Remove
-    /*
-    void ifKit_InputChange(object sender, InputChangeEventArgs e)
-    {
-        digitalInputs[e.Index] = e.Value;
-    }
-
-    void ifKit_OutputChange(object sender, OutputChangeEventArgs e)
-    {
-        digitalOutputs[e.Index] = e.Value;
-    }
-
-    void ifKit_SensorChange(object sender, SensorChangeEventArgs e)
-    {
-        analogInputs[e.Index] = e.Value;
-    }
-    */
-
-    public override void DoFrame(object source, ElapsedEventArgs e)
-    {
-
-    }
 
     public override void exHeartBeatMessage(Receiver r, Message m)
     {

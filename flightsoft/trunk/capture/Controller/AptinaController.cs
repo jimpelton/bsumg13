@@ -66,8 +66,8 @@ public class AptinaController : ReceiverController
 
     private string m_iniFilePath;
 
-    public AptinaController(BufferPool<byte> bp, string id, bool receiving = true,
-        int frame_time = 500) : base(bp, id, receiving, frame_time)
+    public AptinaController(BufferPool<byte> bp, string id, bool receiving = true)
+     : base(bp, id, receiving)
     {
         if (barrierSemaphore == null)
         {
@@ -118,7 +118,9 @@ public class AptinaController : ReceiverController
         //dp.Register(this, "AptianController"+tnum);
         //dp.BroadcastLog(this, String.Format("AptinaController receiving {0}", IsReceiving),1);
         dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
-        dp.Broadcast(new AptinaStatusMessage(this, msc.managed_GetWavelength() == 405 ? uGCapture.StatusStr.STAT_GOOD_405 : uGCapture.StatusStr.STAT_GOOD_485));
+        dp.Broadcast(new AptinaStatusMessage(this, 
+            msc.managed_GetWavelength() == 405 ? 
+            StatusStr.STAT_GOOD_405 : StatusStr.STAT_GOOD_485));
 
         return rval;
     }
@@ -134,7 +136,9 @@ public class AptinaController : ReceiverController
     {
         if (me.IsRunning || !me.IsInit)
         {
-            me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? uGCapture.StatusStr.STAT_ERR_405 : uGCapture.StatusStr.STAT_ERR_485));
+            me.dp.Broadcast(new AptinaStatusMessage(me, 
+                me.msc.managed_GetWavelength() == 405 ? 
+                StatusStr.STAT_ERR_405 : StatusStr.STAT_ERR_485));
             return;
         }
         me.IsRunning = true;
@@ -169,7 +173,9 @@ public class AptinaController : ReceiverController
                 if (data == null)
                 {
                     me.dp.BroadcastLog(me, "DoCapture returned a null pointer.", 100);
-                    me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? uGCapture.StatusStr.STAT_FAIL_405 : uGCapture.StatusStr.STAT_FAIL_485));// Almost salmon.
+                    me.dp.Broadcast(new AptinaStatusMessage(me, 
+                        me.msc.managed_GetWavelength() == 405 ? 
+                        StatusStr.STAT_FAIL_405 : StatusStr.STAT_FAIL_485));  // Almost salmon.
 
                     continue;
                 }
@@ -185,13 +191,12 @@ public class AptinaController : ReceiverController
             //imagebuffer.FillTime = (ulong)DateTime.Now.Millisecond;//No.
             imagebuffer.FillTime = (ulong)DateTime.Now.Ticks;
             me.BufferPool.PostFull(imagebuffer);
-            me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? uGCapture.StatusStr.STAT_GOOD_405 : uGCapture.StatusStr.STAT_GOOD_485)); // Salmon? No.
+
+            me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? 
+                StatusStr.STAT_GOOD_405 : StatusStr.STAT_GOOD_485)); // Salmon? No.
         }   
     }
 
-    public override void DoFrame(object source, System.Timers.ElapsedEventArgs e)
-    {
-        throw new NotImplementedException("The method or operation is not implemented.");
-    }
+
 }
 }

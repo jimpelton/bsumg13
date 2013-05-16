@@ -22,9 +22,8 @@ namespace uGCapture
         private String outputData;
 
         public AccelerometerPhidgetsController(BufferPool<byte> bp, string id,
-                                       int serial, bool receiving = true,
-                                       int frame_time = 500)
-            : base(bp, id, receiving, frame_time)
+                                       int serial, bool receiving = true)
+            : base(bp, id, receiving)
         {
             SerialNumber = serial;
             outputData = "";
@@ -88,27 +87,6 @@ namespace uGCapture
             }
         }
 
-        //TODO: remove
-        //gets n raw acceleration, a smoothed acceleration, and accumulates the amount of recent noise. (wip)
-  /*      private void accel_AccelerationChange(object sender, AccelerationChangeEventArgs e)
-        {
-            //create a mutex. these have a weak identity.
-            lock (rawacceleration)
-            {
-                rawacceleration[e.Index] = e.Acceleration;
-                lock (vibration)
-                {                  
-                    vibration[e.Index] += Math.Abs(e.Acceleration - rawacceleration[e.Index]);          //accumulates total change per axis
-                }
-                lock (acceleration)
-                {
-                    //filtered acceleration.
-                    acceleration[e.Index] += rawacceleration[e.Index] * 0.01;//add one tenth of the current acceleration.
-                    acceleration[e.Index] *= 0.99;//remove one tenth of the accumulated past acceleration.
-                }
-            }
-        }*/
-
         private void Sensor_Detach(object sender, DetachEventArgs e)
         {
             Phidget phid = sender as Phidget;
@@ -127,31 +105,6 @@ namespace uGCapture
             dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL_PHID_ACCL));
         }
 
-        public override void DoFrame(object source, ElapsedEventArgs e)
-        {
-            /*if (accel.Attached)
-            {
-                Buffer<Byte> buffer = BufferPool.PopEmpty();
-                String outputData = "Accel \n";
-
-                outputData += DateTime.Now.Ticks.ToString() + " ";
-                for (int i = 0; i < 3; i++)
-                    outputData += accel.axes[i].Acceleration + " ";
-                lock(acceleration)
-                    for (int i = 0; i < 3; i++)
-                        outputData += acceleration[i] + " ";
-                lock(vibration)
-                    for (int i = 0; i < 3; i++)
-                        outputData += vibration[i] + " ";
-
-                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_ACCEL);
-                buffer.Text = String.Format(accel.SerialNumber.ToString());
-                BufferPool.PostFull(buffer);
-            }*/
-        }
-
-       
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
             base.exHeartBeatMessage(r, m);

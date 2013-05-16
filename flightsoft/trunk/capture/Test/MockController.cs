@@ -5,12 +5,6 @@
 // ******************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 
 namespace uGCapture
 {
@@ -33,8 +27,8 @@ namespace uGCapture
         /// <param name="receiving">start receiving messages</param>
         /// <param name="frame_time">default time between calls to DoFrame</param>
         public MockController(BufferPool<byte> bp, string id,
-                              bool receiving = true, int frame_time = 500)
-            : base(bp, id, receiving, frame_time)
+                              bool receiving = true)
+            : base(bp, id, receiving)
         {
             m_maxDataBytes = bp.BufElem;
 	        lastData = new byte[m_maxDataBytes];
@@ -49,16 +43,6 @@ namespace uGCapture
         {
             m_rand = new Random();
             return true;
-        }
-
-        public override void DoFrame(object source, ElapsedEventArgs e)
-        {
-            throw new NotSupportedException();
-            //Buffer<byte> buffer = BufferPool.PopEmpty();
-            //byte[] data = makeData();
-            //buffer.setData(data, BufferType.USHORT_IMAGE405);
-            //Thread.Sleep(m_rand.Next(SleepMin, SleepMax));
-            //BufferPool.PostFull(buffer);
         }
 
         /// <summary>

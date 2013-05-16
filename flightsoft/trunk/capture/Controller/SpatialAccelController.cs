@@ -18,8 +18,8 @@ namespace uGCapture
         private Spatial accel;
         private int SerialNumber;
         private String outputData;
-        public SpatialAccelController(BufferPool<byte> bp, string id, int serial, bool receiving = true, int frame_time = 500) 
-            : base(bp, id, receiving, frame_time)
+        public SpatialAccelController(BufferPool<byte> bp, string id, int serial, bool receiving = true) 
+            : base(bp, id, receiving)
         {
             SerialNumber = serial;
             outputData = "";
@@ -29,12 +29,6 @@ namespace uGCapture
         {
             return openAccel();
         }
-
-        public override void DoFrame(object source, ElapsedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
 
         private bool openAccel()
         {
@@ -136,14 +130,6 @@ namespace uGCapture
         }
 
 
-    }
-
-    public class SpatialControllerNotInitializedException : Exception
-    {
-        public SpatialControllerNotInitializedException(string message)
-            : base(message)
-        {
-        }
     }
 
 }

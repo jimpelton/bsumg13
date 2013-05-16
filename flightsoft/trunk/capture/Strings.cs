@@ -13,28 +13,36 @@ namespace uGCapture
         STAT_ERR,
         STAT_FAIL,
         STAT_GOOD,
+
         STAT_ERR_405,
         STAT_ERR_485,
+
         STAT_FAIL_405,
         STAT_FAIL_485,
+
         STAT_GOOD_405,
         STAT_GOOD_485,
+
         STAT_FAIL_PHID_1018,
         STAT_DISC_PHID_1018,
         STAT_ATCH_PHID_1018,
         STAT_GOOD_PHID_1018,
+
         STAT_FAIL_PHID_TEMP,
         STAT_DISC_PHID_TEMP,
         STAT_ATCH_PHID_TEMP,
         STAT_GOOD_PHID_TEMP,
+
         STAT_FAIL_PHID_ACCL,
         STAT_DISC_PHID_ACCL,
         STAT_ATCH_PHID_ACCL,
         STAT_GOOD_PHID_ACCL,
+
         STAT_FAIL_PHID_SPTL,
         STAT_DISC_PHID_SPTL,
         STAT_ATCH_PHID_SPTL,
         STAT_GOOD_PHID_SPTL,
+
         STAT_FAIL_NI6008DAQ,
         STAT_DISC_NI6008DAQ,
         STAT_ATCH_NI6008DAQ,
@@ -83,7 +91,7 @@ namespace uGCapture
         ID_VCOMM,    
         ID_NI_DAQ,
         ID_UPS,
-	ID_LOGGER
+	    ID_LOGGER
     }
     
     public enum DirStr
