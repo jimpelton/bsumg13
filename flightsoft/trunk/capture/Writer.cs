@@ -71,9 +71,8 @@ namespace uGCapture
         private object m_isRunningMutex = new object();
 
 
-        public Writer(BufferPool<byte> bp, string id, bool receiving = true,
-                      int frame_time = 500)
-            : base(bp, id, receiving, frame_time)
+        public Writer(BufferPool<byte> bp, string id, bool receiving = true)
+            : base(bp, id, receiving)
         {
         }
 
@@ -291,10 +290,6 @@ namespace uGCapture
             IsRunning = false;
         }
 
-
-        public override void DoFrame(object source, ElapsedEventArgs e)
-        {
-        }
     }
 }
 

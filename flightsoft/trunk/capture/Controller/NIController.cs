@@ -56,82 +56,13 @@ namespace uGCapture
             OFF
         };
 
-        public NIController(BufferPool<byte> bp, string id, bool receiving = true,
-                            int frame_time = 500)
-            : base(bp, id, receiving, frame_time)
+        public NIController(BufferPool<byte> bp, string id, bool receiving = true)
+            : base(bp, id, receiving)
         {
         }
 
 
-        public override void DoFrame(object source, ElapsedEventArgs e)
-        {
-            /*
-            double analogDataIn_X_A=0;
-            double analogDataIn_Y_A=0;
-            double analogDataIn_Z_A=0;
-            double analogDataIn_X_T=0;
-            double analogDataIn_Y_T=0;
-            double analogDataIn_Z_T=0;
-            */
-
-            //try
-            //{
-            //    using (Task digitalWriteTask = new Task())
-            //    {
-            //        /*      digitalWriteTask.DOChannels.CreateChannel("Dev1/port1/line0", "",
-            //            ChannelLineGrouping.OneChannelForAllLines);
-            //        digitalWriteTask.Start();
-                   
-            //        DigitalSingleChannelWriter writer = new DigitalSingleChannelWriter(digitalWriteTask.Stream);
-            //        togglepo1=((count++/10)%2==1);
-            //        //togglepo1 = true;
-            //        writer.WriteSingleSampleSingleLine(true, togglepo1);
-                    
-            //        */
-
-
-            //        // togglepo1 = !togglepo1;
-            //        //DOChannel myChannel = digitalWriteTask.DOChannels.CreateChannel("Dev1/port0/line1", "", ChannelLineGrouping.OneChannelForAllLines);
-            //        //myChannel.OutputDriveType = DOOutputDriveType.ActiveDrive;
-            //        // myChannel.InvertLines = true;
-            //    }
-            //}
-            //catch (DaqException ex)
-            //{
-            //    dp.BroadcastLog(this, ex.Message, 1);
-            //}
-
-            /*
-
-            lock (hardwareMutex)// if another instance of this method is executing we can loose data.
-            {
-                analogDataIn_X_A = reader_X_A.ReadSingleSample();
-                analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
-                analogDataIn_Z_A = reader_Z_A.ReadSingleSample();
-                analogDataIn_X_T = reader_X_T.ReadSingleSample();
-                analogDataIn_Y_T = reader_Y_T.ReadSingleSample();
-                analogDataIn_Z_T = reader_Z_T.ReadSingleSample();
-            }
-
-
-            Buffer<Byte> buffer = BufferPool.PopEmpty();
-            String outputData = "NI6008\n";
-
-            outputData += DateTime.Now.Ticks.ToString() + " ";
-            outputData += analogDataIn_X_A + " ";
-            outputData += analogDataIn_Y_A + " ";
-            outputData += analogDataIn_Z_A + " ";
-            outputData += analogDataIn_X_T + " ";
-            outputData += analogDataIn_Y_T + " ";
-            outputData += analogDataIn_Z_T + " ";
-
-            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-            buffer.setData(encoding.GetBytes(outputData), BufferType.UTF8_NI6008);
-            buffer.Text = String.Format("NI6008");
-            BufferPool.PostFull(buffer);
-
-            */
-        }
+     
 
         protected override bool init()
         {

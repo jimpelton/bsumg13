@@ -19,8 +19,8 @@ namespace uGCapture
         private String outputData;
         private bool hasNewData;
 
-        public VCommController(BufferPool<byte> bp, string id, 
-            bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
+        public VCommController(BufferPool<byte> bp, string id, bool receiving = true) 
+            : base(bp, id, receiving)
         {
         }
 
@@ -56,28 +56,6 @@ namespace uGCapture
             return rval;
         }
 
-        public override void DoFrame(object source, ElapsedEventArgs e)
-        {
-            /*
-            Buffer<byte> buffer = BufferPool.PopEmpty();
-
-            String outputData = "Weatherboard\n";
-            outputData += DateTime.Now.Ticks.ToString() + " ";
-            outputData += humidity.ToString() + " ";
-            outputData += temp1.ToString() + " ";
-            outputData += temp2.ToString() + " ";
-            outputData += temp3.ToString() + " ";
-            outputData += pressure.ToString() + " ";
-            outputData += illumunation.ToString() + " ";
-            outputData += recordnum.ToString() + " ";
-
-            buffer.setData(new UTF8Encoding().GetBytes(outputData), 
-                BufferType.UTF8_VCOMM);
-            buffer.Text = "Weatherboard"; 
-            BufferPool.PostFull(buffer);
-            */
-        }
-
         private void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
@@ -93,12 +71,12 @@ namespace uGCapture
                     dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_GOOD));
                 }
             }
-            catch (System.InvalidOperationException err) 
+            catch (InvalidOperationException err) 
             {
                 Reset();
                 dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
             }
-            catch (System.TimeoutException err) 
+            catch (TimeoutException err) 
             {
                 Reset();
             }
@@ -120,7 +98,7 @@ namespace uGCapture
                     Reset();
                 } 
             }
-            catch (System.UnauthorizedAccessException err)
+            catch (UnauthorizedAccessException err)
             {
                 Reset();
                 dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
@@ -146,7 +124,7 @@ namespace uGCapture
             if (output.Length > 0)
             {
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
-                System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+                UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
                 BufferPool.PostFull(buffer);
             }
@@ -154,12 +132,5 @@ namespace uGCapture
         }
 
 
-    }
-    public class VCommControllerNotInitializedException : Exception
-    {
-        public VCommControllerNotInitializedException(string message)
-            : base(message)
-        {
-        }
     }
 }
