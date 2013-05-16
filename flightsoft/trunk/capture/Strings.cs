@@ -181,6 +181,8 @@ namespace uGCapture
             { DirStr.DIR_UPS,         "Ups\\"       },
             { DirStr.DIR_LOGGER,      "Log\\"       },
         };
+                
+
 
         //public static string GetDirStr(DirStr dir)
         //{
