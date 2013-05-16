@@ -86,6 +86,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Message\AccelStatusMessage.cs" />
     <Compile Include="Message\AccumulateMessage.cs" />
+    <Compile Include="Message\AptinaStatusMessage.cs" />
     <Compile Include="Message\DataRequestMessage.cs" />
     <Compile Include="Message\HeartBeatMessage.cs" />
     <Compile Include="Message\NI6008StatusMessage.cs" />

@@ -30,7 +30,7 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.b_Heater_Auto_Shutoff = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
+            this.b_Camera_485 = new System.Windows.Forms.Button();
             this.b_Battery_Level = new System.Windows.Forms.Button();
             this.b_Battery_Com = new System.Windows.Forms.Button();
             this.b_Drive_Full = new System.Windows.Forms.Button();
@@ -43,7 +43,7 @@
             this.b_Light_1 = new System.Windows.Forms.Button();
             this.b_Heater_Low = new System.Windows.Forms.Button();
             this.b_Heater_High = new System.Windows.Forms.Button();
-            this.b_NIDAQ = new System.Windows.Forms.Button();
+            this.b_Camera_405 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,7 +57,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.Controls.Add(this.b_Heater_Auto_Shutoff, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.button5, 4, 2);
+            this.tableLayoutPanel1.Controls.Add(this.b_Camera_485, 4, 2);
             this.tableLayoutPanel1.Controls.Add(this.b_Battery_Level, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.b_Battery_Com, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.b_Drive_Full, 0, 2);
@@ -70,7 +70,7 @@
             this.tableLayoutPanel1.Controls.Add(this.b_Light_1, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.b_Heater_Low, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.b_Heater_High, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.b_NIDAQ, 3, 2);
+            this.tableLayoutPanel1.Controls.Add(this.b_Camera_405, 3, 2);
             this.tableLayoutPanel1.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -99,22 +99,23 @@
             this.b_Heater_Auto_Shutoff.Text = "Heater Shutoff";
             this.b_Heater_Auto_Shutoff.UseVisualStyleBackColor = false;
             // 
-            // button5
+            // b_Camera_485
             // 
-            this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.b_Camera_485.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button5.AutoSize = true;
-            this.button5.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button5.BackColor = System.Drawing.Color.OrangeRed;
-            this.button5.Enabled = false;
-            this.button5.FlatAppearance.BorderSize = 2;
-            this.button5.Font = new System.Drawing.Font("Calibri", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button5.Location = new System.Drawing.Point(598, 120);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(142, 50);
-            this.button5.TabIndex = 14;
-            this.button5.UseVisualStyleBackColor = false;
+            this.b_Camera_485.AutoSize = true;
+            this.b_Camera_485.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.b_Camera_485.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Camera_485.Enabled = false;
+            this.b_Camera_485.FlatAppearance.BorderSize = 2;
+            this.b_Camera_485.Font = new System.Drawing.Font("Calibri", 12F);
+            this.b_Camera_485.Location = new System.Drawing.Point(598, 120);
+            this.b_Camera_485.Name = "b_Camera_485";
+            this.b_Camera_485.Size = new System.Drawing.Size(142, 50);
+            this.b_Camera_485.TabIndex = 14;
+            this.b_Camera_485.Text = "Camera 485nm";
+            this.b_Camera_485.UseVisualStyleBackColor = false;
             // 
             // b_Battery_Level
             // 
@@ -332,22 +333,23 @@
             this.b_Heater_High.Text = "Heater Temp High";
             this.b_Heater_High.UseVisualStyleBackColor = false;
             // 
-            // b_NIDAQ
+            // b_Camera_405
             // 
-            this.b_NIDAQ.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.b_Camera_405.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.b_NIDAQ.AutoSize = true;
-            this.b_NIDAQ.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_NIDAQ.BackColor = System.Drawing.Color.OrangeRed;
-            this.b_NIDAQ.Enabled = false;
-            this.b_NIDAQ.FlatAppearance.BorderSize = 2;
-            this.b_NIDAQ.Font = new System.Drawing.Font("Calibri", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.b_NIDAQ.Location = new System.Drawing.Point(450, 120);
-            this.b_NIDAQ.Name = "b_NIDAQ";
-            this.b_NIDAQ.Size = new System.Drawing.Size(139, 50);
-            this.b_NIDAQ.TabIndex = 2;
-            this.b_NIDAQ.UseVisualStyleBackColor = false;
+            this.b_Camera_405.AutoSize = true;
+            this.b_Camera_405.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.b_Camera_405.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Camera_405.Enabled = false;
+            this.b_Camera_405.FlatAppearance.BorderSize = 2;
+            this.b_Camera_405.Font = new System.Drawing.Font("Calibri", 12F);
+            this.b_Camera_405.Location = new System.Drawing.Point(450, 120);
+            this.b_Camera_405.Name = "b_Camera_405";
+            this.b_Camera_405.Size = new System.Drawing.Size(139, 50);
+            this.b_Camera_405.TabIndex = 2;
+            this.b_Camera_405.Text = "Camera 405nm";
+            this.b_Camera_405.UseVisualStyleBackColor = false;
             // 
             // BiteCASPanel
             // 
@@ -371,20 +373,20 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button b_Heater_High;
-        private System.Windows.Forms.Button b_Phidgets_1051;
-        private System.Windows.Forms.Button b_Phidgets_1018;
-        private System.Windows.Forms.Button b_Accel_Aircraft;
-        private System.Windows.Forms.Button b_Accel_2;
-        private System.Windows.Forms.Button b_Accel_1;
-        private System.Windows.Forms.Button b_Light_2;
-        private System.Windows.Forms.Button b_Light_1;
-        private System.Windows.Forms.Button b_NIDAQ;
-        private System.Windows.Forms.Button b_Heater_Low;
-        private System.Windows.Forms.Button b_Heater_Auto_Shutoff;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button b_Battery_Level;
-        private System.Windows.Forms.Button b_Battery_Com;
-        private System.Windows.Forms.Button b_Drive_Full;
+        public System.Windows.Forms.Button b_Heater_High;
+        public System.Windows.Forms.Button b_Phidgets_1051;
+        public System.Windows.Forms.Button b_Phidgets_1018;
+        public System.Windows.Forms.Button b_Accel_Aircraft;
+        public System.Windows.Forms.Button b_Accel_2;
+        public System.Windows.Forms.Button b_Accel_1;
+        public System.Windows.Forms.Button b_Light_2;
+        public System.Windows.Forms.Button b_Light_1;
+        public System.Windows.Forms.Button b_Heater_Low;
+        public System.Windows.Forms.Button b_Heater_Auto_Shutoff;
+        public System.Windows.Forms.Button b_Battery_Level;
+        public System.Windows.Forms.Button b_Battery_Com;
+        public System.Windows.Forms.Button b_Drive_Full;
+        public System.Windows.Forms.Button b_Camera_405;
+        public System.Windows.Forms.Button b_Camera_485;
     }
 }
