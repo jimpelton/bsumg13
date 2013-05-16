@@ -40,6 +40,7 @@ namespace uGCapture
         private VCommController weatherboard;
         private NIController ni6008;
         private UPSController UPS;
+        private Logger logger;
 
         private Thread acThread1;
         private Thread acThread2;
@@ -65,6 +66,7 @@ namespace uGCapture
             initWeatherBoard();
             initNI6008Controller();
             initUPSController();
+	    // initLogger();    // --JP 5/13/13
 
             dp.Register(this);
         }
@@ -73,7 +75,7 @@ namespace uGCapture
 
         private void initWriter()
         {
-            writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { DirectoryName = _storageDir };
+            writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { BasePath = _storageDir };
             if (writer.Initialize())
             {
                 wrtThread = new Thread(() => Writer.WriteData(writer));
@@ -244,7 +246,12 @@ namespace uGCapture
             }
             dp.Register(UPS);
         }
-
+	
+	    public void initLogger()
+	    {
+	        logger = new Logger(Str.GetIdStr(IdStr.ID_LOGGER));
+	    }
+	
         public DataSet<byte> GetLastData()
         {
             if(bufferPool.Staging!=null)
