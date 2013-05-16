@@ -245,12 +245,12 @@ namespace uGCapture
                 }
             } // while...
         }
-
+        
         private void WriteOutput(Buffer<byte> buf, string fnamePfx,
             uint index, string fnameExt)
         {
             String filename = String.Format(
-                "{0}{1}_{2}{3}", DirectoryName, fnamePfx, index, fnameExt);
+                "{0}{1}_{2,8:D8}{3}", DirectoryName, fnamePfx, index, fnameExt);
 
             FileStream fs = File.Create(filename, (int)buf.CapacityUtilization,
                                         FileOptions.None);
