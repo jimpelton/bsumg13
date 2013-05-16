@@ -21,7 +21,7 @@ namespace uGCapture
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
-
+            bool found = false;
             System.Management.ObjectQuery query = new ObjectQuery("Select * FROM Win32_Battery");
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
 
@@ -42,14 +42,17 @@ namespace uGCapture
                     }
                     if (property.Name.Equals("Status"))
                     {
+                        found = true;
                         //property.Value//"OK""Error""Degraded""Unknown""Starting""Stopping""Service""Stressed""NonRecover""No Contact""Lost Comm"
-                        if(property.Value=="Error")
+                        if(property.Value==null||property.Value.Equals("Error"))
                             dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
-                        else if(property.Value=="OK")
+                        else
                             dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_GOOD));
                     }
                 }
             }
+            if(!found)
+                 dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
         }
 
         protected override bool init()

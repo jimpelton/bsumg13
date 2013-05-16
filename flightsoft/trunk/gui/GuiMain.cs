@@ -14,6 +14,14 @@ namespace gui
         private bool boolCapturing = false;
         private static int MAX_DATA_POINTS = 100;
         private string configPath;
+        private string dataPath;
+
+        public string guiDataPath
+        {
+            get { return dataPath; }
+            set { dataPath = value; }
+        }
+
         private GuiUpdater guiUpdater;
        
         public gui.GuiUpdater GuiUpdater
@@ -58,6 +66,7 @@ namespace gui
             {
                 path = path + @"\";
             }
+            guiDataPath = path;
             String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
             System.IO.Directory.CreateDirectory(config.Path + directoryName);
 

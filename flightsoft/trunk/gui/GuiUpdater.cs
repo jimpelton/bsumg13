@@ -7,7 +7,7 @@ using System.Text;
 using System.Timers;
 using System.Windows.Forms.DataVisualization.Charting;
 using uGCapture;
-
+using System.Runtime.InteropServices;
 
 namespace gui
 {
@@ -95,9 +95,58 @@ namespace gui
         private void updateCASPanel()
         {
             DataSet<byte> dat = Guimain.getLatestData();
+            ulong freespace;//freespace was an awesome game.
+            if(DriveFreeBytes(Guimain.guiDataPath, out freespace))
+            {
+                if      (freespace < 10000000000L)
+                    CAS.b_Drive_Full.BackColor = Color.OrangeRed;
+                else if (freespace < 20000000000L)
+                    CAS.b_Drive_Full.BackColor = Color.Yellow;
+                else if (freespace < 200000000000L)
+                    CAS.b_Drive_Full.BackColor = Color.Green;
+                else
+                    CAS.b_Drive_Full.BackColor = Color.Black;
+            }
 
             //dat.lastData.
         }
+
+
+        // Stolen! http://stackoverflow.com/questions/1393711/get-free-disk-space
+        // Pinvoke for API function
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
+        out ulong lpFreeBytesAvailable,
+        out ulong lpTotalNumberOfBytes,
+        out ulong lpTotalNumberOfFreeBytes);
+
+        public static bool DriveFreeBytes(string folderName, out ulong freespace)
+        {
+            freespace = 0;
+            if (string.IsNullOrEmpty(folderName))
+            {
+                //throw new ArgumentNullException("folderName");
+                return false;
+            }
+
+            if (!folderName.EndsWith("\\"))
+            {
+                folderName += '\\';
+            }
+
+            ulong free = 0, dummy1 = 0, dummy2 = 0;
+
+            if (GetDiskFreeSpaceEx(folderName, out free, out dummy1, out dummy2))
+            {
+                freespace = free;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }//end theivery!
 
 
         public override void exLogMessage(Receiver r, Message m) 
@@ -211,13 +260,77 @@ namespace gui
             UPSStatusMessage msg = (UPSStatusMessage)m;
             if (msg.getState() == uGCapture.StatusStr.STAT_FAIL)
             {
-
+                CAS.b_Battery_Com.BackColor = Color.OrangeRed;
             }
+            else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD)
+            {
+                CAS.b_Battery_Com.BackColor = Color.Black;
+            }
+            else
+            {
+                CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+            }
+
         }
         override public void exAccelStatusMessage(Receiver r, Message m) { ; }
         override public void exVcommStatusMessage(Receiver r, Message m) { ; }
-        override public void exNI6008StatusMessage(Receiver r, Message m) { ; }
-        override public void exAptinaStatusMessage(Receiver r, Message m) { ; }
+
+        override public void exNI6008StatusMessage(Receiver r, Message m)
+        {
+            NI6008StatusMessage msg = (NI6008StatusMessage)m;
+            if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_NI6008DAQ)
+            {
+                CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;             
+            }
+            else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_NI6008DAQ)
+            {
+                CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;       
+            }
+            else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_NI6008DAQ)
+            {
+                CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;
+            }
+            else if(msg.getState() == uGCapture.StatusStr.STAT_GOOD_NI6008DAQ)
+            {
+                CAS.b_Accel_Aircraft.BackColor = Color.Black;
+            }
+        }
+
+        override public void exAptinaStatusMessage(Receiver r, Message m)
+        {
+            //todo: convert to a switch
+            AptinaStatusMessage msg = (AptinaStatusMessage)m;
+            if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_405)
+            {
+                CAS.b_Camera_405.BackColor = Color.OrangeRed;
+            }
+            else if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_485)
+            {
+                CAS.b_Camera_485.BackColor = Color.OrangeRed;
+            }
+            else if (msg.getState() == uGCapture.StatusStr.STAT_ERR_405)
+            {
+                CAS.b_Camera_405.BackColor = Color.OrangeRed;
+            }
+            else if (msg.getState() == uGCapture.StatusStr.STAT_ERR_485)
+            {
+                CAS.b_Camera_485.BackColor = Color.OrangeRed;
+            }
+            else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_405)
+            {
+                CAS.b_Camera_405.BackColor = Color.Black;
+            }
+            else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_485)
+            {
+                CAS.b_Camera_485.BackColor = Color.Black;
+            }
+            else
+            {
+                CAS.b_Camera_405.BackColor = Color.Salmon;//Something is fishy here.
+                CAS.b_Camera_485.BackColor = Color.Salmon;
+            }
+        }
+
         override public void exSpatialStatusMessage(Receiver r, Message m) { ; }
         override public void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
 

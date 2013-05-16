@@ -118,6 +118,8 @@ public class AptinaController : ReceiverController
         //dp.Register(this, "AptianController"+tnum);
         //dp.BroadcastLog(this, String.Format("AptinaController receiving {0}", IsReceiving),1);
         dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
+        dp.Broadcast(new AptinaStatusMessage(this, msc.managed_GetWavelength() == 405 ? uGCapture.StatusStr.STAT_GOOD_405 : uGCapture.StatusStr.STAT_GOOD_485));
+
         return rval;
     }
 
@@ -132,6 +134,7 @@ public class AptinaController : ReceiverController
     {
         if (me.IsRunning || !me.IsInit)
         {
+            me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? uGCapture.StatusStr.STAT_ERR_405 : uGCapture.StatusStr.STAT_ERR_485));
             return;
         }
         me.IsRunning = true;
@@ -166,6 +169,8 @@ public class AptinaController : ReceiverController
                 if (data == null)
                 {
                     me.dp.BroadcastLog(me, "DoCapture returned a null pointer.", 100);
+                    me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? uGCapture.StatusStr.STAT_FAIL_405 : uGCapture.StatusStr.STAT_FAIL_485));// Almost salmon.
+
                     continue;
                 }
                 Marshal.Copy(new IntPtr(data), me.dest, 0, (int) me.size);
@@ -180,6 +185,7 @@ public class AptinaController : ReceiverController
             //imagebuffer.FillTime = (ulong)DateTime.Now.Millisecond;//No.
             imagebuffer.FillTime = (ulong)DateTime.Now.Ticks;
             me.BufferPool.PostFull(imagebuffer);
+            me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? uGCapture.StatusStr.STAT_GOOD_405 : uGCapture.StatusStr.STAT_GOOD_485)); // Salmon? No.
         }   
     }
 
