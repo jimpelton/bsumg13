@@ -94,7 +94,7 @@ namespace gui
 
         private void updateCASPanel()
         {
-            DataSet<byte> dat = Guimain.getLatestData();
+            
             ulong freespace;//freespace was an awesome game.
             if(DriveFreeBytes(Guimain.guiDataPath, out freespace))
             {
@@ -106,9 +106,72 @@ namespace gui
                     CAS.b_Drive_Full.BackColor = Color.Green;
                 else
                     CAS.b_Drive_Full.BackColor = Color.Black;
+
+                CAS.b_Drive_Full.Text = "Drive Full (" +(freespace/(1024*1024*1024))+")";
             }
 
-            //dat.lastData.
+            UTF8Encoding encoding = new UTF8Encoding();
+            DataSet<byte> dat = Guimain.getLatestData();
+
+            if (dat != null)
+            {
+                string UPSdat = encoding.GetString(dat.lastData[(int)BufferType.UTF8_UPS]);
+                string[] UPSdats = UPSdat.Split();
+                if (UPSdats.Length > 6)
+                {
+                    try
+                    {
+                        int bat = int.Parse(UPSdats[4]);
+                        if (bat < 20)
+                        {
+                            CAS.b_Battery_Level.BackColor = Color.OrangeRed;
+                            CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+                        }
+                        else if (bat < 90)
+                        {
+                            CAS.b_Battery_Level.BackColor = Color.Yellow;
+                            CAS.b_Battery_Com.BackColor = Color.Yellow;
+                        }
+                        else if (bat < 98)
+                        {
+                            CAS.b_Battery_Level.BackColor = Color.YellowGreen;
+                            CAS.b_Battery_Com.BackColor = Color.Green;
+                        }
+                        else if (bat < 99)
+                        {
+                            CAS.b_Battery_Level.BackColor = Color.Green;
+                            CAS.b_Battery_Com.BackColor = Color.Green;
+                        }
+                        else
+                        {
+                            CAS.b_Battery_Level.BackColor = Color.Black;
+                            CAS.b_Battery_Com.BackColor = Color.Black;
+                        }
+
+                        CAS.b_Battery_Level.Text = "Battery Level (" + UPSdats[4] + ")";
+                        if (int.Parse(UPSdats[6]) > 0)
+                        {
+                            CAS.b_Battery_Com.Text = BatteryStatusStrings.GetBatteryStatusStr(int.Parse(UPSdats[6]));
+                        }
+                        else
+                        {
+                            CAS.b_Battery_Com.Text = "Battery Com";
+                        }
+
+                    }
+                    catch (FormatException e)
+                    {
+                        //a malformed packet has arrived. Tremble in fear.
+                    }
+
+                }
+                else
+                {
+                    CAS.b_Battery_Com.Text = "Battery Com";
+                }
+
+            }
+            
         }
 
 
@@ -257,18 +320,28 @@ namespace gui
         
         override public void exUPSStatusMessage(Receiver r, Message m) 
         {
-            UPSStatusMessage msg = (UPSStatusMessage)m;
-            if (msg.getState() == uGCapture.StatusStr.STAT_FAIL)
+            try
             {
-                CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+                UPSStatusMessage msg = (UPSStatusMessage)m;
+                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL)
+                {
+                    CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+                    CAS.b_Battery_Com.Text = "Battery Com";
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD)
+                {
+                    //CAS.b_Battery_Com.BackColor = Color.Black;
+                }
+                else
+                {
+                    CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+                    CAS.b_Battery_Com.Text = "Battery Com";
+                }
             }
-            else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD)
+            catch (InvalidOperationException e)
             {
-                CAS.b_Battery_Com.BackColor = Color.Black;
-            }
-            else
-            {
-                CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+                //the wrong thread operated on something...
+                dp.BroadcastLog(this, e.ToString(), 0);
             }
 
         }
@@ -277,57 +350,73 @@ namespace gui
 
         override public void exNI6008StatusMessage(Receiver r, Message m)
         {
-            NI6008StatusMessage msg = (NI6008StatusMessage)m;
-            if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_NI6008DAQ)
+            try
             {
-                CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;             
+                NI6008StatusMessage msg = (NI6008StatusMessage)m;
+                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_NI6008DAQ)
+                {
+                    CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;             
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_NI6008DAQ)
+                {
+                    CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;       
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_NI6008DAQ)
+                {
+                    CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;
+                }
+                else if(msg.getState() == uGCapture.StatusStr.STAT_GOOD_NI6008DAQ)
+                {
+                    CAS.b_Accel_Aircraft.BackColor = Color.Black;
+                }
             }
-            else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_NI6008DAQ)
+            catch (InvalidOperationException e)
             {
-                CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;       
-            }
-            else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_NI6008DAQ)
-            {
-                CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;
-            }
-            else if(msg.getState() == uGCapture.StatusStr.STAT_GOOD_NI6008DAQ)
-            {
-                CAS.b_Accel_Aircraft.BackColor = Color.Black;
+                //the wrong thread operated on something...
+                dp.BroadcastLog(this, e.ToString(), 0);
             }
         }
 
         override public void exAptinaStatusMessage(Receiver r, Message m)
         {
-            //todo: convert to a switch
-            AptinaStatusMessage msg = (AptinaStatusMessage)m;
-            if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_405)
+            try
             {
-                CAS.b_Camera_405.BackColor = Color.OrangeRed;
+                //todo: convert to a switch
+                AptinaStatusMessage msg = (AptinaStatusMessage)m;
+                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_405)
+                {
+                    CAS.b_Camera_405.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_485)
+                {
+                    CAS.b_Camera_485.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_ERR_405)
+                {
+                    CAS.b_Camera_405.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_ERR_485)
+                {
+                    CAS.b_Camera_485.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_405)
+                {
+                    CAS.b_Camera_405.BackColor = Color.Black;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_485)
+                {
+                    CAS.b_Camera_485.BackColor = Color.Black;
+                }
+                else
+                {
+                    CAS.b_Camera_405.BackColor = Color.Salmon;//Something is fishy here.
+                    CAS.b_Camera_485.BackColor = Color.Salmon;
+                }
             }
-            else if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_485)
+            catch (InvalidOperationException e)
             {
-                CAS.b_Camera_485.BackColor = Color.OrangeRed;
-            }
-            else if (msg.getState() == uGCapture.StatusStr.STAT_ERR_405)
-            {
-                CAS.b_Camera_405.BackColor = Color.OrangeRed;
-            }
-            else if (msg.getState() == uGCapture.StatusStr.STAT_ERR_485)
-            {
-                CAS.b_Camera_485.BackColor = Color.OrangeRed;
-            }
-            else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_405)
-            {
-                CAS.b_Camera_405.BackColor = Color.Black;
-            }
-            else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_485)
-            {
-                CAS.b_Camera_485.BackColor = Color.Black;
-            }
-            else
-            {
-                CAS.b_Camera_405.BackColor = Color.Salmon;//Something is fishy here.
-                CAS.b_Camera_485.BackColor = Color.Salmon;
+                //the wrong thread operated on something...
+                dp.BroadcastLog(this, e.ToString(), 0);
             }
         }
 

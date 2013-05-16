@@ -54,7 +54,8 @@ namespace uGCapture
         public void init()
         {
 
-            bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24));
+            Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944); // Three magic numbers !
+            bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24), sBuf);
 
             initWriter();
             initAptina();

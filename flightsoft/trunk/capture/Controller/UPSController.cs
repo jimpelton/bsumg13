@@ -9,9 +9,6 @@ namespace uGCapture
 {
     class UPSController : ReceiverController
     {
-
-
-
         public UPSController(BufferPool<byte> bp, string id, bool receiving = true, int frame_time = 500) : base(bp, id, receiving, frame_time)
         {
         }
@@ -31,7 +28,7 @@ namespace uGCapture
             string charge = "0";
             string lifeRemaining = "0";
             string stat = "Disconnected";
-
+            string chargeStatus = "0";
             foreach (ManagementObject mo in collection)
             {
                 foreach (PropertyData property in mo.Properties)
@@ -39,24 +36,37 @@ namespace uGCapture
                     if (property.Name.Equals("EstimatedChargeRemaining"))
                     {
                         //property.Value//Estimate of the percentage of full charge remaining. 
-                        charge = property.Value.ToString();
+                        if (property.Value != null)
+                            charge = property.Value.ToString();
+                    }
+
+                    if (property.Name.Equals("BatteryStatus"))
+                    {
+                        //property.Value//Estimate of the percentage of full charge remaining. 
+                        if (property.Value != null)
+                            chargeStatus = property.Value.ToString();
                     }
 
                     if (property.Name.Equals("EstimatedRunTime"))
                     {
                         //property.Value//Estimate in minutes of the time to battery charge depletion under the present load conditions
-                        lifeRemaining = property.Value.ToString();
+                        if(property.Value!=null)
+                            lifeRemaining = property.Value.ToString();
                     }
 
                     if (property.Name.Equals("Status"))
                     {
                         found = true;
-                        stat = property.Value.ToString();
-                        //property.Value//"OK""Error""Degraded""Unknown""Starting""Stopping""Service""Stressed""NonRecover""No Contact""Lost Comm"
-                        if (property.Value == null || property.Value.Equals("Error"))
-                            dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
-                        else
+                        if (property.Value != null)
+                        {
+                            stat = property.Value.ToString();
+                            //property.Value//"OK""Error""Degraded""Unknown""Starting""Stopping""Service""Stressed""NonRecover""No Contact""Lost Comm"
                             dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_GOOD));
+                        }
+                        else
+                        {
+                            dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
+                        }
                     }
                 }
             }
@@ -64,7 +74,7 @@ namespace uGCapture
                  dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
 
             Buffer<Byte> buffer = BufferPool.PopEmpty();
-            String output = "UPS \n" + DateTime.Now.Ticks.ToString() + " " + stat + " " + charge + " " + lifeRemaining;
+            String output = "UPS \n" + DateTime.Now.Ticks.ToString() + " " + stat + " " + charge + " " + lifeRemaining + " " + chargeStatus;
             UTF8Encoding encoding = new UTF8Encoding();
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_UPS);
             BufferPool.PostFull(buffer);
