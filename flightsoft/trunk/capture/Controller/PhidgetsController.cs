@@ -151,6 +151,15 @@ public class PhidgetsController : ReceiverController
             BufferPool.PostFull(buffer);
             outputData = "";
         }
+        if (phidgets1018.Attached)
+            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_GOOD_PHID_1018));
+        else
+            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_FAIL_PHID_1018));
+        if (phidgetTemperature.Attached)
+            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_GOOD_PHID_TEMP));
+        else
+            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_FAIL_PHID_TEMP));
+
     }
 
     public override void exAccumulateMessage(Receiver r, Message m)

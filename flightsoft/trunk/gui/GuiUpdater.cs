@@ -19,7 +19,9 @@ namespace gui
         private BiteCASPanel CAS = null;
         private Queue<uGCapture.StatusStr> CASQueue = null;
 
-
+        private StatusStr lastAccelState = StatusStr.STAT_ERR;
+        private StatusStr lastSpatialState = StatusStr.STAT_ERR;
+        private long last1018update = 0;
         public GuiUpdater(Form1 f,GuiMain m, BiteCASPanel c, string id, bool receiving=true) 
             : base(id, receiving)
         {         
@@ -92,13 +94,12 @@ namespace gui
             //dp.Broadcast(new DataRequestMessage(this));
         }
 
-        private void updateCASPanel()
+        private void updateCASFreeSpace()
         {
-            
             ulong freespace;//freespace was an awesome game.
-            if(DriveFreeBytes(Guimain.guiDataPath, out freespace))
+            if (DriveFreeBytes(Guimain.guiDataPath, out freespace))
             {
-                if      (freespace < 10000000000L)
+                if (freespace < 10000000000L)
                     CAS.b_Drive_Full.BackColor = Color.OrangeRed;
                 else if (freespace < 20000000000L)
                     CAS.b_Drive_Full.BackColor = Color.Yellow;
@@ -107,72 +108,156 @@ namespace gui
                 else
                     CAS.b_Drive_Full.BackColor = Color.Black;
 
-                CAS.b_Drive_Full.Text = "Drive Full (" +(freespace/(1024*1024*1024))+")";
+                CAS.b_Drive_Full.Text = "Drive Full (" + (freespace / (1024 * 1024 * 1024)) + ")";
             }
 
+        }
+
+        private void updateCASBattery(DataSet<byte> dat)
+        {
             UTF8Encoding encoding = new UTF8Encoding();
-            DataSet<byte> dat = Guimain.getLatestData();
 
-            if (dat != null)
+            string UPSdat = encoding.GetString(dat.lastData[BufferType.UTF8_UPS]);
+            string[] UPSdats = UPSdat.Split();
+            if (UPSdats.Length > 6)
             {
-                string UPSdat = encoding.GetString(dat.lastData[(int)BufferType.UTF8_UPS]);
-                string[] UPSdats = UPSdat.Split();
-                if (UPSdats.Length > 6)
+                try
                 {
-                    try
+                    int bat = int.Parse(UPSdats[4]);
+                    if (bat < 20)
                     {
-                        int bat = int.Parse(UPSdats[4]);
-                        if (bat < 20)
-                        {
-                            CAS.b_Battery_Level.BackColor = Color.OrangeRed;
-                            CAS.b_Battery_Com.BackColor = Color.OrangeRed;
-                        }
-                        else if (bat < 90)
-                        {
-                            CAS.b_Battery_Level.BackColor = Color.Yellow;
-                            CAS.b_Battery_Com.BackColor = Color.Yellow;
-                        }
-                        else if (bat < 98)
-                        {
-                            CAS.b_Battery_Level.BackColor = Color.YellowGreen;
-                            CAS.b_Battery_Com.BackColor = Color.Green;
-                        }
-                        else if (bat < 99)
-                        {
-                            CAS.b_Battery_Level.BackColor = Color.Green;
-                            CAS.b_Battery_Com.BackColor = Color.Green;
-                        }
-                        else
-                        {
-                            CAS.b_Battery_Level.BackColor = Color.Black;
-                            CAS.b_Battery_Com.BackColor = Color.Black;
-                        }
-
-                        CAS.b_Battery_Level.Text = "Battery Level (" + UPSdats[4] + ")";
-                        if (int.Parse(UPSdats[6]) > 0)
-                        {
-                            CAS.b_Battery_Com.Text = BatteryStatusStrings.GetBatteryStatusStr(int.Parse(UPSdats[6]));
-                        }
-                        else
-                        {
-                            CAS.b_Battery_Com.Text = "Battery Com";
-                        }
-
+                        CAS.b_Battery_Level.BackColor = Color.OrangeRed;
+                        CAS.b_Battery_Com.BackColor = Color.OrangeRed;
                     }
-                    catch (FormatException e)
+                    else if (bat < 90)
                     {
-                        //a malformed packet has arrived. Tremble in fear.
+                        CAS.b_Battery_Level.BackColor = Color.Yellow;
+                        CAS.b_Battery_Com.BackColor = Color.Yellow;
+                    }
+                    else if (bat < 98)
+                    {
+                        CAS.b_Battery_Level.BackColor = Color.YellowGreen;
+                        CAS.b_Battery_Com.BackColor = Color.Green;
+                    }
+                    else if (bat < 99)
+                    {
+                        CAS.b_Battery_Level.BackColor = Color.Green;
+                        CAS.b_Battery_Com.BackColor = Color.Green;
+                    }
+                    else
+                    {
+                        CAS.b_Battery_Level.BackColor = Color.Black;
+                        CAS.b_Battery_Com.BackColor = Color.Black;
                     }
 
+                    CAS.b_Battery_Level.Text = "Battery Level (" + UPSdats[4] + ")";
+                    if (int.Parse(UPSdats[6]) > 0)
+                    {
+                        string batstring = BatteryStatusStrings.GetBatteryStatusStr(int.Parse(UPSdats[6]));
+                        if(batstring!=null)
+                        CAS.b_Battery_Com.Text = batstring;
+                    }
+                    else
+                    {
+                        CAS.b_Battery_Com.Text = "Battery Com";
+                    }
+
+                }
+                catch (FormatException e)
+                {
+                    //a malformed packet has arrived. Tremble in fear.
+                }
+
+            }
+            else
+            {
+                CAS.b_Battery_Com.Text = "Battery Com";
+            }
+
+            
+            
+        }
+
+        private void updateCASAccel(DataSet<byte> dat)
+        {
+            UTF8Encoding encoding = new UTF8Encoding();
+
+            try
+            {
+                if (lastAccelState == StatusStr.STAT_GOOD_PHID_ACCL)
+                    CAS.b_Accel_1.BackColor = Color.Black;
+                if (lastSpatialState == StatusStr.STAT_GOOD_PHID_SPTL)
+                    CAS.b_Accel_2.BackColor = Color.Black;
+
+                //get the difference between accel and spacials acceleration vector magnitudes.
+                double x1=0, x2=0, y1=0, y2=0, z1=0, z2=0;
+                string Acceldat = encoding.GetString(dat.lastData[BufferType.UTF8_ACCEL]);
+                string[] Acceldats = Acceldat.Split();
+                if (Acceldats.Length > 5)
+                {
+                    x1 = double.Parse(Acceldats[3]);
+                    y1 = double.Parse(Acceldats[4]);
+                    z1 = double.Parse(Acceldats[5]);
                 }
                 else
                 {
-                    CAS.b_Battery_Com.Text = "Battery Com";
+                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
+                }
+               
+
+                Acceldat = encoding.GetString(dat.lastData[BufferType.UTF8_SPATIAL]);
+                Acceldats = Acceldat.Split();
+                if (Acceldats.Length > 5)
+                {
+                    x2 = double.Parse(Acceldats[3]);
+                    y2 = double.Parse(Acceldats[4]);
+                    z2 = double.Parse(Acceldats[5]);
+                }
+                else
+                {
+                    CAS.b_Accel_1.BackColor = Color.OrangeRed;
+                    return;
                 }
 
+                double m1 = Math.Sqrt((x1 * x1) + (y1 * y1) + (z1 * z1));
+                double m2 = Math.Sqrt((x2 * x2) + (y2 * y2) + (z2 * z2));
+                double dif = Math.Abs(m1 - m2);
+
+                if (dif > 0.5)
+                {
+                    if(CAS.b_Accel_1.BackColor!=Color.OrangeRed && lastAccelState == StatusStr.STAT_GOOD_PHID_ACCL)
+                        CAS.b_Accel_1.BackColor = Color.Green;
+                    if (CAS.b_Accel_2.BackColor != Color.OrangeRed && lastSpatialState == StatusStr.STAT_GOOD_PHID_SPTL)
+                        CAS.b_Accel_2.BackColor = Color.Green;
+                }
             }
-            
+            catch (FormatException e)
+            {
+                //a malformed packet has arrived. Tremble in fear.
+            }
+
         }
+
+        private void updateCASPhidgets(DataSet<byte> dat)
+        {
+
+        }
+        
+        private void updateCASPanel()
+        {
+            DataSet<byte> dat = Guimain.getLatestData();
+            if (dat != null)
+            {
+                updateCASFreeSpace();
+                updateCASBattery(dat);
+                updateCASAccel(dat);
+                updateCASPhidgets(dat);
+            }
+
+        }
+
+
+
 
 
         // Stolen! http://stackoverflow.com/questions/1393711/get-free-disk-space
@@ -341,12 +426,85 @@ namespace gui
             catch (InvalidOperationException e)
             {
                 //the wrong thread operated on something...
-                dp.BroadcastLog(this, e.ToString(), 0);
+                dp.BroadcastLog(this, e.Message, 0);
             }
 
         }
-        override public void exAccelStatusMessage(Receiver r, Message m) { ; }
-        override public void exVcommStatusMessage(Receiver r, Message m) { ; }
+
+        override public void exAccelStatusMessage(Receiver r, Message m)       
+        {
+            try
+            {
+                AccelStatusMessage msg = (AccelStatusMessage)m;
+                lastAccelState = msg.getState();
+                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_PHID_ACCL)
+                {
+                    CAS.b_Accel_1.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_PHID_ACCL)
+                {
+                    CAS.b_Accel_1.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_PHID_ACCL)
+                {
+                    CAS.b_Accel_1.BackColor = Color.Yellow;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_PHID_ACCL)
+                {
+                    //CAS.b_Accel_1.BackColor = Color.Black;// handled when checking the acceleration difference.
+                }
+            }
+
+            catch (InvalidOperationException e)
+            {
+                //the wrong thread operated on something...
+                dp.BroadcastLog(this, e.Message, 0);
+            }
+        }
+
+        override public void exSpatialStatusMessage(Receiver r, Message m)
+        {
+            try
+            {
+                SpatialStatusMessage msg = (SpatialStatusMessage)m;
+                lastSpatialState = msg.getState();
+                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_PHID_SPTL)
+                {
+                    CAS.b_Accel_2.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_PHID_SPTL)
+                {
+                    CAS.b_Accel_2.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_PHID_SPTL)
+                {
+                    CAS.b_Accel_2.BackColor = Color.Yellow;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_PHID_SPTL)
+                {
+                    //CAS.b_Accel_2.BackColor = Color.Black;// handled when checking the acceleration difference
+                }
+            }
+
+            catch (InvalidOperationException e)
+            {
+                //the wrong thread operated on something...
+                dp.BroadcastLog(this, e.Message, 0);
+            }
+        }
+
+        override public void exVcommStatusMessage(Receiver r, Message m)
+        {
+            try
+            {
+
+            }
+            catch (InvalidOperationException e)
+            {
+                //the wrong thread operated on something...
+                dp.BroadcastLog(this, e.Message, 0);
+            }
+        }
 
         override public void exNI6008StatusMessage(Receiver r, Message m)
         {
@@ -373,7 +531,7 @@ namespace gui
             catch (InvalidOperationException e)
             {
                 //the wrong thread operated on something...
-                dp.BroadcastLog(this, e.ToString(), 0);
+                dp.BroadcastLog(this, e.Message, 0);
             }
         }
 
@@ -416,12 +574,45 @@ namespace gui
             catch (InvalidOperationException e)
             {
                 //the wrong thread operated on something...
-                dp.BroadcastLog(this, e.ToString(), 0);
+                dp.BroadcastLog(this, e.Message, 0);
             }
         }
 
-        override public void exSpatialStatusMessage(Receiver r, Message m) { ; }
-        override public void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
+        override public void exPhidgetsStatusMessage(Receiver r, Message m)
+        {
+            try
+            {
+                PhidgetsStatusMessage msg = (PhidgetsStatusMessage)m;
+                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_PHID_1018)
+                {
+                    CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_PHID_1018)
+                {
+                    CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_PHID_1018)
+                {
+                    CAS.b_Phidgets_1018.BackColor = Color.Yellow;
+                }
+                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_PHID_1018)
+                {
+                    long now = DateTime.Now.Ticks;
+                    long dist = now - last1018update;
+                    DateTime x = new DateTime(dist);
+                    if (x.Second > 1)
+                        CAS.b_Phidgets_1018.BackColor = Color.Yellow;
+                    else
+                        CAS.b_Phidgets_1018.BackColor = Color.Black;
+                    last1018update = DateTime.Now.Ticks;
+                }
+            }
+            catch (InvalidOperationException e)
+            {
+                //the wrong thread operated on something...
+                dp.BroadcastLog(this, e.Message, 0);
+            }
+        }
 
 
 

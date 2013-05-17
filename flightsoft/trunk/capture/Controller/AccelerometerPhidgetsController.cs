@@ -120,16 +120,26 @@ namespace uGCapture
                 buffer.Text = accel.SerialNumber.ToString();
                 BufferPool.PostFull(buffer);
                 outputData = "";
+                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_GOOD_PHID_ACCL));
             }
         }
 
         public override void exAccumulateMessage(Receiver r, Message m)
         {
+
             if (accel.Attached)
+            {
+             try
             {
                 for (int i = 0; i < 3; i++)
                     outputData += accel.axes[i].Acceleration + " ";
             }
+            catch (ArgumentOutOfRangeException e)
+            {
+                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL_PHID_ACCL));
+            }
+            }
+
         }
 
 

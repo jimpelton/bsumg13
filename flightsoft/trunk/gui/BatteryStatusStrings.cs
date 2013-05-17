@@ -14,24 +14,31 @@ namespace gui
             {
                 case (1):
                     return "Discharging";
+                    break;
                 case (2):
                     return "AC Power";
+                    break;
                 case (3):
                     return "Fully Charged";
+                    break;
                 case (4):
                     return "Low";
+                    break;
                 case (5):
                     return "Critical";
+                    break;
                 case (6)://all of these are different charging states                           
                 case (7):
                 case (8):
                 case (9):
                     return "Charging";
+                    break;
                 //skipped 10 ( undefined )
                 case (11):
                     return "Part Charged";
+                    break;
                 default:
-                    return "Uhg!";
+                    return null;
             }
         }
     }
