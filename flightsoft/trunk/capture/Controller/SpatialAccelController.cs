@@ -116,15 +116,23 @@ namespace uGCapture
                 buffer.Text = accel.SerialNumber.ToString(); 
                 BufferPool.PostFull(buffer);
                 outputData = "";
+                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_GOOD_PHID_SPTL));
             }
         }
 
         public override void exAccumulateMessage(Receiver r, Message m)
         {
-            if (accel.Attached)
+            try
             {
-                for (int i = 0; i < 3; i++)
-                    outputData += accel.accelerometerAxes[i].Acceleration + " ";
+                if (accel.Attached)
+                {
+                    for (int i = 0; i < 3; i++)
+                        outputData += accel.accelerometerAxes[i].Acceleration + " ";// arguementoutofrangeexception was unhandled with plugging in the accelerometer while it was running.
+                }
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL_PHID_SPTL));
             }
         }
 
