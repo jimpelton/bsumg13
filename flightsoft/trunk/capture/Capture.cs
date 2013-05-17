@@ -12,25 +12,35 @@ namespace uGCapture
 {
     public class CaptureClass : Receiver
     {
-        private string _storageDir;
+        /// <summary>
+        /// The top level storage directory which captured data will be written to.
+        /// </summary>
         public string StorageDir
         {
-            get { return _storageDir; }
+            get { return m_storageDir; }
             set
             {
-                _storageDir = value;
-                _storageDir = _storageDir.Trim();
-                if (!_storageDir.EndsWith(@"\"))
+                m_storageDir = value;
+                m_storageDir = m_storageDir.Trim();
+                if (!m_storageDir.EndsWith(@"\"))
                 {
-                    _storageDir += @"\";
+                    m_storageDir += @"\";
                 }
             }
         }
+        private string m_storageDir;
 
+        /// <summary>
+        /// Time in UTC since the capture system was initialized.
+        /// </summary>
+        public static DateTime StartTimeUTC
+        {
+            get { return m_startTimeUTC; }
+        }
+        private static DateTime m_startTimeUTC;
+        
         private bool boolCapturing = false;
-
         private BufferPool<byte> bufferPool;
-
         private PhidgetsController phidgetsController;
         private AccelerometerPhidgetsController accelControler;
         private SpatialAccelController spatialController;
@@ -45,7 +55,6 @@ namespace uGCapture
         private Thread acThread1;
         private Thread acThread2;
         private Thread wrtThread;
-        private const double FRAME_TIME = 500;
 
         public CaptureClass(string id)
             : base(id)
@@ -54,6 +63,7 @@ namespace uGCapture
 
         public void init()
         {
+            m_startTimeUTC = DateTime.UtcNow;
 
             Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944); // Three magic numbers !
             bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24), sBuf);
@@ -71,11 +81,9 @@ namespace uGCapture
             dp.Register(this);
         }
 
-        public void DoFrame(object source, ElapsedEventArgs e) { }
-
         private void initWriter()
         {
-            writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { BasePath = _storageDir };
+            writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { BasePath = m_storageDir };
             if (writer.Initialize())
             {
                 wrtThread = new Thread(() => Writer.WriteData(writer));

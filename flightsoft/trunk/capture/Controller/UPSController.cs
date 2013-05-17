@@ -67,7 +67,7 @@ namespace uGCapture
                  dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
 
             Buffer<Byte> buffer = BufferPool.PopEmpty();
-            String output = "UPS \n" + DateTime.Now.Ticks.ToString() + " " + stat + " " + charge + " " + lifeRemaining + " " + chargeStatus;
+            String output = "UPS \n" + GetUTCMillis().ToString() + " " + stat + " " + charge + " " + lifeRemaining + " " + chargeStatus;
             UTF8Encoding encoding = new UTF8Encoding();
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_UPS);
             BufferPool.PostFull(buffer);

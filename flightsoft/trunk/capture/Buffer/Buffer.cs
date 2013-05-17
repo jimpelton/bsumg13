@@ -46,12 +46,12 @@ namespace uGCapture
         }
         private String m_text;
 
-        public ulong FillTime
+        public long FillTime
         {
             get { return m_filltime; }
             set { m_filltime = value; }
         }
-        private ulong m_filltime = 0;
+        private long m_filltime = 0;
 
 	/// <summary>
 	/// The number of filled elements in this buffer.
