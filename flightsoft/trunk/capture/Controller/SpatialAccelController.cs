@@ -6,7 +6,6 @@
 
 
 using System;
-using System.Timers;
 using Phidgets;
 using Phidgets.Events;
 using System.Text;

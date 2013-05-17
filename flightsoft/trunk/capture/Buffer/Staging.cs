@@ -19,22 +19,27 @@ namespace uGCapture
 
         private DataSet<T> lastDataSet; 
 
-        public Staging(int imgSize)
+        public Staging(int imgSize, int utfSize)
         {
             size405 = 0;
             size485 = 0;
-            lastDataSet = new DataSet<T>(imgSize);
+            lastDataSet = new DataSet<T>(imgSize, utfSize);
         }
 
+        /// <summary>
+        /// Copy this buffer's contents into the appropriate staging
+        /// cache in lastDataSet.
+        /// </summary>
+        /// <param name="buf"></param>
         public void Inspect(Buffer<T> buf) 
         {
             try
             {
                 lock (data_mutex)
                 {
-                    T[] dest = lastDataSet.lastData[(int)buf.Type];
+                    T[] dest = lastDataSet.lastData[buf.Type];
                     int sz = dest.Length;
-                    if (buf.CapacityUtilization >= sz)
+                    if (buf.CapacityUtilization >= sz)  //only fill the size of the cache.
                     {
                         sz = buf.CapacityUtilization;
                     }

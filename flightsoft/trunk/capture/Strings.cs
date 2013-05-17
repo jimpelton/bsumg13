@@ -176,6 +176,9 @@ namespace uGCapture
             }
         }
 
+        /// <summary>
+        /// Maps a controller
+        /// </summary>
         public static readonly Dictionary<DirStr, string> Dirs = new Dictionary<DirStr, string>()
         {
             { DirStr.DIR_CAMERA405,   "Camera405\\" }, 
@@ -189,6 +192,9 @@ namespace uGCapture
             { DirStr.DIR_LOGGER,      "Log\\"       }
         };
 
+        /// <summary>
+        /// Maps a controller's data directory to the filename prefix used by writer.
+        /// </summary>
         public static readonly Dictionary<DirStr, string> Pfx = new Dictionary<DirStr, string>()
             {
               { DirStr.DIR_CAMERA405,  "Camera405"    },

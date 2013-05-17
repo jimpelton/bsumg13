@@ -65,7 +65,7 @@ namespace uGCapture
         {
             m_startTimeUTC = DateTime.UtcNow;
 
-            Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944); // Three magic numbers !
+            Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096); // Three...er four magic numbers !
             bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24), sBuf);
 
             initWriter();
