@@ -110,8 +110,8 @@ namespace uGCapture
             {
                 if (hasNewData)
                 {
-                    output += DateTime.Now.Ticks.ToString() + " ";
-                    output += outputData;
+                    output += GetUTCMillis().ToString() + " " + outputData;
+                    //output += outputData;
                     hasNewData = false;
                 }
                 else

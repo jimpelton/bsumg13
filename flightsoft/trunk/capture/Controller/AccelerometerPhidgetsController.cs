@@ -107,17 +107,17 @@ namespace uGCapture
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
-            base.exHeartBeatMessage(r, m);
+            //base.exHeartBeatMessage(r, m);
             if (accel.Attached)
             {
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 String output = "Accel \n";
 
-                output += DateTime.Now.Ticks.ToString() + " ";
-                output += outputData;
+                output += GetUTCMillis().ToString() + " " + outputData;
+                //output += outputData;
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_ACCEL);
-                buffer.Text = String.Format(accel.SerialNumber.ToString());
+                buffer.Text = accel.SerialNumber.ToString();
                 BufferPool.PostFull(buffer);
                 outputData = "";
             }

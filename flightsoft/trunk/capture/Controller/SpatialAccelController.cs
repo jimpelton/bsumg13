@@ -110,11 +110,11 @@ namespace uGCapture
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 String output = "Accel \n";
 
-                output += DateTime.Now.Ticks.ToString() + " ";
+                output += GetUTCMillis().ToString() + " ";
                 output += outputData;
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_SPATIAL);
-                buffer.Text = accel.SerialNumber.ToString(); //String.Format(accel.SerialNumber.ToString());
+                buffer.Text = accel.SerialNumber.ToString(); 
                 BufferPool.PostFull(buffer);
                 outputData = "";
             }

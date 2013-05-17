@@ -140,11 +140,11 @@ public class PhidgetsController : ReceiverController
 
     public override void exHeartBeatMessage(Receiver r, Message m)
     {
-        if ((phidgetTemperature.Attached) | (phidgets1018.Attached))
+        if ((phidgetTemperature.Attached) || (phidgets1018.Attached))
         {
             Buffer<Byte> buffer = BufferPool.PopEmpty();
             String output = "Phidgets \r\n";
-            output += DateTime.Now.Ticks.ToString() + " ";
+            output += GetUTCMillis().ToString() + " ";
             output += outputData;
             UTF8Encoding encoding = new UTF8Encoding();
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_PHIDGETS);
@@ -158,8 +158,7 @@ public class PhidgetsController : ReceiverController
 
         outputData += "\r\n";
         if (phidgetTemperature.Attached)
-        {          
-            //TODO: add checks for if one of these dies we don't throw.
+        {
             outputData += phidgetTemperature.thermocouples[0].Temperature + " ";
             outputData += phidgetTemperature.ambientSensor.Temperature + " ";
         }

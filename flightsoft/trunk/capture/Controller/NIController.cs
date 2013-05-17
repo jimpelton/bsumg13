@@ -131,7 +131,7 @@ namespace uGCapture
                 {
                     Buffer<Byte> buffer = BufferPool.PopEmpty();
                     String output = "NIDAQ \n";
-                    output += DateTime.Now.Ticks.ToString() + " ";
+                    output += GetUTCMillis().ToString() + " ";
                     output += outputData;
                     UTF8Encoding encoding = new UTF8Encoding();
                     buffer.setData(encoding.GetBytes(output), BufferType.UTF8_NI6008);
@@ -154,7 +154,6 @@ namespace uGCapture
                 if (DaqSystem.Local.Devices.Length > 0)
                     //we have a (the) NI device connected
                 {
-                    base.exAccumulateMessage(r, m);
                     double analogDataIn_X_A = 0;
                     double analogDataIn_Y_A = 0;
                     double analogDataIn_Z_A = 0;
@@ -232,10 +231,11 @@ namespace uGCapture
                 using (Task digitalWriteTask = new Task())
                 {
                     digitalWriteTask.DOChannels.CreateChannel(sline, "",
-                                                              ChannelLineGrouping
-                                                                  .OneChannelForAllLines);
+                        ChannelLineGrouping.OneChannelForAllLines);
+
                     DigitalSingleChannelWriter writer =
                         new DigitalSingleChannelWriter(digitalWriteTask.Stream);
+
                     writer.WriteSingleSampleSingleLine(true, state);
                     digitalWriteTask.Start();
                 }

@@ -19,6 +19,8 @@ namespace uGCapture
     /// </summary>
     public abstract class ReceiverController : Receiver
     {
+        private static DateTime date1970 = new DateTime(1970, 1, 1);
+
         /// <summary>
         /// Main pool that every Receiver controller writes into.
         /// </summary>
@@ -64,7 +66,6 @@ namespace uGCapture
             return (IsInit = init());
         }
 
-        //TODO: change init() to return bool value, which will be the value given to IsInit.
 
         /// <summary>
         /// A receivercontroller must implement init() which will initialize

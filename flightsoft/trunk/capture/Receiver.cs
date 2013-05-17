@@ -16,7 +16,11 @@ namespace uGCapture
         protected Dispatch dp;
         private bool m_receiving; 
         private object receivingMutex = new object();
+
+        protected static DateTime dateTime1970 =
+            new DateTime(1970, 0, 0, 0, 0, 0, DateTimeKind.Utc);
         
+
         /// <summary>
         /// True if this Receiver is currently receiving messages.
         /// </summary>
@@ -54,8 +58,16 @@ namespace uGCapture
             m_receiving = receiving;
             dp = Dispatch.Instance();
         }
+        
 
-
+        /// <summary>
+        /// Milliseconds since the unix epoch.
+        /// </summary>
+        /// <returns></returns>
+        protected long GetUTCMillis()
+        {
+            return (long) Math.Floor((DateTime.UtcNow - dateTime1970).TotalMilliseconds);
+        }
 
         /// <summary>
         /// Any receiver that should respond to the Bite test message should

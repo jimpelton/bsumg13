@@ -188,8 +188,7 @@ public class AptinaController : ReceiverController
                 BufferType.USHORT_IMAGE405 : BufferType.USHORT_IMAGE485;
 
             imagebuffer.setData(me.dest, bufferType);
-            //imagebuffer.FillTime = (ulong)DateTime.Now.Millisecond;//No.
-            imagebuffer.FillTime = (ulong)DateTime.Now.Ticks;
+            imagebuffer.FillTime = me.GetUTCMillis();
             me.BufferPool.PostFull(imagebuffer);
 
             me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? 
