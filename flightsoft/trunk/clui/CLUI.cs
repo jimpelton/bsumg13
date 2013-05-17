@@ -27,12 +27,6 @@ namespace clui
             cls.init();
         }
 
-        public void workIt()
-        {
-            
-            
-        }
-
 
         public override void exLogMessage(Receiver r, Message m)
         {
