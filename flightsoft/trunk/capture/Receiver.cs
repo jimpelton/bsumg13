@@ -18,7 +18,7 @@ namespace uGCapture
         private object receivingMutex = new object();
 
         protected static DateTime dateTime1970 =
-            new DateTime(1970, 0, 0, 0, 0, 0, DateTimeKind.Utc);
+            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         
 
         /// <summary>
