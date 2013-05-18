@@ -261,5 +261,36 @@ namespace uGCapture
                 dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_DISC_NI6008DAQ));
             }
         }
+
+
+
+        public override void exCommandMessage(Receiver r, Message m)
+        {
+            CommandMessage c = (CommandMessage)m;
+            switch (c.getCommand())
+            {
+                case (CommandStr.CMD_NI_HEATER_ON): SetOutputState(Outputs.NI_HEATER_OUT, State.ON); 
+                    break;
+                case (CommandStr.CMD_NI_HEATER_OFF): SetOutputState(Outputs.NI_HEATER_OUT, State.OFF); 
+                    break;
+                case (CommandStr.CMD_NI_LIGHT_1_1_ON): SetOutputState(Outputs.NI_LIGHT11_OUT, State.ON); 
+                    break;
+                case (CommandStr.CMD_NI_LIGHT_1_1_OFF): SetOutputState(Outputs.NI_LIGHT11_OUT, State.OFF); 
+                    break;
+                case (CommandStr.CMD_NI_LIGHT_1_2_ON): SetOutputState(Outputs.NI_LIGHT12_OUT, State.ON); 
+                    break;
+                case (CommandStr.CMD_NI_LIGHT_1_2_OFF): SetOutputState(Outputs.NI_LIGHT12_OUT, State.OFF); 
+                    break;
+                case (CommandStr.CMD_NI_LIGHT_2_1_ON): SetOutputState(Outputs.NI_LIGHT21_OUT, State.ON); 
+                    break;
+                case (CommandStr.CMD_NI_LIGHT_2_1_OFF): SetOutputState(Outputs.NI_LIGHT21_OUT, State.OFF); 
+                    break;
+                case (CommandStr.CMD_NI_LIGHT_2_2_ON): SetOutputState(Outputs.NI_LIGHT22_OUT, State.ON); 
+                    break;
+                case (CommandStr.CMD_NI_LIGHT_2_2_OFF): SetOutputState(Outputs.NI_LIGHT22_OUT, State.OFF); 
+                    break;
+                //no default
+            }
+        }
     }
 }

@@ -186,15 +186,20 @@ namespace gui
 
             try
             {
+
+
                 if (lastAccelState == StatusStr.STAT_GOOD_PHID_ACCL)
                     CAS.b_Accel_1.BackColor = Color.Black;
                 if (lastSpatialState == StatusStr.STAT_GOOD_PHID_SPTL)
                     CAS.b_Accel_2.BackColor = Color.Black;
 
                 //get the difference between accel and spacials acceleration vector magnitudes.
-                double x1=0, x2=0, y1=0, y2=0, z1=0, z2=0;
+                double x1=0, x2=0, x3=0, y1=0, y2=0, y3=0, z1=0, z2=0, z3=0;
                 string Acceldat = encoding.GetString(dat.lastData[BufferType.UTF8_ACCEL]);
                 string[] Acceldats = Acceldat.Split();
+                string AAcceldat = encoding.GetString(dat.lastData[BufferType.UTF8_NI6008]);
+                string[] AAcceldats = AAcceldat.Split();
+
                 if (Acceldats.Length > 5)
                 {
                     x1 = double.Parse(Acceldats[3]);
@@ -217,8 +222,21 @@ namespace gui
                 }
                 else
                 {
-                    CAS.b_Accel_1.BackColor = Color.OrangeRed;
-                    return;
+                    CAS.b_Accel_1.BackColor = Color.OrangeRed;                 
+                }
+
+                if (AAcceldats.Length > 5)
+                {
+                    //convert these from voltages to Gs.... 
+                    x3 = double.Parse(AAcceldats[3]);
+                    y3 = double.Parse(AAcceldats[4]);
+                    z3 = double.Parse(AAcceldats[5]);
+                }
+
+                if (Math.Abs(x3 - y3) < 0.01 && Math.Abs(y3 - z3) < 0.01 && Math.Abs(z3 - x3) < 0.01)
+                {
+                    if(CAS.b_Accel_Aircraft.BackColor!= Color.OrangeRed)
+                        CAS.b_Accel_Aircraft.BackColor = Color.Yellow;  
                 }
 
                 double m1 = Math.Sqrt((x1 * x1) + (y1 * y1) + (z1 * z1));
@@ -240,53 +258,78 @@ namespace gui
 
         }
 
+
         private void updateCASPhidgets(DataSet<byte> dat)
         {
             UTF8Encoding encoding = new UTF8Encoding();
             try
             {
                 double temp = 0;
+                bool door = false;
                 string pdat = encoding.GetString(dat.lastData[BufferType.UTF8_PHIDGETS]);
                 string[] pdats = pdat.Split();
 
-                temp = double.Parse(pdats[6]);
-                if (temp > 2000000000)
+                if (lastTemperatureState == StatusStr.STAT_GOOD_PHID_TEMP)
                 {
-                    CAS.b_Heater_High.BackColor = Color.Salmon;
-                }
-                else if (temp > 40)
-                {
-                    CAS.b_Heater_High.BackColor = Color.OrangeRed;
-                    CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
-                    //dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
-                }
-                else if (temp > 38)
-                {
-                    CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                    temp = double.Parse(pdats[6]);
+                    if (temp > 2000000000)
+                    {
+                        CAS.b_Heater_High.BackColor = Color.Salmon;
+                    }
+                    else if (temp > 40)
+                    {
+                        CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                        CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
+                        dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
+                    }
+                    else if (temp > 38)
+                    {
+                        CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                    }
+                    else
+                    {
+                        CAS.b_Heater_Auto_Shutoff.BackColor = Color.Black;
+                        CAS.b_Heater_High.BackColor = Color.Black;
+                        dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_ON));
+                    }
+
+                    if (temp < 1)
+                    {
+                        CAS.b_Heater_Low.BackColor = Color.White;
+                    }
+                    else if (temp < 20)
+                    {
+                        CAS.b_Heater_Low.BackColor = Color.LightBlue;
+                    }
+                    else if (temp < 35)
+                    {
+                        CAS.b_Heater_Low.BackColor = Color.OrangeRed;
+                    }
+                    else
+                    {
+                        CAS.b_Heater_Low.BackColor = Color.Black;
+                    }
                 }
                 else
-                {
-                    CAS.b_Heater_Auto_Shutoff.BackColor = Color.Black;
-                    CAS.b_Heater_High.BackColor = Color.Black;
-                }
-
-                if (temp < 1)
-                {
-                    CAS.b_Heater_Low.BackColor = Color.White;
-                }
-                else if (temp < 20)
-                {
-                    CAS.b_Heater_Low.BackColor = Color.LightBlue;
-                }
-                else if (temp < 35)
                 {
                     CAS.b_Heater_Low.BackColor = Color.OrangeRed;
+                    CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                    CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
+                }
+                door = bool.Parse(pdats[9]);
+                //TODO Make this change based on the capture status.
+                bool running = true;
+                if (door)
+                {
+                    CAS.b_Doors.BackColor = Color.Black;
                 }
                 else
                 {
-                    CAS.b_Heater_Low.BackColor = Color.Black;
+                    if(running)
+                        CAS.b_Doors.BackColor = Color.OrangeRed;
+                    else
+                        CAS.b_Doors.BackColor = Color.Yellow;
                 }
-
 
 
             }
@@ -658,6 +701,13 @@ namespace gui
                     else
                         CAS.b_Phidgets_1018.BackColor = Color.Black;
                     last1018update = DateTime.Now.Ticks;
+                }
+                if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_PHID_TEMP ||
+                    msg.getState() == uGCapture.StatusStr.STAT_FAIL_PHID_TEMP ||
+                    msg.getState() == uGCapture.StatusStr.STAT_DISC_PHID_TEMP ||
+                    msg.getState() == uGCapture.StatusStr.STAT_ATCH_PHID_TEMP)
+                {
+                    lastTemperatureState = msg.getState();
                 }
             }
             catch (InvalidOperationException e)
