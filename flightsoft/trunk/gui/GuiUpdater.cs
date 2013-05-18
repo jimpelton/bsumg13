@@ -178,7 +178,64 @@ namespace gui
         }
 
 
+        private void updateCASLights(DataSet<byte> dat)
+        {
+            UTF8Encoding encoding = new UTF8Encoding();
 
+            try
+            {
+
+                string lightdat = encoding.GetString(dat.lastData[BufferType.UTF8_PHIDGETS]);
+                string[] lightdats = lightdat.Split();
+                double l1 = 0, l2 = 0;
+                if (lightdats.Length > 8)
+                {
+                    l1 = double.Parse(lightdats[11]);
+                    l2 = double.Parse(lightdats[14]);
+                }
+
+                if (l1 < 100)
+                {
+                    CAS.b_Light_1.BackColor = Color.OrangeRed;
+                }
+                else if (l1 < 200)
+                {
+                    CAS.b_Light_1.BackColor = Color.Yellow;
+                }
+                else if (l1 < 300)
+                {
+                    CAS.b_Light_1.BackColor = Color.Green;
+                }
+                else
+                {
+                    CAS.b_Light_1.BackColor = Color.Black;
+                }
+
+                if (l2 < 10)
+                {
+                    CAS.b_Light_2.BackColor = Color.OrangeRed;
+                }
+                else if (l2 < 200)
+                {
+                    CAS.b_Light_2.BackColor = Color.Yellow;
+                }
+                else if (l2 < 300)
+                {
+                    CAS.b_Light_2.BackColor = Color.Green;
+                }
+                else
+                {
+                    CAS.b_Light_2.BackColor = Color.Black;
+                }
+
+
+            }
+            catch (FormatException e)
+            {
+                //a malformed packet has arrived. Tremble in fear.
+            }
+
+        }
 
         private void updateCASAccel(DataSet<byte> dat)
         {
@@ -226,9 +283,9 @@ namespace gui
                 if (AAcceldats.Length > 5)
                 {
                     //convert these from voltages to Gs.... 
-                    x3 = double.Parse(AAcceldats[3]);
-                    y3 = double.Parse(AAcceldats[4]);
-                    z3 = double.Parse(AAcceldats[5]);
+                    x3 = double.Parse(AAcceldats[3+0]);//3 is the zeroth element. x is on 0
+                    y3 = double.Parse(AAcceldats[3+4]);//y is on 4
+                    z3 = double.Parse(AAcceldats[3+1]);//z is on 1
                 }
 
                 if (Math.Abs(x3 - y3) < 0.01 && Math.Abs(y3 - z3) < 0.01 && Math.Abs(z3 - x3) < 0.01)
@@ -267,7 +324,7 @@ namespace gui
                 string pdat = encoding.GetString(dat.lastData[BufferType.UTF8_PHIDGETS]);
                 string[] pdats = pdat.Split();
 
-                if (lastTemperatureState == StatusStr.STAT_GOOD_PHID_TEMP)
+                if (lastTemperatureState == StatusStr.STAT_GOOD)
                 {
                     temp = double.Parse(pdats[6]);
                     if (temp > 2000000000)
@@ -314,7 +371,10 @@ namespace gui
                     CAS.b_Heater_High.BackColor = Color.OrangeRed;
                     CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
                 }
-                door = bool.Parse(pdats[9]);
+                if (pdats.Length > 10)
+                {
+                    door = bool.Parse(pdats[9]);
+                }
                 //TODO Make this change based on the capture status.
                 bool running = true;
                 if (door)
@@ -346,6 +406,7 @@ namespace gui
                 updateCASBattery(dat);
                 updateCASAccel(dat);
                 updateCASPhidgets(dat);
+                updateCASLights(dat);
             }
 
         }
@@ -651,14 +712,7 @@ namespace gui
                     else
                         CAS.b_Phidgets_1018.BackColor = Color.Black;
                     last1018update = DateTime.Now.Ticks;
-                }
-                if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_PHID_TEMP ||
-                    msg.getState() == uGCapture.StatusStr.STAT_FAIL_PHID_TEMP ||
-                    msg.getState() == uGCapture.StatusStr.STAT_DISC_PHID_TEMP ||
-                    msg.getState() == uGCapture.StatusStr.STAT_ATCH_PHID_TEMP)
-                {
-                    lastTemperatureState = msg.getState();
-                }
+                }                                  
             }
             catch (InvalidOperationException e)
             {
@@ -669,7 +723,8 @@ namespace gui
 
         public override void exPhidgetsTempStatusMessage(Receiver r, Message m)
         {
- 	
+            PhidgetsTempStatusMessage msg = (PhidgetsTempStatusMessage)m;
+            lastTemperatureState = msg.getState();
         }
 
 

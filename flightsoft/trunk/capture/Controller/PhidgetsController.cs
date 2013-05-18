@@ -122,7 +122,7 @@ public class PhidgetsController : ReceiverController
             phidgetTemperature.thermocouples[0].Sensitivity = 0.001;
 
 
-            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_GOOD));
+            dp.Broadcast(new PhidgetsTempStatusMessage(this, StatusStr.STAT_GOOD));
             dp.BroadcastLog(this, "Temperature Sensor found", 0);
         }
         catch (PhidgetException ex)
@@ -187,9 +187,9 @@ public class PhidgetsController : ReceiverController
         else
             dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_FAIL));
         if (phidgetTemperature.Attached)
-            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_GOOD));
+            dp.Broadcast(new PhidgetsTempStatusMessage(this, StatusStr.STAT_GOOD));
         else
-            dp.Broadcast(new PhidgetsStatusMessage(this, StatusStr.STAT_FAIL));
+            dp.Broadcast(new PhidgetsTempStatusMessage(this, StatusStr.STAT_FAIL));
 
     }
 
