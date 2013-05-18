@@ -21,6 +21,8 @@ namespace gui
 
         private StatusStr lastAccelState = StatusStr.STAT_ERR;
         private StatusStr lastSpatialState = StatusStr.STAT_ERR;
+        private StatusStr lastTemperatureState = StatusStr.STAT_ERR;
+
         private long last1018update = 0;
         public GuiUpdater(Form1 f,GuiMain m, BiteCASPanel c, string id, bool receiving=true) 
             : base(id, receiving)
@@ -173,10 +175,10 @@ namespace gui
             {
                 CAS.b_Battery_Com.Text = "Battery Com";
             }
-
-            
-            
         }
+
+
+
 
         private void updateCASAccel(DataSet<byte> dat)
         {
@@ -240,7 +242,58 @@ namespace gui
 
         private void updateCASPhidgets(DataSet<byte> dat)
         {
+            UTF8Encoding encoding = new UTF8Encoding();
+            try
+            {
+                double temp = 0;
+                string pdat = encoding.GetString(dat.lastData[BufferType.UTF8_PHIDGETS]);
+                string[] pdats = pdat.Split();
 
+                temp = double.Parse(pdats[6]);
+                if (temp > 2000000000)
+                {
+                    CAS.b_Heater_High.BackColor = Color.Salmon;
+                }
+                else if (temp > 40)
+                {
+                    CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                    CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
+                    //dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
+                }
+                else if (temp > 38)
+                {
+                    CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                }
+                else
+                {
+                    CAS.b_Heater_Auto_Shutoff.BackColor = Color.Black;
+                    CAS.b_Heater_High.BackColor = Color.Black;
+                }
+
+                if (temp < 1)
+                {
+                    CAS.b_Heater_Low.BackColor = Color.White;
+                }
+                else if (temp < 20)
+                {
+                    CAS.b_Heater_Low.BackColor = Color.LightBlue;
+                }
+                else if (temp < 35)
+                {
+                    CAS.b_Heater_Low.BackColor = Color.OrangeRed;
+                }
+                else
+                {
+                    CAS.b_Heater_Low.BackColor = Color.Black;
+                }
+
+
+
+            }
+            catch (FormatException e)
+            {
+                //a malformed packet has arrived. Tremble in fear.
+            }
         }
         
         private void updateCASPanel()

@@ -27,9 +27,9 @@ namespace gui
                 case (5):
                     return "Critical";
                     break;
-                case (6)://all of these are different charging states                           
-                case (7):
-                case (8):
+                case (6): goto case (9);//all of these are different charging states                           
+                case (7): goto case (9);
+                case (8): goto case (9);
                 case (9):
                     return "Charging";
                     break;

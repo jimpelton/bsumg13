@@ -42,7 +42,7 @@ namespace gui
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            DebugOutput("Starting up...", 1);
+            DebugOutput("Gui Initialized...", 1);
         }
 
         private void rTB_Debug_Output_TextChanged(object sender, EventArgs e)

@@ -49,6 +49,21 @@ namespace uGCapture
         STAT_GOOD_NI6008DAQ
     }
 
+    public enum CommandStr
+    {
+        CMD_NONE,
+        CMD_NI_HEATER_ON,
+        CMD_NI_HEATER_OFF,
+        CMD_NI_LIGHT_1_1_ON,
+        CMD_NI_LIGHT_1_1_OFF,
+        CMD_NI_LIGHT_1_2_ON,
+        CMD_NI_LIGHT_1_2_OFF,
+        CMD_NI_LIGHT_2_1_ON,
+        CMD_NI_LIGHT_2_1_OFF,
+        CMD_NI_LIGHT_2_2_ON,
+        CMD_NI_LIGHT_2_2_OFF
+    }
+
     public enum ErrStr 
     {
         INIT_FAIL_PHID_1018,
