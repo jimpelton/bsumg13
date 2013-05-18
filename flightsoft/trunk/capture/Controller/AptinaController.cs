@@ -14,16 +14,17 @@ public class AptinaController : ReceiverController
 {
     //the buffer size for this controller
     private ulong size;
+    
     //the thread number for this controller.
     private int tnum;
+    
     //destination buffer for data from ManagedSimpleCapture
     private byte[] dest;
 
-    //true if another thread is using this class
+    //true if another thread is running for this instance.
     private bool running=false;
-
-
     private Mutex runningMutex;
+
     private static Semaphore barrierSemaphore;
     private static int barrierCounter;
     private static int nextIdx = 0;
@@ -33,13 +34,7 @@ public class AptinaController : ReceiverController
 
 
     //TODO: move up to ReceiverController?
-    public int Errno
-    {
-        get { return m_errno ; }
-        private set { m_errno = value; }
-    }
-    private int m_errno;
-
+   
     public string IniFilePath
     {
         get { return m_iniFilePath;  }

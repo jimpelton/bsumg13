@@ -17,9 +17,10 @@ namespace uGCapture
         private bool m_receiving; 
         private object receivingMutex = new object();
 
+        // 
         protected static DateTime dateTime1970 =
             new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        
+
 
         /// <summary>
         /// True if this Receiver is currently receiving messages.
@@ -45,11 +46,24 @@ namespace uGCapture
             }
         }
 
+        /// <summary>
+        /// String which is a unique identifier for this Receiver.
+        /// </summary>
         public string Id
         {
             get { return m_id; }
         }
         private string m_id;
+
+        /// <summary>
+        /// Last error value.
+        /// </summary>
+        public ErrStr Errno
+        {
+            get { return m_errno; }
+            private set { m_errno = value; }
+        }
+        private ErrStr m_errno;
 
 
         protected Receiver(string id, bool receiving=true)
@@ -61,7 +75,7 @@ namespace uGCapture
         
 
         /// <summary>
-        /// Milliseconds since the unix epoch.
+        /// Milliseconds since the unix epoch (Jan 1, 1970).
         /// </summary>
         /// <returns></returns>
         protected long GetUTCMillis()
