@@ -13,9 +13,8 @@ namespace uGCapture
         STAT_ERR,        // device error
         STAT_FAIL,       // device failed
         STAT_GOOD,       // device status ok
-        STAT_DISC,       // device discovered
+        STAT_DISC,       // device disconnected
         STAT_ATCH,       // device was attached
-        STAT_DETCH,      // device was detached
 
         STAT_ERR_405,
         STAT_ERR_485,
@@ -50,6 +49,22 @@ namespace uGCapture
         //STAT_DISC_NI6008DAQ,
         //STAT_ATCH_NI6008DAQ,
         //STAT_GOOD_NI6008DAQ
+    }
+
+
+    public enum CommandStr
+    {
+        CMD_NONE,
+        CMD_NI_HEATER_ON,
+        CMD_NI_HEATER_OFF,
+        CMD_NI_LIGHT_1_1_ON,
+        CMD_NI_LIGHT_1_1_OFF,
+        CMD_NI_LIGHT_1_2_ON,
+        CMD_NI_LIGHT_1_2_OFF,
+        CMD_NI_LIGHT_2_1_ON,
+        CMD_NI_LIGHT_2_1_OFF,
+        CMD_NI_LIGHT_2_2_ON,
+        CMD_NI_LIGHT_2_2_OFF
     }
 
     public enum Severity
@@ -144,6 +159,8 @@ namespace uGCapture
                 case ErrStr.INIT_OK_APTINA:           return "Aptina camera initialized.";
                 case ErrStr.INIT_OK_VCOMM:            return "Weatherboard initialized.";
                 case ErrStr.INIT_OK_UPS:              return "UPSController initialized.";
+
+                
                 default:                              return "Unknown Error.";
             }
         }
