@@ -22,6 +22,7 @@ namespace gui
         {
             InitializeComponent();
             var childForm = new BiteCASPanel() { TopLevel = false, Visible = true };
+
             Tab_Control_Main.TabPages[2].Controls.Add(childForm);
             childForm.SetBounds(0, 400, this.Width - 6, this.Height - 6);
             CAS = childForm;
@@ -36,8 +37,24 @@ namespace gui
             //TODO: make an alternative thread-safe way to do this.
             //it likes it when the timer is in here...
             DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);
+            Tab_Control_Main.SelectedIndexChanged+=Tab_Control_Main_SelectedIndexChanged;
 
+        }
 
+        void Tab_Control_Main_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (Tab_Control_Main.SelectedIndex == 0)
+            {
+                Tab_Control_Main.TabPages[2].Controls.Remove(CAS);
+                Tab_Control_Main.TabPages[0].Controls.Add(CAS);
+                CAS.SetBounds(0, 400, this.Width - 6, this.Height - 6);
+            }
+            else
+            {
+                Tab_Control_Main.TabPages[0].Controls.Remove(CAS);
+                Tab_Control_Main.TabPages[2].Controls.Add(CAS);
+                CAS.SetBounds(0, 400, this.Width - 6, this.Height - 6);
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
