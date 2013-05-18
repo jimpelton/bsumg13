@@ -112,10 +112,13 @@ public class AptinaController : ReceiverController
         //IsReceiving = true;
         //dp.Register(this, "AptianController"+tnum);
         //dp.BroadcastLog(this, String.Format("AptinaController receiving {0}", IsReceiving),1);
-        dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
-        dp.Broadcast(new AptinaStatusMessage(this, 
-            msc.managed_GetWavelength() == 405 ? 
-            StatusStr.STAT_GOOD_405 : StatusStr.STAT_GOOD_485));
+        /*
+            dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
+            dp.Broadcast(new AptinaStatusMessage(this,
+                msc.managed_GetWavelength() == 405 ?
+                StatusStr.STAT_GOOD_405 : StatusStr.STAT_GOOD_485));
+         */
+        
 
         return rval;
     }

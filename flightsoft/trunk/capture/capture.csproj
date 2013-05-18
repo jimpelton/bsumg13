@@ -90,6 +90,7 @@
     <Compile Include="Message\DataRequestMessage.cs" />
     <Compile Include="Message\HeartBeatMessage.cs" />
     <Compile Include="Message\NI6008StatusMessage.cs" />
+    <Compile Include="Message\CommandMessage.cs" />
     <Compile Include="Message\ReceiverCleanupMessage.cs" />
     <Compile Include="Message\SetCaptureStateMessage.cs" />
     <Compile Include="Message\DataMessage.cs" />

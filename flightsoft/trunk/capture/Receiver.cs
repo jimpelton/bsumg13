@@ -131,6 +131,9 @@ namespace uGCapture
         public virtual void exSpatialStatusMessage(Receiver r, Message m) { ; }
         public virtual void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
 
+        //our interdevice command message.
+        public virtual void exCommandMessage(Receiver r, Message m) { ; }
+
         /// <summary>
         /// Act on a ReceiverCleanUpMessage(). Default behavior of 
         /// Receiver.exReceiverCleanUpMessage() is to set IsReceiving=false,
