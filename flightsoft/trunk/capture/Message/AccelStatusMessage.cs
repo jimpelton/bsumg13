@@ -1,18 +1,14 @@
-﻿namespace uGCapture
+﻿
+
+namespace uGCapture
 {
-    public class  AccelStatusMessage : Message
+    public class  AccelStatusMessage : StatusMessage
     {
-        private StatusStr state = StatusStr.STAT_ERR;
-        public  StatusStr getState() { return state; }
 
-        public AccelStatusMessage(Receiver s, StatusStr nstate)
-            : base(s)
+        public AccelStatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR)
+            : base(s, nstate)
         {
-            state = nstate;
         }
-
-        AccelStatusMessage(Receiver s)
-            : base(s) { ; }
 
         public override void execute(Receiver r)
         {

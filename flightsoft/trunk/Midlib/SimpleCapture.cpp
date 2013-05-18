@@ -7,48 +7,9 @@
 using std::string;
 
 mi_camera_t *gCameras[MAX_CAMS]; 
-//bool gDone = FALSE;						// Set to cause all workers to exit
-//HANDLE gBarrierSemaphore;				// Synchronization object for all threads
-//volatile unsigned int gWaitingCount;	// Number of waiters, start next loop when this reaches 4
 
 int SimpleCapture::num_cameras=0;
 bool SimpleCapture::isMidLibInit=false;
-
-
-//DWORD WINAPI 
-//SimpleCapture::captureFunction(LPVOID param)
-//{
-//	DWORD rv;
-//	SimpleCapture *me = (SimpleCapture*)param;
-//	unsigned int currValue;
-//
-//	while (1) {
-//		currValue = InterlockedIncrement(&gWaitingCount);		// Atomic increment
-//		if (currValue == NUM_WORKER_THREADS) {
-//			// I'm the last thread here so I don't need to sleep, just wake up others and go
-//			gWaitingCount = 0;
-//			// Releasing the semaphore NUM_WORKER_THREADS times unblocks that many threads
-//			ReleaseSemaphore(gBarrierSemaphore, NUM_WORKER_THREADS - 1, 0);	// Minus 1 because this thread doesn't sleep
-//		} else {
-//			rv = WaitForSingleObject(gBarrierSemaphore, INFINITE);	// Other threads wait for main thread to start
-//			if (rv != WAIT_OBJECT_0) {
-//				printf("Wait failed (%d)\n", GetLastError());
-//				return 1;
-//			}
-//		}
-//
-//		me->_doCapture();
-//
-//		// if gDone was set by the main thread, then exit
-//		if (gDone) {
-//			return 0;
-//		}
-//
-//
-//	} /* while(1) */
-//
-//	return 0;
-//}
 
 SimpleCapture::SimpleCapture()
     : m_cameraIdx(-1)
@@ -56,9 +17,16 @@ SimpleCapture::SimpleCapture()
     , num_frames(1)
     , nWidth(0)
     , nHeight(0)
-    , m_camNM(0) { }
+    , m_camNM(0) 
+{
 
-SimpleCapture::~SimpleCapture(void) { }
+    iniFilePath = new char[260];
+}
+
+SimpleCapture::~SimpleCapture(void) 
+{
+    delete iniFilePath;
+}
 
 //return: 0 success, > 0 on error
 int 
@@ -79,7 +47,14 @@ SimpleCapture::initMidLib2(int nCamsReq)
 
     mi_s32 errval = mi_OpenCameras(gCameras, 
                     &SimpleCapture::num_cameras, mi_SensorData());
-    
+
+    if (errval != MI_CAMERA_SUCCESS) {
+        return errval;
+    }
+
+    isMidLibInit=true;
+    printf("Midlib initialized.\n");
+
  /*   if (num_cameras < nCamsReq) {
         printf("Could not initialize %d camera(s). Found %d. \n",
             nCamsReq, num_cameras);
@@ -88,9 +63,6 @@ SimpleCapture::initMidLib2(int nCamsReq)
         return errval;
     } */
 
-    isMidLibInit=true;
-
-    printf("Midlib initialized.\n");
     return 0;
 }
 
@@ -102,7 +74,7 @@ SimpleCapture::openTransport(int camIdx)
 {
 	int rval = 0;
     if (!isMidLibInit) {
-        printf("openTransport() called before initMidLib2().\n");
+        printf("openTransport() called before initMidLib2() or initMidLib2() previously failed.\n");
         return -1;
     }
 
@@ -146,8 +118,8 @@ SimpleCapture::openTransport(int camIdx)
     }
 
     
-    pCamera->sensor->imageType = MI_PNG;
-    pCamera->updateFrameSize(pCamera, nWidth, nHeight, PIXELBITS,0);
+    pCamera->sensor->imageType = MI_BAYER_12;
+    pCamera->updateFrameSize(pCamera, nWidth, nHeight, PIXELBITS, 0);
      
     frameSize = pCamera->sensor->width * pCamera->sensor->height
               * pCamera->sensor->pixelBytes;
@@ -155,7 +127,7 @@ SimpleCapture::openTransport(int camIdx)
     mallocate();
 
     mi_u32  fuse1 = 0;
-	pCamera->readRegister(pCamera,pCamera->sensor->shipAddr, 0x00FA, &fuse1);
+	pCamera->readRegister(pCamera, pCamera->sensor->shipAddr, 0x00FA, &fuse1);
 
     if (0 != fuse1) {
         m_camNM = (fuse1==0xb8ce) ? 405 : 485;
@@ -225,7 +197,8 @@ SimpleCapture::mallocate()
     return 0;
 }
 
-int SimpleCapture::getWavelength()
+int 
+SimpleCapture::getWavelength()
 {
 	return m_camNM;
 }

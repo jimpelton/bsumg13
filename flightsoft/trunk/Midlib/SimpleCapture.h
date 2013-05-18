@@ -19,7 +19,7 @@
 /**
  *	\brief Modified from the SimpleCapture example provided by Aptina.
  */
-class __declspec(dllexport)  SimpleCapture
+class __declspec(dllexport) SimpleCapture
 {
 public:
 
@@ -28,7 +28,7 @@ public:
   /************************************************************************/ 
     static mi_s32 num_cameras;
     static bool isMidLibInit;
-
+    
     /** 
      * \brief Init all cams, make sure at least nCamsReq 
      * cameras were initialized.
@@ -36,16 +36,9 @@ public:
      */
     static int initMidLib2(int nCamsReq);
 
-    /**
-     * \brief Pass to worker thread for performing the capture.
-     */
-    //static DWORD WINAPI captureFunction(LPVOID args);
-
   /************************************************************************/
   /* PUBLIC MEMBERS                                                       */
   /************************************************************************/ 
-    //mi_s32          num_cameras;                           //number of cameras found
-    //mi_camera_t     *cameras[MI_MAX_CAMERAS];              //cameras found
     mi_camera_t     *pCamera; //=NULL;                     //current camera
     unsigned long   frameSize;                             //size of the frames we want to save
     unsigned char   *pCameraBuff;                          //memory buffer for all the sensor images
@@ -76,8 +69,6 @@ public:
      *  transport opened. camidx must be less than or equal to the number of 
      *  cameras that were initialized by initMidLib2().
      * 
-     *  
-     *  
 	 *  The return value is the MI_CAMERA_* error code.
      *	
      *	\param camidx The camera index to open transport for. Must be <= to the number
@@ -104,6 +95,11 @@ public:
     unsigned long sensorBufferSize();
 
     unsigned char* _doCapture();
+
+    void setIniPath(char *path)
+    {
+        
+    }
 
   /************************************************************************/
   /* PRIVATE members                                                      */
@@ -160,7 +156,7 @@ public:
 
     void managed_setIniPath(char *pathName)
     {
-	   	 	
+	   	native_sc->setIniPath(pathName);
     }
     /**
     *	\brief CLR wrapper around stopTransport.

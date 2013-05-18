@@ -111,13 +111,13 @@ namespace uGCapture
                 SetOutputState(Outputs.NI_LIGHT22_OUT, State.ON);
 
                 dp.BroadcastLog(this, "NI-USB-6008 started up...", 1);
-                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_GOOD_NI6008DAQ));
+                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_GOOD));
             }
             catch (DaqException)
             {
                 rval = false;
                 dp.BroadcastLog(this, "NI-USB-6008 failed to start up...", 1);
-                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL_NI6008DAQ));
+                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL));
             }
             return rval;
         }
@@ -141,7 +141,7 @@ namespace uGCapture
             }
             catch (DaqException eeeee)
             {
-                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL_NI6008DAQ));
+                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL));
                 //lets reset it
                 Reset();
             }
@@ -178,13 +178,13 @@ namespace uGCapture
             }
             catch (NationalInstruments.DAQmx.DaqException eeeee)
             {
-                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL_NI6008DAQ));
+                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL));
                 //lets reset it
                 Reset();
             }
             catch (NullReferenceException Squeee)
             {
-                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL_NI6008DAQ));
+                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL));
                 Reset();
             }
         }
@@ -218,7 +218,7 @@ namespace uGCapture
             }
             catch (NationalInstruments.DAQmx.DaqException eeeee)
             {
-                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL_NI6008DAQ));
+                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL));
                 //lets reset it
                 Reset();
             }
@@ -242,7 +242,7 @@ namespace uGCapture
             }
             catch (DaqException ex)
             {
-                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL_NI6008DAQ));
+                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_FAIL));
                 dp.BroadcastLog(this, ex.Message, 1);
             }
         }
@@ -258,7 +258,7 @@ namespace uGCapture
             catch (NationalInstruments.DAQmx.DaqException eeeee)
             {
                 //probably not connected at this point. Try again next time.
-                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_DISC_NI6008DAQ));
+                dp.Broadcast(new NI6008StatusMessage(this, StatusStr.STAT_DISC));
             }
         }
 

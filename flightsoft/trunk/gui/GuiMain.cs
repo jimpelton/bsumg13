@@ -68,7 +68,7 @@ namespace gui
             }
             guiDataPath = path;
             String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
-            System.IO.Directory.CreateDirectory(config.Path + directoryName);
+            //System.IO.Directory.CreateDirectory(path + directoryName);
 
             dataFrames = new List<DataPoint>();
             guiUpdater = new GuiUpdater(mainForm, this, CAS, "GuiUpdater");
