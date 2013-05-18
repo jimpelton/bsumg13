@@ -130,7 +130,8 @@ namespace uGCapture
         public virtual void exAptinaStatusMessage(Receiver r, Message m) { ; }
         public virtual void exSpatialStatusMessage(Receiver r, Message m) { ; }
         public virtual void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
-
+        public virtual void exPhidgetsTempStatusMessage(Receiver r, Message m) { ; }
+        
         //our interdevice command message.
         public virtual void exCommandMessage(Receiver r, Message m) { ; }
 

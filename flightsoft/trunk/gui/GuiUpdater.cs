@@ -186,11 +186,9 @@ namespace gui
 
             try
             {
-
-
-                if (lastAccelState == StatusStr.STAT_GOOD_PHID_ACCL)
+                if (lastAccelState == StatusStr.STAT_GOOD)
                     CAS.b_Accel_1.BackColor = Color.Black;
-                if (lastSpatialState == StatusStr.STAT_GOOD_PHID_SPTL)
+                if (lastSpatialState == StatusStr.STAT_GOOD)
                     CAS.b_Accel_2.BackColor = Color.Black;
 
                 //get the difference between accel and spacials acceleration vector magnitudes.
@@ -245,9 +243,9 @@ namespace gui
 
                 if (dif > 0.5)
                 {
-                    if(CAS.b_Accel_1.BackColor!=Color.OrangeRed && lastAccelState == StatusStr.STAT_GOOD_PHID_ACCL)
+                    if(CAS.b_Accel_1.BackColor!=Color.OrangeRed && lastAccelState == StatusStr.STAT_GOOD)
                         CAS.b_Accel_1.BackColor = Color.Green;
-                    if (CAS.b_Accel_2.BackColor != Color.OrangeRed && lastSpatialState == StatusStr.STAT_GOOD_PHID_SPTL)
+                    if (CAS.b_Accel_2.BackColor != Color.OrangeRed && lastSpatialState == StatusStr.STAT_GOOD)
                         CAS.b_Accel_2.BackColor = Color.Green;
                 }
             }
@@ -400,54 +398,6 @@ namespace gui
                 mainform.DebugOutput(lm.message, lm.severity);
         }
 
-        //TODO: Remove
-        /*
-        public override void exDataMessage(Receiver r, Message m)
-        {
-            DataPoint dat = new DataPoint();
-
-            DataMessage dm = m as DataMessage;
-            if (dm == null) return;
-
-            
-            dat.image405 = dm.image405;
-            dat.image485 = dm.image485;
-
-            dat.NIanaloginputs = dm.NIanaloginputs;
-            dat.UPSstate = dm.UPSstate;
-            dat.VCommstate = dm.VCommstate;
-            //dat.WellIntensities = dm.WellIntensities;
-            dat.WellIntensities405 = dm.WellIntensities405;
-            dat.WellIntensities485 = dm.WellIntensities405;
-            dat.accel1acceleration = dm.accel1acceleration;
-            dat.accel1rawacceleration = dm.accel1rawacceleration;
-            dat.accel1state = dm.accel1state;
-            dat.accel1vibration = dm.accel1vibration;
-            dat.accel2acceleration = dm.accel2acceleration;
-            dat.accel2rawacceleration = dm.accel2rawacceleration;
-            dat.accel2state = dm.accel2state;
-            dat.accel2vibration = dm.accel2vibration;
-            dat.phidgets888state = dm.phidgets888state;
-            dat.phidgetsanalogInputs = dm.phidgetsanalogInputs;
-            dat.phidgetsdigitalInputs = dm.phidgetsdigitalInputs;
-            dat.phidgetsdigitalOutputs = dm.phidgetsdigitalOutputs;
-            dat.phidgetstempstate = dm.phidgetstempstate;
-            dat.phidgetTemperature_AmbientTemp = dm.phidgetTemperature_AmbientTemp;
-            dat.phidgetTemperature_ProbeTemp = dm.phidgetTemperature_ProbeTemp;
-            dat.timestamp = dm.timestamp;
-
-            dat.vcommHumidity = dm.vcommHumidity;
-            dat.vcommIllumination = dm.vcommIllumination;
-            dat.vcommPressure = dm.vcommPressure;
-            dat.vcommTemperature1 = dm.vcommTemperature1;
-            dat.vcommTemperature2 = dm.vcommTemperature2;
-            dat.vcommTemperature3 = dm.vcommTemperature3;
-
-            Guimain.insertDataPoint(dat);
-
-        }
-        */
-
         public override void exDataRequestMessage(Receiver r, Message m)
         {   
             
@@ -482,19 +432,19 @@ namespace gui
             return bitmap;
         }
         */
-        public static uint[] ConvertGray16ToRGB(ushort[] grayPixels, int bitsUsed)
-        {
-            int pixelCount = grayPixels.Length;
-            uint[] rgbPixels = new uint[pixelCount];
-            int shift = bitsUsed - 8;
-            for (int i = 0; i < pixelCount; i++)
-            {
-                uint gray = (uint)grayPixels[i] >> shift;
-                rgbPixels[i] = 0xff000000U | gray | (gray << 8) | (gray <<
-                16);
-            }
-            return (rgbPixels);
-        }
+        //public static uint[] ConvertGray16ToRGB(ushort[] grayPixels, int bitsUsed)
+        //{
+        //    int pixelCount = grayPixels.Length;
+        //    uint[] rgbPixels = new uint[pixelCount];
+        //    int shift = bitsUsed - 8;
+        //    for (int i = 0; i < pixelCount; i++)
+        //    {
+        //        uint gray = (uint)grayPixels[i] >> shift;
+        //        rgbPixels[i] = 0xff000000U | gray | (gray << 8) | (gray <<
+        //        16);
+        //    }
+        //    return (rgbPixels);
+        //}
 
 
 
@@ -504,12 +454,12 @@ namespace gui
             try
             {
                 UPSStatusMessage msg = (UPSStatusMessage)m;
-                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL)
+                if (msg.getState() == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Battery_Com.BackColor = Color.OrangeRed;
                     CAS.b_Battery_Com.Text = "Battery Com";
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD)
+                else if (msg.getState() == StatusStr.STAT_GOOD)
                 {
                     //CAS.b_Battery_Com.BackColor = Color.Black;
                 }
@@ -533,19 +483,19 @@ namespace gui
             {
                 AccelStatusMessage msg = (AccelStatusMessage)m;
                 lastAccelState = msg.getState();
-                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_PHID_ACCL)
+                if (msg.getState() == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_PHID_ACCL)
+                else if (msg.getState() == StatusStr.STAT_DISC)
                 {
                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_PHID_ACCL)
+                else if (msg.getState() == StatusStr.STAT_ATCH)
                 {
                     CAS.b_Accel_1.BackColor = Color.Yellow;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_PHID_ACCL)
+                else if (msg.getState() == StatusStr.STAT_GOOD)
                 {
                     //CAS.b_Accel_1.BackColor = Color.Black;// handled when checking the acceleration difference.
                 }
@@ -564,19 +514,19 @@ namespace gui
             {
                 SpatialStatusMessage msg = (SpatialStatusMessage)m;
                 lastSpatialState = msg.getState();
-                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_PHID_SPTL)
+                if (msg.getState() == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Accel_2.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_PHID_SPTL)
+                else if (msg.getState() == StatusStr.STAT_DISC)
                 {
                     CAS.b_Accel_2.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_PHID_SPTL)
+                else if (msg.getState() == StatusStr.STAT_ATCH)
                 {
                     CAS.b_Accel_2.BackColor = Color.Yellow;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_PHID_SPTL)
+                else if (msg.getState() == StatusStr.STAT_GOOD)
                 {
                     //CAS.b_Accel_2.BackColor = Color.Black;// handled when checking the acceleration difference
                 }
@@ -607,19 +557,19 @@ namespace gui
             try
             {
                 NI6008StatusMessage msg = (NI6008StatusMessage)m;
-                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_NI6008DAQ)
+                if (msg.getState() == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;             
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_NI6008DAQ)
+                else if (msg.getState() == StatusStr.STAT_DISC)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;       
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_NI6008DAQ)
+                else if (msg.getState() == StatusStr.STAT_ATCH)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;
                 }
-                else if(msg.getState() == uGCapture.StatusStr.STAT_GOOD_NI6008DAQ)
+                else if(msg.getState() == StatusStr.STAT_GOOD)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.Black;
                 }
@@ -637,27 +587,27 @@ namespace gui
             {
                 //todo: convert to a switch
                 AptinaStatusMessage msg = (AptinaStatusMessage)m;
-                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_405)
+                if (msg.getState() == StatusStr.STAT_FAIL_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_485)
+                else if (msg.getState() == StatusStr.STAT_FAIL_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_ERR_405)
+                else if (msg.getState() == StatusStr.STAT_ERR_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_ERR_485)
+                else if (msg.getState() == StatusStr.STAT_ERR_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_405)
+                else if (msg.getState() == StatusStr.STAT_GOOD_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.Black;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_485)
+                else if (msg.getState() == StatusStr.STAT_GOOD_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.Black;
                 }
@@ -679,19 +629,19 @@ namespace gui
             try
             {
                 PhidgetsStatusMessage msg = (PhidgetsStatusMessage)m;
-                if (msg.getState() == uGCapture.StatusStr.STAT_FAIL_PHID_1018)
+                if (msg.getState() == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_DISC_PHID_1018)
+                else if (msg.getState() == StatusStr.STAT_DISC)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_ATCH_PHID_1018)
+                else if (msg.getState() == StatusStr.STAT_ATCH)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.Yellow;
                 }
-                else if (msg.getState() == uGCapture.StatusStr.STAT_GOOD_PHID_1018)
+                else if (msg.getState() == StatusStr.STAT_GOOD)
                 {
                     long now = DateTime.Now.Ticks;
                     long dist = now - last1018update;
@@ -717,11 +667,12 @@ namespace gui
             }
         }
 
+        public override void exPhidgetsTempStatusMessage(Receiver r, Message m)
+        {
+ 	
+        }
 
 
 
-
-
-
-    }
-}
+    } /*  class GuiUpdater  */
+} /*  namespace gui */

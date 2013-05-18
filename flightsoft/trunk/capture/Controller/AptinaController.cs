@@ -21,25 +21,40 @@ public class AptinaController : ReceiverController
     //destination buffer for data from ManagedSimpleCapture
     private byte[] dest;
 
+    //this camera's wrapper around simple capture.
+    private ManagedSimpleCapture msc;
+
     //true if another thread is running for this instance.
-    private bool running=false;
+    private bool running = false;
     private Mutex runningMutex;
+
+    private BufferType bufferType;
+    private StatusStr statusStrFail;
+    private StatusStr statusStrGood;
+
+    //wavelength for this controller
+    public int WaveLength
+    { 
+        get { return waveLength; } 
+    }
+    private int waveLength;
+
+
+
+
 
     private static Semaphore barrierSemaphore;
     private static int barrierCounter;
     private static int nextIdx = 0;
-
-    private ManagedSimpleCapture msc;
     private static int numcams = 2;
-
-
-    //TODO: move up to ReceiverController?
+    
    
     public string IniFilePath
     {
         get { return m_iniFilePath;  }
         set { m_iniFilePath = value; }
     }
+    private string m_iniFilePath;
 
     public bool IsRunning
     {
@@ -59,7 +74,7 @@ public class AptinaController : ReceiverController
         }
     }
 
-    private string m_iniFilePath;
+    
 
     public AptinaController(BufferPool<byte> bp, string id, bool receiving = true)
      : base(bp, id, receiving)
@@ -91,6 +106,20 @@ public class AptinaController : ReceiverController
 
         if (r == 0)
         {
+            waveLength = msc.managed_GetWavelength();
+
+            if (waveLength == 405)
+            {
+                bufferType = BufferType.USHORT_IMAGE405;
+                statusStrFail = StatusStr.STAT_FAIL_405;
+                statusStrGood = StatusStr.STAT_GOOD_405;
+            } 
+            else 
+            {
+                bufferType = BufferType.USHORT_IMAGE485;
+                statusStrFail = StatusStr.STAT_FAIL_485;
+                statusStrGood = StatusStr.STAT_GOOD_485;
+            }
             size = msc.managed_SensorBufferSize();
         }
         else
@@ -112,13 +141,12 @@ public class AptinaController : ReceiverController
         //IsReceiving = true;
         //dp.Register(this, "AptianController"+tnum);
         //dp.BroadcastLog(this, String.Format("AptinaController receiving {0}", IsReceiving),1);
-        /*
-            dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
-            dp.Broadcast(new AptinaStatusMessage(this,
-                msc.managed_GetWavelength() == 405 ?
-                StatusStr.STAT_GOOD_405 : StatusStr.STAT_GOOD_485));
-         */
         
+        dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
+        if (rval)
+            dp.Broadcast(new AptinaStatusMessage(this, statusStrGood));
+        else
+            dp.Broadcast(new AptinaStatusMessage(this, statusStrFail));
 
         return rval;
     }
@@ -134,9 +162,9 @@ public class AptinaController : ReceiverController
     {
         if (me.IsRunning || !me.IsInit)
         {
-            me.dp.Broadcast(new AptinaStatusMessage(me, 
-                me.msc.managed_GetWavelength() == 405 ? 
-                StatusStr.STAT_ERR_405 : StatusStr.STAT_ERR_485));
+            //me.dp.Broadcast(new AptinaStatusMessage(me, 
+            //    me.waveLength == 405 ? 
+            //    StatusStr.STAT_ERR_405 : StatusStr.STAT_ERR_485));
             return;
         }
         me.IsRunning = true;
@@ -165,32 +193,25 @@ public class AptinaController : ReceiverController
                 return;
             }
 
+            Buffer<Byte> imagebuffer = me.BufferPool.PopEmpty();
             unsafe
             {
                 byte *data = me.msc.managed_DoCapture();
                 if (data == null)
                 {
                     me.dp.BroadcastLog(me, "DoCapture returned a null pointer.", 100);
-                    me.dp.Broadcast(new AptinaStatusMessage(me, 
-                        me.msc.managed_GetWavelength() == 405 ? 
-                        StatusStr.STAT_FAIL_405 : StatusStr.STAT_FAIL_485));  // Almost salmon.
-
+                    me.dp.Broadcast(new AptinaStatusMessage(me, me.statusStrFail));  // Almost salmon.
                     continue;
                 }
                 Marshal.Copy(new IntPtr(data), me.dest, 0, (int) me.size);
             }
             
-            Buffer<Byte> imagebuffer = me.BufferPool.PopEmpty();
-
-            BufferType bufferType = me.msc.managed_GetWavelength() == 405 ? 
-                BufferType.USHORT_IMAGE405 : BufferType.USHORT_IMAGE485;
-
-            imagebuffer.setData(me.dest, bufferType);
+            
+            imagebuffer.setData(me.dest, me.bufferType);
             imagebuffer.FillTime = me.GetUTCMillis();
             me.BufferPool.PostFull(imagebuffer);
 
-            me.dp.Broadcast(new AptinaStatusMessage(me, me.msc.managed_GetWavelength() == 405 ? 
-                StatusStr.STAT_GOOD_405 : StatusStr.STAT_GOOD_485)); // Salmon? No.
+            me.dp.Broadcast(new AptinaStatusMessage(me, me.statusStrGood));        // Salmon? No.
         }   
     }
 

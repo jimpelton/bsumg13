@@ -73,12 +73,12 @@ namespace uGCapture
             }
             catch (InvalidOperationException err) 
             {
-                Reset();
+                //Reset();
                 dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
             }
             catch (TimeoutException err) 
             {
-                Reset();
+                //Reset();
             }
 
         }
@@ -100,7 +100,7 @@ namespace uGCapture
             }
             catch (UnauthorizedAccessException err)
             {
-                Reset();
+                //Reset();
                 dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
             }
            

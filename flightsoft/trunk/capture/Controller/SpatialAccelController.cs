@@ -42,7 +42,7 @@ namespace uGCapture
                 accel.Detach += Sensor_Detach;
                 accel.Error += Sensor_Error;
 
-                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_GOOD_PHID_SPTL));
+                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_GOOD));
                 dp.BroadcastLog(this, "Accelerometer found.", 0);
             }
             catch (PhidgetException ex)
@@ -54,7 +54,7 @@ namespace uGCapture
                 dp.BroadcastLog(this,
                     String.Format("Error waiting for Acceler-o-meter: {0}", ex.Description),
                     100);
-                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL_PHID_SPTL));
+                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL));
             }
 
             return rval;
@@ -73,13 +73,13 @@ namespace uGCapture
                 Phidget phid = sender as Phidget;
                 if (phid == null) return;
                 dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
-                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_ATCH_PHID_SPTL));
+                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_ATCH));
             }
             catch (PhidgetException ex)
             {
                 dp.BroadcastLog(this,
                     String.Format("Error while attaching accelerometer: {0}", ex.Description), 100);
-                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL_PHID_SPTL));
+                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL));
             }
         }
 
@@ -89,7 +89,7 @@ namespace uGCapture
             Phidget phid = sender as Phidget;
             if (phid == null) return;
             dp.BroadcastLog(this, String.Format("{0} Detached", phid.Name), 5);
-            dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_DISC_PHID_SPTL));
+            dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_DISC));
         }
 
         void Sensor_Error(object sender, ErrorEventArgs e)
@@ -98,7 +98,7 @@ namespace uGCapture
             if (phid == null) return;
 
             dp.BroadcastLog(this, String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
-            dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL_PHID_SPTL));
+            dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL));
         }
 
 
@@ -116,7 +116,7 @@ namespace uGCapture
                 buffer.Text = accel.SerialNumber.ToString(); 
                 BufferPool.PostFull(buffer);
                 outputData = "";
-                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_GOOD_PHID_SPTL));
+                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_GOOD));
             }
         }
 
@@ -132,7 +132,7 @@ namespace uGCapture
             }
             catch (ArgumentOutOfRangeException e)
             {
-                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL_PHID_SPTL));
+                dp.Broadcast(new SpatialStatusMessage(this, StatusStr.STAT_FAIL));
             }
         }
 

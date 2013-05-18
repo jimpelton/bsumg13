@@ -61,6 +61,8 @@ namespace uGCapture
         {
         }
 
+
+
         public void init()
         {
             m_startTimeUTC = DateTime.UtcNow;
@@ -135,7 +137,7 @@ namespace uGCapture
             phidgetsController = new PhidgetsController(bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_1018));
             if (phidgetsController.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_1018);
+                string s = Str.GetErrStr(ErrStr.INIT_OK_PHID_1018);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
 
@@ -157,7 +159,7 @@ namespace uGCapture
                 Str.GetIdStr(IdStr.ID_PHIDGETS_ACCEL), accelerometer_serial_number);
             if (accelControler.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_ACCEL);
+                string s = Str.GetErrStr(ErrStr.INIT_OK_PHID_ACCEL);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -179,7 +181,7 @@ namespace uGCapture
 
             if (spatialController.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_PHID_SPTL);
+                string s = Str.GetErrStr(ErrStr.INIT_OK_PHID_SPTL);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -200,7 +202,7 @@ namespace uGCapture
 
             if (weatherboard.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_VCOMM);
+                string s = Str.GetErrStr(ErrStr.INIT_OK_VCOMM);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -221,7 +223,7 @@ namespace uGCapture
 
             if (ni6008.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_NI_6008);
+                string s = Str.GetErrStr(ErrStr.INIT_OK_NI_6008);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }
@@ -242,7 +244,7 @@ namespace uGCapture
 
             if (UPS.Initialize())
             {
-                string s = Str.GetMsgStr(MsgStr.INIT_OK_UPS);
+                string s = Str.GetErrStr(ErrStr.INIT_OK_UPS);
                 dp.BroadcastLog(this, s, 100);
                 Console.Error.WriteLine(s);
             }

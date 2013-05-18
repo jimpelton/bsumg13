@@ -18,30 +18,36 @@ namespace gui
         public static ConfigData LoadConfig(string configpath)
         {
             ConfigData config = new ConfigData();
-            StreamReader reader = new StreamReader(configpath);
+            StreamReader reader = null;
+
             string Line = "";
             try
             {
+                reader = new StreamReader(configpath);
                 do
                 {
                     Line = reader.ReadLine();
                     string[] tokens = Line.Split(',');
-                    if(tokens.Length>1&&tokens[0].Equals("Path"))
+                    if (tokens.Length > 1 && tokens[0].Equals("Path"))
                         config.Path = tokens[1];
                 }
                 while (reader.Peek() != -1);
             }
-
-            catch
+            catch (Exception e)
             {
-                
+                configDefaults(config);
             }
-
             finally
             {
-                reader.Close();
+                if (reader != null)
+                    reader.Close();
             }
-             return config;
+            return config;
+        }
+
+        private static void configDefaults(ConfigData config)
+        {
+            config.Path = @"C:\Data";
         }
        
     }

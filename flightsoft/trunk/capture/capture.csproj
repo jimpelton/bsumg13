@@ -80,6 +80,7 @@
     <Compile Include="CirclesFile.cs" />
     <Compile Include="Controller\AccelerometerPhidgetsController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
+    <Compile Include="Message\PhidgetsTempStatusMessage.cs" />
     <Compile Include="Controller\SpatialAccelController.cs" />
     <Compile Include="DataSet.cs" />
     <Compile Include="Image\ImageProcessor.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Message\SetCaptureStateMessage.cs" />
     <Compile Include="Message\DataMessage.cs" />
     <Compile Include="Message\SpatialStatusMessage.cs" />
+    <Compile Include="Message\StatusMessage.cs" />
     <Compile Include="Message\UPSStatusMessage.cs" />
     <Compile Include="Message\VcommStatusMessage.cs" />
     <Compile Include="ReceiverController.cs" />

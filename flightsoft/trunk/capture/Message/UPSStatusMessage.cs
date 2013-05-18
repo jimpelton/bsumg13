@@ -1,24 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace uGCapture
 {
-    public class UPSStatusMessage : Message
+    public class UPSStatusMessage : StatusMessage
     {
-        private StatusStr state = StatusStr.STAT_ERR;
-        public  StatusStr getState() { return state; }
-
-        public UPSStatusMessage(Receiver s, StatusStr nstate)
-            : base(s)
+        public UPSStatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR)
+            : base(s, nstate)
         {
-            state = nstate;
         }
-
-        UPSStatusMessage(Receiver s)
-            : base(s) { ; }
 
         public override void execute(Receiver r)
         {
