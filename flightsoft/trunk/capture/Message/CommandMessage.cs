@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace uGCapture
 {
-    class CommandMessage : Message
+    public class CommandMessage : Message
     {
         private CommandStr cmd = CommandStr.CMD_NONE;
 
@@ -18,7 +18,7 @@ namespace uGCapture
             cmd = ncmd;
         }
 
-        CommandMessage(Receiver s)
+        public CommandMessage(Receiver s)
             : base(s) { ; }
 
         public override void execute(Receiver r)

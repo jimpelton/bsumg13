@@ -34,7 +34,7 @@
             this.b_Battery_Level = new System.Windows.Forms.Button();
             this.b_Battery_Com = new System.Windows.Forms.Button();
             this.b_Drive_Full = new System.Windows.Forms.Button();
-            this.b_Phidgets_1051 = new System.Windows.Forms.Button();
+            this.b_Doors = new System.Windows.Forms.Button();
             this.b_Phidgets_1018 = new System.Windows.Forms.Button();
             this.b_Accel_Aircraft = new System.Windows.Forms.Button();
             this.b_Accel_2 = new System.Windows.Forms.Button();
@@ -61,7 +61,7 @@
             this.tableLayoutPanel1.Controls.Add(this.b_Battery_Level, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.b_Battery_Com, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.b_Drive_Full, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.b_Phidgets_1051, 4, 1);
+            this.tableLayoutPanel1.Controls.Add(this.b_Doors, 4, 1);
             this.tableLayoutPanel1.Controls.Add(this.b_Phidgets_1018, 3, 1);
             this.tableLayoutPanel1.Controls.Add(this.b_Accel_Aircraft, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.b_Accel_2, 1, 1);
@@ -171,23 +171,23 @@
             this.b_Drive_Full.Text = "Drive Full";
             this.b_Drive_Full.UseVisualStyleBackColor = false;
             // 
-            // b_Phidgets_1051
+            // b_Doors
             // 
-            this.b_Phidgets_1051.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.b_Doors.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.b_Phidgets_1051.AutoSize = true;
-            this.b_Phidgets_1051.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Phidgets_1051.BackColor = System.Drawing.Color.OrangeRed;
-            this.b_Phidgets_1051.Enabled = false;
-            this.b_Phidgets_1051.FlatAppearance.BorderSize = 2;
-            this.b_Phidgets_1051.Font = new System.Drawing.Font("Calibri", 12F);
-            this.b_Phidgets_1051.Location = new System.Drawing.Point(598, 63);
-            this.b_Phidgets_1051.Name = "b_Phidgets_1051";
-            this.b_Phidgets_1051.Size = new System.Drawing.Size(142, 48);
-            this.b_Phidgets_1051.TabIndex = 9;
-            this.b_Phidgets_1051.Text = "Phidgets 1051";
-            this.b_Phidgets_1051.UseVisualStyleBackColor = false;
+            this.b_Doors.AutoSize = true;
+            this.b_Doors.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.b_Doors.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Doors.Enabled = false;
+            this.b_Doors.FlatAppearance.BorderSize = 2;
+            this.b_Doors.Font = new System.Drawing.Font("Calibri", 12F);
+            this.b_Doors.Location = new System.Drawing.Point(598, 63);
+            this.b_Doors.Name = "b_Doors";
+            this.b_Doors.Size = new System.Drawing.Size(142, 48);
+            this.b_Doors.TabIndex = 9;
+            this.b_Doors.Text = "Doors";
+            this.b_Doors.UseVisualStyleBackColor = false;
             // 
             // b_Phidgets_1018
             // 
@@ -374,7 +374,7 @@
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         public System.Windows.Forms.Button b_Heater_High;
-        public System.Windows.Forms.Button b_Phidgets_1051;
+        public System.Windows.Forms.Button b_Doors;
         public System.Windows.Forms.Button b_Phidgets_1018;
         public System.Windows.Forms.Button b_Accel_Aircraft;
         public System.Windows.Forms.Button b_Accel_2;
