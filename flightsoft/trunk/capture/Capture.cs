@@ -69,16 +69,18 @@ namespace uGCapture
 
             Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096); // Three...er four magic numbers !
             bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24), sBuf);
-
+            
+            
+            initLogger();    // --JP 5/13/13
             initWriter();
             initAptina();
             initPhidgets();
             initAccelController();
             initSpatialController();
-            initWeatherBoard();
+            //initWeatherBoard();
             initNI6008Controller();
             initUPSController();
-	    // initLogger();    // --JP 5/13/13
+
 
             dp.Register(this);
         }
