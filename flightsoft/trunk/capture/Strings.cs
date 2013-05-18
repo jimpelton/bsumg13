@@ -143,7 +143,7 @@ namespace uGCapture
         {
             switch (msg)
             {
-                case ErrStr.INIT_FAIL_PHID_1018:      return "Phidgets 1018 DAQ failed to initialize."; 
+                case ErrStr.INIT_FAIL_PHID_1018:      return "Phidgets 1018 DAQ or Temp DAQ failed to initialize."; 
                 case ErrStr.INIT_FAIL_PHID_SPTL:      return "Phidgets Spatial failed to initialize."; 
                 case ErrStr.INIT_FAIL_PHID_ACCEL:     return "Phidgets accelerometer failed to initialize."; 
                 case ErrStr.INIT_FAIL_NI_6008:        return "NI-6008 DAQ failed to initialize."; 
