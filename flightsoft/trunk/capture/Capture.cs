@@ -57,19 +57,21 @@ namespace uGCapture
         private Thread acThread1;
         private Thread acThread2;
         private Thread wrtThread;
+        private IntPtr hwnd;
 
-        public CaptureClass(string id)
+        public CaptureClass(string id) : base(id) {}
+
+        public CaptureClass(IntPtr hwnd, string id)
             : base(id)
         {
+            this.hwnd = hwnd;
         }
-
-
 
         public void init()
         {
             m_startTimeUTC = DateTime.UtcNow;
-
-            Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096); // Three...er four magic numbers !
+                                                                               //               10M, 4K
+            Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096);     // image buffer size, utf8 buffer size
             bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24), sBuf);
             
             initLogger();    // --JP 5/13/13
@@ -106,7 +108,10 @@ namespace uGCapture
         //Aptina cameras.
         private void initAptina()
         {
-            ac1 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE));
+            ac1 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE))
+                {
+                    Hwnd = hwnd
+                };
             if (ac1.Initialize())
             {
                 acThread1 = new Thread(() => AptinaController.go(ac1));
@@ -119,7 +124,10 @@ namespace uGCapture
                     Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.", 100);
             }
 
-            ac2 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_TWO));
+            ac2 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_TWO))
+                {
+                    Hwnd = hwnd
+                };
             if (ac2.Initialize())
             {
                 acThread2 = new Thread(() => AptinaController.go(ac2));
@@ -267,9 +275,7 @@ namespace uGCapture
 	
         public DataSet<byte> GetLastData()
         {
-            if(bufferPool.Staging!=null)
-                return bufferPool.Staging.GetLastData();
-            return null;
+            return bufferPool.Staging.GetLastData();   
         }
 
         public void switchToBackupDrive(string newPath)
