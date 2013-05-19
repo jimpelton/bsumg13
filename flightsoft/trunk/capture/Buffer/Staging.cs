@@ -4,25 +4,41 @@
 //  Date: 2013-05-05                                                                      
 // ******************************************************************************
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace uGCapture
 {
 
+    /// <summary>
+    /// Works in conjunction with DataSet to deliver the newest set of
+    /// data available.
+    /// 
+    /// The newest data set is intended to be retrieved by a client that
+    /// calls CaptureClass.GetLastData().
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Staging<T>
     {
 
-        public int size405;
-        public int size485;
-
         private object data_mutex = new object();
+        private readonly DataSet<T> lastDataSet;
 
-        private DataSet<T> lastDataSet; 
+        private readonly Dictionary<BufferType, int> sizes = new Dictionary
+            <BufferType, int>()
+            {
+                {BufferType.USHORT_IMAGE405, 0},
+                {BufferType.USHORT_IMAGE485, 0},
+                {BufferType.UTF8_ACCEL, 0},
+                {BufferType.UTF8_NI6008, 0},
+                {BufferType.UTF8_PHIDGETS, 0},
+                {BufferType.UTF8_SPATIAL, 0},
+                {BufferType.UTF8_UPS, 0},
+                {BufferType.UTF8_VCOMM, 0}
+            };
 
         public Staging(int imgSize, int utfSize)
         {
-            size405 = 0;
-            size485 = 0;
             lastDataSet = new DataSet<T>(imgSize, utfSize);
         }
 
@@ -38,12 +54,13 @@ namespace uGCapture
                 lock (data_mutex)
                 {
                     T[] dest = lastDataSet.lastData[buf.Type];
-                    int sz = dest.Length;
-                    if (buf.CapacityUtilization >= sz)  //only fill the size of the cache.
+                    int newsz = dest.Length;
+                    if (buf.CapacityUtilization >= newsz)  //only fill the size of the cache.
                     {
-                        sz = buf.CapacityUtilization;
+                        newsz = buf.CapacityUtilization;
                     }
-                    Array.Copy(buf.Data, dest, sz);
+                    Array.Copy(buf.Data, dest, newsz);
+                    sizes[buf.Type] = newsz;
                 }
             }
             catch (Exception e)
@@ -62,7 +79,7 @@ namespace uGCapture
         {
             lock (data_mutex)
             {
-                return new DataSet<T>(lastDataSet);	 //deep copy       
+                return new DataSet<T>(lastDataSet, sizes);	 //deep copy       
             }
         }
     }

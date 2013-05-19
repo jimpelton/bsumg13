@@ -24,31 +24,6 @@ namespace uGCapture
 
         STAT_GOOD_405,
         STAT_GOOD_485
-
-        //STAT_FAIL_PHID_1018,
-        //STAT_DISC_PHID_1018,
-        //STAT_ATCH_PHID_1018,
-        //STAT_GOOD_PHID_1018,
-
-        //STAT_FAIL_PHID_TEMP,
-        //STAT_DISC_PHID_TEMP,
-        //STAT_ATCH_PHID_TEMP,
-        //STAT_GOOD_PHID_TEMP,
-
-        //STAT_FAIL_PHID_ACCL,
-        //STAT_DISC_PHID_ACCL,
-        //STAT_ATCH_PHID_ACCL,
-        //STAT_GOOD_PHID_ACCL,
-
-        //STAT_FAIL_PHID_SPTL,
-        //STAT_DISC_PHID_SPTL,
-        //STAT_ATCH_PHID_SPTL,
-        //STAT_GOOD_PHID_SPTL,
-
-        //STAT_FAIL_NI6008DAQ,
-        //STAT_DISC_NI6008DAQ,
-        //STAT_ATCH_NI6008DAQ,
-        //STAT_GOOD_NI6008DAQ
     }
 
 
@@ -67,14 +42,6 @@ namespace uGCapture
         CMD_NI_LIGHT_2_2_OFF
     }
 
-    public enum Severity
-    {
-        DEBUG,
-        INFO,
-        CAUTION,
-        FAILURE
-    }
-
     public enum ErrStr 
     {
         INIT_FAIL_PHID_1018,
@@ -82,8 +49,14 @@ namespace uGCapture
         INIT_FAIL_PHID_ACCEL,
 	    INIT_FAIL_PHID_TEMP,
         INIT_FAIL_NI_6008,
+        
         INIT_FAIL_APTINA,
         INIT_FAIL_APTINA_INITMIDLIB,    
+        INIT_FAIL_APTINA_OPENTRANSPORT,   
+        CAPTURE_FAIL_APTINA_NULLBUFFER,
+        
+        CAPTURE_FAIL_APTINA,
+        
         INIT_FAIL_VCOMM,
         INIT_FAIL_WRITER,
         INIT_FAIL_UPS,
@@ -97,11 +70,9 @@ namespace uGCapture
         INIT_OK_APTINA,
         INIT_OK_VCOMM,
         INIT_OK_UPS,
-	    INIT_OK_LOGGER,
+	    INIT_OK_LOGGER
 
         
-
-        CAPTURE_FAIL
     }
 
 
@@ -143,25 +114,33 @@ namespace uGCapture
         {
             switch (msg)
             {
-                case ErrStr.INIT_FAIL_PHID_1018:      return "Phidgets 1018 DAQ or Temp DAQ failed to initialize."; 
-                case ErrStr.INIT_FAIL_PHID_SPTL:      return "Phidgets Spatial failed to initialize."; 
-                case ErrStr.INIT_FAIL_PHID_ACCEL:     return "Phidgets accelerometer failed to initialize."; 
-                case ErrStr.INIT_FAIL_NI_6008:        return "NI-6008 DAQ failed to initialize."; 
-                case ErrStr.INIT_FAIL_APTINA:         return "Aptina camera failed to initialize.";
-                case ErrStr.INIT_FAIL_VCOMM:          return "Weatherboard failed to initialize.";
-                case ErrStr.INIT_FAIL_WRITER:         return "Writer failed to initialize.";
-                case ErrStr.INIT_FAIL_UPS:            return "UPSController failed to initialize.";
+                case ErrStr.INIT_FAIL_PHID_1018:              return "Phidgets 1018 DAQ failed to initialize."; 
+                case ErrStr.INIT_FAIL_PHID_SPTL:              return "Phidgets Spatial failed to initialize."; 
+                case ErrStr.INIT_FAIL_PHID_ACCEL:             return "Phidgets accelerometer failed to initialize."; 
 
-                case ErrStr.INIT_OK_PHID_1018:        return "Phidgets 1018 initialized.";
-                case ErrStr.INIT_OK_PHID_SPTL:        return "Phidgets Spatial initialized.";
-                case ErrStr.INIT_OK_PHID_ACCEL:       return "Phidgets accelerometer initialized.";
-                case ErrStr.INIT_OK_NI_6008:          return "NI-6008 DAQ initialized.";
-                case ErrStr.INIT_OK_APTINA:           return "Aptina camera initialized.";
-                case ErrStr.INIT_OK_VCOMM:            return "Weatherboard initialized.";
-                case ErrStr.INIT_OK_UPS:              return "UPSController initialized.";
+                case ErrStr.INIT_FAIL_NI_6008:                return "NI-6008 DAQ failed to initialize."; 
 
+                case ErrStr.INIT_FAIL_APTINA:                 return "Aptina camera failed to initialize.";
+                case ErrStr.INIT_FAIL_APTINA_INITMIDLIB:      return "Midlib2 failed to initialize.";
+                case ErrStr.INIT_FAIL_APTINA_OPENTRANSPORT:   return "Midlib2 opentransport failed.";
+                case ErrStr.CAPTURE_FAIL_APTINA_NULLBUFFER:      return "Midlib2 getFrame() returned null pointer.";
+                case ErrStr.CAPTURE_FAIL_APTINA:              return "Aptina capture failed.";
+
+                case ErrStr.INIT_FAIL_VCOMM:                  return "Weatherboard failed to initialize.";
                 
-                default:                              return "Unknown Error.";
+                case ErrStr.INIT_FAIL_WRITER:                 return "Writer failed to initialize.";
+
+                case ErrStr.INIT_FAIL_UPS:                    return "UPSController failed to initialize.";
+
+                case ErrStr.INIT_OK_PHID_1018:                return "Phidgets 1018 initialized.";
+                case ErrStr.INIT_OK_PHID_SPTL:                return "Phidgets Spatial initialized.";
+                case ErrStr.INIT_OK_PHID_ACCEL:               return "Phidgets accelerometer initialized.";
+                case ErrStr.INIT_OK_NI_6008:                  return "NI-6008 DAQ initialized.";
+                case ErrStr.INIT_OK_APTINA:                   return "Aptina camera initialized.";
+                case ErrStr.INIT_OK_VCOMM:                    return "Weatherboard initialized.";
+                case ErrStr.INIT_OK_UPS:                      return "UPSController initialized.";
+                
+                default:                                      return "Unknown Error.";
             }
         }
 
@@ -205,14 +184,14 @@ namespace uGCapture
         public static readonly Dictionary<DirStr, string> Pfx = new Dictionary<DirStr, string>()
             {
               { DirStr.DIR_CAMERA405,  "Camera405"    },
-              { DirStr.DIR_CAMERA485,  "Camera485"  },
+              { DirStr.DIR_CAMERA485,  "Camera485"    },
               { DirStr.DIR_PHIDGETS,   "Phidgets"     },
-              { DirStr.DIR_SPATIAL,    "Spatial"   },
-              { DirStr.DIR_ACCEL,      "Accel" },
-              { DirStr.DIR_VCOMM,      "Barometer" },
-              { DirStr.DIR_NI_DAQ,     "NI6008" },
-              { DirStr.DIR_UPS,        "UPS"       },
-              { DirStr.DIR_LOGGER,     "Log"       }
+              { DirStr.DIR_SPATIAL,    "Spatial"      },
+              { DirStr.DIR_ACCEL,      "Accel"        },
+              { DirStr.DIR_VCOMM,      "Barometer"    },
+              { DirStr.DIR_NI_DAQ,     "NI6008"       },
+              { DirStr.DIR_UPS,        "UPS"          },
+              { DirStr.DIR_LOGGER,     "Log"          }
         };
 
 
