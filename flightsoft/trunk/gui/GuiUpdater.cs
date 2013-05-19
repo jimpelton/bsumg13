@@ -117,13 +117,23 @@ namespace gui
             if (DriveFreeBytes(Guimain.guiDataPath, out freespace))
             {
                 if (freespace < 10000000000L)
+                {
                     CAS.b_Drive_Full.BackColor = Color.OrangeRed;
+                    Guimain.switchToAlternateDrive();
+                }
                 else if (freespace < 20000000000L)
+                {
                     CAS.b_Drive_Full.BackColor = Color.Yellow;
-                else if (freespace < 200000000000L)
+                }
+                else if (freespace < 20000000000L)
+                {
                     CAS.b_Drive_Full.BackColor = Color.Green;
+                    
+                }
                 else
+                {
                     CAS.b_Drive_Full.BackColor = Color.Black;
+                }
 
                 CAS.b_Drive_Full.Text = "Drive Full (" + (freespace / (1024 * 1024 * 1024)) + ")";
             }
@@ -417,6 +427,7 @@ namespace gui
             }
         }
         
+
         private void updateCASPanel()
         {
             DataSet<byte> dat = Guimain.getLatestData();
@@ -427,8 +438,7 @@ namespace gui
                 updateCASAccel(dat);
                 updateCASPhidgets(dat);
                 updateCASLights(dat);
-            }
-
+            }           
         }
 
         

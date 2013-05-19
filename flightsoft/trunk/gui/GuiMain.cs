@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
+using System.IO;
 using uGCapture;
 
 namespace gui
@@ -146,6 +146,27 @@ namespace gui
             return captureClass.GetLastData();
         }
 
+        public void switchToAlternateDrive()
+        {
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            DriveInfo bestDrive = null;
 
+            foreach (DriveInfo drive in drives)
+            {
+                if (drive.IsReady)
+                {
+                    if (bestDrive == null)
+                        bestDrive = drive;
+                    if (drive.TotalFreeSpace > bestDrive.TotalFreeSpace)
+                        bestDrive = drive;
+                }
+            }
+            if (bestDrive != null)
+            {
+                dataPath = bestDrive.RootDirectory + "Data\\";
+                captureClass.switchToBackupDrive(bestDrive.RootDirectory + "Data\\");
+                
+            }
+        }
     }
 }
