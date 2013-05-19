@@ -60,7 +60,9 @@ namespace gui
         public void Startup_Init()
         {
             ConfigData config = ConfigLoader.LoadConfig(configPath);
-
+            dp.BroadcastLog(this, "Begin config:\n", 1);
+            dp.BroadcastLog(this, config.Path, 1);
+            dp.BroadcastLog(this, "End config\n", 1);
             string path = config.Path.Trim();
             if (!path.EndsWith(@"\"))
             {

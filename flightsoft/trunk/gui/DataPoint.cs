@@ -45,7 +45,7 @@ namespace gui
 
         public DataPoint()
         {           
-            WellIntensities405 = new long[16*12];
+            WellIntensities405 = new long[16 * 12];
             WellIntensities485 = new long[16 * 12];
             phidgetsdigitalInputs = new bool[8];
             phidgetsdigitalOutputs = new bool[8];

@@ -29,33 +29,35 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend6 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.DebugUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.TabPage_Debug = new System.Windows.Forms.TabPage();
-            this.rTB_Debug_Output = new System.Windows.Forms.RichTextBox();
             this.Btn_ShowImages = new System.Windows.Forms.Button();
+            this.rTB_Debug_Output = new System.Windows.Forms.RichTextBox();
             this.TabPage_BITE = new System.Windows.Forms.TabPage();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.b_Execute_BITE_Test = new System.Windows.Forms.Button();
+            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.TabPage_Wells = new System.Windows.Forms.TabPage();
+            this.panel_Wells = new System.Windows.Forms.Panel();
             this.TabPage_Capture = new System.Windows.Forms.TabPage();
-            this.btn_Go = new System.Windows.Forms.Button();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.btn_Go = new System.Windows.Forms.Button();
             this.Tab_Control_Main = new System.Windows.Forms.TabControl();
             this.TabPage_Graphs = new System.Windows.Forms.TabPage();
             this.TabPage_Debug.SuspendLayout();
             this.TabPage_BITE.SuspendLayout();
+            this.TabPage_Wells.SuspendLayout();
             this.TabPage_Capture.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.Tab_Control_Main.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,15 +78,6 @@
             this.TabPage_Debug.Text = "Debug";
             this.TabPage_Debug.UseVisualStyleBackColor = true;
             // 
-            // rTB_Debug_Output
-            // 
-            this.rTB_Debug_Output.Location = new System.Drawing.Point(6, 6);
-            this.rTB_Debug_Output.Name = "rTB_Debug_Output";
-            this.rTB_Debug_Output.Size = new System.Drawing.Size(1142, 643);
-            this.rTB_Debug_Output.TabIndex = 0;
-            this.rTB_Debug_Output.Text = "";
-            this.rTB_Debug_Output.TextChanged += new System.EventHandler(this.rTB_Debug_Output_TextChanged);
-            // 
             // Btn_ShowImages
             // 
             this.Btn_ShowImages.Location = new System.Drawing.Point(6, 655);
@@ -94,6 +87,15 @@
             this.Btn_ShowImages.Text = "Secwet Buton";
             this.Btn_ShowImages.UseVisualStyleBackColor = true;
             this.Btn_ShowImages.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // rTB_Debug_Output
+            // 
+            this.rTB_Debug_Output.Location = new System.Drawing.Point(6, 6);
+            this.rTB_Debug_Output.Name = "rTB_Debug_Output";
+            this.rTB_Debug_Output.Size = new System.Drawing.Size(1142, 643);
+            this.rTB_Debug_Output.TabIndex = 0;
+            this.rTB_Debug_Output.Text = "";
+            this.rTB_Debug_Output.TextChanged += new System.EventHandler(this.rTB_Debug_Output_TextChanged);
             // 
             // TabPage_BITE
             // 
@@ -108,15 +110,14 @@
             this.TabPage_BITE.TabIndex = 2;
             this.TabPage_BITE.Text = "BITE";
             // 
-            // richTextBox1
+            // b_Execute_BITE_Test
             // 
-            this.richTextBox1.BackColor = System.Drawing.Color.Black;
-            this.richTextBox1.ForeColor = System.Drawing.Color.White;
-            this.richTextBox1.Location = new System.Drawing.Point(6, 6);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(564, 264);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
+            this.b_Execute_BITE_Test.Location = new System.Drawing.Point(449, 276);
+            this.b_Execute_BITE_Test.Name = "b_Execute_BITE_Test";
+            this.b_Execute_BITE_Test.Size = new System.Drawing.Size(256, 80);
+            this.b_Execute_BITE_Test.TabIndex = 2;
+            this.b_Execute_BITE_Test.Text = "Execute BITE Test";
+            this.b_Execute_BITE_Test.UseVisualStyleBackColor = true;
             // 
             // richTextBox2
             // 
@@ -128,17 +129,19 @@
             this.richTextBox2.TabIndex = 1;
             this.richTextBox2.Text = "Built In Test Equipment (BITE) Starting Up...";
             // 
-            // b_Execute_BITE_Test
+            // richTextBox1
             // 
-            this.b_Execute_BITE_Test.Location = new System.Drawing.Point(449, 276);
-            this.b_Execute_BITE_Test.Name = "b_Execute_BITE_Test";
-            this.b_Execute_BITE_Test.Size = new System.Drawing.Size(256, 80);
-            this.b_Execute_BITE_Test.TabIndex = 2;
-            this.b_Execute_BITE_Test.Text = "Execute BITE Test";
-            this.b_Execute_BITE_Test.UseVisualStyleBackColor = true;
+            this.richTextBox1.BackColor = System.Drawing.Color.Black;
+            this.richTextBox1.ForeColor = System.Drawing.Color.White;
+            this.richTextBox1.Location = new System.Drawing.Point(6, 6);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(564, 264);
+            this.richTextBox1.TabIndex = 0;
+            this.richTextBox1.Text = "";
             // 
             // TabPage_Wells
             // 
+            this.TabPage_Wells.Controls.Add(this.panel_Wells);
             this.TabPage_Wells.Location = new System.Drawing.Point(4, 29);
             this.TabPage_Wells.Name = "TabPage_Wells";
             this.TabPage_Wells.Padding = new System.Windows.Forms.Padding(3);
@@ -146,6 +149,14 @@
             this.TabPage_Wells.TabIndex = 1;
             this.TabPage_Wells.Text = "Wells";
             this.TabPage_Wells.UseVisualStyleBackColor = true;
+            // 
+            // panel_Wells
+            // 
+            this.panel_Wells.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel_Wells.Location = new System.Drawing.Point(6, 6);
+            this.panel_Wells.Name = "panel_Wells";
+            this.panel_Wells.Size = new System.Drawing.Size(1142, 676);
+            this.panel_Wells.TabIndex = 0;
             // 
             // TabPage_Capture
             // 
@@ -160,6 +171,49 @@
             this.TabPage_Capture.Text = "Capture Control";
             this.TabPage_Capture.UseVisualStyleBackColor = true;
             // 
+            // chart2
+            // 
+            chartArea3.Name = "ChartArea1";
+            this.chart2.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.chart2.Legends.Add(legend3);
+            this.chart2.Location = new System.Drawing.Point(1016, 0);
+            this.chart2.Name = "chart2";
+            series4.ChartArea = "ChartArea1";
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chart2.Series.Add(series4);
+            this.chart2.Size = new System.Drawing.Size(132, 382);
+            this.chart2.TabIndex = 2;
+            this.chart2.Text = "chart2";
+            // 
+            // chart1
+            // 
+            chartArea4.Area3DStyle.Enable3D = true;
+            chartArea4.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
+            chartArea4.BackColor = System.Drawing.Color.Gray;
+            chartArea4.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.Center;
+            chartArea4.BackSecondaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            chartArea4.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea4);
+            legend4.Name = "Legend1";
+            this.chart1.Legends.Add(legend4);
+            this.chart1.Location = new System.Drawing.Point(6, 70);
+            this.chart1.Name = "chart1";
+            series5.ChartArea = "ChartArea1";
+            series5.Legend = "Legend1";
+            series5.Name = "Series1";
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bar;
+            series6.Legend = "Legend1";
+            series6.Name = "BarChart";
+            this.chart1.Series.Add(series5);
+            this.chart1.Series.Add(series6);
+            this.chart1.Size = new System.Drawing.Size(1004, 312);
+            this.chart1.TabIndex = 1;
+            this.chart1.Text = "chart1";
+            this.chart1.Click += new System.EventHandler(this.chart1_Click_1);
+            // 
             // btn_Go
             // 
             this.btn_Go.Location = new System.Drawing.Point(6, 6);
@@ -169,49 +223,6 @@
             this.btn_Go.Text = "Start Capture";
             this.btn_Go.UseVisualStyleBackColor = true;
             this.btn_Go.Click += new System.EventHandler(this.btn_Go_Click);
-            // 
-            // chart1
-            // 
-            chartArea5.Area3DStyle.Enable3D = true;
-            chartArea5.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
-            chartArea5.BackColor = System.Drawing.Color.Gray;
-            chartArea5.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.Center;
-            chartArea5.BackSecondaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea5.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea5);
-            legend5.Name = "Legend1";
-            this.chart1.Legends.Add(legend5);
-            this.chart1.Location = new System.Drawing.Point(6, 70);
-            this.chart1.Name = "chart1";
-            series7.ChartArea = "ChartArea1";
-            series7.Legend = "Legend1";
-            series7.Name = "Series1";
-            series8.ChartArea = "ChartArea1";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bar;
-            series8.Legend = "Legend1";
-            series8.Name = "BarChart";
-            this.chart1.Series.Add(series7);
-            this.chart1.Series.Add(series8);
-            this.chart1.Size = new System.Drawing.Size(1004, 312);
-            this.chart1.TabIndex = 1;
-            this.chart1.Text = "chart1";
-            this.chart1.Click += new System.EventHandler(this.chart1_Click_1);
-            // 
-            // chart2
-            // 
-            chartArea6.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea6);
-            legend6.Name = "Legend1";
-            this.chart2.Legends.Add(legend6);
-            this.chart2.Location = new System.Drawing.Point(1016, 0);
-            this.chart2.Name = "chart2";
-            series9.ChartArea = "ChartArea1";
-            series9.Legend = "Legend1";
-            series9.Name = "Series1";
-            this.chart2.Series.Add(series9);
-            this.chart2.Size = new System.Drawing.Size(132, 382);
-            this.chart2.TabIndex = 2;
-            this.chart2.Text = "chart2";
             // 
             // Tab_Control_Main
             // 
@@ -250,9 +261,10 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             this.TabPage_Debug.ResumeLayout(false);
             this.TabPage_BITE.ResumeLayout(false);
+            this.TabPage_Wells.ResumeLayout(false);
             this.TabPage_Capture.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.Tab_Control_Main.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -274,6 +286,7 @@
         public System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.Button btn_Go;
         private System.Windows.Forms.TabControl Tab_Control_Main;
+        public System.Windows.Forms.Panel panel_Wells;
         private System.Windows.Forms.TabPage TabPage_Graphs;
 
     }
