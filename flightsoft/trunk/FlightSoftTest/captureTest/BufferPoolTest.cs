@@ -12,7 +12,8 @@ namespace captureTest
         private int fillBufferPool(BufferPool<byte> bp, List<byte[]> arrs)
         {
             int filled = 0;
-            foreach(byte[] barr in arrs) {
+            foreach (byte[] barr in arrs)
+            {
                 Buffer<byte> b = bp.PopEmpty();
                 if (b != null)
                 {
@@ -23,11 +24,11 @@ namespace captureTest
             }
             return filled;
         }
-        
+
         // create a list of byte[] filled with random bytes.
         private List<byte[]> byteArrays(int numbufs, int numelem)
         {
-            List<byte[]> arrays = new List<byte[]>(); 
+            List<byte[]> arrays = new List<byte[]>();
             Random r = new Random();
             for (int i = 0; i < numbufs; ++i)
             {
@@ -52,7 +53,7 @@ namespace captureTest
         }
 
 
-	[Test]
+        [Test]
         public void PeekFullCopy_Test()
         {
             int numelem = 10;
@@ -66,7 +67,7 @@ namespace captureTest
             Assert.AreEqual(bp.NumBufs, numfilled);
 
             Buffer<byte> actual = bp.PeekFullCopy();
-            int last = arrs.Count-1;
+            int last = arrs.Count - 1;
             byte[] expected = arrs[last];
             CollectionAssert.AreEqual(expected, actual.Data);
         }
@@ -97,9 +98,13 @@ namespace captureTest
             Assert.AreEqual(bp.NumBufs, numfilled);
 
             Buffer<byte> actual = bp.PopFull();
-            int last = arrs.Count-1;
+            int last = arrs.Count - 1;
             byte[] expected = arrs[last];
             CollectionAssert.AreEqual(expected, actual.Data);
         }
-    } /* class BufferPoolTest */
-} /* namepsace CaptureTest */
+    }
+
+    /* class BufferPoolTest */
+}
+
+/* namepsace CaptureTest */

@@ -58,6 +58,7 @@
     <Compile Include="BufferPoolTest.cs" />
     <Compile Include="BufferTest.cs" />
     <Compile Include="CirclesFileTest.cs" />
+    <Compile Include="LoggerTest.cs" />
     <Compile Include="MockDataTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DispatchTest.cs" />
