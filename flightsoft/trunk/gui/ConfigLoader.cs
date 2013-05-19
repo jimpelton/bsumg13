@@ -26,7 +26,7 @@ namespace gui
                 reader = new StreamReader(configpath);
                 do
                 {
-                    Line = reader.ReadLine();
+                    Line = reader.ReadLine();                    
                     string[] tokens = Line.Split(',');
                     if (tokens.Length > 1 && tokens[0].Equals("Path"))
                         config.Path = tokens[1];

@@ -24,6 +24,12 @@ namespace gui
         private StatusStr lastTemperatureState = StatusStr.STAT_ERR;
 
         private long last1018update = 0;
+
+        private double[] lowpassfilteredwells = null;
+        private double[] lowlowpassfilteredwells = null;
+        private double[] lowlowlowpassfilteredwells = null;
+        private double[] lowlowlowlowpassfilteredwells = null;
+
         public GuiUpdater(Form1 f,GuiMain m, BiteCASPanel c, string id, bool receiving=true) 
             : base(id, receiving)
         {         
@@ -32,11 +38,20 @@ namespace gui
             graph1data = new Series("Points");
             Guimain = m;
             dp.Register(this);
+            mainform.panel_Wells.Paint += new System.Windows.Forms.PaintEventHandler(WellStatusPanelPaintage);
+            lowpassfilteredwells = new double[16 * 12];
+            lowlowpassfilteredwells = new double[16 * 12];
+            lowlowlowpassfilteredwells = new double[16 * 12];
+            lowlowlowlowpassfilteredwells = new double[16 * 12];
         }
 
         public void UpdateGUI(object sender, EventArgs e)
         {
             updateCASPanel();
+            List<DataPoint> frames = Guimain.DataFrames;
+            if (frames.Count > 100)
+                frames.RemoveAt(0);
+
             //try
             //{
             //    ExecuteMessageQueue();              
@@ -48,15 +63,15 @@ namespace gui
             //}
             mainform.chart1.Series.Clear();
             mainform.chart2.Series.Clear();
-            List<DataPoint> frames = Guimain.DataFrames;
+           
             if (frames.Count > 0)
             {
 
                 mainform.chart1.Series.Add("Graph1");
              //   mainform.chart1.Series.Add("Graph2");
               //  mainform.chart1.Series.Add("Graph3");
-                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 38.0;
-                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = 35.0;
+                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 2.0;
+                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = -1.0;
                 if (frames.Count > 99)
                 {
                     Color col = System.Drawing.Color.FromArgb(255, (int)Math.Min(255, Math.Max(0, ((frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3))), 0, (int)Math.Min(255, Math.Max(0, ((37 - (frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3)))));
@@ -74,8 +89,8 @@ namespace gui
 
                 foreach (DataPoint p in frames)
                 {
-                    mainform.chart1.Series["Graph1"].ChartType = SeriesChartType.SplineArea;                
-                    mainform.chart1.Series["Graph1"].Points.AddY(p.phidgetTemperature_ProbeTemp);
+                    mainform.chart1.Series["Graph1"].ChartType = SeriesChartType.SplineArea;
+                    mainform.chart1.Series["Graph1"].Points.AddY(p.accel1rawacceleration[1]);
                     mainform.chart1.Series["Graph1"].ChartArea = "ChartArea1";
 /*
                     mainform.chart1.Series["Graph2"].ChartType = SeriesChartType.SplineArea;
@@ -88,7 +103,7 @@ namespace gui
                     */
                     mainform.chart2.Series["Gravity"].ChartType = SeriesChartType.SplineArea;
                     mainform.chart2.Series["Gravity"].Points.AddY(
-                        p.accel2acceleration[1]
+                        p.accel1rawacceleration[1]
                         );
                     mainform.chart2.Series["Gravity"].ChartArea = "ChartArea1";
                 }
@@ -112,7 +127,6 @@ namespace gui
 
                 CAS.b_Drive_Full.Text = "Drive Full (" + (freespace / (1024 * 1024 * 1024)) + ")";
             }
-
         }
 
         private void updateCASBattery(DataSet<byte> dat)
@@ -169,7 +183,6 @@ namespace gui
                 {
                     //a malformed packet has arrived. Tremble in fear.
                 }
-
             }
             else
             {
@@ -260,6 +273,13 @@ namespace gui
                     x1 = double.Parse(Acceldats[3]);
                     y1 = double.Parse(Acceldats[4]);
                     z1 = double.Parse(Acceldats[5]);
+
+                    DataPoint d = new DataPoint();
+                    d.accel1rawacceleration[0] = x1;
+                    d.accel1rawacceleration[1] = y1;
+                    d.accel1rawacceleration[2] = z1;
+                    Guimain.DataFrames.Add(d);
+
                 }
                 else
                 {
@@ -411,6 +431,7 @@ namespace gui
 
         }
 
+        
 
 
 
@@ -727,7 +748,124 @@ namespace gui
             lastTemperatureState = msg.getState();
         }
 
+        private void WellStatusPanelPaintage(object sender, System.Windows.Forms.PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            
+            
+            if(Guimain.DataFrames.Count>1)
+            {
+                DataPoint frame = Guimain.DataFrames.Last();
+                int widthIncrement = (mainform.panel_Wells.Width / 16)-1;
+                int heightIncrement = (mainform.panel_Wells.Height / 12)-1;
+
+                Pen pen = new Pen(Color.Gray);
+                Brush b = new SolidBrush(Color.Black);
+                Font f = new Font("Calibri",8);
+                Random random = new Random();
+                Point p = new Point(0,0);
+                Rectangle r = new Rectangle(0,0,1,1);
+
+                for (int x = 0; x < 16; x++)
+                {
+                    for (int y = 0; y < 12; y++)
+                    {
+                        pen = new Pen(Color.Gray);
+                        //405 over 485
+                        double ratio = ((double)frame.WellIntensities405[x + (y * 16)]) / ((double)frame.WellIntensities485[x + (y * 16)] + 1);
+
+                        lowpassfilteredwells[x + (y * 16)] = ratio * 0.1;
+                        lowpassfilteredwells[x + (y * 16)] *= 0.9;
+
+                        lowlowpassfilteredwells[x + (y * 16)] = ratio * 0.01;
+                        lowlowpassfilteredwells[x + (y * 16)] *= 0.99;
+
+                        lowlowlowpassfilteredwells[x + (y * 16)] = ratio * 0.001;
+                        lowlowlowpassfilteredwells[x + (y * 16)] *= 0.999;
+
+                        lowlowlowlowpassfilteredwells[x + (y * 16)] = ratio * 0.0001;
+                        lowlowlowlowpassfilteredwells[x + (y * 16)] *= 0.9999;
+
+                        p.X = x * widthIncrement;
+                        p.Y = y * heightIncrement;
+                        r.X = x * widthIncrement;
+                        r.Y = y * heightIncrement;
+                        r.Width = widthIncrement;
+                        r.Height = heightIncrement;
+
+                        g.DrawRectangle(pen, r);
+
+                        g.DrawString("" + (x + 1) + "," + (y + 1), f, b, p);
+                        
+                        r.X = (x * widthIncrement)+10;
+                        r.Y = (y * heightIncrement)+10;
+                        r.Width = widthIncrement-20;
+                        r.Height = heightIncrement-20;
+
+                        int rend = (int)(lowlowlowlowpassfilteredwells[x + (y * 16)] - lowpassfilteredwells[x + (y * 16)]);
+                        //debug
+                        rend = (int)((random.NextDouble() - random.NextDouble()) * 10.0);
+
+                        p.X = (x * widthIncrement) + (widthIncrement/2) - 10;
+                        p.Y = (y * heightIncrement) + (heightIncrement/2) - 10;
+                        g.DrawString(String.Format("{0}\n{1:0.00}\n{2} {3}", rend, ratio, frame.WellIntensities405[x + (y * 16)] / 100, frame.WellIntensities485[x + (y * 16)] / 100), f, b, p);
+
+                        if (rend > 0)
+                        {
+                            pen.Color = Color.Green;
+                            pen.Width = 10;                               
+                        }
+                        else
+                        {
+                            pen.Color = Color.Red;
+                            pen.Width = 10;                               
+                        }
+
+                        g.DrawArc(pen, r, 270.0f, (float)rend);
+
+                        rend = (int)(lowlowlowlowpassfilteredwells[x + (y * 16)] - lowlowpassfilteredwells[x + (y * 16)]);
+                        //debug
+                        rend = (int)((random.NextDouble() - random.NextDouble()) * 10.0);
+                            
+                        if (rend > 0)
+                        {
+                            pen.Color = Color.Green;
+                            pen.Width = 10;
+                        }
+                        else
+                        {
+                            pen.Color = Color.Red;
+                            pen.Width = 10;
+                        }
+                        Point p1 = new Point((x * widthIncrement) + 5, (y * heightIncrement) + (heightIncrement / 2) + rend);
+                        Point p2 = new Point((x * widthIncrement) + 5, (y * heightIncrement) + (heightIncrement / 2));
+
+                        g.DrawLine(pen, p1, p2);
+
+                        rend = (int)(lowlowlowlowpassfilteredwells[x + (y * 16)] - lowlowlowpassfilteredwells[x + (y * 16)]);
+                        //debug
+                        rend = (int)((random.NextDouble() - random.NextDouble()) * 10.0);
+                            
+                        if (rend > 0)
+                        {
+                            pen.Color = Color.Green;
+                            pen.Width = 10;
+                        }
+                        else
+                        {
+                            pen.Color = Color.Red;
+                            pen.Width = 10;
+                        }
+                        p1 = new Point((x * widthIncrement) + widthIncrement - 5, (y * heightIncrement) + (heightIncrement / 2) + rend);
+                        p2 = new Point((x * widthIncrement) + widthIncrement - 5, (y * heightIncrement) + (heightIncrement / 2));
+
+                        g.DrawLine(pen, p1, p2);
 
 
+                        
+                    }
+                }
+            }
+        }
     } /*  class GuiUpdater  */
 } /*  namespace gui */
