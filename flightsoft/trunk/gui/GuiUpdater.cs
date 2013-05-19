@@ -142,7 +142,6 @@ namespace gui
         private void updateCASBattery(DataSet<byte> dat)
         {
             UTF8Encoding encoding = new UTF8Encoding();
-
             string UPSdat = encoding.GetString(dat.lastData[BufferType.UTF8_UPS]);
             string[] UPSdats = UPSdat.Split();
             if (UPSdats.Length > 6)
@@ -191,6 +190,7 @@ namespace gui
                 }
                 catch (FormatException e)
                 {
+                    dp.BroadcastLog(this, "CAS Battery update handler has encountered a malformed packet", 1);
                     //a malformed packet has arrived. Tremble in fear.
                 }
             }
@@ -211,6 +211,7 @@ namespace gui
                 string lightdat = encoding.GetString(dat.lastData[BufferType.UTF8_PHIDGETS]);
                 string[] lightdats = lightdat.Split();
                 double l1 = 0, l2 = 0;
+
                 if (lightdats.Length > 8)
                 {
                     l1 = double.Parse(lightdats[11]);
@@ -255,6 +256,7 @@ namespace gui
             }
             catch (FormatException e)
             {
+                dp.BroadcastLog(this, "CAS Light update handler has encountered a malformed packet", 1);
                 //a malformed packet has arrived. Tremble in fear.
             }
 
@@ -338,9 +340,9 @@ namespace gui
             }
             catch (FormatException e)
             {
+                dp.BroadcastLog(this, "Cas Accel update handler has encountered a malformed packet", 1);
                 //a malformed packet has arrived. Tremble in fear.
             }
-
         }
 
 
@@ -423,6 +425,7 @@ namespace gui
             }
             catch (FormatException e)
             {
+                dp.BroadcastLog(this, "CAS Doors update handler has encountered a malformed packet", 1);
                 //a malformed packet has arrived. Tremble in fear.
             }
         }

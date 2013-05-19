@@ -164,9 +164,14 @@ namespace gui
             if (bestDrive != null)
             {
                 dataPath = bestDrive.RootDirectory + "Data\\";
-                captureClass.switchToBackupDrive(bestDrive.RootDirectory + "Data\\");
-                
+                captureClass.switchToBackupDrive(bestDrive.RootDirectory + "Data\\");               
             }
         }
+
+        public void executeBiteTest()
+        {
+            dp.Broadcast(new BiteTestMessage(this));
+        }
+
     }
 }

@@ -293,5 +293,6 @@ namespace uGCapture
             writer.stop();
             base.exReceiverCleanUpMessage(r, m);
         }
+
     }
 }
