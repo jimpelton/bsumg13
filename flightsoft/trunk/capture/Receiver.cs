@@ -61,7 +61,7 @@ namespace uGCapture
         public ErrStr Errno
         {
             get { return m_errno; }
-            private set { m_errno = value; }
+            protected set { m_errno = value; }
         }
         private ErrStr m_errno;
 
