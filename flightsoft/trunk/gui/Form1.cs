@@ -136,5 +136,11 @@ namespace gui
             guiMain.Shutdown();
         }
 
+        private void b_Execute_BITE_Test_Click(object sender, EventArgs e)
+        {
+            if (guiMain != null)
+                guiMain.executeBiteTest();
+        }
+
     }
 }

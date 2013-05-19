@@ -63,11 +63,14 @@ namespace uGCapture
                     }
                 }
             }
-            if(!found)
-                 dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
+            if (!found)
+            {
+                dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
+
+            }
 
             Buffer<Byte> buffer = BufferPool.PopEmpty();
-            String output = "UPS \n" + GetUTCMillis().ToString() + " " + stat + " " + charge + " " + lifeRemaining + " " + chargeStatus;
+            String output = "UPS \n" + GetUTCMillis().ToString() + " " + stat + " " + charge + " " + lifeRemaining + " " + chargeStatus+" \n\0";
             UTF8Encoding encoding = new UTF8Encoding();
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_UPS);
             BufferPool.PostFull(buffer);
