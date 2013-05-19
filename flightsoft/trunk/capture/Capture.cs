@@ -7,6 +7,8 @@
 using System;
 using System.Threading;
 using System.Timers;
+using System.IO;
+using System.Collections.Generic;
 
 namespace uGCapture
 {
@@ -69,7 +71,6 @@ namespace uGCapture
 
             Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096); // Three...er four magic numbers !
             bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24), sBuf);
-            
             
             initLogger();    // --JP 5/13/13
             initWriter();
@@ -269,7 +270,14 @@ namespace uGCapture
             if(bufferPool.Staging!=null)
                 return bufferPool.Staging.GetLastData();
             return null;
-        } 
+        }
+
+        public void switchToBackupDrive(string newPath)
+        {
+            wrtThread.Suspend();//depricated. Find alternative.
+            writer.BasePath = newPath;
+            wrtThread.Resume();//depricated.
+        }
 
         public override void exSetCaptureStateMessage(Receiver r, Message m)
         {

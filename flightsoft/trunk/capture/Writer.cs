@@ -7,7 +7,7 @@
 using System;
 using System.IO;
 using System.Timers;
-
+using System.Threading;
 namespace uGCapture
 {
     public class Writer : ReceiverController
@@ -119,6 +119,46 @@ namespace uGCapture
             return rval;
         }
 
+        private void checkCurrentPathForUpdate()
+        {
+            try
+            {
+                if (!Directory.Exists(BasePath))
+                {
+                    Directory.CreateDirectory(BasePath);
+                    makePaths(BasePath);
+                    foreach (string s in Str.Dirs.Values)
+                    {
+                        try
+                        {
+                            if (!Directory.Exists(BasePath + s))
+                            {
+                                Directory.CreateDirectory(BasePath + s);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.Error.WriteLine(e.StackTrace);
+                            dp.BroadcastLog(this,
+                                            "Data subdirectory " + s +
+                                            " could not be created\r\n" +
+                                            e.StackTrace, 100);                           
+                        }
+                    }
+                }
+            }
+
+
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.StackTrace);
+                dp.BroadcastLog(this,
+                                "Top level data directory " + BasePath +
+                                " could not be created\r\n" +
+                    e.StackTrace, 100);
+            }
+        }
+
 
         private void makePaths(string basePath)
         {
@@ -193,69 +233,70 @@ namespace uGCapture
         /// <param name="w">The writer which should do the writing.</param>
         public static void DoWrite(Writer w)
         {
-                try
+            w.checkCurrentPathForUpdate();
+            try
+            {
+                Buffer<byte> fulbuf = w.BufferPool.PopFull();
+                switch (fulbuf.Type)
                 {
-                    Buffer<byte> fulbuf = w.BufferPool.PopFull();
-                    switch (fulbuf.Type)
-                    {
-                        case (BufferType.UTF8_UPS):
-                            w.WriteOutput(fulbuf, w.m_upsPath, w.indexUPS, ".txt");
-                            w.indexUPS += 1;
-                            break;
+                    case (BufferType.UTF8_UPS):
+                        w.WriteOutput(fulbuf, w.m_upsPath, w.indexUPS, ".txt");
+                        w.indexUPS += 1;
+                        break;
 
-                        case (BufferType.UTF8_VCOMM):
-                            w.WriteOutput(fulbuf, w.m_baroPath, w.indexBarometer, ".txt");
-                            w.indexBarometer += 1;
-                            break;
+                    case (BufferType.UTF8_VCOMM):
+                        w.WriteOutput(fulbuf, w.m_baroPath, w.indexBarometer, ".txt");
+                        w.indexBarometer += 1;
+                        break;
 
-                        case (BufferType.UTF8_PHIDGETS):
-                        w.WriteOutput(fulbuf, w.m_phidPath, w.indexPhidgets, ".txt");
-                            w.indexPhidgets += 1;
-                            break;
+                    case (BufferType.UTF8_PHIDGETS):
+                    w.WriteOutput(fulbuf, w.m_phidPath, w.indexPhidgets, ".txt");
+                        w.indexPhidgets += 1;
+                        break;
 
-                        case (BufferType.UTF8_ACCEL):
-                        w.WriteOutput(fulbuf, w.m_accelPath, w.indexAccel, ".txt");
-                            w.indexAccel += 1;
-                            break;
+                    case (BufferType.UTF8_ACCEL):
+                    w.WriteOutput(fulbuf, w.m_accelPath, w.indexAccel, ".txt");
+                        w.indexAccel += 1;
+                        break;
 
-                        case (BufferType.UTF8_SPATIAL):
-                        w.WriteOutput(fulbuf, w.m_spatPath, w.indexSpatial, ".txt");
-                            w.indexSpatial += 1;
-                            break;
+                    case (BufferType.UTF8_SPATIAL):
+                    w.WriteOutput(fulbuf, w.m_spatPath, w.indexSpatial, ".txt");
+                        w.indexSpatial += 1;
+                        break;
 
-                        case (BufferType.UTF8_NI6008):
-                        w.WriteOutput(fulbuf, w.m_niPath, w.indexNI6008, ".txt");
-                            w.indexNI6008 += 1;
-                            break;
+                    case (BufferType.UTF8_NI6008):
+                    w.WriteOutput(fulbuf, w.m_niPath, w.indexNI6008, ".txt");
+                        w.indexNI6008 += 1;
+                        break;
 
-                        case (BufferType.USHORT_IMAGE405):
-                        w.WriteImageOutput(fulbuf, w.m_cam405Path, w.index405, ".raw");
-                            w.index405 += 1;
-                            break;
+                    case (BufferType.USHORT_IMAGE405):
+                    w.WriteImageOutput(fulbuf, w.m_cam405Path, w.index405, ".raw");
+                        w.index405 += 1;
+                        break;
 
-                        case (BufferType.USHORT_IMAGE485):
-                        w.WriteImageOutput(fulbuf, w.m_cam485Path, w.index485, ".raw");
-                            w.index485 += 1;
-                            break;
+                    case (BufferType.USHORT_IMAGE485):
+                    w.WriteImageOutput(fulbuf, w.m_cam485Path, w.index485, ".raw");
+                        w.index485 += 1;
+                        break;
 
-                        case (BufferType.UTF8_LOG):
-                        w.WriteOutput(fulbuf, w.m_loggerPath, w.indexLog, ".txt");
-                            w.indexLog += 1;
-                            break;
+                    case (BufferType.UTF8_LOG):
+                    w.WriteOutput(fulbuf, w.m_loggerPath, w.indexLog, ".txt");
+                        w.indexLog += 1;
+                        break;
 
-                        case (BufferType.EMPTY_CYCLE):
-                            break;
+                    case (BufferType.EMPTY_CYCLE):
+                        break;
 
-                        default:
-                            break;
-                    }
-                    w.BufferPool.PostEmpty(fulbuf);
+                    default:
+                        break;
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.StackTrace);
-                    //return ;
-                }
+                w.BufferPool.PostEmpty(fulbuf);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+                //return ;
+            }
         }
 
         private void WriteOutput(Buffer<byte> buf, string fnamePfx,
