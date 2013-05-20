@@ -9,6 +9,9 @@ using System.Windows.Forms.DataVisualization.Charting;
 using uGCapture;
 using System.Runtime.InteropServices;
 
+using System.IO;
+
+
 namespace gui
 {
     public class GuiUpdater : Receiver
@@ -48,6 +51,7 @@ namespace gui
         public void UpdateGUI(object sender, EventArgs e)
         {
             updateCASPanel();
+            updateImages();
             List<DataPoint> frames = Guimain.DataFrames;
             if (frames.Count > 100)
                 frames.RemoveAt(0);
@@ -61,21 +65,22 @@ namespace gui
             //    Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at ExecuteMessageQueue();  ");
  
             //}
-            mainform.chart1.Series.Clear();
+          //  mainform.chart1.Series.Clear();
             mainform.chart2.Series.Clear();
            
             if (frames.Count > 0)
             {
 
-                mainform.chart1.Series.Add("Graph1");
+               // mainform.chart1.Series.Add("Graph1");
              //   mainform.chart1.Series.Add("Graph2");
               //  mainform.chart1.Series.Add("Graph3");
-                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 2.0;
-                mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = -1.0;
+               // mainform.chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 2.0;
+               // mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = -1.0;
+
                 if (frames.Count > 99)
                 {
                     Color col = System.Drawing.Color.FromArgb(255, (int)Math.Min(255, Math.Max(0, ((frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3))), 0, (int)Math.Min(255, Math.Max(0, ((37 - (frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3)))));
-                    mainform.chart1.Series["Graph1"].Color = col;
+                  //  mainform.chart1.Series["Graph1"].Color = col;
                 }
                 //mainform.chart1.ChartAreas["ChartArea2"].AxisY.Maximum = 38.0;
                 //mainform.chart1.ChartAreas["ChartArea2"].AxisY.Minimum = 10.0;
@@ -88,11 +93,11 @@ namespace gui
 
 
                 foreach (DataPoint p in frames)
-                {
+                {/*
                     mainform.chart1.Series["Graph1"].ChartType = SeriesChartType.SplineArea;
                     mainform.chart1.Series["Graph1"].Points.AddY(p.accel1rawacceleration[1]);
                     mainform.chart1.Series["Graph1"].ChartArea = "ChartArea1";
-/*
+
                     mainform.chart1.Series["Graph2"].ChartType = SeriesChartType.SplineArea;
                     mainform.chart1.Series["Graph2"].Points.AddY(p.phidgetTemperature_AmbientTemp);
                     mainform.chart1.Series["Graph2"].ChartArea = "ChartArea2";
@@ -110,6 +115,35 @@ namespace gui
             }
             //dp.Broadcast(new DataRequestMessage(this));
         }
+
+        private void updateImages()
+        {
+            DataSet<byte> dat = Guimain.getLatestData();
+            byte[] i405 = dat.lastData[BufferType.USHORT_IMAGE405];
+            byte[] i485 = dat.lastData[BufferType.USHORT_IMAGE485];
+
+            //test goodness
+/*
+            BinaryReader b = new BinaryReader(File.Open("data_485_1000.raw",FileMode.Open));
+            i405 = b.ReadBytes(2 * 2592 * 1944);
+            b.Close();
+            b.Dispose();
+            */
+
+            ImageDisplay iee = Guimain.guiImageDisplay;
+            if (405 != null)
+            {
+                iee.pictureBox1.Image = ConvertCapturedRawImage(i405);
+                iee.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            }
+            if (485 != null)
+            {
+                iee.pictureBox2.Image = ConvertCapturedRawImage(i485);
+                iee.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            }
+        }
+
+
 
         private void updateCASFreeSpace()
         {
@@ -497,7 +531,8 @@ namespace gui
         {   
             
         }
-        /*
+
+        
         static unsafe public Bitmap ConvertCapturedRawImage(byte[] indata)
         {
             Bitmap bitmap = null;
@@ -505,43 +540,58 @@ namespace gui
             {
                 fixed (byte* ptr = indata)
                 {
-                    ushort[] pixels = new ushort[indata.Length/2];
-                    for (int i = 0; i < pixels.Length; i++)
+                    uint[] points = new uint[indata.Length / 2];
+
+                    long total = 0;
+                    uint p = 0;
+                    for (int i = 0; i < indata.Length / 2; i+=2)
                     {
-                        pixels[i] = (ushort) ((indata[i * 2] * 256) + indata[i]);
+                        p = indata[i] + (uint)(indata[i + 1] << 8);
+                        total += p;
                     }
-                    uint[] dat = ConvertGray16ToRGB(pixels, 12);
-                    fixed (uint* ptr2 = dat)
+
+                    long avg = total / (2592 * 1944);
+
+                    if (avg < 1)//div by zero wrong.
+                        avg = 1;
+
+                    double expand = (65535 / avg);
+                    int a = 1;
+                    int b = 0;
+
+                    while (a < indata.Length)
                     {
+                        points[b] = (uint)(indata[a]*expand*32);
+                        if (points[b] > 65535)
+                            points[b] = 65535;
+                        a+=2;
+                        b++;
+                    }
 
 
+                    byte[] pixels = new byte[indata.Length/2*3];
+                    a = 0;
+                    b = 0;
+                    while (a < indata.Length/2)
+                    {
+                        pixels[b++] = (byte)(points[a] / 256);
+                        pixels[b++] = (byte)(points[a] / 256);
+                        pixels[b++] = (byte)(points[a] / 256); 
+                        a++;
+                    }
+
+                    fixed (byte* ptr2 = pixels)
+                    {
                         IntPtr scan0 = new IntPtr(ptr2);
                         bitmap = new Bitmap(2592, 1944, // Image size
-                                            2592, // Scan size
+                                            2592*3, // Scan size
                                             PixelFormat.Format24bppRgb, scan0);
-
-        
                     }
                 }
             }
             return bitmap;
         }
-        */
-        //public static uint[] ConvertGray16ToRGB(ushort[] grayPixels, int bitsUsed)
-        //{
-        //    int pixelCount = grayPixels.Length;
-        //    uint[] rgbPixels = new uint[pixelCount];
-        //    int shift = bitsUsed - 8;
-        //    for (int i = 0; i < pixelCount; i++)
-        //    {
-        //        uint gray = (uint)grayPixels[i] >> shift;
-        //        rgbPixels[i] = 0xff000000U | gray | (gray << 8) | (gray <<
-        //        16);
-        //    }
-        //    return (rgbPixels);
-        //}
-
-
+  
 
         
         override public void exUPSStatusMessage(Receiver r, Message m) 

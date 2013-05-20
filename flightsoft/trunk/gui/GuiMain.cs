@@ -37,6 +37,13 @@ namespace gui
             set { CAS = value; }
         }
 
+        private gui.ImageDisplay ImageDisplay;
+        public gui.ImageDisplay guiImageDisplay
+        {
+            get { return ImageDisplay; }
+            set { ImageDisplay = value; }
+        }
+
         private Form1 mainForm;
         public Form1 MainForm
         {
