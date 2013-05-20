@@ -16,5 +16,10 @@ namespace gui
         {
             InitializeComponent();
         }
+
+        private void ImageDisplay_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

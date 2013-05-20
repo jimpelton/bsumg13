@@ -164,11 +164,9 @@ public class AptinaController : ReceiverController
 
         dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
         if (rval)
-            dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_GOOD, 
-                Str.GetErrStr(ErrStr.INIT_FAIL_APTINA)));
+            dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_GOOD));
         else
-            dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_FAIL, 
-                Str.GetErrStr(ErrStr.INIT_OK_APTINA)));
+            dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_FAIL));
 
         return rval;
     }
@@ -222,8 +220,7 @@ public class AptinaController : ReceiverController
                 byte* data = (byte*)doCapture(me.tnum); 
                 if (data == null)
                 {
-                    me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_FAIL, 
-                        Str.GetErrStr(ErrStr.CAPTURE_FAIL_APTINA_NULLBUFFER)));  // Almost salmon.
+                    me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_FAIL));  // Almost salmon.
                     continue;
                 }
                 Marshal.Copy(new IntPtr(data), me.dest, 0, (int) me.size);

@@ -22,13 +22,17 @@ namespace gui
         {
             InitializeComponent();
             var childForm = new BiteCASPanel() { TopLevel = false, Visible = true };
-
-            Tab_Control_Main.TabPages[2].Controls.Add(childForm);
-            childForm.SetBounds(0, 400, this.Width - 6, this.Height - 6);
+            var guiimagedisp = new ImageDisplay() { TopLevel = false, Visible = true };
+            Tab_Control_Main.TabPages[0].Controls.Add(childForm);
+            Tab_Control_Main.TabPages[0].Controls.Add(guiimagedisp);
+            childForm.SetBounds(0, 700, childForm.Width, childForm.Height);
+            guiimagedisp.SetBounds(0, 250, guiimagedisp.Width, guiimagedisp.Height);
             CAS = childForm;
+            guiImageDisplay = guiimagedisp;
 
             guiMain = new GuiMain(this, "GuiMain",config );
             guiMain.guiCAS = CAS;
+            guiMain.guiImageDisplay = guiimagedisp;
             guiMain.Startup_Init();
             guiUpdater = guiMain.GuiUpdater;
 
@@ -47,13 +51,13 @@ namespace gui
             {
                 Tab_Control_Main.TabPages[2].Controls.Remove(CAS);
                 Tab_Control_Main.TabPages[0].Controls.Add(CAS);
-                CAS.SetBounds(0, 400, this.Width - 6, this.Height - 6);
+                CAS.SetBounds(0, 700, CAS.Width, CAS.Height);
             }
             else
             {
                 Tab_Control_Main.TabPages[0].Controls.Remove(CAS);
                 Tab_Control_Main.TabPages[2].Controls.Add(CAS);
-                CAS.SetBounds(0, 400, this.Width - 6, this.Height - 6);
+                CAS.SetBounds(0, 700, CAS.Width, CAS.Height);
             }
         }
 
@@ -140,6 +144,11 @@ namespace gui
         {
             if (guiMain != null)
                 guiMain.executeBiteTest();
+        }
+
+        private void TabPage_Capture_Click(object sender, EventArgs e)
+        {
+
         }
 
     }

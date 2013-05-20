@@ -29,13 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.DebugUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.TabPage_Debug = new System.Windows.Forms.TabPage();
             this.Btn_ShowImages = new System.Windows.Forms.Button();
@@ -48,16 +44,13 @@
             this.panel_Wells = new System.Windows.Forms.Panel();
             this.TabPage_Capture = new System.Windows.Forms.TabPage();
             this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.btn_Go = new System.Windows.Forms.Button();
             this.Tab_Control_Main = new System.Windows.Forms.TabControl();
-            this.TabPage_Graphs = new System.Windows.Forms.TabPage();
             this.TabPage_Debug.SuspendLayout();
             this.TabPage_BITE.SuspendLayout();
             this.TabPage_Wells.SuspendLayout();
             this.TabPage_Capture.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.Tab_Control_Main.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,7 +66,7 @@
             this.TabPage_Debug.Location = new System.Drawing.Point(4, 29);
             this.TabPage_Debug.Name = "TabPage_Debug";
             this.TabPage_Debug.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPage_Debug.Size = new System.Drawing.Size(1154, 688);
+            this.TabPage_Debug.Size = new System.Drawing.Size(1824, 997);
             this.TabPage_Debug.TabIndex = 4;
             this.TabPage_Debug.Text = "Debug";
             this.TabPage_Debug.UseVisualStyleBackColor = true;
@@ -106,7 +99,7 @@
             this.TabPage_BITE.Location = new System.Drawing.Point(4, 29);
             this.TabPage_BITE.Name = "TabPage_BITE";
             this.TabPage_BITE.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPage_BITE.Size = new System.Drawing.Size(1154, 688);
+            this.TabPage_BITE.Size = new System.Drawing.Size(1824, 997);
             this.TabPage_BITE.TabIndex = 2;
             this.TabPage_BITE.Text = "BITE";
             // 
@@ -146,7 +139,7 @@
             this.TabPage_Wells.Location = new System.Drawing.Point(4, 29);
             this.TabPage_Wells.Name = "TabPage_Wells";
             this.TabPage_Wells.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPage_Wells.Size = new System.Drawing.Size(1154, 688);
+            this.TabPage_Wells.Size = new System.Drawing.Size(1824, 997);
             this.TabPage_Wells.TabIndex = 1;
             this.TabPage_Wells.Text = "Wells";
             this.TabPage_Wells.UseVisualStyleBackColor = true;
@@ -156,70 +149,45 @@
             this.panel_Wells.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel_Wells.Location = new System.Drawing.Point(6, 6);
             this.panel_Wells.Name = "panel_Wells";
-            this.panel_Wells.Size = new System.Drawing.Size(1142, 676);
+            this.panel_Wells.Size = new System.Drawing.Size(1800, 980);
             this.panel_Wells.TabIndex = 0;
             // 
             // TabPage_Capture
             // 
+            this.TabPage_Capture.BackColor = System.Drawing.Color.DimGray;
             this.TabPage_Capture.Controls.Add(this.chart2);
-            this.TabPage_Capture.Controls.Add(this.chart1);
             this.TabPage_Capture.Controls.Add(this.btn_Go);
             this.TabPage_Capture.Location = new System.Drawing.Point(4, 29);
             this.TabPage_Capture.Name = "TabPage_Capture";
             this.TabPage_Capture.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPage_Capture.Size = new System.Drawing.Size(1154, 688);
+            this.TabPage_Capture.Size = new System.Drawing.Size(1824, 997);
             this.TabPage_Capture.TabIndex = 0;
             this.TabPage_Capture.Text = "Capture Control";
-            this.TabPage_Capture.UseVisualStyleBackColor = true;
+            this.TabPage_Capture.Click += new System.EventHandler(this.TabPage_Capture_Click);
             // 
             // chart2
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart2.Legends.Add(legend1);
-            this.chart2.Location = new System.Drawing.Point(1016, 0);
-            this.chart2.Name = "chart2";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chart2.Series.Add(series1);
-            this.chart2.Size = new System.Drawing.Size(132, 382);
-            this.chart2.TabIndex = 2;
-            this.chart2.Text = "chart2";
-            // 
-            // chart1
-            // 
-            chartArea2.Area3DStyle.Enable3D = true;
-            chartArea2.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
-            chartArea2.BackColor = System.Drawing.Color.Gray;
-            chartArea2.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.Center;
-            chartArea2.BackSecondaryColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.chart2.BackColor = System.Drawing.Color.DimGray;
+            chartArea2.BackSecondaryColor = System.Drawing.Color.Gray;
             chartArea2.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea2);
+            this.chart2.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
-            this.chart1.Legends.Add(legend2);
-            this.chart1.Location = new System.Drawing.Point(6, 70);
-            this.chart1.Name = "chart1";
+            this.chart2.Legends.Add(legend2);
+            this.chart2.Location = new System.Drawing.Point(1686, 6);
+            this.chart2.Name = "chart2";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
             series2.Name = "Series1";
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bar;
-            series3.Legend = "Legend1";
-            series3.Name = "BarChart";
-            this.chart1.Series.Add(series2);
-            this.chart1.Series.Add(series3);
-            this.chart1.Size = new System.Drawing.Size(1004, 312);
-            this.chart1.TabIndex = 1;
-            this.chart1.Text = "chart1";
-            this.chart1.Click += new System.EventHandler(this.chart1_Click_1);
+            this.chart2.Series.Add(series2);
+            this.chart2.Size = new System.Drawing.Size(132, 1059);
+            this.chart2.TabIndex = 2;
+            this.chart2.Text = "chart2";
             // 
             // btn_Go
             // 
-            this.btn_Go.Location = new System.Drawing.Point(6, 6);
+            this.btn_Go.Location = new System.Drawing.Point(1604, 324);
             this.btn_Go.Name = "btn_Go";
-            this.btn_Go.Size = new System.Drawing.Size(1004, 58);
+            this.btn_Go.Size = new System.Drawing.Size(76, 58);
             this.btn_Go.TabIndex = 0;
             this.btn_Go.Text = "Start Capture";
             this.btn_Go.UseVisualStyleBackColor = true;
@@ -230,34 +198,26 @@
             this.Tab_Control_Main.Controls.Add(this.TabPage_Capture);
             this.Tab_Control_Main.Controls.Add(this.TabPage_Wells);
             this.Tab_Control_Main.Controls.Add(this.TabPage_BITE);
-            this.Tab_Control_Main.Controls.Add(this.TabPage_Graphs);
             this.Tab_Control_Main.Controls.Add(this.TabPage_Debug);
             this.Tab_Control_Main.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.Tab_Control_Main.Location = new System.Drawing.Point(12, 12);
+            this.Tab_Control_Main.Location = new System.Drawing.Point(40, 12);
             this.Tab_Control_Main.Name = "Tab_Control_Main";
             this.Tab_Control_Main.SelectedIndex = 0;
-            this.Tab_Control_Main.Size = new System.Drawing.Size(1162, 721);
+            this.Tab_Control_Main.Size = new System.Drawing.Size(1832, 1030);
             this.Tab_Control_Main.TabIndex = 0;
-            // 
-            // TabPage_Graphs
-            // 
-            this.TabPage_Graphs.Location = new System.Drawing.Point(4, 29);
-            this.TabPage_Graphs.Name = "TabPage_Graphs";
-            this.TabPage_Graphs.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPage_Graphs.Size = new System.Drawing.Size(1154, 688);
-            this.TabPage_Graphs.TabIndex = 3;
-            this.TabPage_Graphs.Text = "Graphs";
-            this.TabPage_Graphs.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1186, 745);
+            this.ClientSize = new System.Drawing.Size(1884, 1054);
             this.Controls.Add(this.Tab_Control_Main);
-            this.MaximizeBox = false;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MinimizeBox = false;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Boise State Microgravity Experiment Control";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.TabPage_Debug.ResumeLayout(false);
@@ -265,7 +225,6 @@
             this.TabPage_Wells.ResumeLayout(false);
             this.TabPage_Capture.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.Tab_Control_Main.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -282,13 +241,11 @@
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.TabPage TabPage_Wells;
+        public System.Windows.Forms.Panel panel_Wells;
         private System.Windows.Forms.TabPage TabPage_Capture;
         public System.Windows.Forms.DataVisualization.Charting.Chart chart2;
-        public System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.Button btn_Go;
         private System.Windows.Forms.TabControl Tab_Control_Main;
-        public System.Windows.Forms.Panel panel_Wells;
-        private System.Windows.Forms.TabPage TabPage_Graphs;
 
     }
 }
