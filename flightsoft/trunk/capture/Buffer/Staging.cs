@@ -54,13 +54,13 @@ namespace uGCapture
                 lock (data_mutex)
                 {
                     T[] dest = lastDataSet.lastData[buf.Type];
-                    int newsz = dest.Length;
-                    if (buf.CapacityUtilization >= newsz)  //only fill the size of the cache.
+                    int oldsz = dest.Length;
+                    if (buf.CapacityUtilization <= oldsz)  //only fill the size of the cache.
                     {
-                        newsz = buf.CapacityUtilization;
+                        oldsz = buf.CapacityUtilization;
                     }
-                    Array.Copy(buf.Data, dest, newsz);
-                    sizes[buf.Type] = newsz;
+                    Array.Copy(buf.Data, dest, oldsz);
+                    sizes[buf.Type] = oldsz;
                 }
             }
             catch (Exception e)
@@ -72,9 +72,7 @@ namespace uGCapture
         /// <summary>
         /// Get a copy of the latest data.
         /// </summary>
-        /// <param name="nm"></param>
-        /// <returns></returns>
-
+        /// <returns>A dataset truncated </returns>
         public DataSet<T> GetLastData()
         {
             lock (data_mutex)

@@ -53,6 +53,7 @@ namespace uGCapture
         INIT_FAIL_APTINA,
         INIT_FAIL_APTINA_INITMIDLIB,    
         INIT_FAIL_APTINA_OPENTRANSPORT,   
+
         CAPTURE_FAIL_APTINA_NULLBUFFER,
         
         CAPTURE_FAIL_APTINA,
@@ -117,13 +118,14 @@ namespace uGCapture
                 case ErrStr.INIT_FAIL_PHID_1018:              return "Phidgets 1018 DAQ failed to initialize."; 
                 case ErrStr.INIT_FAIL_PHID_SPTL:              return "Phidgets Spatial failed to initialize."; 
                 case ErrStr.INIT_FAIL_PHID_ACCEL:             return "Phidgets accelerometer failed to initialize."; 
+                case ErrStr.INIT_FAIL_PHID_TEMP:              return "Phidgets temp sensor failed to initialize.";
 
                 case ErrStr.INIT_FAIL_NI_6008:                return "NI-6008 DAQ failed to initialize."; 
 
                 case ErrStr.INIT_FAIL_APTINA:                 return "Aptina camera failed to initialize.";
                 case ErrStr.INIT_FAIL_APTINA_INITMIDLIB:      return "Midlib2 failed to initialize.";
                 case ErrStr.INIT_FAIL_APTINA_OPENTRANSPORT:   return "Midlib2 opentransport failed.";
-                case ErrStr.CAPTURE_FAIL_APTINA_NULLBUFFER:      return "Midlib2 getFrame() returned null pointer.";
+                case ErrStr.CAPTURE_FAIL_APTINA_NULLBUFFER:   return "Midlib2 getFrame() returned null pointer.";
                 case ErrStr.CAPTURE_FAIL_APTINA:              return "Aptina capture failed.";
 
                 case ErrStr.INIT_FAIL_VCOMM:                  return "Weatherboard failed to initialize.";

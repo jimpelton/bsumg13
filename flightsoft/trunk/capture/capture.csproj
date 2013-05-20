@@ -79,7 +79,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BITE.cs" />
     <Compile Include="Buffer\Buffer.cs" />
     <Compile Include="Buffer\BufferType.cs" />
     <Compile Include="Buffer\BufferPool.cs" />
@@ -126,13 +125,13 @@
     <Compile Include="Writer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Midlib\Midlib.vcxproj">
       <Project>{4a587572-fa3c-417b-88f0-430a0bfc8155}</Project>
       <Name>Midlib</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -33,7 +33,7 @@ namespace gui
                 }
                 while (reader.Peek() != -1);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 configDefaults(config);
             }

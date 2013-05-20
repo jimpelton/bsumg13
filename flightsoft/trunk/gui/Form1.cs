@@ -120,21 +120,6 @@ namespace gui
             return DateTime.Now.ToString("dd:HH:mm:ss ");
         }
 
-        private void chart1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void chart1_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             guiMain.Shutdown();

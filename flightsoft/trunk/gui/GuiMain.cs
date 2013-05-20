@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.IO;
 using uGCapture;
@@ -24,21 +24,21 @@ namespace gui
 
         private GuiUpdater guiUpdater;
        
-        public gui.GuiUpdater GuiUpdater
+        public GuiUpdater GuiUpdater
         {
             get { return guiUpdater; }
             set { guiUpdater = value; }
         }
 
-        private gui.BiteCASPanel CAS;
-        public gui.BiteCASPanel guiCAS
+        private BiteCASPanel CAS;
+        public BiteCASPanel guiCAS
         {
             get { return CAS; }
             set { CAS = value; }
         }
 
-        private gui.ImageDisplay ImageDisplay;
-        public gui.ImageDisplay guiImageDisplay
+        private ImageDisplay ImageDisplay;
+        public ImageDisplay guiImageDisplay
         {
             get { return ImageDisplay; }
             set { ImageDisplay = value; }
@@ -67,9 +67,8 @@ namespace gui
         public void Startup_Init()
         {
             ConfigData config = ConfigLoader.LoadConfig(configPath);
-            dp.BroadcastLog(this, "Begin config:\n", 1);
-            dp.BroadcastLog(this, config.Path, 1);
-            dp.BroadcastLog(this, "End config\n", 1);
+            dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
+
             string path = config.Path.Trim();
             if (!path.EndsWith(@"\"))
             {
@@ -77,15 +76,16 @@ namespace gui
             }
             guiDataPath = path;
             String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
-            //System.IO.Directory.CreateDirectory(path + directoryName);
 
             dataFrames = new List<DataPoint>();
             guiUpdater = new GuiUpdater(mainForm, this, CAS, "GuiUpdater");
-            captureClass = new CaptureClass("CaptureClass")
-            {
-                StorageDir = path + directoryName
-            };
 
+            IntPtr hwnd;
+            unsafe
+            {
+                hwnd = new IntPtr(mainForm.Handle.ToPointer());
+            } 
+            captureClass = new CaptureClass(hwnd, "CaptureClass") { StorageDir = path + directoryName };
             captureClass.init();
         }
 
@@ -117,11 +117,6 @@ namespace gui
             mainForm.DebugOutput(s, severity);
         }
 
-        public void DebugOutput(String s, System.Drawing.Color col)
-        {
-            mainForm.DebugOutput(s, col);
-        }
-
         public void insertDataPoint(DataPoint p)
         {
             if (dataFrames.Count > 0)
@@ -143,10 +138,6 @@ namespace gui
         {
             Dispatch.Instance().Broadcast(new ReceiverCleanupMessage(this));
         }
-        // public int getMaxDataPoints()
-        // {
-        //     return MAX_DATA_POINTS;
-        // }
 
         public DataSet<byte> getLatestData()
         {

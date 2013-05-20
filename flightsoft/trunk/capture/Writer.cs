@@ -204,7 +204,7 @@ namespace uGCapture
 
         /// <summary>
         /// Writes data to the disk.
-        /// returns false if an error occurs.
+        /// WriteData should be executed by a worker thread.
         /// </summary>
         /// <param name="w"></param>
         public static void WriteData(Writer w)
@@ -227,6 +227,7 @@ namespace uGCapture
         }
 
         /// <summary>
+        /// Helper to WriteData(), but can be called by itself.
         /// Pops a single full buffer from the pool and writes it 
         /// to disk in the appropriate location.
         /// </summary>

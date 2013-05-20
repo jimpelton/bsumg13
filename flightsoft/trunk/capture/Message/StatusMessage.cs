@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace uGCapture
 {
@@ -10,13 +6,18 @@ namespace uGCapture
     {
         private StatusStr state;
         public  StatusStr getState() { return state; }
+        private string mes;
 
-        protected StatusMessage(Receiver s, StatusStr nstate)
+        public string getMessage()
+        {
+            return mes;
+        }
+
+        protected StatusMessage(Receiver s, StatusStr nstate, string message)
             : base(s)
         {
             state = nstate;
+            mes = message;
         }
-
-        public override abstract void execute(Receiver r);
     }
 }

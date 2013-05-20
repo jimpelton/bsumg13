@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.DebugUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.TabPage_Debug = new System.Windows.Forms.TabPage();
             this.Btn_ShowImages = new System.Windows.Forms.Button();
@@ -79,7 +79,6 @@
             this.Btn_ShowImages.TabIndex = 1;
             this.Btn_ShowImages.Text = "Secwet Buton";
             this.Btn_ShowImages.UseVisualStyleBackColor = true;
-            this.Btn_ShowImages.Click += new System.EventHandler(this.button1_Click);
             // 
             // rTB_Debug_Output
             // 
@@ -168,17 +167,17 @@
             // chart2
             // 
             this.chart2.BackColor = System.Drawing.Color.DimGray;
-            chartArea2.BackSecondaryColor = System.Drawing.Color.Gray;
-            chartArea2.Name = "ChartArea1";
-            this.chart2.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chart2.Legends.Add(legend2);
+            chartArea1.BackSecondaryColor = System.Drawing.Color.Gray;
+            chartArea1.Name = "ChartArea1";
+            this.chart2.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chart2.Legends.Add(legend1);
             this.chart2.Location = new System.Drawing.Point(1686, 6);
             this.chart2.Name = "chart2";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chart2.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chart2.Series.Add(series1);
             this.chart2.Size = new System.Drawing.Size(132, 1059);
             this.chart2.TabIndex = 2;
             this.chart2.Text = "chart2";
