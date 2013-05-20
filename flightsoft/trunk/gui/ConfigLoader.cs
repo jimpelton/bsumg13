@@ -19,23 +19,40 @@ namespace gui
         {
             ConfigData config = new ConfigData();
             StreamReader reader = null;
-
+            configDefaults(config);
             string Line = "";
             try
             {
                 reader = new StreamReader(configpath);
+                Line = reader.ReadToEnd();
+                string[] tokens = Line.Split(',');
+                int spot = 0;
                 do
                 {
-                    Line = reader.ReadLine();                    
-                    string[] tokens = Line.Split(',');
-                    if (tokens.Length > 1 && tokens[0].Equals("Path"))
-                        config.Path = tokens[1];
+                    if (tokens[spot].Equals("Path"))
+                        config.Path = tokens[spot + 1];
+                    if (tokens[spot].Equals("GreenSpace"))
+                        config.GreenSpace = ulong.Parse(tokens[spot + 1]);
+                    if (tokens[spot].Equals("YellowSpace"))
+                        config.YellowSpace = ulong.Parse(tokens[spot + 1]);
+                    if (tokens[spot].Equals("RedSpace"))
+                        config.RedSpace = ulong.Parse(tokens[spot + 1]);
+                    if (tokens[spot].Equals("GreenBattery"))
+                        config.GreenBattery = int.Parse(tokens[spot + 1]);
+                    if (tokens[spot].Equals("YellowBattery"))
+                        config.YellowBattery = int.Parse(tokens[spot + 1]);
+                    if (tokens[spot].Equals("RedBattery"))
+                        config.RedBattery = int.Parse(tokens[spot + 1]);
+                    spot++;
                 }
-                while (reader.Peek() != -1);
+                while (spot<tokens.Length);
+                config.GreenSpace *= 1024 * 1024 * 1024;
+                config.YellowSpace *= 1024 * 1024 * 1024;
+                config.RedSpace *= 1024 * 1024 * 1024;
             }
             catch (Exception)
             {
-                configDefaults(config);
+                configDefaults(config);//if it craps out set to defaults.
             }
             finally
             {
@@ -48,16 +65,60 @@ namespace gui
         private static void configDefaults(ConfigData config)
         {
             config.Path = @"C:\Data";
+            config.GreenSpace = 1024L * 1024L * 1024L * 100L;
+            config.YellowSpace = 1024L * 1024L * 1024L * 50L;
+            config.RedSpace = 1024L * 1024L * 1024L * 20L;
+            config.GreenBattery = 95;
+            config.YellowBattery = 85;
+            config.RedBattery = 50;
         }
        
     }
 
     public class ConfigData
     {
+
         public string Path
         {
            get;
            set;
         }
+
+        public ulong GreenSpace
+        {
+            get;
+            set;
+        }
+
+        public ulong YellowSpace
+        {
+            get;
+            set;
+        }
+
+        public ulong RedSpace
+        {
+            get;
+            set;
+        }
+
+        public int GreenBattery
+        {
+            get;
+            set;
+        }
+
+        public int YellowBattery
+        {
+            get;
+            set;
+        }
+
+        public int RedBattery
+        {
+            get;
+            set;
+        }
+
     }
 }

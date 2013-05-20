@@ -126,12 +126,12 @@ namespace gui
             */
 
             ImageDisplay iee = Guimain.guiImageDisplay;
-            if (405 != null)
+            if (i405 != null)
             {
                 iee.pictureBox1.Image = ConvertCapturedRawImage(i405);
                 iee.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             }
-            if (485 != null)
+            if (i485 != null)
             {
                 iee.pictureBox2.Image = ConvertCapturedRawImage(i485);
                 iee.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -145,16 +145,16 @@ namespace gui
             ulong freespace;//freespace was an awesome game.
             if (DriveFreeBytes(Guimain.guiDataPath, out freespace))
             {
-                if (freespace < 10000000000L)                   //10GB
+                if (freespace < Guimain.CurrentConfig.RedSpace)                   
                 {
                     CAS.b_Drive_Full.BackColor = Color.OrangeRed;
                     Guimain.switchToAlternateDrive();
                 }
-                else if (freespace < 20000000000L)
+                else if (freespace < Guimain.CurrentConfig.YellowSpace)
                 {
                     CAS.b_Drive_Full.BackColor = Color.Yellow;
                 }
-                else if (freespace < 20000000000L)
+                else if (freespace < Guimain.CurrentConfig.GreenSpace)
                 {
                     CAS.b_Drive_Full.BackColor = Color.Green;
                     
@@ -178,22 +178,17 @@ namespace gui
                 try
                 {
                     int bat = int.Parse(UPSdats[4]);
-                    if (bat < 20)
+                    if (bat < Guimain.CurrentConfig.RedBattery)
                     {
                         CAS.b_Battery_Level.BackColor = Color.OrangeRed;
                         CAS.b_Battery_Com.BackColor = Color.OrangeRed;
                     }
-                    else if (bat < 90)
+                    else if (bat < Guimain.CurrentConfig.YellowBattery)
                     {
                         CAS.b_Battery_Level.BackColor = Color.Yellow;
                         CAS.b_Battery_Com.BackColor = Color.Yellow;
                     }
-                    else if (bat < 98)
-                    {
-                        CAS.b_Battery_Level.BackColor = Color.YellowGreen;
-                        CAS.b_Battery_Com.BackColor = Color.Green;
-                    }
-                    else if (bat < 99)
+                    else if (bat < Guimain.CurrentConfig.GreenBattery)
                     {
                         CAS.b_Battery_Level.BackColor = Color.Green;
                         CAS.b_Battery_Com.BackColor = Color.Green;

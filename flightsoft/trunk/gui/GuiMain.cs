@@ -14,16 +14,15 @@ namespace gui
         private bool boolCapturing = false;
         private static int MAX_DATA_POINTS = 100;
         private string configPath;
-        private string dataPath;
 
+        private string dataPath;
         public string guiDataPath
         {
             get { return dataPath; }
             set { dataPath = value; }
         }
 
-        private GuiUpdater guiUpdater;
-       
+        private GuiUpdater guiUpdater;     
         public GuiUpdater GuiUpdater
         {
             get { return guiUpdater; }
@@ -57,6 +56,13 @@ namespace gui
             set { dataFrames = value; }
         }
 
+        private ConfigData config;
+        public ConfigData CurrentConfig
+        {
+            get { return config; }
+            set { config = value; }
+        }
+
         public GuiMain(Form1 mainForm, string id, String cPath, bool receiving = true)
             : base(id, receiving)
         {
@@ -66,7 +72,7 @@ namespace gui
 
         public void Startup_Init()
         {
-            ConfigData config = ConfigLoader.LoadConfig(configPath);
+            config = ConfigLoader.LoadConfig(configPath);
             dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
 
             string path = config.Path.Trim();
@@ -162,6 +168,7 @@ namespace gui
             if (bestDrive != null)
             {
                 dataPath = bestDrive.RootDirectory + "Data\\";
+                config.Path = dataPath;
                 captureClass.switchToBackupDrive(bestDrive.RootDirectory + "Data\\");               
             }
         }
