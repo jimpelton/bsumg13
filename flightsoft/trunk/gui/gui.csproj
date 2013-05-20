@@ -63,6 +63,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web.DataVisualization" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -138,6 +139,10 @@
     <ProjectReference Include="..\capture\capture.csproj">
       <Project>{16c569c2-a76b-47b0-a4df-7b39b505943e}</Project>
       <Name>capture</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Midlib\Midlib.vcxproj">
+      <Project>{4a587572-fa3c-417b-88f0-430a0bfc8155}</Project>
+      <Name>Midlib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

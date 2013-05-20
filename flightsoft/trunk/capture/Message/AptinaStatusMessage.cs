@@ -4,8 +4,8 @@ namespace uGCapture
 {
     public class  AptinaStatusMessage : StatusMessage
     {
-        public AptinaStatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR)
-            : base(s, nstate)
+        public AptinaStatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR, string mes = "")
+            : base(s, nstate, mes)
         {
         }
 

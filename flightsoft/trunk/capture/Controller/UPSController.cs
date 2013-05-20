@@ -24,44 +24,51 @@ namespace uGCapture
             string chargeStatus = "0";
             foreach (ManagementObject mo in collection)
             {
-                foreach (PropertyData property in mo.Properties)
-                {
-                    if (property.Name.Equals("EstimatedChargeRemaining"))
-                    {
-                        //property.Value//Estimate of the percentage of full charge remaining. 
-                        if (property.Value != null)
-                            charge = property.Value.ToString();
-                    }
+                charge = mo["EstimatedChargeRemaining"].ToString();
+                chargeStatus = mo["BatteryStatus"].ToString();
+                lifeRemaining = mo["EstimatedRunTime"].ToString();
+                stat = mo["Status"].ToString();
 
-                    if (property.Name.Equals("BatteryStatus"))
-                    {
-                        //property.Value//Estimate of the percentage of full charge remaining. 
-                        if (property.Value != null)
-                            chargeStatus = property.Value.ToString();
-                    }
 
-                    if (property.Name.Equals("EstimatedRunTime"))
-                    {
-                        //property.Value//Estimate in minutes of the time to battery charge depletion under the present load conditions
-                        if(property.Value!=null)
-                            lifeRemaining = property.Value.ToString();
-                    }
 
-                    if (property.Name.Equals("Status"))
-                    {
-                        found = true;
-                        if (property.Value != null)
-                        {
-                            stat = property.Value.ToString();
-                            //property.Value//"OK""Error""Degraded""Unknown""Starting""Stopping""Service""Stressed""NonRecover""No Contact""Lost Comm"
-                            dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_GOOD));
-                        }
-                        else
-                        {
-                            dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
-                        }
-                    }
-                }
+            //    foreach (PropertyData property in mo.Properties)
+            //    {
+            //        if (property.Name.Equals("EstimatedChargeRemaining"))
+            //        {
+            //            //property.Value//Estimate of the percentage of full charge remaining. 
+            //            if (property.Value != null)
+            //                charge = property.Value.ToString();
+            //        }
+
+            //        if (property.Name.Equals("BatteryStatus"))
+            //        {
+            //            //property.Value//Estimate of the percentage of full charge remaining. 
+            //            if (property.Value != null)
+            //                chargeStatus = property.Value.ToString();
+            //        }
+
+            //        if (property.Name.Equals("EstimatedRunTime"))
+            //        {
+            //            //property.Value//Estimate in minutes of the time to battery charge depletion under the present load conditions
+            //            if(property.Value!=null)
+            //                lifeRemaining = property.Value.ToString();
+            //        }
+
+            //        if (property.Name.Equals("Status"))
+            //        {
+            //            found = true;
+            //            if (property.Value != null)
+            //            {
+            //                stat = property.Value.ToString();
+            //                //property.Value//"OK""Error""Degraded""Unknown""Starting""Stopping""Service""Stressed""NonRecover""No Contact""Lost Comm"
+            //                dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_GOOD));
+            //            }
+            //            else
+            //            {
+            //                dp.Broadcast(new UPSStatusMessage(this, StatusStr.STAT_ERR));
+            //            }
+            //        }
+            //    }
             }
             if (!found)
             {

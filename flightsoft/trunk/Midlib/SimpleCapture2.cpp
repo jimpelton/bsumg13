@@ -34,19 +34,23 @@ int initMidLib2(int nCamsReq)
         return 1;
     }
 
-    memset(g_cameras, 0, sizeof(ugCamera)*MAX_CAMS);
+    //memset(g_cameras, 0, sizeof(ugCamera)*MAX_CAMS);
 
     mi_s32 errval = mi_OpenCameras(g_mi_cameras, &g_cams_found, mi_SensorData());
     if ( errval != MI_CAMERA_SUCCESS ) {
         return errval;
     }
+    printf("Found %d cameras.", g_cams_found);
 
     for (int i = 0; i < g_cams_found; ++i)
     {
         g_cameras[i].camIdx  = i;
         g_cameras[i].pCamera = g_mi_cameras[i];   
 
-        openTransport(&g_cameras[i]);
+        errval = openTransport(&g_cameras[i]);
+        if (errval != MI_CAMERA_SUCCESS){
+            printf("%s %s: Camera failed to initialize.", __FILE__, __LINE__);
+        }
     }
 
     //errval = mi_SetDeviceChangeCallback((HWND)hwnd, &SimpleCapture::miDevCallBack);
@@ -64,10 +68,10 @@ void setInitPath(char *path)
 int openTransport(ugCamera *cam)
 {
     int rval = 0;
-    if (!g_isMidLibInit) {
+ /*   if (!g_isMidLibInit) {
         printf("openTransport() called before initMidLib2() or initMidLib2() previously failed.\n");
         return -1;
-    }
+    }*/
 
     mi_camera_t *pCamera = cam->pCamera;
 
@@ -104,14 +108,16 @@ int openTransport(ugCamera *cam)
     //switch logging OFF for some reason...
     pCamera->setMode(pCamera, MI_ERROR_LOG_TYPE, MI_NO_ERROR_LOG);
 
-    if (cam->nWidth < 1 || cam->nHeight < 1) {
-        cam->nWidth     = pCamera->sensor->width;
-        cam->nHeight    = pCamera->sensor->height;
-    }
+    //if (cam->nWidth < 1 || cam->nHeight < 1) {
+    //    cam->nWidth     = pCamera->sensor->width;
+    //    cam->nHeight    = pCamera->sensor->height;
+    //}
 
-    
+    cam->nWidth     = pCamera->sensor->width;
+    cam->nHeight    = pCamera->sensor->height;
     pCamera->sensor->imageType = MI_BAYER_12;
-    pCamera->updateFrameSize(pCamera, cam->nWidth, cam->nHeight, PIXELBITS, 0);
+    pCamera->updateFrameSize(pCamera, pCamera->sensor->width, 
+        pCamera->sensor->height, PIXELBITS, 0);
      
     cam->frameSize = pCamera->sensor->width  * 
         pCamera->sensor->height * pCamera->sensor->pixelBytes;
@@ -124,7 +130,7 @@ int openTransport(ugCamera *cam)
     if (0 != fuse1) {
         cam->camNm = (fuse1==0xb8ce) ? 405 : 485;
     }else{
-        printf("couldn't get Camera Fuse Register for camera: %d\n", cam->camIdx);
+        printf("Couldn't get Camera Fuse Register for camera: %d\n", cam->camIdx);
         cam->camNm = 0;
     }
 
@@ -133,9 +139,9 @@ int openTransport(ugCamera *cam)
     return 0;
 }
 
-unsigned char* doCapture(int cam_nm)
+unsigned char* doCapture(int cam_idx)
 {
-    int cam_idx = g_cameras[0].camNm == cam_nm ? 0 : 1;
+    //int cam_idx = g_cameras[0].camNm == cam_nm ? 0 : 1;
     return _doCapture(&g_cameras[cam_idx]);
 }
 
@@ -147,9 +153,9 @@ unsigned char *_doCapture(ugCamera *cam)
         cam->pGrabframeBuff, 
         cam->pCamera->sensor->bufferSize); 
 
-    if (nRet != MI_CAMERA_SUCCESS) {
-        return NULL;
-    }
+    //if (nRet != MI_CAMERA_SUCCESS) {
+    //    return NULL;
+    //}
     memcpy(cam->pCameraBuff, cam->pGrabframeBuff, cam->frameSize);
     return cam->pCameraBuff;
 }
@@ -195,7 +201,7 @@ int mallocate(ugCamera *cam)
 
 unsigned long sensorBufferSize(int camIdx)
 {
-   return g_cameras[camIdx].camNm;
+    return g_cameras[camIdx].pCamera->sensor->bufferSize;
 }
 
 void printCameraInfo()

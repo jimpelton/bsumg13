@@ -4,8 +4,8 @@ namespace uGCapture
 {
     public class VcommStatusMessage : StatusMessage
     {
-        public VcommStatusMessage(Receiver s, StatusStr nstate=StatusStr.STAT_ERR)
-            : base(s, nstate)
+        public VcommStatusMessage(Receiver s, StatusStr nstate=StatusStr.STAT_ERR, string mes = "")
+            : base(s, nstate, mes)
         {
         }
 

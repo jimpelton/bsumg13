@@ -159,5 +159,10 @@ namespace uGCapture
             return Id;
         }
 
+
+        public virtual void log(Receiver r, StatusMessage statusMessage)
+        {
+            
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace clui
         public void init()
         {
             dp.Register(this);
+            
             cls = new CaptureClass("CaptureClass")
                 {
                     StorageDir = @"C:\Data\"

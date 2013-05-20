@@ -173,9 +173,12 @@ public class AptinaController : ReceiverController
 
     public void stop()
     {
-        runningMutex.WaitOne();
-        IsRunning = false;
-        runningMutex.ReleaseMutex();
+        //runningMutex.WaitOne();
+        lock (runningMutex)
+        {
+            IsRunning = false;            
+        }
+        //runningMutex.ReleaseMutex();
     }
 
     private void updateStatus()

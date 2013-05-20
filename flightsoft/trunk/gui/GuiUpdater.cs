@@ -41,7 +41,9 @@ namespace gui
             graph1data = new Series("Points");
             Guimain = m;
             dp.Register(this);
-            mainform.panel_Wells.Paint += new System.Windows.Forms.PaintEventHandler(WellStatusPanelPaintage);
+            mainform.panel_Wells.Paint += 
+                new System.Windows.Forms.PaintEventHandler(WellStatusPanelPaintage);
+
             lowpassfilteredwells = new double[16 * 12];
             lowlowpassfilteredwells = new double[16 * 12];
             lowlowlowpassfilteredwells = new double[16 * 12];
@@ -51,33 +53,22 @@ namespace gui
         public void UpdateGUI(object sender, EventArgs e)
         {
             updateCASPanel();
-            if(GC.GetTotalMemory(false)<1024*1024*500)//below 500 mb. update images.
-                updateImages();
-
-
+            //if(GC.GetTotalMemory(false)<1024*1024*500)//below 500 mb. update images.
+            
+            updateImages();
 
             List<DataPoint> frames = Guimain.DataFrames;
             if (frames.Count > 100)
                 frames.RemoveAt(0);
 
-            //try
-            //{
-            //    ExecuteMessageQueue();              
-            //}
-            //catch (NullReferenceException nel)/// temp fix for monday's test. 5 minutes out.
-            //{
-            //    Console.WriteLine("UpdateGUI in GuiUpdater.cs threw a null pointer exception at ExecuteMessageQueue();  ");
- 
-            //}
-          //  mainform.chart1.Series.Clear();
             mainform.chart2.Series.Clear();
            
             if (frames.Count > 0)
             {
 
                // mainform.chart1.Series.Add("Graph1");
-             //   mainform.chart1.Series.Add("Graph2");
-              //  mainform.chart1.Series.Add("Graph3");
+               //   mainform.chart1.Series.Add("Graph2");
+               //  mainform.chart1.Series.Add("Graph3");
                // mainform.chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 2.0;
                // mainform.chart1.ChartAreas["ChartArea1"].AxisY.Minimum = -1.0;
 
@@ -98,7 +89,7 @@ namespace gui
 
                 foreach (DataPoint p in frames)
                 {/*
-                    mainform.chart1.Series["Graph1"].ChartType = SeriesChartType.SplineArea;
+                    mainform.chart1.Series["Graph1"].ChartType = SeriesChartType.SplineArea;                
                     mainform.chart1.Series["Graph1"].Points.AddY(p.accel1rawacceleration[1]);
                     mainform.chart1.Series["Graph1"].ChartArea = "ChartArea1";
 
@@ -154,7 +145,7 @@ namespace gui
             ulong freespace;//freespace was an awesome game.
             if (DriveFreeBytes(Guimain.guiDataPath, out freespace))
             {
-                if (freespace < 10000000000L)
+                if (freespace < 10000000000L)                   //10GB
                 {
                     CAS.b_Drive_Full.BackColor = Color.OrangeRed;
                     Guimain.switchToAlternateDrive();
@@ -254,7 +245,7 @@ namespace gui
                 {
                     l1 = double.Parse(lightdats[11]);
                     l2 = double.Parse(lightdats[14]);
-                }
+            }
 
                 if (l1 < 100)
                 {
@@ -268,15 +259,15 @@ namespace gui
                 {
                     CAS.b_Light_1.BackColor = Color.Green;
                 }
-                else
-                {
+            else
+            {
                     CAS.b_Light_1.BackColor = Color.Black;
-                }
+            }
 
                 if (l2 < 10)
                 {
                     CAS.b_Light_2.BackColor = Color.OrangeRed;
-                }
+        }
                 else if (l2 < 200)
                 {
                     CAS.b_Light_2.BackColor = Color.Yellow;
@@ -458,8 +449,6 @@ namespace gui
                     else
                         CAS.b_Doors.BackColor = Color.Yellow;
                 }
-
-
             }
             catch (FormatException e)
             {
@@ -482,19 +471,14 @@ namespace gui
             }           
         }
 
-        
-
-
-
-
         // Stolen! http://stackoverflow.com/questions/1393711/get-free-disk-space
         // Pinvoke for API function
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-        out ulong lpFreeBytesAvailable,
-        out ulong lpTotalNumberOfBytes,
-        out ulong lpTotalNumberOfFreeBytes);
+                out ulong lpFreeBytesAvailable,
+                out ulong lpTotalNumberOfBytes,
+                out ulong lpTotalNumberOfFreeBytes);
 
         public static bool DriveFreeBytes(string folderName, out ulong freespace)
         {
@@ -575,12 +559,13 @@ namespace gui
             try
             {
                 UPSStatusMessage msg = (UPSStatusMessage)m;
-                if (msg.getState() == StatusStr.STAT_FAIL)
+                StatusStr st = msg.getState();
+                if (st == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Battery_Com.BackColor = Color.OrangeRed;
-                    CAS.b_Battery_Com.Text = "Battery Com";
+                    CAS.b_Battery_Com.Text = "Battery Com";    
                 }
-                else if (msg.getState() == StatusStr.STAT_GOOD)
+                else if (st == StatusStr.STAT_GOOD)
                 {
                     //CAS.b_Battery_Com.BackColor = Color.Black;
                 }
@@ -604,19 +589,19 @@ namespace gui
             {
                 AccelStatusMessage msg = (AccelStatusMessage)m;
                 lastAccelState = msg.getState();
-                if (msg.getState() == StatusStr.STAT_FAIL)
+                if (lastAccelState == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_DISC)
+                else if (lastAccelState == StatusStr.STAT_DISC)
                 {
                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_ATCH)
+                else if (lastAccelState == StatusStr.STAT_ATCH)
                 {
                     CAS.b_Accel_1.BackColor = Color.Yellow;
                 }
-                else if (msg.getState() == StatusStr.STAT_GOOD)
+                else if (lastAccelState == StatusStr.STAT_GOOD)
                 {
                     //CAS.b_Accel_1.BackColor = Color.Black;// handled when checking the acceleration difference.
                 }
@@ -635,19 +620,19 @@ namespace gui
             {
                 SpatialStatusMessage msg = (SpatialStatusMessage)m;
                 lastSpatialState = msg.getState();
-                if (msg.getState() == StatusStr.STAT_FAIL)
+                if (lastSpatialState == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Accel_2.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_DISC)
+                else if (lastSpatialState == StatusStr.STAT_DISC)
                 {
                     CAS.b_Accel_2.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_ATCH)
+                else if (lastSpatialState == StatusStr.STAT_ATCH)
                 {
                     CAS.b_Accel_2.BackColor = Color.Yellow;
                 }
-                else if (msg.getState() == StatusStr.STAT_GOOD)
+                else if (lastSpatialState == StatusStr.STAT_GOOD)
                 {
                     //CAS.b_Accel_2.BackColor = Color.Black;// handled when checking the acceleration difference
                 }
@@ -678,19 +663,21 @@ namespace gui
             try
             {
                 NI6008StatusMessage msg = (NI6008StatusMessage)m;
-                if (msg.getState() == StatusStr.STAT_FAIL)
+                StatusStr status = msg.getState();
+
+                if (status == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;             
                 }
-                else if (msg.getState() == StatusStr.STAT_DISC)
+                else if (status == StatusStr.STAT_DISC)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;       
                 }
-                else if (msg.getState() == StatusStr.STAT_ATCH)
+                else if (status == StatusStr.STAT_ATCH)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;
                 }
-                else if(msg.getState() == StatusStr.STAT_GOOD)
+                else if(status == StatusStr.STAT_GOOD)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.Black;
                 }
@@ -708,27 +695,28 @@ namespace gui
             {
                 //todo: convert to a switch
                 AptinaStatusMessage msg = (AptinaStatusMessage)m;
-                if (msg.getState() == StatusStr.STAT_FAIL_405)
+                StatusStr status = msg.getState();
+                if (status == StatusStr.STAT_FAIL_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_FAIL_485)
+                else if (status == StatusStr.STAT_FAIL_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_ERR_405)
+                else if (status == StatusStr.STAT_ERR_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_ERR_485)
+                else if (status == StatusStr.STAT_ERR_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_GOOD_405)
+                else if (status == StatusStr.STAT_GOOD_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.Black;
                 }
-                else if (msg.getState() == StatusStr.STAT_GOOD_485)
+                else if (status == StatusStr.STAT_GOOD_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.Black;
                 }
@@ -750,19 +738,20 @@ namespace gui
             try
             {
                 PhidgetsStatusMessage msg = (PhidgetsStatusMessage)m;
-                if (msg.getState() == StatusStr.STAT_FAIL)
+                StatusStr status = msg.getState();
+                if (status == StatusStr.STAT_FAIL)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_DISC)
+                else if (status == StatusStr.STAT_DISC)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
                 }
-                else if (msg.getState() == StatusStr.STAT_ATCH)
+                else if (status == StatusStr.STAT_ATCH)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.Yellow;
                 }
-                else if (msg.getState() == StatusStr.STAT_GOOD)
+                else if (status == StatusStr.STAT_GOOD)
                 {
                     long now = DateTime.Now.Ticks;
                     long dist = now - last1018update;
@@ -772,8 +761,8 @@ namespace gui
                     else
                         CAS.b_Phidgets_1018.BackColor = Color.Black;
                     last1018update = DateTime.Now.Ticks;
-                }                                  
-            }
+                }
+                }
             catch (InvalidOperationException e)
             {
                 //the wrong thread operated on something...
@@ -804,7 +793,7 @@ namespace gui
                 Random random = new Random();
                 Point p = new Point(0,0);
                 Rectangle r = new Rectangle(0,0,1,1);
-
+ 	
                 for (int x = 0; x < 16; x++)
                 {
                     for (int y = 0; y < 12; y++)
@@ -875,7 +864,7 @@ namespace gui
                         {
                             pen.Color = Color.Red;
                             pen.Width = 10;
-                        }
+        }
                         Point p1 = new Point((x * widthIncrement) + 5, (y * heightIncrement) + (heightIncrement / 2) + rend);
                         Point p2 = new Point((x * widthIncrement) + 5, (y * heightIncrement) + (heightIncrement / 2));
 
@@ -884,7 +873,7 @@ namespace gui
                         rend = (int)(lowlowlowlowpassfilteredwells[x + (y * 16)] - lowlowlowpassfilteredwells[x + (y * 16)]);
                         //debug
                         rend = (int)((random.NextDouble() - random.NextDouble()) * 10.0);
-                            
+
                         if (rend > 0)
                         {
                             pen.Color = Color.Green;
