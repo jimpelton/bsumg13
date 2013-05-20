@@ -51,7 +51,11 @@ namespace gui
         public void UpdateGUI(object sender, EventArgs e)
         {
             updateCASPanel();
-            updateImages();
+            if(GC.GetTotalMemory(false)<1024*1024*500)//below 500 mb. update images.
+                updateImages();
+
+
+
             List<DataPoint> frames = Guimain.DataFrames;
             if (frames.Count > 100)
                 frames.RemoveAt(0);
@@ -123,7 +127,7 @@ namespace gui
             byte[] i485 = dat.lastData[BufferType.USHORT_IMAGE485];
 
             //test goodness
-/*
+            /*
             BinaryReader b = new BinaryReader(File.Open("data_485_1000.raw",FileMode.Open));
             i405 = b.ReadBytes(2 * 2592 * 1944);
             b.Close();
@@ -532,52 +536,24 @@ namespace gui
             
         }
 
-        
+        private static byte[] pixels = new byte[2592 * 1944 * 3];
         static unsafe public Bitmap ConvertCapturedRawImage(byte[] indata)
         {
             Bitmap bitmap = null;
+            
             unsafe
             {
                 fixed (byte* ptr = indata)
                 {
-                    uint[] points = new uint[indata.Length / 2];
-
-                    long total = 0;
-                    uint p = 0;
-                    for (int i = 0; i < indata.Length / 2; i+=2)
-                    {
-                        p = indata[i] + (uint)(indata[i + 1] << 8);
-                        total += p;
-                    }
-
-                    long avg = total / (2592 * 1944);
-
-                    if (avg < 1)//div by zero wrong.
-                        avg = 1;
-
-                    double expand = (65535 / avg);
+                    
                     int a = 1;
                     int b = 0;
-
                     while (a < indata.Length)
                     {
-                        points[b] = (uint)(indata[a]*expand*32);
-                        if (points[b] > 65535)
-                            points[b] = 65535;
+                        pixels[b++] = (byte)(Math.Min(indata[a] * 4, 255));
+                        pixels[b++] = (byte)(Math.Min(indata[a] * 4, 255));
+                        pixels[b++] = (byte)(Math.Min(indata[a] * 4, 255));
                         a+=2;
-                        b++;
-                    }
-
-
-                    byte[] pixels = new byte[indata.Length/2*3];
-                    a = 0;
-                    b = 0;
-                    while (a < indata.Length/2)
-                    {
-                        pixels[b++] = (byte)(points[a] / 256);
-                        pixels[b++] = (byte)(points[a] / 256);
-                        pixels[b++] = (byte)(points[a] / 256); 
-                        a++;
                     }
 
                     fixed (byte* ptr2 = pixels)
