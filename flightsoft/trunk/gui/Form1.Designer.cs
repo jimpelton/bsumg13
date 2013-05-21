@@ -34,7 +34,6 @@
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.DebugUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.TabPage_Debug = new System.Windows.Forms.TabPage();
-            this.Btn_ShowImages = new System.Windows.Forms.Button();
             this.rTB_Debug_Output = new System.Windows.Forms.RichTextBox();
             this.TabPage_BITE = new System.Windows.Forms.TabPage();
             this.b_Execute_BITE_Test = new System.Windows.Forms.Button();
@@ -61,7 +60,6 @@
             // 
             // TabPage_Debug
             // 
-            this.TabPage_Debug.Controls.Add(this.Btn_ShowImages);
             this.TabPage_Debug.Controls.Add(this.rTB_Debug_Output);
             this.TabPage_Debug.Location = new System.Drawing.Point(4, 29);
             this.TabPage_Debug.Name = "TabPage_Debug";
@@ -71,20 +69,12 @@
             this.TabPage_Debug.Text = "Debug";
             this.TabPage_Debug.UseVisualStyleBackColor = true;
             // 
-            // Btn_ShowImages
-            // 
-            this.Btn_ShowImages.Location = new System.Drawing.Point(6, 655);
-            this.Btn_ShowImages.Name = "Btn_ShowImages";
-            this.Btn_ShowImages.Size = new System.Drawing.Size(134, 27);
-            this.Btn_ShowImages.TabIndex = 1;
-            this.Btn_ShowImages.Text = "Secwet Buton";
-            this.Btn_ShowImages.UseVisualStyleBackColor = true;
-            // 
             // rTB_Debug_Output
             // 
-            this.rTB_Debug_Output.Location = new System.Drawing.Point(6, 6);
+            this.rTB_Debug_Output.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rTB_Debug_Output.Location = new System.Drawing.Point(3, 3);
             this.rTB_Debug_Output.Name = "rTB_Debug_Output";
-            this.rTB_Debug_Output.Size = new System.Drawing.Size(1142, 643);
+            this.rTB_Debug_Output.Size = new System.Drawing.Size(1818, 991);
             this.rTB_Debug_Output.TabIndex = 0;
             this.rTB_Debug_Output.Text = "";
             this.rTB_Debug_Output.TextChanged += new System.EventHandler(this.rTB_Debug_Output_TextChanged);
@@ -233,7 +223,6 @@
 
         private System.Windows.Forms.Timer DebugUpdateTimer;
         private System.Windows.Forms.TabPage TabPage_Debug;
-        private System.Windows.Forms.Button Btn_ShowImages;
         private System.Windows.Forms.RichTextBox rTB_Debug_Output;
         private System.Windows.Forms.TabPage TabPage_BITE;
         private System.Windows.Forms.Button b_Execute_BITE_Test;

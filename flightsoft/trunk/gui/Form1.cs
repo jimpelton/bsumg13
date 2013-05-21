@@ -105,7 +105,9 @@ namespace gui
         private void setDebugText(string s, Color col)
         {           
             String s2 = GetTimestamp() + s + "\n";
-            rTB_Debug_Output.Text += s2;
+            rTB_Debug_Output.AppendText(s2);
+            //rTB_Debug_Output.SelectionLength = rTB_Debug_Output.Text.Length;
+            //rTB_Debug_Output.ScrollToCaret();
         }
 
 
