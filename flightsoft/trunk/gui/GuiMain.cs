@@ -49,8 +49,8 @@ namespace gui
             get { return mainForm; }
         }
 
-        private List<DataPoint> dataFrames;
-        public List<DataPoint> DataFrames
+        private IList<DataPoint> dataFrames = new List<DataPoint>();
+        public IList<DataPoint> DataFrames
         {
             get { return dataFrames; }
             set { dataFrames = value; }
@@ -66,14 +66,13 @@ namespace gui
         public GuiMain(Form1 mainForm, string id, String cPath, bool receiving = true)
             : base(id, receiving)
         {
-            this.configPath = cPath;
+            configPath = cPath;
             this.mainForm = mainForm;
         }
 
         public void Startup_Init()
         {
             config = ConfigLoader.LoadConfig(configPath);
-            dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
 
             string path = config.Path.Trim();
             if (!path.EndsWith(@"\"))
@@ -83,15 +82,14 @@ namespace gui
             guiDataPath = path;
             String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
 
-            dataFrames = new List<DataPoint>();
-            guiUpdater = new GuiUpdater(mainForm, this, CAS, "GuiUpdater");
+            guiUpdater = new GuiUpdater(mainForm, this, CAS, "GuiUpdater")
+                {
+                    DataFrames = this.dataFrames
+                };
 
-            IntPtr hwnd;
-            unsafe
-            {
-                hwnd = new IntPtr(mainForm.Handle.ToPointer());
-            } 
-            captureClass = new CaptureClass(hwnd, "CaptureClass") { StorageDir = path + directoryName };
+            dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
+            dp.BroadcastLog(this, "Starting capture class.", 1);
+            captureClass = new CaptureClass(mainForm.Handle, "CaptureClass") { StorageDir = path + directoryName };
             captureClass.init();
         }
 
