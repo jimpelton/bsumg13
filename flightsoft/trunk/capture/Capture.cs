@@ -80,7 +80,7 @@ namespace uGCapture
             initPhidgets();
             initAccelController();
             initSpatialController();
-            //initWeatherBoard();
+            initWeatherBoard();
             initNI6008Controller();
             initUPSController();
 
