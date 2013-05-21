@@ -9,6 +9,12 @@
 
 #include <midlib2.h>
 
+#ifdef UG_EXPORT_SIMPLE_CAPTURE
+#define UGEXPORT __declspec(dllexport)
+#else
+#define UGEXPORT
+#endif
+
 #define NUM_WORKER_THREADS      2 
 #define DEFAULT_NUM_FRAMES      1
 #define PIXELBITS               16
@@ -16,10 +22,12 @@
 
 #define MAX_CAMS 2
 
+
+
 /**
  *	\brief Modified from the SimpleCapture example provided by Aptina.
  */
-class __declspec(dllexport) SimpleCapture
+class SimpleCapture
 {
 public:
 
@@ -34,7 +42,7 @@ public:
      * cameras were initialized.
      * \return 0 on success, or greater than 0 on failure.
      */
-    static int initMidLib2(int nCamsReq);
+    UGEXPORT static int initMidLib2(int nCamsReq);
 
   /************************************************************************/
   /* PUBLIC MEMBERS                                                       */
@@ -55,8 +63,9 @@ public:
   /************************************************************************/
   /* PUBLIC METHODS                                                       */
   /************************************************************************/ 
+    static mi_u32 miDevCallBack(HWND, _mi_camera_t*, mi_u32);
 
-    SimpleCapture();
+    UGEXPORT SimpleCapture();
     ~SimpleCapture();
 
 	int getWavelength();
@@ -117,6 +126,8 @@ private:
 /************************************************************************/
 /* Begin class ManagedSimpleCapture                                     */
 /************************************************************************/
+
+
 public ref class ManagedSimpleCapture {
     SimpleCapture *native_sc;
 
@@ -174,25 +185,27 @@ public:
         return native_sc->_doCapture();
     }
 
-    static int managed_InitMidLib(int nCamsReqd)
+    static int managed_InitMidLib(System::IntPtr hwnd, int nCamsReqd)
     {
-        return SimpleCapture::initMidLib2(nCamsReqd);
+        //HWND thisSucks((HWND)(hwnd.ToPointer())); //= hwnd.ToPointer();
+        //return SimpleCapture::initMidLib2(thisSucks, nCamsReqd);
+        return 0;
     }
 };
 
-static void 
-str_replace(char* strOut, char* strIn, char* oldStr, char* newStr)
-{
-    int total_len = (int)strlen(strIn);
-    char* pChar;
-    int lenBeg;
-
-    pChar= strstr(strIn,oldStr);
-    lenBeg = total_len-(int)strlen(pChar);
-    strncpy(strOut, strIn,lenBeg);
-    strOut[lenBeg] = 0;
-    strcat(strOut,newStr);
-    strcat(strOut,&strIn[lenBeg+strlen(oldStr)]);
-}
+//static void 
+//str_replace(char* strOut, char* strIn, char* oldStr, char* newStr)
+//{
+//    int total_len = (int)strlen(strIn);
+//    char* pChar;
+//    int lenBeg;
+//
+//    pChar= strstr(strIn,oldStr);
+//    lenBeg = total_len-(int)strlen(pChar);
+//    strncpy(strOut, strIn,lenBeg);
+//    strOut[lenBeg] = 0;
+//    strcat(strOut,newStr);
+//    strcat(strOut,&strIn[lenBeg+strlen(oldStr)]);
+//}
 
 #endif // SimpleCapture_h__

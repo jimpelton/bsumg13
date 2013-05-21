@@ -28,6 +28,17 @@ SimpleCapture::~SimpleCapture(void)
     delete iniFilePath;
 }
 
+mi_u32 
+SimpleCapture::miDevCallBack(HWND hwnd, _mi_camera_t *pCamera, mi_u32 flags)
+{
+    MessageBox(hwnd, TEXT("holy jesus fucking christ."), TEXT("eeeee"), MB_OK);
+    if (flags & MI_DEVEVENT_REMOVAL)
+    {
+        printf("Aieeeeeeeeeeeeeeeeeeeeeeeeeeeeee!\n");
+    }
+    return MI_CAMERA_SUCCESS;
+}
+
 //return: 0 success, > 0 on error
 int 
 SimpleCapture::initMidLib2(int nCamsReq)
@@ -51,6 +62,8 @@ SimpleCapture::initMidLib2(int nCamsReq)
     if (errval != MI_CAMERA_SUCCESS) {
         return errval;
     }
+
+    //errval = mi_SetDeviceChangeCallback((HWND)hwnd, &SimpleCapture::miDevCallBack);
 
     isMidLibInit=true;
     printf("Midlib initialized.\n");
