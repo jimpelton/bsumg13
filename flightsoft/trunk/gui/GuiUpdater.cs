@@ -72,7 +72,7 @@ namespace gui
             if (frames.Count <= 0) return; 
             if (frames.Count > 99)
             {
-                //jesus christ when did we switch to LISP?
+                //eeeeeee!!!
                 Color col = Color.FromArgb(255, 
                 (int)Math.Min(255, Math.Max(0, ((frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3))), 
                 0, 
