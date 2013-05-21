@@ -85,15 +85,13 @@ namespace uGCapture
                 if (!Directory.Exists(BasePath))
                 {
                     Directory.CreateDirectory(BasePath);
+                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS), 1);
                 }
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e.StackTrace);
-                dp.BroadcastLog(this,
-                                "Top level data directory " + BasePath +
-                                " could not be created\r\n" +
-                    e.StackTrace, 100);
+                dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + " :" + BasePath, 5);
                 rval = false;
             }
 
@@ -104,15 +102,13 @@ namespace uGCapture
                     if (!Directory.Exists(BasePath + s))
                     {
                         Directory.CreateDirectory(BasePath + s);
+                        dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS), 1);
                     }
                 }
                 catch (Exception e)
                 {
                     Console.Error.WriteLine(e.StackTrace);
-                    dp.BroadcastLog(this,
-                                    "Data subdirectory " + s +
-                                    " could not be created\r\n" +
-                                    e.StackTrace, 100);
+                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + " :" + s, 5);
                     rval = false;
                 }
             }
@@ -234,7 +230,7 @@ namespace uGCapture
         /// <param name="w">The writer which should do the writing.</param>
         public static void DoWrite(Writer w)
         {
-            w.checkCurrentPathForUpdate();
+            //w.checkCurrentPathForUpdate();
             try
             {
                 Buffer<byte> fulbuf = w.BufferPool.PopFull();
@@ -291,6 +287,7 @@ namespace uGCapture
                     default:
                         break;
                 }
+                w.dp.BroadcastLog(w, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER) + fulbuf.ToString(), 3);
                 w.BufferPool.PostEmpty(fulbuf);
             }
             catch (Exception e)

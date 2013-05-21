@@ -33,5 +33,10 @@ namespace uGCapture
         {
             r.exLogMessage(r, this);
         }
+
+        public override string ToString()
+        {
+            return message;
+        }
     }
 }

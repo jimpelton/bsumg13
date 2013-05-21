@@ -19,6 +19,8 @@
 #define PIXELBITS  16
 #define MAX_CAMS   2
 
+typedef void (__stdcall *AttachCallback)(int camIdx);
+
 struct ugCamera {
 mi_camera_t     *pCamera; //=NULL;                     //current camera
 int             camIdx;
@@ -40,17 +42,16 @@ mi_string       errorFileName;
 
 extern "C" 
 {
-
     UGEXPORT mi_u32 miDevCallBack(HWND, _mi_camera_t*, mi_u32);
-    UGEXPORT int initMidLib2(int nCamsReq);
+    UGEXPORT int initMidLib2(int nCamsReq, void *hwnd, long attach_cb);
     UGEXPORT void setIniPath(char *);
     UGEXPORT int  openTransport(ugCamera*); 
-    UGEXPORT unsigned char* doCapture(int camIdx);
-    UGEXPORT int getWavelength(int camIdx);
-    UGEXPORT void stopTransport();
-    UGEXPORT unsigned long sensorBufferSize(int camIdx);
+    UGEXPORT unsigned char* doCaptureIdx(int camIdx);
+    UGEXPORT int getWavelengthIdx(int camIdx);
+    UGEXPORT void stopTransportIdx(int camIdx);
+    UGEXPORT unsigned long sensorBufferSizeIdx(int camIdx);
     UGEXPORT void printCameraInfo();
-
+    UGEXPORT int setDeviceCallback(void * hwnd);
 }
 #endif /* SimpleCapture2_h__ */
 

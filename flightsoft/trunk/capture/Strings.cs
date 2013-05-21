@@ -44,6 +44,7 @@ namespace uGCapture
 
     public enum ErrStr 
     {
+        // INIT FAIL 
         INIT_FAIL_PHID_1018,
         INIT_FAIL_PHID_SPTL,
         INIT_FAIL_PHID_ACCEL,
@@ -54,15 +55,12 @@ namespace uGCapture
         INIT_FAIL_APTINA_INITMIDLIB,    
         INIT_FAIL_APTINA_OPENTRANSPORT,   
 
-        CAPTURE_FAIL_APTINA_NULLBUFFER,
-        
-        CAPTURE_FAIL_APTINA,
-        
         INIT_FAIL_VCOMM,
         INIT_FAIL_WRITER,
         INIT_FAIL_UPS,
 	    INIT_FAIL_LOGGER,
         
+        // INIT SUCCESS 
         INIT_OK_PHID_1018,
         INIT_OK_PHID_SPTL,
         INIT_OK_PHID_ACCEL,
@@ -71,9 +69,17 @@ namespace uGCapture
         INIT_OK_APTINA,
         INIT_OK_VCOMM,
         INIT_OK_UPS,
-	    INIT_OK_LOGGER
+	    INIT_OK_LOGGER,
 
-        
+        // APTINA
+        APTINA_FAIL_DISCONNECT,
+        APTINA_FAIL_CAPTURE_NULLBUFFER,
+        APTINA_FAIL_CAPTURE,
+
+        // WRITER
+        WRITER_FAIL_CREATE_DIRS,
+        WRITER_OK_CREATE_DIRS,
+        WRITER_OK_WRITE_BUFFER
     }
 
 
@@ -125,9 +131,7 @@ namespace uGCapture
                 case ErrStr.INIT_FAIL_APTINA:                 return "Aptina camera failed to initialize.";
                 case ErrStr.INIT_FAIL_APTINA_INITMIDLIB:      return "Midlib2 failed to initialize.";
                 case ErrStr.INIT_FAIL_APTINA_OPENTRANSPORT:   return "Midlib2 opentransport failed.";
-                case ErrStr.CAPTURE_FAIL_APTINA_NULLBUFFER:   return "Midlib2 getFrame() returned null pointer.";
-                case ErrStr.CAPTURE_FAIL_APTINA:              return "Aptina capture failed.";
-
+               
                 case ErrStr.INIT_FAIL_VCOMM:                  return "Weatherboard failed to initialize.";
                 
                 case ErrStr.INIT_FAIL_WRITER:                 return "Writer failed to initialize.";
@@ -141,7 +145,15 @@ namespace uGCapture
                 case ErrStr.INIT_OK_APTINA:                   return "Aptina camera initialized.";
                 case ErrStr.INIT_OK_VCOMM:                    return "Weatherboard initialized.";
                 case ErrStr.INIT_OK_UPS:                      return "UPSController initialized.";
-                
+
+                case ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER:   return "Midlib2 getFrame() returned null pointer.";
+                case ErrStr.APTINA_FAIL_CAPTURE:              return "Aptina capture failed.";
+                case ErrStr.APTINA_FAIL_DISCONNECT:           return "Midlib detected camera removal.";
+
+                case ErrStr.WRITER_OK_CREATE_DIRS:            return "Writer successfully created storage directory.";
+                case ErrStr.WRITER_FAIL_CREATE_DIRS:          return "Writer failed to create storage directory.";
+                case ErrStr.WRITER_OK_WRITE_BUFFER:           return "Writer wrote buffer: ";
+
                 default:                                      return "Unknown Error.";
             }
         }
