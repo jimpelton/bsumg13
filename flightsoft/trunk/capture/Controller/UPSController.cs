@@ -16,7 +16,6 @@ namespace uGCapture
             bool found = false;
             ObjectQuery query = new ObjectQuery("Select * FROM Win32_Battery");
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-
             ManagementObjectCollection collection = searcher.Get();
             string charge = "0";
             string lifeRemaining = "0";

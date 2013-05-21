@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.IO.Ports;
 using System.Text;
+using System.Management;
 
 namespace uGCapture
 {
@@ -24,6 +25,9 @@ namespace uGCapture
 
         protected override bool init()
         {
+            if (!Com3Exists())
+                return false;
+
             outputData = "";
             bool rval = true;
             port = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
@@ -87,8 +91,27 @@ namespace uGCapture
             init();
         }
 
+        private bool Com3Exists()
+        {
+            //check to make sure we actually have a com3 port available
+            bool found = false;
+            ObjectQuery query = new ObjectQuery("Select * FROM Win32_USBHub");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
+            ManagementObjectCollection collection = searcher.Get();
+            foreach (ManagementObject mo in collection)
+            {
+                if (mo["DeviceID"] != null)
+                    if (mo["DeviceID"].ToString().Contains("0403"))
+                        found = true;
+            }
+            return found;
+        }
+
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
+            if (!Com3Exists())
+                return;
+
             //test the port.
             try
             {
