@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-05-19                                                                      
+// ******************************************************************************
+
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using uGCapture;
 
 namespace gui
 {
@@ -30,7 +30,7 @@ namespace gui
             CAS = childForm;
             guiImageDisplay = guiimagedisp;
 
-            guiMain = new GuiMain(this, "GuiMain",config );
+            guiMain = new GuiMain(this, "GuiMain", config);
             guiMain.guiCAS = CAS;
             guiMain.guiImageDisplay = guiimagedisp;
             guiMain.Startup_Init();
@@ -96,9 +96,7 @@ namespace gui
             }
             else
             {
-
                 setDebugText(s, col);
-
             }
             
         }
@@ -107,11 +105,7 @@ namespace gui
         private void setDebugText(string s, Color col)
         {           
             String s2 = GetTimestamp() + s + "\n";
-            //rTB_Debug_Output.SelectionStart = rTB_Debug_Output.TextLength;
-            //rTB_Debug_Output.SelectionLength = 0;
-            //rTB_Debug_Output.SelectionColor = col;
             rTB_Debug_Output.Text += s2;
-            //rTB_Debug_Output.SelectionColor = rTB_Debug_Output.ForeColor;
         }
 
 

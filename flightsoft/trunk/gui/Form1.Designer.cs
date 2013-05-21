@@ -57,7 +57,7 @@
             // DebugUpdateTimer
             // 
             this.DebugUpdateTimer.Enabled = true;
-            this.DebugUpdateTimer.Interval = 501;
+            this.DebugUpdateTimer.Interval = 2000;
             // 
             // TabPage_Debug
             // 
