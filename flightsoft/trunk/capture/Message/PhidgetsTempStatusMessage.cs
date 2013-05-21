@@ -4,7 +4,7 @@ namespace uGCapture
     public class PhidgetsTempStatusMessage : StatusMessage
     {
 
-        public PhidgetsTempStatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR, string mes = "")
+        public PhidgetsTempStatusMessage(Receiver s, Status nstate, ErrStr mes = 0)
             : base(s, nstate, mes)
         {
         }

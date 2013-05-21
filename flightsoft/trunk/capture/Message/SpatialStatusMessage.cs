@@ -5,7 +5,7 @@ namespace uGCapture
     public class SpatialStatusMessage : StatusMessage
     {
         
-        public SpatialStatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR, string mes = "")
+        public SpatialStatusMessage(Receiver s, Status nstate, ErrStr mes = 0)
             : base(s, nstate, mes)
         {
         }

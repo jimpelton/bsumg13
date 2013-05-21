@@ -121,7 +121,7 @@ namespace uGCapture
             }
             else
             {
-                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Err, Str.GetErrStr(ac1.Errno)));
+                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Err, ac1.Errno));
                 dp.BroadcastLog(this,
                     Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.", 100);
             }
@@ -150,16 +150,13 @@ namespace uGCapture
             phidgetsController = new PhidgetsController(bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_1018));
             if (phidgetsController.Initialize())
             {
-                string s = Str.GetErrStr(ErrStr.INIT_OK_PHID_1018);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
-
+                dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_1018));
+                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_1018));
             }
             else
             {
-                string s = Str.GetErrStr(ErrStr.INIT_FAIL_PHID_1018);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_ERR, ErrStr.INIT_FAIL_PHID_1018));
+                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_1018));
             }
             dp.Register(phidgetsController);
         }
@@ -168,19 +165,18 @@ namespace uGCapture
         private void initAccelController()
         {
             const int accelerometer_serial_number = 159352;
-            accelControler = new AccelerometerPhidgetsController(bufferPool,
+            accelControler = new AccelerometerPhidgetsController(bufferPool, 
                 Str.GetIdStr(IdStr.ID_PHIDGETS_ACCEL), accelerometer_serial_number);
+
             if (accelControler.Initialize())
             {
-                string s = Str.GetErrStr(ErrStr.INIT_OK_PHID_ACCEL);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_ACCEL));
+                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_ACCEL));
             }
             else
             {
-                string s = Str.GetErrStr(ErrStr.INIT_FAIL_PHID_ACCEL);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL, ErrStr.INIT_FAIL_PHID_ACCEL));
+                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_ACCEL));
             }
             dp.Register(accelControler);
         }
@@ -194,15 +190,13 @@ namespace uGCapture
 
             if (spatialController.Initialize())
             {
-                string s = Str.GetErrStr(ErrStr.INIT_OK_PHID_SPTL);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_SPTL));
+                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_SPTL));
             }
             else
             {
-                string s = Str.GetErrStr(ErrStr.INIT_FAIL_PHID_SPTL);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_FAIL_PHID_SPTL));
+                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_SPTL));
             }
             dp.Register(spatialController);
         }

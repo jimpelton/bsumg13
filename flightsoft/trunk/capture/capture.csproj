@@ -102,7 +102,9 @@
     <Compile Include="Message\SetCaptureStateMessage.cs" />
     <Compile Include="Message\DataMessage.cs" />
     <Compile Include="Message\SpatialStatusMessage.cs" />
-    <Compile Include="Message\StatusMessage.cs" />
+    <Compile Include="Message\StatusMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Message\UPSStatusMessage.cs" />
     <Compile Include="Message\VcommStatusMessage.cs" />
     <Compile Include="ReceiverController.cs" />

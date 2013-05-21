@@ -4,7 +4,7 @@ namespace uGCapture
 {
     public class UPSStatusMessage : StatusMessage
     {
-        public UPSStatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR, string mes = "")
+        public UPSStatusMessage(Receiver s, Status nstate, ErrStr mes = 0)
             : base(s, nstate, mes)
         {
         }

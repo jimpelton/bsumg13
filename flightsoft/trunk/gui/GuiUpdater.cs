@@ -29,9 +29,9 @@ namespace gui
         }
         private IList<DataPoint> frames;
 
-        private StatusStr lastAccelState = StatusStr.STAT_ERR;
-        private StatusStr lastSpatialState = StatusStr.STAT_ERR;
-        private StatusStr lastTemperatureState = StatusStr.STAT_ERR;
+        private Status lastAccelState = Status.STAT_ERR;
+        private Status lastSpatialState = Status.STAT_ERR;
+        private Status lastTemperatureState = Status.STAT_ERR;
 
         private long last1018update = 0;
 
@@ -277,9 +277,9 @@ namespace gui
 
             try
             {
-                if (lastAccelState == StatusStr.STAT_GOOD)
+                if (lastAccelState == Status.STAT_GOOD)
                     CAS.b_Accel_1.BackColor = Color.Black;
-                if (lastSpatialState == StatusStr.STAT_GOOD)
+                if (lastSpatialState == Status.STAT_GOOD)
                     CAS.b_Accel_2.BackColor = Color.Black;
 
                 //get the difference between accel and spacials acceleration vector magnitudes.
@@ -341,9 +341,9 @@ namespace gui
 
                 if (dif > 0.5)
                 {
-                    if(CAS.b_Accel_1.BackColor!=Color.OrangeRed && lastAccelState == StatusStr.STAT_GOOD)
+                    if(CAS.b_Accel_1.BackColor!=Color.OrangeRed && lastAccelState == Status.STAT_GOOD)
                         CAS.b_Accel_1.BackColor = Color.Green;
-                    if (CAS.b_Accel_2.BackColor != Color.OrangeRed && lastSpatialState == StatusStr.STAT_GOOD)
+                    if (CAS.b_Accel_2.BackColor != Color.OrangeRed && lastSpatialState == Status.STAT_GOOD)
                         CAS.b_Accel_2.BackColor = Color.Green;
                 }
             }
@@ -365,7 +365,7 @@ namespace gui
                 string pdat = encoding.GetString(dat.lastData[BufferType.UTF8_PHIDGETS]);
                 string[] pdats = pdat.Split();
 
-                if (lastTemperatureState == StatusStr.STAT_GOOD)
+                if (lastTemperatureState == Status.STAT_GOOD)
                 {
                     temp = double.Parse(pdats[6]);
                     if (temp > 2000000000)
@@ -539,13 +539,13 @@ namespace gui
             try
             {
                 UPSStatusMessage msg = (UPSStatusMessage)m;
-                StatusStr st = msg.getState();
-                if (st == StatusStr.STAT_FAIL)
+                Status st = msg.getState();
+                if (st == Status.STAT_FAIL)
                 {
                     CAS.b_Battery_Com.BackColor = Color.OrangeRed;
                     CAS.b_Battery_Com.Text = "Battery Com";    
                 }
-                else if (st == StatusStr.STAT_GOOD)
+                else if (st == Status.STAT_GOOD)
                 {
                     //CAS.b_Battery_Com.BackColor = Color.Black;
                 }
@@ -569,19 +569,19 @@ namespace gui
             {
                 AccelStatusMessage msg = (AccelStatusMessage)m;
                 lastAccelState = msg.getState();
-                if (lastAccelState == StatusStr.STAT_FAIL)
+                if (lastAccelState == Status.STAT_FAIL)
                 {
                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
                 }
-                else if (lastAccelState == StatusStr.STAT_DISC)
+                else if (lastAccelState == Status.STAT_DISC)
                 {
                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
                 }
-                else if (lastAccelState == StatusStr.STAT_ATCH)
+                else if (lastAccelState == Status.STAT_ATCH)
                 {
                     CAS.b_Accel_1.BackColor = Color.Yellow;
                 }
-                else if (lastAccelState == StatusStr.STAT_GOOD)
+                else if (lastAccelState == Status.STAT_GOOD)
                 {
                     //CAS.b_Accel_1.BackColor = Color.Black;// handled when checking the acceleration difference.
                 }
@@ -600,19 +600,19 @@ namespace gui
             {
                 SpatialStatusMessage msg = (SpatialStatusMessage)m;
                 lastSpatialState = msg.getState();
-                if (lastSpatialState == StatusStr.STAT_FAIL)
+                if (lastSpatialState == Status.STAT_FAIL)
                 {
                     CAS.b_Accel_2.BackColor = Color.OrangeRed;
                 }
-                else if (lastSpatialState == StatusStr.STAT_DISC)
+                else if (lastSpatialState == Status.STAT_DISC)
                 {
                     CAS.b_Accel_2.BackColor = Color.OrangeRed;
                 }
-                else if (lastSpatialState == StatusStr.STAT_ATCH)
+                else if (lastSpatialState == Status.STAT_ATCH)
                 {
                     CAS.b_Accel_2.BackColor = Color.Yellow;
                 }
-                else if (lastSpatialState == StatusStr.STAT_GOOD)
+                else if (lastSpatialState == Status.STAT_GOOD)
                 {
                     //CAS.b_Accel_2.BackColor = Color.Black;// handled when checking the acceleration difference
                 }
@@ -643,21 +643,21 @@ namespace gui
             try
             {
                 NI6008StatusMessage msg = (NI6008StatusMessage)m;
-                StatusStr status = msg.getState();
+                Status status = msg.getState();
 
-                if (status == StatusStr.STAT_FAIL)
+                if (status == Status.STAT_FAIL)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;             
                 }
-                else if (status == StatusStr.STAT_DISC)
+                else if (status == Status.STAT_DISC)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;       
                 }
-                else if (status == StatusStr.STAT_ATCH)
+                else if (status == Status.STAT_ATCH)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;
                 }
-                else if(status == StatusStr.STAT_GOOD)
+                else if(status == Status.STAT_GOOD)
                 {
                     CAS.b_Accel_Aircraft.BackColor = Color.Black;
                 }
@@ -675,28 +675,28 @@ namespace gui
             {
                 //todo: convert to a switch
                 AptinaStatusMessage msg = (AptinaStatusMessage)m;
-                StatusStr status = msg.getState();
-                if (status == StatusStr.STAT_FAIL_405)
+                Status status = msg.getState();
+                if (status == Status.STAT_FAIL_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.OrangeRed;
                 }
-                else if (status == StatusStr.STAT_FAIL_485)
+                else if (status == Status.STAT_FAIL_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.OrangeRed;
                 }
-                else if (status == StatusStr.STAT_ERR_405)
+                else if (status == Status.STAT_ERR_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.OrangeRed;
                 }
-                else if (status == StatusStr.STAT_ERR_485)
+                else if (status == Status.STAT_ERR_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.OrangeRed;
                 }
-                else if (status == StatusStr.STAT_GOOD_405)
+                else if (status == Status.STAT_GOOD_405)
                 {
                     CAS.b_Camera_405.BackColor = Color.Black;
                 }
-                else if (status == StatusStr.STAT_GOOD_485)
+                else if (status == Status.STAT_GOOD_485)
                 {
                     CAS.b_Camera_485.BackColor = Color.Black;
                 }
@@ -718,20 +718,20 @@ namespace gui
             try
             {
                 PhidgetsStatusMessage msg = (PhidgetsStatusMessage)m;
-                StatusStr status = msg.getState();
-                if (status == StatusStr.STAT_FAIL)
+                Status status = msg.getState();
+                if (status == Status.STAT_FAIL)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
                 }
-                else if (status == StatusStr.STAT_DISC)
+                else if (status == Status.STAT_DISC)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
                 }
-                else if (status == StatusStr.STAT_ATCH)
+                else if (status == Status.STAT_ATCH)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.Yellow;
                 }
-                else if (status == StatusStr.STAT_GOOD)
+                else if (status == Status.STAT_GOOD)
                 {
                     long now = DateTime.Now.Ticks;
                     long dist = now - last1018update;

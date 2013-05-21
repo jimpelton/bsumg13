@@ -42,14 +42,14 @@ namespace uGCapture
             {
                 Console.WriteLine(e.StackTrace);
                 rval = false;
-                dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
+                dp.Broadcast(new VcommStatusMessage(this, Status.STAT_FAIL));
             }
             catch (UnauthorizedAccessException e)
             {
                 Console.WriteLine(e.StackTrace);
                 port.Close();              
                 rval = false;
-                dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
+                dp.Broadcast(new VcommStatusMessage(this, Status.STAT_FAIL));
             }
             return rval;
         }
@@ -66,17 +66,18 @@ namespace uGCapture
                         outputData = data;
                         hasNewData = true;
                     }
-                    dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_GOOD));
+                    dp.Broadcast(new VcommStatusMessage(this, Status.STAT_GOOD));
                 }
             }
             catch (InvalidOperationException err) 
             {
                 //Reset();
-                dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
+                Console.Error.WriteLine(err.StackTrace);
             }
             catch (TimeoutException err) 
             {
                 //Reset();
+                Console.Error.WriteLine(err.StackTrace);
             }
 
         }
@@ -99,7 +100,8 @@ namespace uGCapture
             catch (UnauthorizedAccessException err)
             {
                 //Reset();
-                dp.Broadcast(new VcommStatusMessage(this, StatusStr.STAT_FAIL));
+                dp.Broadcast(new VcommStatusMessage(this, Status.STAT_FAIL));
+                Console.Error.WriteLine(err.StackTrace);
             }
            
             String output = "Weatherboard \n";

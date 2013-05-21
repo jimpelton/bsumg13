@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace uGCapture
 {
 
-    public enum StatusStr
+    public enum Status
     {
         STAT_ERR,        // device error
         STAT_FAIL,       // device failed
@@ -44,6 +44,7 @@ namespace uGCapture
 
     public enum ErrStr 
     {
+        ERR_EMPTY = 0,
         // INIT FAIL 
         INIT_FAIL_PHID_1018,
         INIT_FAIL_PHID_SPTL,
@@ -72,14 +73,36 @@ namespace uGCapture
 	    INIT_OK_LOGGER,
 
         // APTINA
-        APTINA_FAIL_DISCONNECT,
+        APTINA_DISCONNECT,
         APTINA_FAIL_CAPTURE_NULLBUFFER,
         APTINA_FAIL_CAPTURE,
+
+        //PHIDGITS
+        PHID_1018_STAT_DISC,
+        PHID_1018_STAT_ATCH,
+        PHID_1018_STAT_FAIL,
+        
+        //PHID TEMP
+        PHID_TEMP_STAT_DISC,
+        PHID_TEMP_STAT_ATCH,
+        PHID_TEMP_STAT_FAIL,
+
+        //PHID SPTL
+        PHID_SPTL_STAT_DISC,
+        PHID_SPTL_STAT_ATCH,
+        PHID_SPTL_STAT_FAIL,
+
+        NI6008_STAT_FAIL,
+        
+        UPS_ERR_NOT_FOUND,
+        UPS_ERR_STATUS_PROPERTY_NOT_FOUND,
 
         // WRITER
         WRITER_FAIL_CREATE_DIRS,
         WRITER_OK_CREATE_DIRS,
-        WRITER_OK_WRITE_BUFFER
+        WRITER_OK_WRITE_BUFFER, 
+
+        
     }
 
 
@@ -121,6 +144,7 @@ namespace uGCapture
         {
             switch (msg)
             {
+                case ErrStr.ERR_EMPTY:                        return "";
                 case ErrStr.INIT_FAIL_PHID_1018:              return "Phidgets 1018 DAQ failed to initialize."; 
                 case ErrStr.INIT_FAIL_PHID_SPTL:              return "Phidgets Spatial failed to initialize."; 
                 case ErrStr.INIT_FAIL_PHID_ACCEL:             return "Phidgets accelerometer failed to initialize."; 
@@ -148,8 +172,21 @@ namespace uGCapture
 
                 case ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER:   return "Midlib2 getFrame() returned null pointer.";
                 case ErrStr.APTINA_FAIL_CAPTURE:              return "Aptina capture failed.";
-                case ErrStr.APTINA_FAIL_DISCONNECT:           return "Midlib detected camera removal.";
+                case ErrStr.APTINA_DISCONNECT:           return "Midlib detected camera removal.";
 
+                case ErrStr.PHID_1018_STAT_DISC:              return "Phidgits 1080 disconnected.";
+                case ErrStr.PHID_1018_STAT_ATCH:              return "Phidgits 1018 attached.";
+                case ErrStr.PHID_1018_STAT_FAIL:              return "Phidgits 1018 failure!.";
+
+                case ErrStr.PHID_TEMP_STAT_DISC:              return "Phidgits Temperature probe diconnected.";
+                case ErrStr.PHID_TEMP_STAT_ATCH:              return "Phidgits temperature probe attached.";
+                case ErrStr.PHID_TEMP_STAT_FAIL:              return "Phidgits temperature probe failed!.";
+
+                case ErrStr.NI6008_STAT_FAIL:                 return "NI-6008 failure!.";
+
+                case ErrStr.UPS_ERR_NOT_FOUND:                return "A ups was not found!";
+                case ErrStr.UPS_ERR_STATUS_PROPERTY_NOT_FOUND:return "UPS status property is unavailable.";
+                
                 case ErrStr.WRITER_OK_CREATE_DIRS:            return "Writer successfully created storage directory.";
                 case ErrStr.WRITER_FAIL_CREATE_DIRS:          return "Writer failed to create storage directory.";
                 case ErrStr.WRITER_OK_WRITE_BUFFER:           return "Writer wrote buffer: ";
