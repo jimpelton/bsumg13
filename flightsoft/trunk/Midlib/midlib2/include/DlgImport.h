@@ -1,29 +1,29 @@
-//**************************************************************************************       
-// Copyright 2009 Aptina Imaging Corporation. All rights reserved.                             
-//                                                                                             
-//                                                                                             
-// No permission to use, copy, modify, or distribute this software and/or                      
-// its documentation for any purpose has been granted by Aptina Imaging Corporation.           
-// If any such permission has been granted ( by separate agreement ), it                       
-// is required that the above copyright notice appear in all copies and                        
-// that both that copyright notice and this permission notice appear in                        
-// supporting documentation, and that the name of Aptina Imaging Corporation or any            
-// of its trademarks may not be used in advertising or publicity pertaining                    
-// to distribution of the software without specific, written prior permission.                 
-//                                                                                             
-//                                                                                             
-//      This software and any associated documentation are provided "AS IS" and                
-//      without warranty of any kind.   APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS         
-//      ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT       
-//      OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS        
-//      FOR A PARTICULAR PURPOSE.  APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED        
-//      IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE   
-//      WILL BE UNINTERRUPTED OR ERROR-FREE.  FURTHERMORE, APTINA DOES NOT WARRANT OR          
-//      MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY            
-//      ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,         
-//      OR OTHERWISE.                                                                          
-//*************************************************************************************/       
-// DlgImport.h 
+//**************************************************************************************
+// Copyright 2009 Aptina Imaging Corporation. All rights reserved.
+//
+//
+// No permission to use, copy, modify, or distribute this software and/or
+// its documentation for any purpose has been granted by Aptina Imaging Corporation.
+// If any such permission has been granted ( by separate agreement ), it
+// is required that the above copyright notice appear in all copies and
+// that both that copyright notice and this permission notice appear in
+// supporting documentation, and that the name of Aptina Imaging Corporation or any
+// of its trademarks may not be used in advertising or publicity pertaining
+// to distribution of the software without specific, written prior permission.
+//
+//
+// This software and any associated documentation are provided "AS IS" and
+// without warranty of any kind. APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS
+// ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT
+// OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
+// FOR A PARTICULAR PURPOSE. APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED
+// IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE
+// WILL BE UNINTERRUPTED OR ERROR-FREE. FURTHERMORE, APTINA DOES NOT WARRANT OR
+// MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY
+// ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,
+// OR OTHERWISE.
+//*************************************************************************************/
+// DlgImport.h
 //
 
 #ifndef _DLGIMPORT_H_
@@ -47,7 +47,7 @@ typedef void          (CALLBACK *DEVW_SetState)(const char *state, int nValue);
 typedef void          (CALLBACK *DEVW_PokeRegisters)(unsigned int nBaseAddr, unsigned int nAddr, int nCount, void *pValues, int nAddrSize, int nDataSize);
 typedef void          (CALLBACK *DEVW_Pause)(int pause);
 typedef void          (CALLBACK *DEVW_PeekRegisters)(unsigned int nBaseAddr, unsigned int nAddr, int nCount, void *pValues, int nAddrSize, int nDataSize);
-typedef char *        (CALLBACK *DEVW_GetStateStr)(const char *state);
+typedef const char *  (CALLBACK *DEVW_GetStateStr)(const char *state);
 typedef void          (CALLBACK *DEVW_SetStateStr)(const char *state, const char *szValue);
 typedef void          (CALLBACK *DEVW_LoadPreset)(const char *szFilename, const char *szPreset);
 typedef int           (CALLBACK *DEVW_RunPython)(const char *szStatements);
@@ -59,6 +59,9 @@ typedef void          (CALLBACK *DEVW_GetMouseSelection)(int* pnSelectType, int*
 typedef void          (CALLBACK *DEVW_SetMouseSelection)(int nSelectType, int nStartX, int nStartY, int nEndX, int nEndY);
 typedef void          (CALLBACK *DEVW_BeginAccessRegs)(void);
 typedef void          (CALLBACK *DEVW_EndAccessRegs)(void);
+typedef int           (CALLBACK *DEVW_RefreshSensorFile)(const char *szFilename);
+typedef const char *  (CALLBACK *DEVW_GetIniFileName)(int nSeq);
+typedef unsigned int  (CALLBACK *DEVW_SendCommand)(unsigned int nCommand, unsigned int pParamSize, unsigned char *pParamBuffer, unsigned int nResultSize, unsigned char *pResultBuffer, unsigned int *pBytesReturned);
 
 typedef struct tag_devw_callbacks
 {
@@ -88,6 +91,9 @@ typedef struct tag_devw_callbacks
     DEVW_SetMouseSelection  SetMouseSelection;
     DEVW_BeginAccessRegs    BeginAccessRegs;
     DEVW_EndAccessRegs      EndAccessRegs;
+    DEVW_RefreshSensorFile  RefreshSensorFile;
+    DEVW_GetIniFileName     GetIniFileName;
+    DEVW_SendCommand        SendCommand;
 }
 DEVW_Callbacks;
 #define WM_PLUGIN_HIDE (WM_APP+0x211)
@@ -148,6 +154,22 @@ typedef void (CALLBACK *DLLFN_ImageData)(
 typedef void (CALLBACK *DLLFN_GrabFrame)(
                 unsigned char * pBuffer,
                 int             nDataLength);
+
+typedef void (CALLBACK *DLLFN_SaveImage)(
+                const char *szPath);
+
+typedef void (CALLBACK *DLLFN_LinearRgb)(
+                unsigned char *pRed,
+                unsigned char *pGreen,
+                unsigned char *pBlue,
+                int           nRow,
+                int           nPixelCount,
+                int           nBytesPerPixel,
+                int           nBitDepth);
+
+typedef int (CALLBACK *DLLFN_DroppedFile) (
+                const char *szFileName);
+
 #ifdef __cplusplus
 }
 #endif

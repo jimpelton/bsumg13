@@ -1,28 +1,28 @@
-//**************************************************************************************       
-// Copyright 2009 Aptina Imaging Corporation. All rights reserved.                             
-//                                                                                             
-//                                                                                             
-// No permission to use, copy, modify, or distribute this software and/or                      
-// its documentation for any purpose has been granted by Aptina Imaging Corporation.           
-// If any such permission has been granted ( by separate agreement ), it                       
-// is required that the above copyright notice appear in all copies and                        
-// that both that copyright notice and this permission notice appear in                        
-// supporting documentation, and that the name of Aptina Imaging Corporation or any            
-// of its trademarks may not be used in advertising or publicity pertaining                    
-// to distribution of the software without specific, written prior permission.                 
-//                                                                                             
-//                                                                                             
-//      This software and any associated documentation are provided "AS IS" and                
-//      without warranty of any kind.   APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS         
-//      ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT       
-//      OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS        
-//      FOR A PARTICULAR PURPOSE.  APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED        
-//      IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE   
-//      WILL BE UNINTERRUPTED OR ERROR-FREE.  FURTHERMORE, APTINA DOES NOT WARRANT OR          
-//      MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY            
-//      ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,         
-//      OR OTHERWISE.                                                                          
-//*************************************************************************************/       
+//**************************************************************************************
+// Copyright 2009 Aptina Imaging Corporation. All rights reserved.
+//
+//
+// No permission to use, copy, modify, or distribute this software and/or
+// its documentation for any purpose has been granted by Aptina Imaging Corporation.
+// If any such permission has been granted ( by separate agreement ), it
+// is required that the above copyright notice appear in all copies and
+// that both that copyright notice and this permission notice appear in
+// supporting documentation, and that the name of Aptina Imaging Corporation or any
+// of its trademarks may not be used in advertising or publicity pertaining
+// to distribution of the software without specific, written prior permission.
+//
+//
+// This software and any associated documentation are provided "AS IS" and
+// without warranty of any kind. APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS
+// ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT
+// OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
+// FOR A PARTICULAR PURPOSE. APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED
+// IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE
+// WILL BE UNINTERRUPTED OR ERROR-FREE. FURTHERMORE, APTINA DOES NOT WARRANT OR
+// MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY
+// ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,
+// OR OTHERWISE.
+//*************************************************************************************/
 
 #ifndef _LENSCAL_H_
 #define _LENSCAL_H_
@@ -77,6 +77,7 @@ typedef struct _CalibParams
     int         nYcenter_min;
     int         nYcenter_max;
     int         nFalloff4[3];//  G1, G2, B
+    int         nLumaOnly; //  Same correction to all Bayer channels
 } CalibParams;
 
 typedef enum {
@@ -117,6 +118,16 @@ typedef struct _AutoPgaParams
     int         nIterations;
     int         nLensRadius;
 } AutoPgaParams;
+
+typedef struct _GenericLscParams
+{
+    size_t      size;
+    int         nXzones;
+    int         nYzones;
+    int         nGap;
+    int         nCenterW;
+    int         nCenterH;
+} GenericLscParams;
 
 enum RegFormat
 {
@@ -259,6 +270,15 @@ lc_CalculateCorrectedSbl(void *lc, double *pResults, int nLength);
 
 LENSCAL_API int LENSCAL_DECL
 lc_CalculateCorrectedAvgColor(void *lc, double *pResults, int nLength);
+
+LENSCAL_API int LENSCAL_DECL
+lc_CalculateGenericLsc(void *lc, GenericLscParams *params,
+                       double *pResults /* nX * nY * 4 items; Gr, R, B, Gb; 0.0 - 1.0 scale*/,
+                       int nLength); // experimental
+LENSCAL_API int LENSCAL_DECL
+lc_CalculateGenericCenter(void *lc, GenericLscParams *params,
+                          double *pResults /* 4 items; Gr, R, B, Gb; 0.0 - 1.0 scale*/,
+                          int nLength); // experimental
 
 #ifdef __cplusplus
 }

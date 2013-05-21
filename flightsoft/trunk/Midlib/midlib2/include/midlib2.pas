@@ -1,31 +1,31 @@
 unit Midlib2;
 interface
 
-//**************************************************************************************       
-// Copyright 2009 Aptina Imaging Corporation. All rights reserved.                             
-//                                                                                             
-//                                                                                             
-// No permission to use, copy, modify, or distribute this software and/or                      
-// its documentation for any purpose has been granted by Aptina Imaging Corporation.           
-// If any such permission has been granted ( by separate agreement ), it                       
-// is required that the above copyright notice appear in all copies and                        
-// that both that copyright notice and this permission notice appear in                        
-// supporting documentation, and that the name of Aptina Imaging Corporation or any            
-// of its trademarks may not be used in advertising or publicity pertaining                    
-// to distribution of the software without specific, written prior permission.                 
-//                                                                                             
-//                                                                                             
-//      This software and any associated documentation are provided “AS IS” and                
-//      without warranty of any kind.   APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS         
-//      ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT       
-//      OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS        
-//      FOR A PARTICULAR PURPOSE.  APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED        
-//      IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE   
-//      WILL BE UNINTERRUPTED OR ERROR-FREE.  FURTHERMORE, APTINA DOES NOT WARRANT OR          
-//      MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY            
-//      ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,         
-//      OR OTHERWISE.                                                                          
-//*************************************************************************************/       
+//**************************************************************************************
+// Copyright 2009 Aptina Imaging Corporation. All rights reserved.
+//
+//
+// No permission to use, copy, modify, or distribute this software and/or
+// its documentation for any purpose has been granted by Aptina Imaging Corporation.
+// If any such permission has been granted ( by separate agreement ), it
+// is required that the above copyright notice appear in all copies and
+// that both that copyright notice and this permission notice appear in
+// supporting documentation, and that the name of Aptina Imaging Corporation or any
+// of its trademarks may not be used in advertising or publicity pertaining
+// to distribution of the software without specific, written prior permission.
+//
+//
+// This software and any associated documentation are provided “AS IS” and
+// without warranty of any kind. APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS
+// ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT
+// OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
+// FOR A PARTICULAR PURPOSE. APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED
+// IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE
+// WILL BE UNINTERRUPTED OR ERROR-FREE. FURTHERMORE, APTINA DOES NOT WARRANT OR
+// MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY
+// ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,
+// OR OTHERWISE.
+//*************************************************************************************/
 
 //Make sure that the data is packed w/ 8-byte alignment
 //Also make sure that enums are treated as integers
@@ -169,6 +169,7 @@ type mi_image_types =(MI_UNKNOWN_IMAGE_TYPE,
                      MI_RGB32,
                      MI_BAYER_12,
                      MI_BAYER_S12,
+					 MI_BAYER_S24,
                      MI_RGB48,
                      MI_JPEG,
                      MI_BAYER_STEREO,
@@ -184,7 +185,12 @@ type mi_image_types =(MI_UNKNOWN_IMAGE_TYPE,
                      MI_BAYER_10_IHDR,
                      MI_JPEG_SPEEDTAGS,
                      MI_BAYER_16,
-                     MI_YCBCR_10
+                     MI_YCBCR_10,
+                     MI_BAYER_6,
+                     MI_JPEG_ROT,
+                     MI_Y400,
+                     MI_RGB555L,
+                     MI_RGB555M
                      );
 
 const
@@ -306,9 +312,23 @@ type mi_sensor_types = (MI_UNKNOWN_SENSOR,
                         MI_RESERVED_SENSOR65,
                         MI_RESERVED_SENSOR66,
                         MI_RESERVED_SENSOR67,
-						MI_RESERVED_SENSOR68,
-						MI_RESERVED_SENSOR69,
-						MI_RESERVED_SENSOR70
+                        MI_RESERVED_SENSOR68,
+                        MI_RESERVED_SENSOR69,
+                        MI_RESERVED_SENSOR70,
+                        MI_RESERVED_SENSOR71,
+                        MI_RESERVED_SENSOR72,
+                        MI_RESERVED_SENSOR73,
+                        MI_RESERVED_SENSOR74,
+                        MI_RESERVED_SENSOR75,
+                        MI_RESERVED_SENSOR76,
+                        MI_RESERVED_SENSOR77,
+                        MI_RESERVED_SENSOR78,
+                        MI_RESERVED_SENSOR79,
+						MI_RESERVED_SENSOR80,
+						MI_RESERVED_SENSOR81,
+						MI_RESERVED_SENSOR82,
+						MI_RESERVED_SENSOR83,
+						MI_RESERVED_SENSOR84
                         );
 //  Sensor names no longer reserved
 const
@@ -398,7 +418,14 @@ type mi_modes      = (MI_ERROR_CHECK_MODE,
                       MI_LSB_ALIGNED,          //  parallel port data is LSB-aligned
                       MI_NACK_RETRIES,         //  number of times to retry after I2C NACK
                       MI_RX_CCIR656,           //  use CCIR-656 embedded sync codes
-                      MI_RX_INTERLACED         //  incoming stream is interlaced
+                      MI_RX_INTERLACED,         //  incoming stream is interlaced
+                      MI_MEM_CAPTURE_CYCLE,    // linear, circular
+                      MI_TRIGGER_HIGH_WIDTH,   // trigger high width in clock.
+                      MI_TRIGGER_LOW_WIDTH,   // trigger low width in clock.
+                      MI_TRIGGER, // trigger modes, 0 : No trigger, 1: single shot, 2: continuous.
+                      MI_OUTPUT_PORT, // Port for image data out, 0: demo3, 1: CameraLink
+                      MI_PIXEL_PACK,           //  Pack 10- or 12-bit pixel data
+		      MI_PARITY
 );
 
 //for backwards compatibility
@@ -736,7 +763,7 @@ type charPtr = ^char;
 //  mi_ReadSensorRegStr   - read the register or variable using "register name" and "bitfield name" or NULL
 //  mi_WriteSensorRegStr  - writes register or variable using "register name" and "bitfield name" or NULL
 //  mi_LoadSectionINI     - used to load  a section from ini file. return MI_SECTION_SUCCESS: succeed; else error.
-//  mi_mi_ReadVars        - reads (sequence and continuous) variables using pointer to a register
+//  mi_ReadVars           - reads (sequence and continuous) variables using pointer to a register
 //*****************************************************************************/
 function  mi_OpenCameras(pCameras : mi_camera_array; nNumCameras : Pmi_s32; sensor_dir : mi_string) : mi_s32; cdecl; external 'midlib2.dll';
 function  mi_OpenCameras2(pCameras : mi_camera_array; nNumCameras : Pmi_s32; sensor_dir : mi_string; transportType: mi_u32; dllName: mi_string) : mi_s32; cdecl; external 'midlib2.dll';

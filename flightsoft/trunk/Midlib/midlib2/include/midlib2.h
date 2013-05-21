@@ -1,28 +1,28 @@
-//**************************************************************************************       
-// Copyright 2009 Aptina Imaging Corporation. All rights reserved.                             
-//                                                                                             
-//                                                                                             
-// No permission to use, copy, modify, or distribute this software and/or                      
-// its documentation for any purpose has been granted by Aptina Imaging Corporation.           
-// If any such permission has been granted ( by separate agreement ), it                       
-// is required that the above copyright notice appear in all copies and                        
-// that both that copyright notice and this permission notice appear in                        
-// supporting documentation, and that the name of Aptina Imaging Corporation or any            
-// of its trademarks may not be used in advertising or publicity pertaining                    
-// to distribution of the software without specific, written prior permission.                 
-//                                                                                             
-//                                                                                             
-//      This software and any associated documentation are provided "AS IS" and                
-//      without warranty of any kind.   APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS         
-//      ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT       
-//      OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS        
-//      FOR A PARTICULAR PURPOSE.  APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED        
-//      IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE   
-//      WILL BE UNINTERRUPTED OR ERROR-FREE.  FURTHERMORE, APTINA DOES NOT WARRANT OR          
-//      MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY            
-//      ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,         
-//      OR OTHERWISE.                                                                          
-//*************************************************************************************/       
+//**************************************************************************************
+// Copyright 2009 Aptina Imaging Corporation. All rights reserved.
+//
+//
+// No permission to use, copy, modify, or distribute this software and/or
+// its documentation for any purpose has been granted by Aptina Imaging Corporation.
+// If any such permission has been granted ( by separate agreement ), it
+// is required that the above copyright notice appear in all copies and
+// that both that copyright notice and this permission notice appear in
+// supporting documentation, and that the name of Aptina Imaging Corporation or any
+// of its trademarks may not be used in advertising or publicity pertaining
+// to distribution of the software without specific, written prior permission.
+//
+//
+// This software and any associated documentation are provided "AS IS" and
+// without warranty of any kind. APTINA IMAGING CORPORATION EXPRESSLY DISCLAIMS
+// ALL WARRANTIES EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, NONINFRINGEMENT
+// OF THIRD PARTY RIGHTS, AND ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS
+// FOR A PARTICULAR PURPOSE. APTINA DOES NOT WARRANT THAT THE FUNCTIONS CONTAINED
+// IN THIS SOFTWARE WILL MEET YOUR REQUIREMENTS, OR THAT THE OPERATION OF THIS SOFTWARE
+// WILL BE UNINTERRUPTED OR ERROR-FREE. FURTHERMORE, APTINA DOES NOT WARRANT OR
+// MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE USE OF ANY
+// ACCOMPANYING DOCUMENTATION IN TERMS OF ITS CORRECTNESS, ACCURACY, RELIABILITY,
+// OR OTHERWISE.
+//*************************************************************************************/
 
 // MIDLIB (Micron Imaging Device LIBrary) 
 
@@ -43,6 +43,9 @@ extern "C" {
     #else
         #define MIDLIB_API __declspec(dllimport)
     #endif
+    #ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+    #endif
     #include <windows.h>
 #else
     #define MIDLIB_API
@@ -50,8 +53,9 @@ extern "C" {
 
 //Make sure that the data is packed w/ 8-byte alignment
 //Also make sure that enums are treated as integers
+#ifndef _WIN64
 #pragma pack(8)
-
+#endif
 
 /***************************************************************************
   Error and log types
@@ -141,6 +145,8 @@ typedef __w64 int         mi_intptr;
 #else
 typedef int               mi_intptr;
 #endif
+typedef unsigned long long mi_u64;
+typedef long long         mi_s64;
 
 /****************************************************************************
   Enums
@@ -166,7 +172,7 @@ typedef enum
      //Grabframe return codes
      MI_GRAB_FRAME_ERROR        = 0x03,         //General failure for grab frame routine
      MI_NOT_ENOUGH_DATA_ERROR   = 0x04,         //Grab frame failed to return enough data
-     MI_EOF_MARKER_ERROR        = 0x05,         //EOF packet not found in grab frame dat
+     MI_EOF_MARKER_ERROR        = 0x05,         //EOF packet not found in grab frame data
      MI_BUFFER_SIZE_ERROR       = 0x06,         //GrabFrame buffer is too small
      //mi_OpenCameras return codes
      MI_SENSOR_FILE_PARSE_ERROR = 0x07,         //There was an error parsing the sdat file
@@ -178,6 +184,7 @@ typedef enum
      MI_I2C_NACK_ERROR          = 0x0C,         //I2C NAC error
      MI_I2C_TIMEOUT             = 0x0D,         //I2C time out error
      MI_CAMERA_TIMEOUT          = 0x0E,      
+     MI_TOO_MUCH_DATA_ERROR     = 0x0F,         //Grab frame returned more data than expected
 
      MI_CAMERA_NOT_SUPPORTED    = 0x10,         //The function call is not supported
 
@@ -215,6 +222,8 @@ typedef enum { MI_UNKNOWN_IMAGE_TYPE,
 
                MI_BAYER_S12,  // Signed 16-bit, 0-4095 nominal value range,
                               // intermediate image format used in software colorpipe
+               MI_BAYER_S24,  // Signed 24-bit, 0-16777215 nominal value range,
+                              // intermediate image format used in software colorpipe
                MI_RGB48,      // R, G, B, 0-65535
                MI_JPEG,
                MI_BAYER_STEREO,  //  each 16-bit pixel is 8-bit left pixel and 8-bit right pixel
@@ -231,6 +240,11 @@ typedef enum { MI_UNKNOWN_IMAGE_TYPE,
                MI_JPEG_SPEEDTAGS,  // JPEG with Scalado SpeedTags
                MI_BAYER_16,
                MI_YCBCR_10,
+               MI_BAYER_6,
+               MI_JPEG_ROT,   // JPEG with 90-deg rotation within the blocks
+               MI_Y400,     //  Like YCbCr, but with Y only
+               MI_RGB555L,
+               MI_RGB555M,
 
    MI_NUM_IMAGE_TYPES
 } mi_image_types;
@@ -248,6 +262,8 @@ typedef enum { MI_UNKNOWN_PRODUCT,
                MI_MIDES_XL  = 0x100C,
                MI_DEMO_2X   = 0x100D,
                MI_DEMO_3    = 0x100E,
+               MI_MIGMATE_3 = 0x100F,
+               MI_EMULATION_3 = 0x1010,
                MI_CLINK_1   = 0x5555,            // Camera Link product ID
                MI_CARDCAM_1 = 0xD100
 } mi_product_ids;
@@ -355,6 +371,21 @@ typedef enum { MI_UNKNOWN_SENSOR,
                MI_RESERVED_SENSOR68,
                MI_RESERVED_SENSOR69,
                MI_RESERVED_SENSOR70,
+               MI_RESERVED_SENSOR71,
+               MI_RESERVED_SENSOR72,
+               MI_RESERVED_SENSOR73,
+               MI_RESERVED_SENSOR74,
+               MI_RESERVED_SENSOR75,
+               MI_RESERVED_SENSOR76,
+               MI_RESERVED_SENSOR77,
+               MI_RESERVED_SENSOR78,
+               MI_RESERVED_SENSOR79,
+               MI_RESERVED_SENSOR80,
+               MI_RESERVED_SENSOR81,
+               MI_RESERVED_SENSOR82,
+               MI_RESERVED_SENSOR83,
+               MI_RESERVED_SENSOR84,
+			   MI_RESERVED_SENSOR85,
 } mi_sensor_types;
 
 //  Sensor names no longer reserved
@@ -404,6 +435,7 @@ typedef enum { MI_UNKNOWN_SENSOR,
 #define MI_MT9F002   MI_RESERVED_SENSOR55  /* 14041 */
 #define MI_AR0331    MI_RESERVED_SENSOR57  /* 3110 */
 #define MI_AR0832    MI_RESERVED_SENSOR58  /* 8141 */
+
 
 typedef enum { MI_ERROR_CHECK_MODE,
                MI_REG_ADDR_SIZE,
@@ -473,7 +505,7 @@ typedef enum { MI_ERROR_CHECK_MODE,
 
                //  Capture to demo board RAM
                MI_MEM_CAPTURE,           // set number of frames to capture
-               MI_MEM_CAPTURE_PROGRESS,  // frames stored do far, read-only
+               MI_MEM_CAPTURE_PROGRESS,  // frames stored so far, read-only
                MI_MEM_CAPTURE_MB,        // available RAM in MB, read-only
 
                //  Stereo
@@ -488,10 +520,21 @@ typedef enum { MI_ERROR_CHECK_MODE,
                //  Image data receiver parameters (CCP, MIPI, HiSPi, etc.)
                MI_RX_CCIR656,           //  use CCIR-656 embedded sync codes
                MI_RX_INTERLACED,        //  incoming stream is interlaced
+
+               MI_MEM_CAPTURE_CYCLE,    // linear, circular
+
+               MI_TRIGGER_HIGH_WIDTH,   // trigger high width in clock.
+               MI_TRIGGER_LOW_WIDTH,   // trigger low width in clock.
+               MI_TRIGGER, // trigger modes, 0 : No trigger, 1: single shot, 2: continuous.
+               MI_OUTPUT_PORT, // Port for image data out, 0: demo3, 1: CameraLink
+
+               MI_PIXEL_PACK,   //  Pack 10- or 12-bit pixel data
+
+               MI_PARITY,   //  parity mode for UART transports (same definition as WinBase.h)
 } mi_modes;
 
-#define MI_SWIZZLE_MODE MI_SW_UNSWIZZLE_MODE //for backwards compatibility
-#define MI_SWIZZLE_DEFAULT MI_SW_UNSWIZZLE_DEFAULT //for backwards compatibility
+//#define MI_SWIZZLE_MODE MI_SW_UNSWIZZLE_MODE //for backwards compatibility
+//#define MI_SWIZZLE_DEFAULT MI_SW_UNSWIZZLE_DEFAULT //for backwards compatibility
 
 typedef enum { MI_NO_UNSWIZZLE,
                MI_HW_UNSWIZZLE,
@@ -513,6 +556,17 @@ typedef enum { MI_RX_HISPI_S,
                MI_RX_HISPI_DSLR,
 } mi_rx_modes;
 
+typedef enum { MI_PARITY_NONE,
+               MI_PARITY_ODD,
+               MI_PARITY_EVEN,
+               MI_PARITY_MARK,
+               MI_PARITY_SPACE,
+} mi_parity_modes;
+
+typedef enum { MI_MEM_CAPTURE_LINEAR,
+               MI_MEM_CAPTURE_CIRCULAR,
+} mi_mem_capture_cycles;
+
 //  This is a special value for mode MI_RX_LANES that indicates the
 //  MT9H004 'HD' mode that uses 4 lanes out of the 8-lane interface.
 #define MI_RX_HISPI_HD_4_LANES      0x10000004
@@ -520,6 +574,7 @@ typedef enum { MI_RX_HISPI_S,
 typedef enum { MI_HDMI_OFF      = 0,
                MI_HDMI_1080p60,
                MI_HDMI_720p60,
+               MI_HDMI_1080p30,
 } mi_hdmi_modes;
 
 typedef enum { MI_STEREO_LEFT, // or monocular
@@ -741,7 +796,8 @@ typedef struct _mi_reg_data_t
 *****************************************************************************/
 typedef struct
 {
-    mi_u32                  reg_addr;  // = 0 if there is no selector register
+    mi_u32                  reg_addr_read;  // = 0 if there is no selector register
+    mi_u32                  reg_addr_write;  // = 0 if there is no selector register
     mi_s32                  num_vals; 
     mi_addr_space_val_t*    addr_space_val;
     mi_u32                  far1_reg_addr;
@@ -969,14 +1025,14 @@ typedef mi_s32 (*MI_INICOMMANDCALLBACK)(mi_camera_t *pCamera, const char *szKey,
   The values are stored in the file little-endian.
 */
 #define MI_CCR_ID               0x0a524343
-#define MI_CCR_VERSION          0x0102
+#define MI_CCR_IT_RGB           0   //  planar; R, G, B
 #define MI_CCR_IT_BAYER         1
 #define MI_CCR_IT_BAYER_ODDH    2
 #define MI_CCR_IT_BAYER_ODDV    4
 typedef struct
 {
     mi_u32      ccrID;          //  MI_CCR_ID = 0x0a524343 = 'CCR\n'
-    mi_u32      ccrVersion;     //  MI_CCR_VERSION = 0x0102
+    mi_u32      ccrVersion;     //  MI_CCR_VERSION = 0x102 or 0x103
     mi_u32      width;
     mi_u32      height;
     mi_u32      imageType;      //  MI_CCR_IT_BAYER for Bayer, plus MI_CCR_IT_BAYER_ODDH/V
@@ -990,6 +1046,31 @@ typedef struct
     char        comment[256];   //  NUL-terminated string
 } mi_ccr_header_t;
 
+/****************************************************************************
+  Type: mi_dxr_header_t
+ 
+  This is the header for DXR files, which are used by the DxO Labs tools.
+  The values are stored in the file little-endian.
+  Bayer data is planar.
+*/
+#define MI_DXR_ID               0x20525844
+#define MI_DXR_IT_RGB           "RGB"   //  planar; R, G, B
+#define MI_DXR_IT_BAYER0        "Bayer0"//  planar; Gb B R Gr
+#define MI_DXR_IT_BAYER1        "Bayer1"//  planar; B Gb Gr R
+#define MI_DXR_IT_BAYER2        "Bayer2"//  planar; R Gr Gb B
+#define MI_DXR_IT_BAYER3        "Bayer3"//  planar; Gr R B Gb
+#define MI_DXR_IT_MONO          ""      //  one plane
+typedef struct DXRImageHeader
+{
+    mi_u32      ucFourCC;       // 0x20525844 = 'DXR '
+    char        ucType[16];     // hint for interpreting the raw data
+    mi_u32      uiWidth;        // image width
+    mi_u32      uiHeight;       // image height
+    mi_u32      uiPrecision;    // precision, i.e. number of bits per sample
+    mi_u32      uiIsSigned;     // 0 for unsigned, 1 for signed samples
+    mi_u32      uiChannels;     // number of channels
+    char        ucPadding[24];  // reserved for future use
+} mi_dxr_header_t;
 
 /****************************************************************************
   Exported Functions
@@ -1010,6 +1091,8 @@ typedef struct
   mi_InvalidateRegCache - Invalidates the entire register cache
   mi_IsBayer            - returns true if the current image type is a Bayer format
   mi_IsSOC              - returns true if the sensor is considered an SOC sensor
+  mi_IsArrayImager      - returns true if the sensor is array imager
+  mi_IsFarSpace         - returns true if the address space belongs to attatched sensor
 
   mi_ParseSensorFile    - parse a given .sdat file into a mi_sensor_t structure
   mi_ParseChipFile      - parse a given .cdat file into a mi_chip_t structure
@@ -1027,6 +1110,7 @@ MIDLIB_API const char *     mi_Home();
 MIDLIB_API const char *     mi_SensorData();
 MIDLIB_API mi_s32           mi_OpenCameras(mi_camera_t* pCameras[MI_MAX_CAMERAS],  mi_s32* nNumCameras, const char *sensor_dir);
 MIDLIB_API mi_s32           mi_OpenCameras2(mi_camera_t* pCameras[MI_MAX_CAMERAS],  mi_s32* nNumCameras, const char *sensor_dir, mi_u32 transportType, const char *dllName);
+MIDLIB_API mi_s32           mi_GetCameras(mi_camera_t *pCamera[MI_MAX_CAMERAS], mi_s32 *nNumCameras, mi_u32 transportType, const char *dllName);
 MIDLIB_API void             mi_CloseCameras();
 MIDLIB_API void             mi_CloseCameras2(mi_camera_t* pCameras[], mi_s32 nNumCameras);
 MIDLIB_API void             mi_CancelProbe();
@@ -1035,10 +1119,11 @@ MIDLIB_API mi_s32           mi_ExistsBitfield(mi_camera_t* pCamera, const char* 
 MIDLIB_API mi_s32           mi_ExistsRegister(mi_camera_t* pCamera, const char* pszRegisterName);
 MIDLIB_API mi_bitfield_t*   mi_FindBitfield(mi_camera_t* pCamera, const char* pszRegisterName, const char* pszBitfieldrName);
 MIDLIB_API mi_reg_data_t*   mi_FindRegister(mi_camera_t* pCamera, const char* pszRegisterName);
-MIDLIB_API mi_s32           mi_ExistsBitfield2(mi_camera_t* pCamera, const char* pszRegisterName, const char* pszBitfieldName);
-MIDLIB_API mi_s32           mi_ExistsRegister2(mi_camera_t* pCamera, const char* pszRegisterName);
-MIDLIB_API mi_bitfield_t*   mi_FindBitfield2(mi_camera_t* pCamera, const char* pszRegisterName, const char* pszBitfieldrName);
-MIDLIB_API mi_reg_data_t*   mi_FindRegister2(mi_camera_t* pCamera, const char* pszRegisterName);
+MIDLIB_API mi_s32           mi_FindChip(mi_camera_t * pCamera, const char *szChipName);
+MIDLIB_API mi_s32           mi_ExistsBitfield2(mi_camera_t* pCamera, mi_s32 nChip, const char* pszRegisterName, const char* pszBitfieldName);
+MIDLIB_API mi_s32           mi_ExistsRegister2(mi_camera_t* pCamera, mi_s32 nChip, const char* pszRegisterName);
+MIDLIB_API mi_bitfield_t*   mi_FindBitfield2(mi_camera_t* pCamera, mi_s32 nChip, const char* pszRegisterName, const char* pszBitfieldrName);
+MIDLIB_API mi_reg_data_t*   mi_FindRegister2(mi_camera_t* pCamera, mi_s32 nChip, const char* pszRegisterName);
 MIDLIB_API mi_reg_data_t*   mi_FindRegisterAddr(mi_camera_t* pCamera, mi_u32 regAddr, mi_u32 addrSpace, mi_addr_type addrType);
 MIDLIB_API mi_reg_data_t*   mi_FindRegisterWildcard(mi_camera_t *pCamera, const char *pszWildcard, int *pnPos);
 MIDLIB_API mi_addr_space_val_t* mi_CurrentAddrSpace(mi_camera_t *pCamera);
@@ -1055,9 +1140,11 @@ MIDLIB_API mi_s32           mi_IsBayer(mi_camera_t* pCamera);
 MIDLIB_API mi_s32           mi_IsYcbcrImageType(mi_image_types imageType);
 MIDLIB_API mi_s32           mi_IsJpegImageType(mi_image_types imageType);
 MIDLIB_API mi_s32           mi_IsSOC(mi_camera_t* pCamera);
+MIDLIB_API mi_s32           mi_IsArrayImager(mi_camera_t* pCamera);
 MIDLIB_API mi_s32           mi_IsFarSpace(mi_addr_space_val_t *pSpace);
 
 MIDLIB_API mi_s32           mi_ParseSensorFile(mi_camera_t *pCamera, const char *fileName, mi_sensor_t *sensor_data);
+MIDLIB_API mi_s32           mi_RefreshSensorFile(mi_camera_t *pCamera, const char *fileName);
 MIDLIB_API mi_s32           mi_ParseFarSensorFile(mi_camera_t *pCamera, const char *far_id, mi_addr_type far_type, mi_u32 far_base, const char *far_sdat, mi_sensor_t *sensor_data);
 MIDLIB_API mi_s32           mi_ParseLongDescFile(mi_camera_t *pCamera, const char *fileName);
 MIDLIB_API void             mi_DestructSensor(mi_sensor_t *pSensor);
@@ -1082,13 +1169,24 @@ MIDLIB_API mi_s32           mi_ReadSensorRegAddr(mi_camera_t* pCamera, mi_addr_t
 MIDLIB_API mi_s32           mi_WriteSensorRegAddr(mi_camera_t* pCamera, mi_addr_type addrType, mi_u32 addrSpace, mi_u32 addr, mi_s32 is8, mi_u32 value);
 MIDLIB_API mi_s32           mi_ReadSensorRegStr(mi_camera_t *pCamera, const char *pszRegisterName, const char *pszBitfieldName, mi_u32 *val);
 MIDLIB_API mi_s32           mi_WriteSensorRegStr(mi_camera_t *pCamera, const char *pszRegisterName, const char *pszBitfieldName, mi_u32 val);
-MIDLIB_API int              mi_GetAddrIncrement(mi_camera_t *pCamera, mi_addr_type addrType);
+MIDLIB_API mi_s32           mi_ReadSensorRegs(mi_camera_t* pCamera, mi_u32 numRegs, mi_reg_data_t* pReg[], mi_u32 vals[], mi_s32 retVals[]);
+MIDLIB_API mi_s32           mi_WriteSensorRegs(mi_camera_t *pCamera, mi_u32 numRegs, mi_reg_data_t* pReg[], mi_u32 vals[], mi_s32 retVals[]);
+MIDLIB_API mi_s32           mi_ReadSensorRegsAddr(mi_camera_t* pCamera, mi_u32 numRegs, mi_addr_type addrType[], mi_u32 addrSpace[], mi_u32 addr[], mi_s32 is8[], mi_u32 vals[], mi_s32 retVals[]);
+MIDLIB_API mi_s32           mi_WriteSensorRegsAddr(mi_camera_t* pCamera, mi_u32 numRegs, mi_addr_type addrType[], mi_u32 addrSpace[], mi_u32 addr[], mi_s32 is8[], mi_u32 vals[], mi_s32 retVals[]);
+MIDLIB_API mi_s32           mi_ReadSensorRegsStr(mi_camera_t *pCamera, mi_u32 numRegs, const char *pszRegisterName[], const char *pszBitfieldName[], mi_u32 vals[], mi_s32 retVals[]);
+MIDLIB_API mi_s32           mi_WriteSensorRegsStr(mi_camera_t *pCamera, mi_u32 numRegs, const char *pszRegisterName[], const char *pszBitfieldName[], mi_u32 vals[], mi_s32 retVals[]);
+MIDLIB_API mi_u32           mi_GetAddrIncrement(mi_camera_t *pCamera, mi_u32 shipAddr, mi_addr_type addrType);
+MIDLIB_API mi_u32           mi_GetAddrIncrementDataSize(mi_camera_t *pCamera, mi_u32 shipAddr, mi_addr_type addrType);
+MIDLIB_API mi_u32           mi_GetSensorAddrIncrement(mi_camera_t *pCamera, mi_addr_type addrType);
 MIDLIB_API int              mi_McuAddrStyle(mi_camera_t *pCamera);
 MIDLIB_API int              mi_McuDirectStyle(mi_camera_t *pCamera);
 MIDLIB_API mi_s32           mi_GetLongDescription(mi_camera_t *pCamera, const char *pszRegisterName, const char *pszBitfieldName, char *szLongDesc, mi_s32 bufferLen);
 
 MIDLIB_API mi_s32           mi_startTransport(mi_camera_t *pCamera);
 MIDLIB_API mi_s32           mi_stopTransport(mi_camera_t *pCamera);
+MIDLIB_API mi_s32           mi_readSystemRegisters(mi_camera_t *pCamera, mi_addr_type addrType, mi_u32 addrSpace, mi_u32 startAddr, mi_u32 dataSize, mi_u32 numRegs, mi_u32 vals[]);
+MIDLIB_API mi_s32           mi_writeSystemRegisters(mi_camera_t *pCamera, mi_addr_type addrType, mi_u32 addrSpace, mi_u32 startAddr, mi_u32 dataSize, mi_u32 numRegs, mi_u32 vals[]);
+MIDLIB_API mi_s32           mi_sendCommand(mi_camera_t *pCamera, mi_u32 command, mi_u32 paramSize, mi_u8 *paramBuffer, mi_u32 *statusCode, mi_u32 resultSize, mi_u8 *resultBuffer, mi_u32 *bytesReturned);
 MIDLIB_API mi_s32           mi_readSensorRegisters(mi_camera_t *pCamera, mi_u32 addrSpace, mi_u32 startAddr, mi_u32 numRegs, mi_u32 vals[]);
 MIDLIB_API mi_s32           mi_writeSensorRegisters(mi_camera_t *pCamera, mi_u32 addrSpace, mi_u32 startAddr, mi_u32 numRegs, mi_u32 vals[]);
 MIDLIB_API mi_s32           mi_readRegister(mi_camera_t *pCamera, mi_u32 shipAddr, mi_u32 regAddr, mi_u32 *val);
