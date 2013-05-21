@@ -17,9 +17,33 @@ mi_camera_t *g_mi_cameras[MAX_CAMS];
 int g_isMidLibInit = 0;
 
 int mallocate(ugCamera *);
-unsigned char * _doCapture(ugCamera *);
 
-int initMidLib2(int nCamsReq)
+int openTransport_(ugCamera*);
+unsigned char * doCapture_(ugCamera *);
+void stopTransport_(ugCamera *cam);
+
+AttachCallback attachCallbackAddr;
+
+/************************************************************************/
+/* EXPORTS TO MANAGED SPACE                                             */
+/************************************************************************/
+
+unsigned long sensorBufferSizeIdx(int camIdx)
+{
+    return g_cameras[camIdx].pCamera->sensor->bufferSize;
+}
+
+int getWavelengthIdx(int camIdx)
+{
+    return (g_cameras[camIdx]).camNm;
+}
+
+unsigned char* doCaptureIdx(int cam_idx)
+{
+    return doCapture_(&g_cameras[cam_idx]);
+}
+
+int initMidLib2(int nCamsReq, void *hwnd, long attach_cb_addr)
 {
     if (g_isMidLibInit) return 0;
 
@@ -36,7 +60,10 @@ int initMidLib2(int nCamsReq)
 
     //memset(g_cameras, 0, sizeof(ugCamera)*MAX_CAMS);
 
-    mi_s32 errval = mi_OpenCameras(g_mi_cameras, &g_cams_found, mi_SensorData());
+    attachCallbackAddr = (AttachCallback)attach_cb_addr;
+    mi_s32 errval = mi_SetDeviceChangeCallback((HWND)hwnd, miDevCallBack);
+
+    errval = mi_OpenCameras(g_mi_cameras, &g_cams_found, mi_SensorData());
     if ( errval != MI_CAMERA_SUCCESS ) {
         return errval;
     }
@@ -47,13 +74,12 @@ int initMidLib2(int nCamsReq)
         g_cameras[i].camIdx  = i;
         g_cameras[i].pCamera = g_mi_cameras[i];   
 
-        errval = openTransport(&g_cameras[i]);
+        errval = openTransport_(&g_cameras[i]);
         if (errval != MI_CAMERA_SUCCESS){
             printf("%s %s: Camera failed to initialize.", __FILE__, __LINE__);
         }
     }
 
-    //errval = mi_SetDeviceChangeCallback((HWND)hwnd, &SimpleCapture::miDevCallBack);
 
     g_isMidLibInit = 1;
     printf("Midlib initialized.\n");
@@ -65,7 +91,30 @@ void setInitPath(char *path)
 
 }
 
-int openTransport(ugCamera *cam)
+mi_u32 miDevCallBack(HWND handle, _mi_camera_t* cam, mi_u32 flag)
+{
+    printf("inside miDevCallBack.");
+    int idx;
+    if (cam == g_cameras[0].pCamera) {
+        idx = 0;
+    } else { idx = 1; }
+
+    attachCallbackAddr(idx);
+    return 0;
+}
+
+void printCameraInfo()
+{
+}
+
+
+
+/************************************************************************/
+/* NATIVE ONLY                                                          */
+/************************************************************************/
+
+
+int openTransport_(ugCamera *cam)
 {
     int rval = 0;
  /*   if (!g_isMidLibInit) {
@@ -113,8 +162,8 @@ int openTransport(ugCamera *cam)
     //    cam->nHeight    = pCamera->sensor->height;
     //}
 
-    cam->nWidth     = pCamera->sensor->width;
-    cam->nHeight    = pCamera->sensor->height;
+    cam->nWidth    =  pCamera->sensor->width;
+    cam->nHeight   = pCamera->sensor->height;
     pCamera->sensor->imageType = MI_BAYER_12;
     pCamera->updateFrameSize(pCamera, pCamera->sensor->width, 
         pCamera->sensor->height, PIXELBITS, 0);
@@ -139,13 +188,7 @@ int openTransport(ugCamera *cam)
     return 0;
 }
 
-unsigned char* doCapture(int cam_idx)
-{
-    //int cam_idx = g_cameras[0].camNm == cam_nm ? 0 : 1;
-    return _doCapture(&g_cameras[cam_idx]);
-}
-
-unsigned char *_doCapture(ugCamera *cam)
+unsigned char *doCapture_(ugCamera *cam)
 {
     int nRet;
     int count=0;
@@ -160,15 +203,7 @@ unsigned char *_doCapture(ugCamera *cam)
     return cam->pCameraBuff;
 }
 
-
-int getWavelength(int camIdx)
-{
-    return (g_cameras[camIdx]).camNm;
-}
-
-
-
-void stopTransport(ugCamera *cam)
+void stopTransport_(ugCamera *cam)
 {
     //close the camera and clean up
     cam->pCamera->stopTransport(cam->pCamera);
@@ -180,7 +215,7 @@ void stopTransport(ugCamera *cam)
 
 int mallocate(ugCamera *cam)
 {
-     //Allocate a buffer to store the images
+    //Allocate a buffer to store the images
     cam->pCameraBuff  = (unsigned char *)malloc(cam->frameSize);
     if (cam->pCameraBuff == NULL) {
         printf("Error trying to create a buffer of size %d to capture %d frames.\n", 
@@ -199,16 +234,9 @@ int mallocate(ugCamera *cam)
     return 0;
 }
 
-unsigned long sensorBufferSize(int camIdx)
-{
-    return g_cameras[camIdx].pCamera->sensor->bufferSize;
-}
-
-void printCameraInfo()
-{
 
 
-}
+
 
 
 

@@ -12,40 +12,114 @@ namespace uGCapture
 {
 public class AptinaController : ReceiverController
 {
+    /// <summary>
+    /// Initialize midlib2 system.
+    /// </summary>
+    /// <param name="nCamsReq">Number of cameras to expect.</param>
+    /// <param name="hwnd">Window handle (type HWND) to main window.</param>
+    /// <param name="attachCallback">Device detach event callback.</param>
+    /// <returns>0 on success, 1 or a value from enum mi_error_code on failure.</returns>
+    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int initMidLib2(int nCamsReq, IntPtr hwnd, AttachCallback attachCallback);
+
+    /// <summary>
+    /// The wavelength for the given camera index.
+    /// Value is based off the fuse id value provided from midlib in when
+    /// querying readRegister() with 0x00FA register address.
+    /// </summary>
+    /// <param name="camIdx">Wavelength to get</param>
+    /// <returns>an int that is the wavelength of the camera filter.</returns>
+    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int getWavelengthIdx(int camIdx);
+
+    /// <summary>
+    /// Stop the transport for this camera index.
+    /// </summary>
+    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void stopTransportIdx(int camIdx);
+
+    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern ulong sensorBufferSizeIdx(int camIdx);
+
+    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern UIntPtr doCaptureIdx(int camIdx);
+
+    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int setDeviceCallback(
+        IntPtr hwnd, 
+        [MarshalAs(UnmanagedType.FunctionPtr)] AttachCallback cb_ptr
+    );
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+    public delegate void AttachCallback(int camIdx);
+
+    /// <summary>
+    /// Window handle from GUI used for the
+    /// Midlib2 callback.
+    /// </summary>
+    public IntPtr Hwnd
+    {
+        get { return m_hwnd; }
+        set { m_hwnd = value; }
+    }
+    private unsafe IntPtr m_hwnd = IntPtr.Zero;
+
+
     //the buffer size for this controller
     private ulong size;
     
-    //the thread number for this controller.
+    //the thread number (and camera index) for this controller.
     private int tnum;
     
     //destination buffer for data from ManagedSimpleCapture
     private byte[] dest;
 
-    //this camera's wrapper around simple capture.
-    //private ManagedSimpleCapture msc;
-
     //true if another thread is running for this instance.
     private bool running = false;
-    private Mutex runningMutex;
+    private object runningMutex = new object();
 
+    /// <summary>
+    /// The buffertype for this aptina controller, 
+    /// either a USHORT_IMAGE405 or USHORT_IMAGE485.
+    /// </summary>
+    public BufferType Type
+    {
+        get { return bufferType; }
+    }
     private BufferType bufferType;
+
+    /// <summary>
+    /// The status fail code for this controller,
+    /// either STAT_FAIL405 or STAT_FAIL485
+    /// </summary>
+    public StatusStr Status_Fail 
+    {
+        get { return STATUSSTR_FAIL; }
+    }
     private StatusStr STATUSSTR_FAIL;
+
+    public StatusStr Status_Good
+    {
+        get { return STATUSSTR_GOOD; }
+    }
     private StatusStr STATUSSTR_GOOD;
 
-    //wavelength for this controller
+    public StatusStr Status_Err
+    {
+        get { return STATUSSTR_ERR; }
+    }
+    private StatusStr STATUSSTR_ERR;
+
+    /// <summary>
+    /// filter wavelength for this controller.
+    /// </summary>
     public int WaveLength
     { 
         get { return waveLength; } 
     }
     private int waveLength;
 
-
-    private static Semaphore barrierSemaphore;
-    private static int barrierCounter;
-    private static int nextIdx = 0;
-    private const int numcams = 2;
-    
-   
+    // aptina configuration file.
     public string IniFilePath
     {
         get { return m_iniFilePath;  }
@@ -53,6 +127,10 @@ public class AptinaController : ReceiverController
     }
     private string m_iniFilePath;
 
+    /// <summary>
+    /// true if this instance is associated with 
+    /// a running thread.
+    /// </summary>
     public bool IsRunning
     {
         get
@@ -71,67 +149,45 @@ public class AptinaController : ReceiverController
         }
     }
 
-    public IntPtr Hwnd
-    {
-        get { return m_hwnd; }
-        set { m_hwnd = value; }
-    }
-    private unsafe IntPtr m_hwnd = IntPtr.Zero;
-    
-    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int initMidLib2(int nCamsReq);
+    private static Semaphore barrierSemaphore;
+    private static int barrierCounter = 0;
 
-    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int getWavelength(int camIdx);
-
-    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int openTransport(int camidx);
-
-    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void stopTransport();
-
-    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern ulong sensorBufferSize(int camIdx);
-
-    [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern UIntPtr doCapture(int camIdx);
-
+    private static int nextIdx = 0;
+    private const int NUMCAMS = 2;
 
     public AptinaController(BufferPool<byte> bp, string id, bool receiving = true)
      : base(bp, id, receiving)
     {
         if (barrierSemaphore == null)
         {
-            barrierSemaphore = new Semaphore(0, numcams);
+            barrierSemaphore = new Semaphore(0, NUMCAMS);
         }
 
-        runningMutex = new Mutex();
-        barrierCounter = 0;
-        
-        //the next AptinaController initialized will have tnum=tnum+1.
-        tnum = nextIdx;
+        tnum = nextIdx;   //the next controller will have tnum=tnum+1.
         nextIdx += 1;  
     }
 
-    
-
     protected override bool init()
     {
-        bool rval = true;
-        int r = 0;
+        bool rval = true; int r = 0;
 
-        r = initMidLib2(numcams);
-        
+        r = initMidLib2(NUMCAMS, Hwnd, 
+            (camIdx) =>
+                {
+                    dp.Broadcast(
+                        new AptinaStatusMessage(this, STATUSSTR_FAIL,
+                        Str.GetErrStr(ErrStr.APTINA_FAIL_DISCONNECT) + " " + waveLength));
+                });
+
         if (r != 0)
         {
             rval = false;
             Errno = ErrStr.INIT_FAIL_APTINA_INITMIDLIB;
         }
-
-        if (r == 0)
+        else
         {
-            waveLength = getWavelength(tnum);
-            size = sensorBufferSize(tnum);
+            waveLength = getWavelengthIdx(tnum);
+            size = sensorBufferSizeIdx(tnum);
 
             if (waveLength == 405)
             {
@@ -146,7 +202,7 @@ public class AptinaController : ReceiverController
                 STATUSSTR_GOOD = StatusStr.STAT_GOOD_485;
             }
         }
-        else
+    
         {
             rval = false;
             Errno = ErrStr.INIT_FAIL_APTINA_OPENTRANSPORT;
@@ -173,12 +229,10 @@ public class AptinaController : ReceiverController
 
     public void stop()
     {
-        //runningMutex.WaitOne();
         lock (runningMutex)
         {
             IsRunning = false;            
         }
-        //runningMutex.ReleaseMutex();
     }
 
     private void updateStatus()
@@ -197,10 +251,10 @@ public class AptinaController : ReceiverController
         while (true)
         {
             int curval = Interlocked.Increment(ref barrierCounter);
-            if (curval == numcams)
+            if (curval == NUMCAMS)
             {
                 barrierCounter = 0;
-                barrierSemaphore.Release(numcams - 1);
+                barrierSemaphore.Release(NUMCAMS - 1);
             }
             else
             {
@@ -220,7 +274,7 @@ public class AptinaController : ReceiverController
 
             unsafe
             {
-                byte* data = (byte*)doCapture(me.tnum); 
+                byte* data = (byte*)doCaptureIdx(me.tnum); 
                 if (data == null)
                 {
                     me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_FAIL));  // Almost salmon.
@@ -233,7 +287,7 @@ public class AptinaController : ReceiverController
             imagebuffer.setData(me.dest, me.bufferType);
             imagebuffer.FillTime = me.GetUTCMillis();
             me.BufferPool.PostFull(imagebuffer);
-            //me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_GOOD));        // Salmon? No.
+            me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_GOOD));        // Salmon? No.
         }   
     }
 }

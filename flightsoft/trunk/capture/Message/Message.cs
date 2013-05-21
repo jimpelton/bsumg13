@@ -24,5 +24,6 @@ namespace uGCapture
         public Message(Receiver sender) { m_sender = sender; }
 
         public abstract void execute(Receiver r);
+
     }
 }

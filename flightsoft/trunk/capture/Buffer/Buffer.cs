@@ -129,5 +129,10 @@ namespace uGCapture
             CapacityUtilization = 0;
         }
 
+        public override string ToString()
+        {
+            return Type.ToString();
+        }
+
     }
 }

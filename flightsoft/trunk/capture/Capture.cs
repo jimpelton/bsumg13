@@ -117,9 +117,11 @@ namespace uGCapture
                 acThread1 = new Thread(() => AptinaController.go(ac1));
                 dp.Register(ac1);
                 acThread1.Start();
+                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Good));
             }
             else
             {
+                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Err, Str.GetErrStr(ac1.Errno)));
                 dp.BroadcastLog(this,
                     Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.", 100);
             }
