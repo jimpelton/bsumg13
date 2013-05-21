@@ -49,7 +49,7 @@ namespace uGCapture
                 accel.Error += Sensor_Error;
                 
                 dp.BroadcastLog(this, "Accelerometer found", 0);
-                dp.Broadcast(new AccelStatusMessage(this,StatusStr.STAT_GOOD));
+                dp.Broadcast(new AccelStatusMessage(this,Status.STAT_GOOD));
             }
             catch (PhidgetException ex)
             {
@@ -57,7 +57,7 @@ namespace uGCapture
                 dp.BroadcastLog( this, 
                     "Error waiting for Accelerometer: "+ex.Description,
                     100 );
-                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL));
+                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL));
             }
             return rval;
         }
@@ -75,7 +75,7 @@ namespace uGCapture
                 Phidget phid = sender as Phidget;
                 if (phid == null) return;
                 dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
-                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_ATCH));
+                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_ATCH));
             }
             catch (PhidgetException ex)
             {
@@ -83,7 +83,7 @@ namespace uGCapture
                                 String.Format("Error while attaching accelerometer: {0}",
                                               ex.Description), 100);
                 //we are probably already holding a bad state. but lets make sure
-                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL));
+                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL));
             }
         }
 
@@ -92,7 +92,7 @@ namespace uGCapture
             Phidget phid = sender as Phidget;
             if (phid == null) return;
             dp.BroadcastLog(this, String.Format("{0} Detached", phid.Name), 5);
-            dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_DISC));
+            dp.Broadcast(new AccelStatusMessage(this, Status.STAT_DISC));
         }
 
         private void Sensor_Error(object sender, ErrorEventArgs e)
@@ -102,7 +102,7 @@ namespace uGCapture
 
             dp.BroadcastLog(this,
                 String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
-            dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL));
+            dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL));
         }
 
         public override void exHeartBeatMessage(Receiver r, Message m)
@@ -120,7 +120,7 @@ namespace uGCapture
                 buffer.Text = accel.SerialNumber.ToString();
                 BufferPool.PostFull(buffer);
                 outputData = "";
-                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_GOOD));
+                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_GOOD));
             }
         }
 
@@ -136,7 +136,7 @@ namespace uGCapture
             }
             catch (ArgumentOutOfRangeException e)
             {
-                dp.Broadcast(new AccelStatusMessage(this, StatusStr.STAT_FAIL));
+                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL));
             }
             }
 

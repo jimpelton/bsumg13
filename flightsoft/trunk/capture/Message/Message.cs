@@ -5,16 +5,21 @@
 // ******************************************************************************
 
 
+using System.Collections.Generic;
+
 namespace uGCapture
 {
     public abstract class Message
     {
-        private Receiver m_sender;
+        /// <summary>
+        /// The originator of this message
+        /// </summary>
         public Receiver Sender
         {
             get { return m_sender; }
             set { m_sender = value; }
         }
+        private Receiver m_sender;
 
         /// <summary>
         /// Creates this message. The receiver that generated this message
@@ -24,6 +29,9 @@ namespace uGCapture
         public Message(Receiver sender) { m_sender = sender; }
 
         public abstract void execute(Receiver r);
+
+        
+
 
     }
 }

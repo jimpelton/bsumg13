@@ -49,8 +49,6 @@ namespace uGCapture
         public void Enqueue(Message m)
         {
             m_mesWait.Add(m);
-            //Console.WriteLine("Enqueued message: type [{0}], Sender [{1}] Receiver [{2}].", 
-            //    m.GetType(), m.Sender.Id, Id);
         }
 
         /// <summary>

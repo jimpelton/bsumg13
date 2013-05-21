@@ -4,6 +4,7 @@
 //  Date: 2013-05-05                                                                      
 // ******************************************************************************
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
@@ -53,6 +54,11 @@ namespace uGCapture
             {
                 lock (data_mutex)
                 {
+                    if (! lastDataSet.lastData.ContainsKey(buf.Type))
+                    {
+                        return;
+                    }
+
                     T[] dest = lastDataSet.lastData[buf.Type];
                     int oldsz = dest.Length;
                     if (buf.CapacityUtilization <= oldsz)  //only fill the size of the cache.

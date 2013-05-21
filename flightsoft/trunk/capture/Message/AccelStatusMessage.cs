@@ -5,7 +5,7 @@ namespace uGCapture
     public class  AccelStatusMessage : StatusMessage
     {
 
-        public AccelStatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR, string mes = "")
+        public AccelStatusMessage(Receiver s, Status nstate, ErrStr mes = 0)
             : base(s, nstate, mes)
         {
         }

@@ -5,53 +5,47 @@
 // ******************************************************************************
 
 using System;
-using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
+
 namespace uGCapture
 {
 public class AptinaController : ReceiverController
 {
-    /// <summary>
-    /// Initialize midlib2 system.
-    /// </summary>
-    /// <param name="nCamsReq">Number of cameras to expect.</param>
-    /// <param name="hwnd">Window handle (type HWND) to main window.</param>
-    /// <param name="attachCallback">Device detach event callback.</param>
-    /// <returns>0 on success, 1 or a value from enum mi_error_code on failure.</returns>
+    // Initialize midlib2 system.
+    // Return values: 0 on success, 1 or a value from enum mi_error_code on failure.
     [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int initMidLib2(int nCamsReq, IntPtr hwnd, AttachCallback attachCallback);
+    private static extern int initMidLib2(int nCamsReq, IntPtr hwnd, AttachCallback attachCallback);
 
-    /// <summary>
-    /// The wavelength for the given camera index.
-    /// Value is based off the fuse id value provided from midlib in when
-    /// querying readRegister() with 0x00FA register address.
-    /// </summary>
-    /// <param name="camIdx">Wavelength to get</param>
-    /// <returns>an int that is the wavelength of the camera filter.</returns>
+    // The wavelength for the given camera index.
+    // Value is based off the fuse id value provided from midlib in when
+    // querying readRegister() with 0x00FA register address.
+    // 
+    // Returns: An int that is the wavelength of the camera filter.
     [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int getWavelengthIdx(int camIdx);
+    private static extern int getWavelengthIdx(int camIdx);
 
-    /// <summary>
-    /// Stop the transport for this camera index.
-    /// </summary>
+    // Stop the transport for this camera index.
     [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void stopTransportIdx(int camIdx);
+    private static extern void stopTransportIdx(int camIdx);
 
+    // Returns the buffer size for the sensor for the given camera index.
     [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern ulong sensorBufferSizeIdx(int camIdx);
+    private static extern ulong sensorBufferSizeIdx(int camIdx);
 
+    // Perform a capture for this camera.
     [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern UIntPtr doCaptureIdx(int camIdx);
+    private static extern UIntPtr doCaptureIdx(int camIdx);
 
+    // Set the detach event callback for this camera.
     [DllImport("Midlib.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int setDeviceCallback(
+    private static extern int setDeviceCallback(
         IntPtr hwnd, 
         [MarshalAs(UnmanagedType.FunctionPtr)] AttachCallback cb_ptr
     );
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    public delegate void AttachCallback(int camIdx);
+    private delegate void AttachCallback(int camIdx);
 
     /// <summary>
     /// Window handle from GUI used for the
@@ -92,23 +86,23 @@ public class AptinaController : ReceiverController
     /// The status fail code for this controller,
     /// either STAT_FAIL405 or STAT_FAIL485
     /// </summary>
-    public StatusStr Status_Fail 
+    public Status Status_Fail 
     {
         get { return STATUSSTR_FAIL; }
     }
-    private StatusStr STATUSSTR_FAIL;
+    private Status STATUSSTR_FAIL;
 
-    public StatusStr Status_Good
+    public Status Status_Good
     {
         get { return STATUSSTR_GOOD; }
     }
-    private StatusStr STATUSSTR_GOOD;
+    private Status STATUSSTR_GOOD;
 
-    public StatusStr Status_Err
+    public Status Status_Err
     {
         get { return STATUSSTR_ERR; }
     }
-    private StatusStr STATUSSTR_ERR;
+    private Status STATUSSTR_ERR;
 
     /// <summary>
     /// filter wavelength for this controller.
@@ -174,9 +168,8 @@ public class AptinaController : ReceiverController
         r = initMidLib2(NUMCAMS, Hwnd, 
             (camIdx) =>
                 {
-                    dp.Broadcast(
-                        new AptinaStatusMessage(this, STATUSSTR_FAIL,
-                        Str.GetErrStr(ErrStr.APTINA_FAIL_DISCONNECT) + " " + waveLength));
+                    dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_FAIL, ErrStr.APTINA_DISCONNECT));
+                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.APTINA_DISCONNECT) + " " + waveLength, 100);
                 });
 
         if (r != 0)
@@ -188,21 +181,9 @@ public class AptinaController : ReceiverController
         {
             waveLength = getWavelengthIdx(tnum);
             size = sensorBufferSizeIdx(tnum);
-
-            if (waveLength == 405)
-            {
-                bufferType = BufferType.USHORT_IMAGE405;
-                STATUSSTR_FAIL = StatusStr.STAT_FAIL_405;
-                STATUSSTR_GOOD = StatusStr.STAT_GOOD_405;
-            }
-            else
-            {
-                bufferType = BufferType.USHORT_IMAGE485;
-                STATUSSTR_FAIL = StatusStr.STAT_FAIL_485;
-                STATUSSTR_GOOD = StatusStr.STAT_GOOD_485;
-            }
+            setErrors(waveLength);
         }
-    
+        
         {
             rval = false;
             Errno = ErrStr.INIT_FAIL_APTINA_OPENTRANSPORT;
@@ -217,14 +198,25 @@ public class AptinaController : ReceiverController
             rval = false;
             Errno = ErrStr.INIT_FAIL_APTINA;
         }
-
-        dp.BroadcastLog(this, "AptinaController class done initializing...", 1);
-        if (rval)
-            dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_GOOD));
-        else
-            dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_FAIL));
-
         return rval;
+    }
+
+    private void setErrors(int wl)
+    {
+        if (wl == 405)
+        {
+            bufferType = BufferType.USHORT_IMAGE405;
+            STATUSSTR_FAIL = Status.STAT_FAIL_405;
+            STATUSSTR_GOOD = Status.STAT_GOOD_405;
+            STATUSSTR_ERR = Status.STAT_ERR_405;
+        }
+        else
+        {
+            bufferType = BufferType.USHORT_IMAGE485;
+            STATUSSTR_FAIL = Status.STAT_FAIL_485;
+            STATUSSTR_GOOD = Status.STAT_GOOD_485;
+            STATUSSTR_ERR = Status.STAT_ERR_485;
+        }   
     }
 
     public void stop()
@@ -242,10 +234,7 @@ public class AptinaController : ReceiverController
 
     public static void go(AptinaController me)
     {
-        if (me.IsRunning || !me.IsInit)
-        {
-            return;
-        }
+        if (me.IsRunning || !me.IsInit) { return; }
         me.IsRunning = true;
 
         while (true)
@@ -295,4 +284,4 @@ public class AptinaController : ReceiverController
 
 //me.dp.Broadcast(new AptinaStatusMessage(me, 
 //    me.waveLength == 405 ? 
-//    StatusStr.STAT_ERR_405 : StatusStr.STAT_ERR_485));
+//    Status.STAT_ERR_405 : Status.STAT_ERR_485));

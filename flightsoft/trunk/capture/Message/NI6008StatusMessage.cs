@@ -4,7 +4,7 @@ namespace uGCapture
 {
     public class NI6008StatusMessage : StatusMessage
     {
-        public NI6008StatusMessage(Receiver s, StatusStr nstate = StatusStr.STAT_ERR, string mes = "")
+        public NI6008StatusMessage(Receiver s, Status nstate, ErrStr mes = 0)
             : base(s, nstate, mes)
         {
         }
