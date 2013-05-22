@@ -90,7 +90,7 @@ namespace gui
 
             captureClass = new CaptureClass(mainForm.Handle, "CaptureClass") { StorageDir = path + directoryName };
             captureClass.init();
-            dp.StartAllExecuting();
+            //dp.StartAllExecuting();
             dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
         }
 
@@ -122,19 +122,19 @@ namespace gui
             mainForm.DebugOutput(s, severity);
         }
 
-        public void insertDataPoint(DataPoint p)
-        {
-            if (dataFrames.Count > 0)
-            {
-                //we are adding to the end of the list so the previous data point will be last.
-                dataFrames.Last().image405 = null;
-                dataFrames.Last().image485 = null;
-            }
-            //and place us at last.
-            dataFrames.Add(p);
-            if (dataFrames.Count > MAX_DATA_POINTS)
-                dataFrames.RemoveAt(0);
-        }
+        //public void insertDataPoint(DataPoint p)
+        //{
+        //    if (dataFrames.Count > 0)
+        //    {
+        //        //we are adding to the end of the list so the previous data point will be last.
+        //        dataFrames.Last().image405 = null;
+        //        dataFrames.Last().image485 = null;
+        //    }
+        //    //and place us at last.
+        //    dataFrames.Add(p);
+        //    if (dataFrames.Count > MAX_DATA_POINTS)
+        //        dataFrames.RemoveAt(0);
+        //}
 
         /// <summary>
         /// Broadcasts the ReceiverCleanupMessage() from the Guimain instance.
