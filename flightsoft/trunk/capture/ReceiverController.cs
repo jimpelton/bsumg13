@@ -49,13 +49,11 @@ namespace uGCapture
         /// <param name="id">A unique identifier for this ReceiverController.</param>
         /// <param name="receiving">If this ReceiverController should begin life receiving. Defaults to true.</param>
         protected ReceiverController(BufferPool<byte> bp, string id, 
-            bool receiving=true) : base(id, receiving)
+            bool receiving=true, bool executing=false) : base(id, receiving, executing)
         {
 
             BufferPool = bp;
         }
-
-
 
         /// <summary>
         /// Initializes this ReceiverController.

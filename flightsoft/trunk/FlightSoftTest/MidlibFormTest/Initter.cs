@@ -19,6 +19,8 @@ namespace MidlibFormTest
         private Thread writerThread;
         private BufferPool<byte> bp;
 
+        private CaptureClass cc;
+
         public IntPtr Hwnd
         {
             get { return hwnd; }
@@ -29,7 +31,11 @@ namespace MidlibFormTest
         public delegate void cb_log_message(string message);
         cb_log_message log_callback;
 
-        public Initter() : base("Initter") { }
+        public Initter() : base("Initter")
+        {
+            cc = new CaptureClass(hwnd, "CaptureClass");
+            cc.StorageDir = @"C:\TestDir\";
+        }
 
         public void set_callback(cb_log_message callback)
         {
@@ -40,11 +46,13 @@ namespace MidlibFormTest
         {
             Dispatch.Instance().Register(this);
 
-            const int pool_size_bytes = 16777216;
-            bp = new BufferPool<byte>(10, pool_size_bytes);
-
-            initWriter();
-            initAptina();
+            //const int pool_size_bytes = 16777216;
+            //bp = new BufferPool<byte>(10, pool_size_bytes);
+            
+            cc.init();
+            
+            //initWriter();
+            //initAptina();
         }
 
         public void startThread()
@@ -101,13 +109,14 @@ namespace MidlibFormTest
             if (ac1.Initialize())
             {
                 acThread1 = new Thread(() => AptinaController.go(ac1));
-                dp.Register(ac1);
             }
             else
             {
                 dp.BroadcastLog(this,
                     Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.", 100);
             }
+            dp.Register(ac1);
+
 
             ac2 = new AptinaController(bp, Str.GetIdStr(IdStr.ID_APTINA_TWO))
             {
@@ -116,13 +125,14 @@ namespace MidlibFormTest
             if (ac2.Initialize())
             {
                 acThread2 = new Thread(() => AptinaController.go(ac2));
-                dp.Register(ac2);
             }
             else
             {
                 dp.BroadcastLog(this,
                      Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 2.", 100);
             }
+            dp.Register(ac2);
+
 
         }
 

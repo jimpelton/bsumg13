@@ -147,56 +147,50 @@ public class AptinaController : ReceiverController
     private static int barrierCounter = 0;
 
     private static int nextIdx = 0;
-    private const int NUMCAMS = 2;
+    private static int numCams = 2;
 
-    public AptinaController(BufferPool<byte> bp, string id, bool receiving = true)
-     : base(bp, id, receiving)
+    public AptinaController(BufferPool<byte> bp, string id, bool receiving=true, bool executing=false)
+     : base(bp, id, receiving, executing)
     {
         if (barrierSemaphore == null)
         {
-            barrierSemaphore = new Semaphore(0, NUMCAMS);
+            barrierSemaphore = new Semaphore(0, numCams);
         }
-
         tnum = nextIdx;   //the next controller will have tnum=tnum+1.
-        nextIdx += 1;  
+        nextIdx += 1;
     }
 
     protected override bool init()
     {
         bool rval = true; int r = 0;
 
-        r = initMidLib2(NUMCAMS, Hwnd, 
+        r = initMidLib2(numCams, Hwnd, 
             (camIdx) =>
                 {
                     dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_FAIL, ErrStr.APTINA_DISCONNECT));
                     dp.BroadcastLog(this, Str.GetErrStr(ErrStr.APTINA_DISCONNECT) + " " + waveLength, 100);
                 });
 
-        if (r != 0)
-        {
-            rval = false;
-            Errno = ErrStr.INIT_FAIL_APTINA_INITMIDLIB;
-        }
-        else
+        if (r == 0)
         {
             waveLength = getWavelengthIdx(tnum);
             size = sensorBufferSizeIdx(tnum);
             setErrors(waveLength);
         }
-        
+        else
         {
             rval = false;
-            Errno = ErrStr.INIT_FAIL_APTINA_OPENTRANSPORT;
+            Errno = ErrStr.INIT_FAIL_APTINA_INITMIDLIB;
         }
 
-        if (size != 0)
+        if (size > 0)
         {
             dest = new byte[size];
         }
         else
         {
             rval = false;
-            Errno = ErrStr.INIT_FAIL_APTINA;
+            Errno = ErrStr.INIT_FAIL_APTINA_ZERO_SIZE;
         }
         return rval;
     }
@@ -223,7 +217,7 @@ public class AptinaController : ReceiverController
     {
         lock (runningMutex)
         {
-            IsRunning = false;            
+            IsRunning = false;
         }
     }
 
@@ -240,10 +234,10 @@ public class AptinaController : ReceiverController
         while (true)
         {
             int curval = Interlocked.Increment(ref barrierCounter);
-            if (curval == NUMCAMS)
+            if (curval == numCams)
             {
                 barrierCounter = 0;
-                barrierSemaphore.Release(NUMCAMS - 1);
+                barrierSemaphore.Release(numCams - 1);
             }
             else
             {
@@ -266,10 +260,11 @@ public class AptinaController : ReceiverController
                 byte* data = (byte*)doCaptureIdx(me.tnum); 
                 if (data == null)
                 {
-                    me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_FAIL));  // Almost salmon.
+                    me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_FAIL, 
+                        ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER));  // Almost salmon.
                     continue;
                 }
-                Marshal.Copy(new IntPtr(data), me.dest, 0, (int) me.size);
+                Marshal.Copy(new IntPtr(data), me.dest, 0, me.dest.Length);
             }
 
             Buffer<Byte> imagebuffer = me.BufferPool.PopEmpty();            
@@ -280,6 +275,11 @@ public class AptinaController : ReceiverController
         }   
     }
 }
+
+
+
+
+
 }
 
 //me.dp.Broadcast(new AptinaStatusMessage(me, 

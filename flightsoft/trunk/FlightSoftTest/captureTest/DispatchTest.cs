@@ -24,7 +24,7 @@ namespace captureTest
 
             // kick the thread out of the execute loop.
             tmr.IsReceiving = false;
-            Dispatch.Instance().CleanUpThreads();
+            Dispatch.Instance().CleanUpMessageThreads();
         }
     }
 }

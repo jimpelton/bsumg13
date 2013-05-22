@@ -15,7 +15,7 @@ namespace MidlibFormTest
     public partial class Form1 : Form
     {
         Initter initter = new Initter();
-        public LinkedList<string> s = new LinkedList<string>();
+
         public Form1()
         {
             InitializeComponent();

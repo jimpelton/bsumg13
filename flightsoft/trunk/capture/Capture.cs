@@ -59,7 +59,7 @@ namespace uGCapture
         private Thread wrtThread;
         private IntPtr hwnd;
 
-        public CaptureClass(string id) : base(id) {}
+        public CaptureClass(string id) : base(id, true) {}
 
         public CaptureClass(IntPtr hwnd, string id)
             : base(id)
@@ -70,11 +70,12 @@ namespace uGCapture
         public void init()
         {
             m_startTimeUTC = DateTime.UtcNow;
-                                                                               //               10M, 4K
+            dp.Register(this);
+                                                                               // 10M, 4K
             Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096);     // image buffer size, utf8 buffer size
-            bufferPool = new BufferPool<byte>(10, (int)Math.Pow(2, 24), sBuf);
+            bufferPool = new BufferPool<byte>(20, (int)Math.Pow(2,24), sBuf);
             
-            initLogger();    // --JP 5/13/13
+            initLogger();   
             initWriter();
             initAptina();
             initPhidgets();
@@ -84,18 +85,17 @@ namespace uGCapture
             initNI6008Controller();
             initUPSController();
 
-
-            dp.Register(this);
+            Dispatch.Scheduler.Start();
         }
 
         private void initWriter()
         {
             writer = new Writer(bufferPool, Str.GetIdStr(IdStr.ID_WRITER)) { BasePath = m_storageDir };
+
             if (writer.Initialize())
             {
                 wrtThread = new Thread(() => Writer.WriteData(writer));
                 wrtThread.Start();
-                dp.Register(writer);
             }
             else
             {
@@ -103,6 +103,7 @@ namespace uGCapture
                 dp.BroadcastLog(this, s, 100);
                 Console.WriteLine(s);
             }
+            dp.Register(writer);
         }
 
         //Aptina cameras.
@@ -115,8 +116,6 @@ namespace uGCapture
             if (ac1.Initialize())
             {
                 acThread1 = new Thread(() => AptinaController.go(ac1));
-                dp.Register(ac1);
-                acThread1.Start();
                 dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Good));
             }
             else
@@ -125,6 +124,7 @@ namespace uGCapture
                 dp.BroadcastLog(this,
                     Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.", 100);
             }
+            dp.Register(ac1);
 
             ac2 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_TWO))
                 {
@@ -133,14 +133,18 @@ namespace uGCapture
             if (ac2.Initialize())
             {
                 acThread2 = new Thread(() => AptinaController.go(ac2));
-                dp.Register(ac2);
-                acThread2.Start();
+                dp.Broadcast(new AptinaStatusMessage(this, ac2.Status_Good, ac2.Errno));
             }
             else
             {
                 dp.BroadcastLog(this,
                      Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 2.", 100);
             }
+            dp.Register(ac2);
+
+            acThread1.Start();
+            acThread2.Start();
+
 
         }
 
@@ -148,6 +152,7 @@ namespace uGCapture
         private void initPhidgets()
         {
             phidgetsController = new PhidgetsController(bufferPool, Str.GetIdStr(IdStr.ID_PHIDGETS_1018));
+
             if (phidgetsController.Initialize())
             {
                 dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_1018));
@@ -159,6 +164,7 @@ namespace uGCapture
                 Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_1018));
             }
             dp.Register(phidgetsController);
+
         }
 
         // Phidgits Accellerometer.
@@ -179,6 +185,7 @@ namespace uGCapture
                 Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_ACCEL));
             }
             dp.Register(accelControler);
+
         }
 
         // Phidgits Spatial Accellerometer.
@@ -199,13 +206,13 @@ namespace uGCapture
                 Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_SPTL));
             }
             dp.Register(spatialController);
+
         }
 
         // Sparkfun weatherboard through virtual com port.
         private void initWeatherBoard()
         {
-            weatherboard = new VCommController(bufferPool,
-                Str.GetIdStr(IdStr.ID_VCOMM));
+            weatherboard = new VCommController(bufferPool, Str.GetIdStr(IdStr.ID_VCOMM));
 
             if (weatherboard.Initialize())
             {
@@ -220,13 +227,13 @@ namespace uGCapture
                 Console.Error.WriteLine(s);
             }
             dp.Register(weatherboard);
+
         }
 
         // NI-6008 DAQ.
         private void initNI6008Controller()
         {
-            ni6008 = new NIController(bufferPool,
-                Str.GetIdStr(IdStr.ID_NI_DAQ));
+            ni6008 = new NIController(bufferPool, Str.GetIdStr(IdStr.ID_NI_DAQ));
 
             if (ni6008.Initialize())
             {
@@ -241,13 +248,13 @@ namespace uGCapture
                 Console.Error.WriteLine(s);
             }
             dp.Register(ni6008);
+
         }
 
         // APC UTF8_UPS Data Getter
         private void initUPSController()
         {
-            UPS = new UPSController(bufferPool,
-                Str.GetIdStr(IdStr.ID_UPS));
+            UPS = new UPSController(bufferPool, Str.GetIdStr(IdStr.ID_UPS));
 
             if (UPS.Initialize())
             {
@@ -262,11 +269,13 @@ namespace uGCapture
                 Console.Error.WriteLine(s);
             }
             dp.Register(UPS);
+
         }
 	
 	    public void initLogger()
 	    {
 	        logger = new Logger(Str.GetIdStr(IdStr.ID_LOGGER));
+            dp.Register(logger);
 	    }
 	
         public DataSet<byte> GetLastData()
@@ -290,11 +299,16 @@ namespace uGCapture
 
         public override void exReceiverCleanUpMessage(Receiver r, Message m)
         {
+            base.exReceiverCleanUpMessage(r, m);
+            
+        }
+
+        public void Shutdown()
+        {
             ac1.stop();
             ac2.stop();
             writer.stop();
-            base.exReceiverCleanUpMessage(r, m);
+            Dispatch.Instance().CleanUpMessageThreads();
         }
-
     }
 }

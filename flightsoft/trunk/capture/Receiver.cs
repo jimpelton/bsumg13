@@ -16,8 +16,8 @@ namespace uGCapture
         protected Dispatch dp;
         private bool m_receiving; 
         private object receivingMutex = new object();
+        private object executingMutex = new object();
 
-        // 
         protected static DateTime dateTime1970 =
             new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -46,6 +46,27 @@ namespace uGCapture
             }
         }
 
+        public bool IsExecuting
+        {
+            get
+            {
+                bool rval;
+                lock (executingMutex)
+                {
+                    rval = m_executing;
+                }
+                return rval;
+            }  
+            set
+            {
+                lock (executingMutex)
+                {
+                    m_executing = value;
+                }
+            } 
+        }
+        private bool m_executing;
+
         /// <summary>
         /// String which is a unique identifier for this Receiver.
         /// </summary>
@@ -66,10 +87,11 @@ namespace uGCapture
         private ErrStr m_errno;
 
 
-        protected Receiver(string id, bool receiving=true)
+        protected Receiver(string id, bool receiving = true, bool executing = false)
         {
             m_id = id;
             m_receiving = receiving;
+            m_executing = executing;
             dp = Dispatch.Instance();
         }
         
@@ -86,16 +108,8 @@ namespace uGCapture
         /// <summary>
         /// Any receiver that should respond to the Bite test message should
         /// override this method.
-        ///
-        /// This method could generate a BiteTestResultMessage, however the default behavior 
-        /// is to do nothing.
         /// </summary>
         public virtual void exBiteTestMessage(Receiver r, Message m) { ; }
-
-        /// <summary>
-        /// Generate a PhidgetsStatusMessage
-        /// </summary>
-        
 
         /// <summary>
         /// Execute a DataRequestMessage.
@@ -132,7 +146,9 @@ namespace uGCapture
         public virtual void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
         public virtual void exPhidgetsTempStatusMessage(Receiver r, Message m) { ; }
         
-        //our interdevice command message.
+        /// <summary>
+        /// Act on CommandMessage.
+        /// </summary>
         public virtual void exCommandMessage(Receiver r, Message m) { ; }
 
         /// <summary>

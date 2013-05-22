@@ -7,7 +7,6 @@
 using System.Collections.Generic;
 namespace uGCapture
 {
-
     public enum Status
     {
         STAT_ERR,        // device error
@@ -54,7 +53,12 @@ namespace uGCapture
         
         INIT_FAIL_APTINA,
         INIT_FAIL_APTINA_INITMIDLIB,    
-        INIT_FAIL_APTINA_OPENTRANSPORT,   
+        INIT_FAIL_APTINA_OPENTRANSPORT,  
+        INIT_FAIL_APTINA_ZERO_SIZE,
+        INIT_FAIL_APTINA_KEY_NOT_SUPPORTED,
+        INIT_FAIL_APTINA_INI_LOAD_ERROR,
+        INIT_FAIL_APTINA_INI_POLLREG_TIMEOUT,
+         
 
         INIT_FAIL_VCOMM,
         INIT_FAIL_WRITER,
@@ -100,9 +104,9 @@ namespace uGCapture
         // WRITER
         WRITER_FAIL_CREATE_DIRS,
         WRITER_OK_CREATE_DIRS,
-        WRITER_OK_WRITE_BUFFER, 
+        WRITER_OK_WRITE_BUFFER,
 
-        
+
     }
 
 
@@ -155,6 +159,7 @@ namespace uGCapture
                 case ErrStr.INIT_FAIL_APTINA:                 return "Aptina camera failed to initialize.";
                 case ErrStr.INIT_FAIL_APTINA_INITMIDLIB:      return "Midlib2 failed to initialize.";
                 case ErrStr.INIT_FAIL_APTINA_OPENTRANSPORT:   return "Midlib2 opentransport failed.";
+                case ErrStr.INIT_FAIL_APTINA_ZERO_SIZE:       return "Midlib2 returned that frames are 0 sized.";
                
                 case ErrStr.INIT_FAIL_VCOMM:                  return "Weatherboard failed to initialize.";
                 
@@ -172,8 +177,8 @@ namespace uGCapture
 
                 case ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER:   return "Midlib2 getFrame() returned null pointer.";
                 case ErrStr.APTINA_FAIL_CAPTURE:              return "Aptina capture failed.";
-                case ErrStr.APTINA_DISCONNECT:           return "Midlib detected camera removal.";
-
+                case ErrStr.APTINA_DISCONNECT:                return "Midlib detected camera removal.";
+                
                 case ErrStr.PHID_1018_STAT_DISC:              return "Phidgits 1080 disconnected.";
                 case ErrStr.PHID_1018_STAT_ATCH:              return "Phidgits 1018 attached.";
                 case ErrStr.PHID_1018_STAT_FAIL:              return "Phidgits 1018 failure!.";
@@ -245,12 +250,81 @@ namespace uGCapture
               { DirStr.DIR_LOGGER,     "Log"          }
         };
 
+        public static readonly Dictionary<MiErrorCode, string> MiErrStr = new Dictionary<MiErrorCode, string>()
+            {
+               { MiErrorCode.MI_CAMERA_SUCCESS,        "MI Succes"                                                                   },
+               { MiErrorCode.MI_CAMERA_ERROR,         "MI General failure for midlib routines"                                       },
+               { MiErrorCode.MI_GRAB_FRAME_ERROR ,         "General failure for grab frame routine"                                  },
+               { MiErrorCode.MI_NOT_ENOUGH_DATA_ERROR ,         "Grab frame failed to return enough data "                           },
+               { MiErrorCode.MI_EOF_MARKER_ERROR ,         "EOF packet not found in grab frame data"                                 },
+               { MiErrorCode.MI_BUFFER_SIZE_ERROR,         "GrabFrame buffer is too small "                                          },
+               { MiErrorCode.MI_SENSOR_FILE_PARSE_ERROR,         "There was an error parsing the sdat file"                          },
+               { MiErrorCode.MI_SENSOR_DOES_NOT_MATCH,         "Cannot find sdat file which matches sensor "                         },
+               { MiErrorCode.MI_SENSOR_NOT_INITIALIZED,         "The sensor structure has not been initialized (call updateFrame)"   },
+               { MiErrorCode.MI_SENSOR_NOT_SUPPORTED,         "The sensor is no longer supported"                                    },
+               { MiErrorCode.MI_I2C_BIT_ERROR ,         "I2C bit error "                                                             },
+               { MiErrorCode.MI_I2C_NACK_ERROR ,         "I2C NAC error"                                                             },
+               { MiErrorCode.MI_I2C_TIMEOUT ,         "I2C time out error"                                                           },
+               { MiErrorCode.MI_CAMERA_TIMEOUT ,       "Timeout waiting for camera"                                                  },
+               { MiErrorCode.MI_TOO_MUCH_DATA_ERROR ,         "Grab frame returned more data than expected"                          },
+               { MiErrorCode.MI_CAMERA_NOT_SUPPORTED ,         "The function call is not supported"                                  },
+               { MiErrorCode.MI_PARSE_SUCCESS ,         "Parsing was successful"                                                     },
+               { MiErrorCode.MI_DUPLICATE_DESC_ERROR,         "Duplicate unique descriptor was found"                                },
+               { MiErrorCode.MI_PARSE_FILE_ERROR,         "Unable to open sensor data file"                                          },
+               { MiErrorCode.MI_PARSE_REG_ERROR,         "Error parsing the register descriptors"                                    },
+               { MiErrorCode.MI_UKNOWN_SECTION_ERROR,         "Unknown Section found in sensor data file"                            },
+               { MiErrorCode.MI_CHIP_DESC_ERROR ,         "Error parsing the chip descriptor section"                                },
+               { MiErrorCode.MI_PARSE_ADDR_SPACE_ERROR,         "Error parsing the address space section"                            },
+               { MiErrorCode.MI_INI_SUCCESS,        "INI Preset is loaded successfully"                                              },
+               { MiErrorCode.MI_INI_KEY_NOT_SUPPORTED,        "Key is not supported - will be ignored "                              },
+               { MiErrorCode.MI_INI_LOAD_ERROR ,        "Error loading INI preset     "                                              },
+               { MiErrorCode.MI_INI_POLLREG_TIMEOUT ,        "time out in POLLREG/POLL_VAR/POLL_FIELD command"                       },
+               { MiErrorCode.MI_INI_HANDLED_SUCCESS,        "transport handled the command, success"                                 },
+               { MiErrorCode.MI_INI_HANDLED_ERROR ,        "transport handled the command, with error"                               },
+               { MiErrorCode.MI_INI_NOT_HANDLED ,        "transport did not handle the command"                                      }
+            };  
 
+        public enum MiErrorCode
+        {
+            //Generic return codes
+            MI_CAMERA_SUCCESS = 0x00,         //Success value for midlib routines
+            MI_CAMERA_ERROR = 0x01,         //General failure for midlib routines
+            //Grabframe return codes
+            MI_GRAB_FRAME_ERROR = 0x03,         //General failure for grab frame routine
+            MI_NOT_ENOUGH_DATA_ERROR = 0x04,         //Grab frame failed to return enough data
+            MI_EOF_MARKER_ERROR = 0x05,         //EOF packet not found in grab frame data
+            MI_BUFFER_SIZE_ERROR = 0x06,         //GrabFrame buffer is too small
+            //mi_OpenCameras return codes
+            MI_SENSOR_FILE_PARSE_ERROR = 0x07,         //There was an error parsing the sdat file
+            MI_SENSOR_DOES_NOT_MATCH = 0x08,         //Cannot find sdat file which matches sensor
+            MI_SENSOR_NOT_INITIALIZED = 0x09,         //The sensor structure has not been initialized (call updateFrame)
+            MI_SENSOR_NOT_SUPPORTED = 0x0A,         //The sensor is no longer supported
+            //I2C return codes
+            MI_I2C_BIT_ERROR = 0x0B,         //I2C bit error  
+            MI_I2C_NACK_ERROR = 0x0C,         //I2C NAC error
+            MI_I2C_TIMEOUT = 0x0D,         //I2C time out error
+            MI_CAMERA_TIMEOUT = 0x0E,
+            MI_TOO_MUCH_DATA_ERROR = 0x0F,         //Grab frame returned more data than expected
 
-        //public static string GetDirStr(DirStr dir)
-        //{
-        //    return Dirs[dir];
-        //}
+            MI_CAMERA_NOT_SUPPORTED = 0x10,         //The function call is not supported
+
+            //return codes for parsing sdat file
+            MI_PARSE_SUCCESS = 0x20,         //Parsing was successful
+            MI_DUPLICATE_DESC_ERROR = 0x21,         //Duplicate unique descriptor was found
+            MI_PARSE_FILE_ERROR = 0x22,         //Unable to open sensor data file
+            MI_PARSE_REG_ERROR = 0x23,         //Error parsing the register descriptors
+            MI_UKNOWN_SECTION_ERROR = 0x24,         //Unknown Section found in sensor data file
+            MI_CHIP_DESC_ERROR = 0x25,         //Error parsing the chip descriptor section
+            MI_PARSE_ADDR_SPACE_ERROR = 0x26,         //Error parsing the address space section
+            //Error codes for loading INI presets 
+            MI_INI_SUCCESS = 0x100,        //INI Preset is loaded successfully
+            MI_INI_KEY_NOT_SUPPORTED = 0x101,        //Key is not supported - will be ignored
+            MI_INI_LOAD_ERROR = 0x102,        //Error loading INI preset
+            MI_INI_POLLREG_TIMEOUT = 0x103,        //time out in POLLREG/POLL_VAR/POLL_FIELD command
+            MI_INI_HANDLED_SUCCESS = 0x104,        //transport handled the command, success
+            MI_INI_HANDLED_ERROR = 0x105,        //transport handled the command, with error
+            MI_INI_NOT_HANDLED = 0x106,        //transport did not handle the command
+        };
     }
 }
 
