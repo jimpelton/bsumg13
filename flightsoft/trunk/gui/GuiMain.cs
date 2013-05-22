@@ -178,9 +178,10 @@ namespace gui
             }
             if (bestDrive != null)
             {
-                dataPath = bestDrive["Name"] + "\\Data\\";
+                String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
+                dataPath = bestDrive["Name"] + "\\Data\\" + directoryName;
                 config.Path = dataPath;
-                captureClass.switchToBackupDrive(bestDrive["Name"] + "\\Data\\");               
+                captureClass.switchToBackupDrive(bestDrive["Name"] + "\\Data\\" + directoryName);               
             }
         }
 

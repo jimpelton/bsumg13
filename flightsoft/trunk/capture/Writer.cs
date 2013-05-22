@@ -123,25 +123,26 @@ namespace uGCapture
                 {
                     Directory.CreateDirectory(BasePath);
                     makePaths(BasePath);
-                    foreach (string s in Str.Dirs.Values)
+                }
+                foreach (string s in Str.Dirs.Values)
+                {
+                    try
                     {
-                        try
+                        if (!Directory.Exists(BasePath + s))
                         {
-                            if (!Directory.Exists(BasePath + s))
-                            {
-                                Directory.CreateDirectory(BasePath + s);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Console.Error.WriteLine(e.StackTrace);
-                            dp.BroadcastLog(this,
-                                            "Data subdirectory " + s +
-                                            " could not be created\r\n" +
-                                            e.StackTrace, 100);                           
+                            Directory.CreateDirectory(BasePath + s);
                         }
                     }
+                    catch (Exception e)
+                    {
+                        Console.Error.WriteLine(e.StackTrace);
+                        dp.BroadcastLog(this,
+                                        "Data subdirectory " + s +
+                                        " could not be created\r\n" +
+                                        e.StackTrace, 100);                           
+                    }
                 }
+                
             }
 
 
@@ -230,7 +231,7 @@ namespace uGCapture
         /// <param name="w">The writer which should do the writing.</param>
         public static void DoWrite(Writer w)
         {
-            //w.checkCurrentPathForUpdate();
+            w.checkCurrentPathForUpdate();
             try
             {
                 Buffer<byte> fulbuf = w.BufferPool.PopFull();
