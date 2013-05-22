@@ -303,9 +303,18 @@ namespace uGCapture
             ac1.stop();
             ac2.stop();
             writer.stop();
-            acThread1.Join(500);
-            acThread2.Join(500);
-            wrtThread.Join(500);
+            if (ac1.IsInit)
+            {
+                acThread1.Join(500);
+            }
+            if (ac2.IsInit)
+            {
+                acThread2.Join(500);
+            }
+            if (writer.IsInit)
+            {
+                wrtThread.Join(500);
+            }
         }
     }
 }
