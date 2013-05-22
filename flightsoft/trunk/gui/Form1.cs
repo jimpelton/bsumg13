@@ -116,7 +116,7 @@ namespace gui
             return DateTime.Now.ToString("dd:HH:mm:ss ");
         }
 
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             guiMain.Shutdown();
         }

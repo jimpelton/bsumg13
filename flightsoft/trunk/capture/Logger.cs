@@ -5,14 +5,14 @@ namespace uGCapture
 {
     public class Logger : Receiver
     {
-        private String outputData;
+        private StringBuilder outputData;
         private const UInt32 MAX_LOG_FILE_LENGTH =1048576; // One megabyte.
 
         public Logger(String id, bool receiving = true, bool executing = true) 
             : base(id, receiving, executing)
         {
             // Set output data buffer to empty to begin.
-            outputData = "";
+            outputData = new StringBuilder();
         }
 
 
@@ -45,25 +45,53 @@ namespace uGCapture
         /// </summary>    
         public override void exLogMessage(Receiver r, Message m)
         {
-
             if (outputData.Length > MAX_LOG_FILE_LENGTH)
             {
+                String output;
+                lock (outputData)
+                {
+                    output = "Log\r\n" + timeStamp() + " " + m + outputData.ToString();
+                    outputData.Clear();
+                }
+
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
-                String output = "Log\r\n";
-                output += timeStamp() + " ";
-                output += outputData; // Add all collected output data.
-                output += m; // Finally, add the current message
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
                 BufferPool.PostFull(buffer);
-                outputData = "";
             }
             else // If we're under the write threshold, write the new log message to the output data
             {
-                outputData += m;
+                lock (outputData)
+                {
+                    outputData.Append(timeStamp() + m + "\n");
+                }
             }
         }
 
+        public override void exStatusMessage(Receiver r, Message m)
+        {
+            if (outputData.Length > MAX_LOG_FILE_LENGTH)
+            {
+                String output;
+                lock (outputData)
+                {
+                    output = "Log\r\n" + timeStamp() + " " + m + outputData.ToString();
+                    outputData.Clear();
+                }
+
+                Buffer<Byte> buffer = BufferPool.PopEmpty();
+                UTF8Encoding encoding = new UTF8Encoding();
+                buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
+                BufferPool.PostFull(buffer);
+            }
+            else // If we're under the write threshold, write the new log message to the output data
+            {
+                lock (outputData)
+                {
+                    outputData.Append(timeStamp() + m + "\n");
+                }
+            }
+        }
 
         /// <summary>
         /// LJX, 12/5/11.
@@ -72,15 +100,17 @@ namespace uGCapture
         /// </summary> 
         public void flushLogMessage(Receiver r, Message m)
         {
+            String output;
+            lock (outputData)
+            {
+                output = "Log\r\n" + timeStamp() + "\n" + outputData.ToString() + m;
+                outputData.Clear();
+            }
+
             Buffer<Byte> buffer = BufferPool.PopEmpty();
-            String output = "Log\r\n";
-            output += timeStamp() + " ";
-            output += outputData;
-            output += m;
             UTF8Encoding encoding = new UTF8Encoding();
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
             BufferPool.PostFull(buffer);
-            outputData = "";
         }
     }
 }

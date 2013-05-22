@@ -53,6 +53,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NationalInstruments.Common, Version=13.0.40.188, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL" />
@@ -86,6 +87,7 @@
     <Compile Include="CirclesFile.cs" />
     <Compile Include="Controller\AccelerometerPhidgetsController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
+    <Compile Include="Message\EmptyCycleMessage.cs" />
     <Compile Include="Message\PhidgetsTempStatusMessage.cs" />
     <Compile Include="Controller\SpatialAccelController.cs" />
     <Compile Include="DataSet.cs" />

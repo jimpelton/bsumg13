@@ -40,6 +40,8 @@ namespace uGCapture
             m_sender = sender;
         }
 
+        public virtual void executeLog(Receiver r) { ; }
+
         public abstract void execute(Receiver r);
 
         

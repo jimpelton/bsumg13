@@ -142,8 +142,8 @@ namespace uGCapture
             }
             dp.Register(ac2);
 
-            acThread1.Start();
-            acThread2.Start();
+            if (ac1.IsInit) acThread1.Start();
+            if (ac2.IsInit) acThread2.Start();
 
 
         }
@@ -297,18 +297,15 @@ namespace uGCapture
             boolCapturing = lm.running;
         }
 
-        public override void exReceiverCleanUpMessage(Receiver r, Message m)
-        {
-            base.exReceiverCleanUpMessage(r, m);
-            
-        }
-
         public void Shutdown()
         {
+            Dispatch.Instance().CleanUpMessageThreads();
             ac1.stop();
             ac2.stop();
             writer.stop();
-            Dispatch.Instance().CleanUpMessageThreads();
+            acThread1.Join(500);
+            acThread2.Join(500);
+            wrtThread.Join(500);
         }
     }
 }
