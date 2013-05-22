@@ -4,13 +4,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
-using System.Timers;
 using System.Windows.Forms.DataVisualization.Charting;
-using uGCapture;
 using System.Runtime.InteropServices;
-
-using System.IO;
-
+using uGCapture;
 
 namespace gui
 {

@@ -6,8 +6,7 @@
 
 using System;
 using System.IO;
-using System.Timers;
-using System.Threading;
+
 namespace uGCapture
 {
     public class Writer : ReceiverController
@@ -71,8 +70,8 @@ namespace uGCapture
         private object m_isRunningMutex = new object();
 
 
-        public Writer(BufferPool<byte> bp, string id, bool receiving = true)
-            : base(bp, id, receiving)
+        public Writer(BufferPool<byte> bp, string id, bool receiving=true, bool executing=false)
+            : base(bp, id, receiving, executing)
         {
         }
 
@@ -248,37 +247,37 @@ namespace uGCapture
                         break;
 
                     case (BufferType.UTF8_PHIDGETS):
-                    w.WriteOutput(fulbuf, w.m_phidPath, w.indexPhidgets, ".txt");
+                        w.WriteOutput(fulbuf, w.m_phidPath, w.indexPhidgets, ".txt");
                         w.indexPhidgets += 1;
                         break;
 
                     case (BufferType.UTF8_ACCEL):
-                    w.WriteOutput(fulbuf, w.m_accelPath, w.indexAccel, ".txt");
+                        w.WriteOutput(fulbuf, w.m_accelPath, w.indexAccel, ".txt");
                         w.indexAccel += 1;
                         break;
 
                     case (BufferType.UTF8_SPATIAL):
-                    w.WriteOutput(fulbuf, w.m_spatPath, w.indexSpatial, ".txt");
+                        w.WriteOutput(fulbuf, w.m_spatPath, w.indexSpatial, ".txt");
                         w.indexSpatial += 1;
                         break;
 
                     case (BufferType.UTF8_NI6008):
-                    w.WriteOutput(fulbuf, w.m_niPath, w.indexNI6008, ".txt");
+                        w.WriteOutput(fulbuf, w.m_niPath, w.indexNI6008, ".txt");
                         w.indexNI6008 += 1;
                         break;
 
                     case (BufferType.USHORT_IMAGE405):
-                    w.WriteImageOutput(fulbuf, w.m_cam405Path, w.index405, ".raw");
+                        w.WriteImageOutput(fulbuf, w.m_cam405Path, w.index405, ".raw");
                         w.index405 += 1;
                         break;
 
                     case (BufferType.USHORT_IMAGE485):
-                    w.WriteImageOutput(fulbuf, w.m_cam485Path, w.index485, ".raw");
+                        w.WriteImageOutput(fulbuf, w.m_cam485Path, w.index485, ".raw");
                         w.index485 += 1;
                         break;
 
                     case (BufferType.UTF8_LOG):
-                    w.WriteOutput(fulbuf, w.m_loggerPath, w.indexLog, ".txt");
+                        w.WriteOutput(fulbuf, w.m_loggerPath, w.indexLog, ".txt");
                         w.indexLog += 1;
                         break;
 
@@ -324,11 +323,11 @@ namespace uGCapture
             fs.Close();
         }
 
-        public override void exReceiverCleanUpMessage(Receiver r, Message m)
-        {
-            base.exReceiverCleanUpMessage(r, m);
-            IsRunning = false;
-        }
+        //public override void exReceiverCleanUpMessage(Receiver r, Message m)
+        //{
+        //    base.exReceiverCleanUpMessage(r, m);
+        //    IsRunning = false;
+        //}
 
     }
 }

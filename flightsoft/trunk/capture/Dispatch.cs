@@ -78,6 +78,11 @@ namespace uGCapture
     {
         private ConcurrentDictionary<string, ReceiverIdPair> m_receiversMap;
         private static Dispatch me;
+        
+        public static Scheduler Scheduler
+        {
+            get { return m_sch; }
+        }
         private static Scheduler m_sch;
 
         /// <summary>
@@ -106,6 +111,59 @@ namespace uGCapture
             return me;
         }
 
+       
+
+        //TODO: CleanUpMessageThreads() is never called.
+        public void CleanUpMessageThreads()
+        {
+            ICollection<ReceiverIdPair> rips = m_receiversMap.Values;
+            foreach (ReceiverIdPair pair in rips)
+            {
+                pair.Receiver.IsExecuting = false;
+                pair.Receiver.IsReceiving = false;
+            }
+
+            
+            foreach (ReceiverIdPair rip in rips)
+            {
+                try
+                {
+                    rip.T.Join(ThreadJoinTimeoutIntervalMillis);
+                }
+                catch (ThreadStateException eek)
+                {
+                    Console.WriteLine(eek.StackTrace);
+                }
+                catch (ArgumentOutOfRangeException eek)
+                {
+                    Console.WriteLine(eek.StackTrace);
+                }
+            }
+
+        }
+
+        //public void StartAllExecuting()
+        //{
+        //    foreach (ReceiverIdPair pair in m_receiversMap.Values)
+        //    {
+        //        pair.Receiver.IsReceiving = true;
+        //        pair.Receiver.IsExecuting = true;
+        //        pair.T = new Thread(() => ExecuteMessageQueue(pair.Receiver));
+        //        pair.T.Start();
+        //        if (pair.T.IsAlive)
+        //        {
+        //            Console.WriteLine("[{0}] message thread started.", pair.Id);
+        //        }
+        //    }
+        //}
+
+        //public void psauce()
+        //{
+        //    Receiver q;
+        //    q.IsExecuting = true;
+            
+        //}
+
         /// <summary>
         /// Add Receiver r with unique id, id, to the m_receiversMap list.
         /// </summary>
@@ -113,9 +171,9 @@ namespace uGCapture
         public void Register(Receiver r)
         {
             ReceiverIdPair p = m_receiversMap.GetOrAdd(r.Id, makeNewQueue(r));
+            p.Receiver.IsExecuting = true;            
             p.T = new Thread(() => ExecuteMessageQueue(r));
             p.T.Start();
-
             Console.WriteLine("Dispatch: Registered Id: [{0}]", r.Id);
         }
 
@@ -149,26 +207,7 @@ namespace uGCapture
             }
         }
 
-        //TODO: CleanUpThreads() is never called.
-        public void CleanUpThreads()
-        {
-            ICollection<ReceiverIdPair> rips = m_receiversMap.Values;
-            foreach (ReceiverIdPair rip in rips)
-            {
-                try
-                {
-                    rip.T.Join(ThreadJoinTimeoutIntervalMillis);
-                }
-                catch (ThreadStateException eek)
-                {
-                    Console.WriteLine(eek.StackTrace);
-                }
-                catch (ArgumentOutOfRangeException eek)
-                {
-                    Console.WriteLine(eek.StackTrace);
-                }
-            }
-        }
+
 
       
         /// <summary>
@@ -177,7 +216,12 @@ namespace uGCapture
         /// <param name="m">The message to enqueue.</param>
         public void Broadcast(Message m)
         {
-            Parallel.ForEach(m_receiversMap, q => q.Value.Enqueue(m));
+            Parallel.ForEach(m_receiversMap, 
+                (q) =>
+                    {
+                        if (q.Value.Receiver.IsReceiving)
+                            q.Value.Enqueue(m);
+                    });
         }
 
         /// <summary>
@@ -219,7 +263,8 @@ namespace uGCapture
         }
 
         /// <summary>
-        /// Dequeue the next Message for the specified receiver.
+        /// Dequeue the next Message for the specified receiver. 
+        /// Blocks until a new message is available.
         /// </summary>
         /// <param name="r">The Receiver to dequeue the message from</param>
         /// <returns>The next message in the queue</returns>
@@ -230,6 +275,7 @@ namespace uGCapture
 
         /// <summary>
         /// Dequeue the next Message for the receiver specified by id.
+        /// Blocks until a new message is available.
         /// </summary>
         /// <param name="id"></param>
         /// <returns>The next message</returns>
@@ -238,6 +284,10 @@ namespace uGCapture
             return m_receiversMap[id].Dequeue();
         }
 
+        public bool HasNext(Receiver r)
+        {
+            return (m_receiversMap[r.Id].MesWait.Count != 0);
+        }
         
         /// <summary>
         /// Worker method for Message execution.
@@ -245,17 +295,20 @@ namespace uGCapture
         /// <param name="r"></param>
         public static void ExecuteMessageQueue(Receiver r)
         {
+            Dispatch dp = Instance();
             while (true)
             {
-                if (!r.IsReceiving)
+                if (!r.IsExecuting && !dp.HasNext(r))
                 {
                     return;
                 }
-                Message m = Instance().Next(r.Id);
+                Message m = dp.Next(r.Id);
                 m.execute(r);
                 //Instance().Next(r.Id).execute(r);
                 //Console.WriteLine("Receiver: {0} Executed {1}", r.Id, m.GetType());
             }
+
         }
+
     }
 }

@@ -1,4 +1,9 @@
 
+// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-05-18                                                                      
+// ******************************************************************************
 
 #include "SimpleCapture2.h"
 #include <stdio.h>
@@ -75,7 +80,7 @@ int initMidLib2(int nCamsReq, void *hwnd, long attach_cb_addr)
         g_cameras[i].pCamera = g_mi_cameras[i];   
 
         errval = openTransport_(&g_cameras[i]);
-        if (errval != MI_CAMERA_SUCCESS){
+        if (errval != MI_CAMERA_SUCCESS) {
             printf("%s %s: Camera failed to initialize.", __FILE__, __LINE__);
         }
     }
@@ -83,7 +88,7 @@ int initMidLib2(int nCamsReq, void *hwnd, long attach_cb_addr)
 
     g_isMidLibInit = 1;
     printf("Midlib initialized.\n");
-    return MI_CAMERA_SUCCESS;
+    return errval;
 }
 
 void setInitPath(char *path)
@@ -196,9 +201,9 @@ unsigned char *doCapture_(ugCamera *cam)
         cam->pGrabframeBuff, 
         cam->pCamera->sensor->bufferSize); 
 
-    //if (nRet != MI_CAMERA_SUCCESS) {
-    //    return NULL;
-    //}
+    if (nRet != MI_CAMERA_SUCCESS) {
+        return NULL;
+    }
     memcpy(cam->pCameraBuff, cam->pGrabframeBuff, cam->frameSize);
     return cam->pCameraBuff;
 }
@@ -208,8 +213,17 @@ void stopTransport_(ugCamera *cam)
     //close the camera and clean up
     cam->pCamera->stopTransport(cam->pCamera);
     mi_CloseCameras();
-    free(cam->pGrabframeBuff);
-    free(cam->pCameraBuff);
+
+    if (cam->pGrabframeBuff != NULL){
+        free(cam->pGrabframeBuff);
+        cam->pGrabframeBuff = NULL;
+    }
+
+    if (cam->pCameraBuff != NULL){
+        free(cam->pCameraBuff);
+        cam->pCameraBuff = NULL;
+    }
+
     mi_CloseErrorLog();
 }
 

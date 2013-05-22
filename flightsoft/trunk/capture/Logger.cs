@@ -8,7 +8,8 @@ namespace uGCapture
         private String outputData;
         private const UInt32 MAX_LOG_FILE_LENGTH =1048576; // One megabyte.
 
-        public Logger(String id, bool receiving = true) : base(id, receiving)
+        public Logger(String id, bool receiving = true, bool executing = true) 
+            : base(id, receiving, executing)
         {
             // Set output data buffer to empty to begin.
             outputData = "";
@@ -81,6 +82,5 @@ namespace uGCapture
             BufferPool.PostFull(buffer);
             outputData = "";
         }
-
     }
 }

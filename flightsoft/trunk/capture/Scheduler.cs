@@ -11,7 +11,7 @@ namespace uGCapture
     /// <summary>
     /// The beginnings of a job scheduler.
     /// </summary>
-    class Scheduler : Receiver
+    public class Scheduler : Receiver
     {
 
         Timer baseClock;
@@ -22,9 +22,14 @@ namespace uGCapture
             : base(id, receiving)
         {
             baseClock = new Timer();
-            baseClock.Enabled = true;
+            baseClock.Enabled = false;
             baseClock.Interval = 10;
             baseClock.Elapsed += beat;
+        }
+
+        public void Start()
+        {
+            baseClock.Enabled = true;
         }
 
         private void beat(object sender, ElapsedEventArgs e)
@@ -45,8 +50,8 @@ namespace uGCapture
 
         public override void exReceiverCleanUpMessage(Receiver r, Message m)
         {
-	    // overriden to do nothing (we don't want the parent method's behavior 
-	    // in the Scheduler. --JP
+	        // overriden to do nothing (we don't want the parent method's behavior 
+	        // in the Scheduler. --JP
         }
     }
 }

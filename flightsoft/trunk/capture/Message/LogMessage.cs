@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using uGCapture;
+﻿// ******************************************************************************
+//  BSU Microgravity Team 2013                                                 
+//  In-Flight Data Capture Software                                            
+//  Date: 2013-03-06                                                                      
+// ******************************************************************************
+
+
+using System;
 
 namespace uGCapture
 {
     public class LogMessage : Message
     {
-
-        public long time;
         public String message;
         public int severity;
 
@@ -28,7 +29,6 @@ namespace uGCapture
         public LogMessage(Receiver sender, String m) 
             : base(sender)
         {
-            time = DateTime.Now.Ticks;
             message = m;
             severity = 0;
         }
@@ -36,7 +36,6 @@ namespace uGCapture
         public LogMessage(Receiver sender, String m, int s)
             : base(sender)
         {
-            time = DateTime.Now.Ticks;
             message = m;
             severity = s;
         }

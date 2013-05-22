@@ -5,19 +5,27 @@
 // ******************************************************************************
 
 
+using System;
 using System.Collections.Generic;
 
 namespace uGCapture
 {
     public abstract class Message
     {
+        public DateTime CreateTime
+        {
+            get { return m_createTime; }
+            private set { m_createTime = value; }
+        }
+        private DateTime m_createTime;
+
         /// <summary>
         /// The originator of this message
         /// </summary>
         public Receiver Sender
         {
             get { return m_sender; }
-            set { m_sender = value; }
+            private set { m_sender = value; }
         }
         private Receiver m_sender;
 
@@ -26,7 +34,11 @@ namespace uGCapture
         /// should pass itself into this constructor.
         /// </summary>
         /// <param name="s">The Receiver that generated this message.</param>
-        public Message(Receiver sender) { m_sender = sender; }
+        public Message(Receiver sender)
+        {
+            m_createTime = DateTime.Now;
+            m_sender = sender;
+        }
 
         public abstract void execute(Receiver r);
 

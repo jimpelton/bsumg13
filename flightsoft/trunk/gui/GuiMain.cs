@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using System.IO;
 using System.Management;
@@ -87,10 +88,10 @@ namespace gui
                     DataFrames = this.dataFrames
                 };
 
-            dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
-            dp.BroadcastLog(this, "Starting capture class.", 1);
             captureClass = new CaptureClass(mainForm.Handle, "CaptureClass") { StorageDir = path + directoryName };
             captureClass.init();
+            //dp.StartAllExecuting();
+            dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
         }
 
         public bool ToggleCapture()
@@ -140,7 +141,9 @@ namespace gui
         /// </summary>
         public void Shutdown()
         {
-            Dispatch.Instance().Broadcast(new ReceiverCleanupMessage(this));
+            //Dispatch.Instance().Broadcast(new ReceiverCleanupMessage(this));
+            captureClass.Shutdown();
+
         }
 
         public DataSet<byte> getLatestData()
