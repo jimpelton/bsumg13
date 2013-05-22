@@ -195,7 +195,7 @@ namespace uGCapture
             }
             else
             {
-                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_FAIL_PHID_SPTL));
+                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL, ErrStr.INIT_FAIL_PHID_SPTL));
                 Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_SPTL));
             }
             dp.Register(spatialController);
