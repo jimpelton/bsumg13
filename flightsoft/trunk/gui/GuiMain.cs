@@ -4,8 +4,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.IO;
+using System.Management;
 using uGCapture;
-
 namespace gui
 {
     public class GuiMain : Receiver
@@ -150,24 +150,37 @@ namespace gui
 
         public void switchToAlternateDrive()
         {
-            DriveInfo[] drives = DriveInfo.GetDrives();
-            DriveInfo bestDrive = null;
+            ManagementObject bestDrive = null;
 
-            foreach (DriveInfo drive in drives)
+            ObjectQuery query = new ObjectQuery("Select * FROM  Win32_LogicalDisk");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
+            ManagementObjectCollection collection = searcher.Get();
+            foreach (ManagementObject mo in collection)
             {
-                if (drive.IsReady)
+                if(bestDrive==null)
+                    bestDrive = mo;
+
+                if(mo["FreeSpace"]!=null)
                 {
-                    if (bestDrive == null)
-                        bestDrive = drive;
-                    if (drive.TotalFreeSpace > bestDrive.TotalFreeSpace)
-                        bestDrive = drive;
+                    ulong mySpace = (ulong)mo["FreeSpace"];
+                    ulong theirSpace = (ulong)bestDrive["FreeSpace"];
+
+                    if (mySpace > theirSpace)
+                    {
+                        if (((string)mo["VolumeName"]).ToLower().Contains("nasa"))
+                        {
+                            bestDrive = mo;
+                        }
+                    }
                 }
+            
+
             }
             if (bestDrive != null)
             {
-                dataPath = bestDrive.RootDirectory + "Data\\";
+                dataPath = bestDrive["Name"] + "\\Data\\";
                 config.Path = dataPath;
-                captureClass.switchToBackupDrive(bestDrive.RootDirectory + "Data\\");               
+                captureClass.switchToBackupDrive(bestDrive["Name"] + "\\Data\\");               
             }
         }
 
