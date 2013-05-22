@@ -116,19 +116,25 @@ namespace uGCapture
         //TODO: CleanUpMessageThreads() is never called.
         public void CleanUpMessageThreads()
         {
+            Console.Error.WriteLine("Cleaning up messaging threads.");
             ICollection<ReceiverIdPair> rips = m_receiversMap.Values;
             foreach (ReceiverIdPair pair in rips)
             {
                 pair.Receiver.IsExecuting = false;
-                pair.Receiver.IsReceiving = false;
+                pair.Receiver.IsReceiving = true;
             }
-
             
+            Broadcast(new EmptyCycleMessage(null));
+
             foreach (ReceiverIdPair rip in rips)
             {
                 try
                 {
                     rip.T.Join(ThreadJoinTimeoutIntervalMillis);
+                    if (rip.T.IsAlive)
+                    {
+                        Console.Error.WriteLine("A message thread wasn't joined.");
+                    }
                 }
                 catch (ThreadStateException eek)
                 {
@@ -142,20 +148,20 @@ namespace uGCapture
 
         }
 
-        //public void StartAllExecuting()
-        //{
-        //    foreach (ReceiverIdPair pair in m_receiversMap.Values)
-        //    {
-        //        pair.Receiver.IsReceiving = true;
-        //        pair.Receiver.IsExecuting = true;
-        //        pair.T = new Thread(() => ExecuteMessageQueue(pair.Receiver));
-        //        pair.T.Start();
-        //        if (pair.T.IsAlive)
-        //        {
-        //            Console.WriteLine("[{0}] message thread started.", pair.Id);
-        //        }
-        //    }
-        //}
+        public void StartAllExecuting()
+        {
+            foreach (ReceiverIdPair pair in m_receiversMap.Values)
+            {
+                pair.Receiver.IsReceiving = true;
+                pair.Receiver.IsExecuting = true;
+                pair.T = new Thread(() => ExecuteMessageQueue(pair.Receiver));
+                pair.T.Start();
+                if (pair.T.IsAlive)
+                {
+                    Console.WriteLine("[{0}] message thread started.", pair.Id);
+                }
+            }
+        }
 
         //public void psauce()
         //{
@@ -171,9 +177,9 @@ namespace uGCapture
         public void Register(Receiver r)
         {
             ReceiverIdPair p = m_receiversMap.GetOrAdd(r.Id, makeNewQueue(r));
-            p.Receiver.IsExecuting = true;            
-            p.T = new Thread(() => ExecuteMessageQueue(r));
-            p.T.Start();
+            //p.Receiver.IsExecuting = true;            
+            //p.T = new Thread(() => ExecuteMessageQueue(r));
+            //p.T.Start();
             Console.WriteLine("Dispatch: Registered Id: [{0}]", r.Id);
         }
 
@@ -311,4 +317,5 @@ namespace uGCapture
         }
 
     }
+
 }

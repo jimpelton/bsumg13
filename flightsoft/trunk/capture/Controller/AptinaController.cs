@@ -276,10 +276,6 @@ public class AptinaController : ReceiverController
     }
 }
 
-
-
-
-
 }
 
 //me.dp.Broadcast(new AptinaStatusMessage(me, 

@@ -90,7 +90,7 @@ namespace gui
 
             captureClass = new CaptureClass(mainForm.Handle, "CaptureClass") { StorageDir = path + directoryName };
             captureClass.init();
-            //dp.StartAllExecuting();
+            dp.StartAllExecuting();
             dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
         }
 

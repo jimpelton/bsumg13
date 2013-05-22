@@ -136,6 +136,8 @@ namespace uGCapture
         /// </summary>
         public virtual void exLogMessage(Receiver r, Message m) { ; }
 
+        public virtual void exStatusMessage(Receiver r, Message m) { ; }
+
         // Updates given to the gui for updating as messages are passed throug the following:
         public virtual void exUPSStatusMessage(Receiver r, Message m) { ; }
         public virtual void exAccelStatusMessage(Receiver r, Message m) { ; }
@@ -163,10 +165,7 @@ namespace uGCapture
         /// 
         /// On the next heartbeat sleeping threads will cycle and break out of the worker loop.
         /// </summary>
-        public virtual void exReceiverCleanUpMessage(Receiver r, Message m)
-        {
-            IsReceiving = false;
-        }
+        public virtual void exReceiverCleanUpMessage(Receiver r, Message m){ ; }
 
         public virtual void exTest(Receiver r, Message m) { ; }
 
