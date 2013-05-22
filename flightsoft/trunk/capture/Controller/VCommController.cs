@@ -37,6 +37,8 @@ namespace uGCapture
             if (port.IsOpen)
             {
                 port.Close();
+                port.Dispose();
+                return false;
             }
             try
             {
@@ -51,9 +53,10 @@ namespace uGCapture
             catch (UnauthorizedAccessException e)
             {
                 Console.WriteLine(e.StackTrace);
-                port.Close();              
+                port.Close();
+                port = null;
                 rval = false;
-                dp.Broadcast(new VcommStatusMessage(this, Status.STAT_FAIL));
+                dp.Broadcast(new VcommStatusMessage(this, Status.STAT_FAIL));              
             }
             return rval;
         }
@@ -111,7 +114,11 @@ namespace uGCapture
         {
             if (!Com3Exists())
                 return;
-
+            if (port == null)
+            {
+                init();
+                return;                
+            }
             //test the port.
             try
             {
