@@ -90,7 +90,7 @@ namespace uGCapture
             catch (Exception e)
             {
                 Console.Error.WriteLine(e.StackTrace);
-                dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + " :" + BasePath, 5);
+                dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + ": " + BasePath, 5);
                 rval = false;
             }
 
@@ -107,7 +107,7 @@ namespace uGCapture
                 catch (Exception e)
                 {
                     Console.Error.WriteLine(e.StackTrace);
-                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + " :" + s, 5);
+                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + ": " + s, 5);
                     rval = false;
                 }
             }

@@ -55,6 +55,7 @@ namespace uGCapture
         INIT_FAIL_APTINA_INITMIDLIB,    
         INIT_FAIL_APTINA_OPENTRANSPORT,  
         INIT_FAIL_APTINA_ZERO_SIZE,
+        INIT_FAIL_APTINA_FUSE_ERROR,
         INIT_FAIL_APTINA_KEY_NOT_SUPPORTED,
         INIT_FAIL_APTINA_INI_LOAD_ERROR,
         INIT_FAIL_APTINA_INI_POLLREG_TIMEOUT,
@@ -104,9 +105,10 @@ namespace uGCapture
         // WRITER
         WRITER_FAIL_CREATE_DIRS,
         WRITER_OK_CREATE_DIRS,
-        WRITER_OK_WRITE_BUFFER,
+        WRITER_OK_WRITE_BUFFER
 
 
+        
     }
 
 
@@ -160,6 +162,7 @@ namespace uGCapture
                 case ErrStr.INIT_FAIL_APTINA_INITMIDLIB:      return "Midlib2 failed to initialize.";
                 case ErrStr.INIT_FAIL_APTINA_OPENTRANSPORT:   return "Midlib2 opentransport failed.";
                 case ErrStr.INIT_FAIL_APTINA_ZERO_SIZE:       return "Midlib2 returned that frames are 0 sized.";
+                case ErrStr.INIT_FAIL_APTINA_FUSE_ERROR:      return "Returned wavelength was 0 during aptinaController.initMidlib(). Fuse register not read correctly?";
                
                 case ErrStr.INIT_FAIL_VCOMM:                  return "Weatherboard failed to initialize.";
                 

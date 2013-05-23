@@ -116,13 +116,12 @@ namespace uGCapture
             if (ac1.Initialize())
             {
                 acThread1 = new Thread(() => AptinaController.go(ac1));
-                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Good));
+                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Good, ac1.Errno));
             }
             else
             {
-                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Err, ac1.Errno));
-                dp.BroadcastLog(this,
-                    Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 1.", 100);
+                dp.BroadcastLog(this, Str.MiErrStr[ac1.MiError] + ": Camera 1.", 100);
+                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Fail, ac1.Errno));
             }
             dp.Register(ac1);
 
@@ -137,8 +136,8 @@ namespace uGCapture
             }
             else
             {
-                dp.BroadcastLog(this,
-                     Str.GetErrStr(ErrStr.INIT_FAIL_APTINA) + ": Camera 2.", 100);
+                dp.BroadcastLog(this, Str.MiErrStr[ac2.MiError] + ": Camera 2.", 100);
+                dp.Broadcast(new AptinaStatusMessage(this, ac2.Status_Fail, ac2.Errno));
             }
             dp.Register(ac2);
 
@@ -303,18 +302,27 @@ namespace uGCapture
             ac1.stop();
             ac2.stop();
             writer.stop();
-            if (ac1.IsInit)
+            try
             {
-                acThread1.Join(500);
+                if (ac1.IsInit)
+                {
+                    acThread1.Join(500);
+                }
+                if (ac2.IsInit)
+                {
+                    acThread2.Join(500);
+                }
+                if (writer.IsInit)
+                {
+                    wrtThread.Join(500);
+                }
             }
-            if (ac2.IsInit)
+            catch (Exception e)
             {
-                acThread2.Join(500);
+                Console.Error.WriteLine(e.Message);
+                dp.BroadcastLog(this, e.Message, Status.STAT_ERR);
             }
-            if (writer.IsInit)
-            {
-                wrtThread.Join(500);
-            }
+            
         }
     }
 }

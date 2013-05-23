@@ -69,6 +69,7 @@ namespace uGCapture
         /// A receivercontroller must implement init() which will initialize
         /// hardware and other objects when called.
         /// </summary>
+        /// <param name="lastErr"></param>
         protected abstract bool init(); 
 
     }

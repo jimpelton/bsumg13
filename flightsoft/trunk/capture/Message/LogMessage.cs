@@ -40,11 +40,19 @@ namespace uGCapture
             severity = s;
         }
 
-        public LogMessage(Receiver sender, Status str, ErrStr er)
+        public LogMessage(Receiver sender, ErrStr er, Status str)
             : base(sender)
         {
             estr = er;
+            message = Str.GetErrStr(er);
             _status = str;
+        }
+
+        public LogMessage(Receiver sender, string m, Status stat)
+            : base(sender)
+        {
+            message = m;
+            _status = stat;
         }
 
         public override void execute(Receiver r)
