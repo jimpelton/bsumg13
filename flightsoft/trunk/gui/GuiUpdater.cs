@@ -4,14 +4,30 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Runtime.InteropServices;
 using uGCapture;
+using Message = uGCapture.Message;
 
 namespace gui
 {
     public class GuiUpdater : Receiver
     {
+        
+        public void Broadcast(Message m)
+        {
+            dp.Broadcast(m);
+        }
+
+        public void BroadcastLogError(string s)
+        {
+            dp.BroadcastLog(this, s, Status.STAT_ERR);
+        }
+        
+        IList<Control> updatables = new List<Control>();
+
+
         Form1 mainform;
         private GuiMain Guimain;
         //private Series graph1data;
@@ -49,6 +65,24 @@ namespace gui
             lowlowpassfilteredwells = new double[16 * 12];
             lowlowlowpassfilteredwells = new double[16 * 12];
             lowlowlowlowpassfilteredwells = new double[16 * 12];
+        }
+
+        public GuiUpdater(string id, bool receiving = true)
+            : base(id, receiving)
+        {
+            //mainform = f;
+            //CAS = c;
+            //graph1data = new Series("Points");
+            //Guimain = m;
+            dp.Register(this);  //yikes!
+            mainform.panel_Wells.Paint += WellStatusPanelPaintage;
+            lowpassfilteredwells = new double[16 * 12];
+            lowlowpassfilteredwells = new double[16 * 12];
+            lowlowlowpassfilteredwells = new double[16 * 12];
+            lowlowlowlowpassfilteredwells = new double[16 * 12];
+
+
+
         }
 
         public void UpdateGUI(object sender, EventArgs e)
@@ -489,11 +523,6 @@ namespace gui
             LogMessage lm = m as LogMessage;
             if (lm != null)
                 mainform.DebugOutput(lm.message, lm.severity);
-        }
-
-        public override void exDataRequestMessage(Receiver r, Message m)
-        {   
-            
         }
 
         private static byte[] pixels = new byte[2592 * 1944 * 3];
