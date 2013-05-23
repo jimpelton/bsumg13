@@ -19,7 +19,7 @@ namespace uGCapture
         }
 
         protected StatusMessage(Receiver s, Status nstate, ErrStr mes = 0)
-            : base(s, nstate, mes )
+            : base(s, mes, nstate)
         {
             state = nstate;
         }

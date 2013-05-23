@@ -50,10 +50,10 @@ extern "C"
     UGEXPORT mi_u32 miDevCallBack(HWND, _mi_camera_t*, mi_u32);
     UGEXPORT int initMidLib2(int nCamsReq, void *hwnd, long attach_cb);
     UGEXPORT void setIniPath(char *);
-    UGEXPORT int  openTransport(ugCamera*); 
-    UGEXPORT unsigned char* doCaptureIdx(int camIdx);
+    UGEXPORT int  openTransportIdx(int camIdx); 
+    UGEXPORT unsigned char* doCaptureIdx(int camIdx, int *errval);
     UGEXPORT int getWavelengthIdx(int camIdx);
-    UGEXPORT void stopTransportIdx(int camIdx);
+    UGEXPORT int stopTransportIdx(int camIdx);
     UGEXPORT unsigned long sensorBufferSizeIdx(int camIdx);
     UGEXPORT void printCameraInfo();
     UGEXPORT int setDeviceCallback(void * hwnd);

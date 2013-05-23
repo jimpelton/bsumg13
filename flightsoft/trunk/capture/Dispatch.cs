@@ -245,6 +245,22 @@ namespace uGCapture
                 );
         }
 
+        public void BroadcastLog(Receiver sender, string message, Status severity)
+        {
+            Broadcast
+                (
+                    new LogMessage(sender, message, severity)
+                );
+        }
+
+        public void BroadcastLog(Receiver sender, ErrStr message, Status severity)
+        {
+            Broadcast
+                (
+                    new LogMessage(sender, message, severity)
+                );
+        }
+
         /// <summary>
         /// Broadcast message to the receiver, specified by its id.
         /// </summary>

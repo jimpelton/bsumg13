@@ -24,14 +24,19 @@ int g_isMidLibInit = 0;
 int mallocate(ugCamera *);
 
 int openTransport_(ugCamera*);
-unsigned char * doCapture_(ugCamera *);
-void stopTransport_(ugCamera *cam);
+unsigned char * doCapture_(ugCamera *, int *);
+int stopTransport_(ugCamera *cam);
 
 AttachCallback attachCallbackAddr;
 
 /************************************************************************/
 /* EXPORTS TO MANAGED SPACE                                             */
 /************************************************************************/
+
+int openTransportIdx(int camIdx)
+{
+    return openTransport_(&g_cameras[camIdx]);
+}
 
 unsigned long sensorBufferSizeIdx(int camIdx)
 {
@@ -43,9 +48,14 @@ int getWavelengthIdx(int camIdx)
     return (g_cameras[camIdx]).camNm;
 }
 
-unsigned char* doCaptureIdx(int cam_idx)
+unsigned char* doCaptureIdx(int cam_idx, int *errval)
 {
-    return doCapture_(&g_cameras[cam_idx]);
+    return doCapture_(&g_cameras[cam_idx], errval);
+}
+
+int stopTransportIdx(int camIdx)
+{
+    return stopTransport_(&g_cameras[camIdx]);
 }
 
 int initMidLib2(int nCamsReq, void *hwnd, long attach_cb_addr)
@@ -79,12 +89,11 @@ int initMidLib2(int nCamsReq, void *hwnd, long attach_cb_addr)
         g_cameras[i].camIdx  = i;
         g_cameras[i].pCamera = g_mi_cameras[i];   
 
-        errval = openTransport_(&g_cameras[i]);
+       /* errval = openTransport_(&g_cameras[i]);
         if (errval != MI_CAMERA_SUCCESS) {
             printf("%s %s: Camera failed to initialize.", __FILE__, __LINE__);
-        }
+        }*/
     }
-
 
     g_isMidLibInit = 1;
     printf("Midlib initialized.\n");
@@ -121,21 +130,22 @@ void printCameraInfo()
 
 int openTransport_(ugCamera *cam)
 {
-    int rval = 0;
- /*   if (!g_isMidLibInit) {
+    //int rval = 0;
+    mi_s32 errnum = 0;
+    if (!g_isMidLibInit) {
         printf("openTransport() called before initMidLib2() or initMidLib2() previously failed.\n");
         return -1;
-    }*/
+    }
 
     mi_camera_t *pCamera = cam->pCamera;
 
     //pCamera = 0==m_cameraIdx ? gCameras[0] : gCameras[1];
     if (pCamera == NULL) { return -2; }
 
-    if( (rval = pCamera->startTransport(pCamera)) != MI_CAMERA_SUCCESS ) {
+    if( (errnum = pCamera->startTransport(pCamera)) != MI_CAMERA_SUCCESS ) {
         printf("Start Transport Unsuccessful.\n");
         mi_CloseCameras();
-        return rval;
+        return errnum;
     }    
 
     mi_OpenErrorLog(MI_LOG_SHIP, "ship_log.txt");
@@ -146,7 +156,7 @@ int openTransport_(ugCamera *cam)
 	const char* iniFilePath = "C:\\MicrogravityImager.ini";     //path to .ini file.
 	const char* presetName = "Demo Initialization Mono";       //settings preset loaded from ini file.
     
-	mi_s32 errnum = mi_LoadINIPreset(pCamera, iniFilePath, presetName);
+	errnum = mi_LoadINIPreset(pCamera, iniFilePath, presetName);
     switch(errnum) {
     case MI_INI_KEY_NOT_SUPPORTED:
         printf("%d: MI_INI_KEY_NOT_SUPPORTED\n", MI_INI_KEY_NOT_SUPPORTED);
@@ -167,19 +177,27 @@ int openTransport_(ugCamera *cam)
     //    cam->nHeight    = pCamera->sensor->height;
     //}
 
-    cam->nWidth    =  pCamera->sensor->width;
-    cam->nHeight   = pCamera->sensor->height;
+    cam->nWidth   =  pCamera->sensor->width;
+    cam->nHeight  =  pCamera->sensor->height;
     pCamera->sensor->imageType = MI_BAYER_12;
-    pCamera->updateFrameSize(pCamera, pCamera->sensor->width, 
+    
+    errnum = pCamera->updateFrameSize(pCamera, pCamera->sensor->width, 
         pCamera->sensor->height, PIXELBITS, 0);
-     
+
+    if (errnum != MI_CAMERA_SUCCESS) {
+        return errnum; 
+    }
+
     cam->frameSize = pCamera->sensor->width  * 
         pCamera->sensor->height * pCamera->sensor->pixelBytes;
 
     mallocate(cam);
 
     mi_u32  fuse1 = 0;
-	pCamera->readRegister(pCamera, pCamera->sensor->shipAddr, 0x00FA, &fuse1);
+	errnum = pCamera->readRegister(pCamera, pCamera->sensor->shipAddr, 0x00FA, &fuse1);
+    if (errnum != MI_CAMERA_SUCCESS) { 
+       return errnum; 
+    }
 
     if (0 != fuse1) {
         cam->camNm = (fuse1==0xb8ce) ? 405 : 485;
@@ -193,14 +211,15 @@ int openTransport_(ugCamera *cam)
     return 0;
 }
 
-unsigned char *doCapture_(ugCamera *cam)
+unsigned char *doCapture_(ugCamera *cam, int *rval)
 {
-    int nRet;
+    mi_s32 nRet;
     int count=0;
     nRet = cam->pCamera->grabFrame(cam->pCamera, 
         cam->pGrabframeBuff, 
         cam->pCamera->sensor->bufferSize); 
 
+    *rval = (int)nRet;
     if (nRet != MI_CAMERA_SUCCESS) {
         return NULL;
     }
@@ -208,10 +227,15 @@ unsigned char *doCapture_(ugCamera *cam)
     return cam->pCameraBuff;
 }
 
-void stopTransport_(ugCamera *cam)
+int stopTransport_(ugCamera *cam)
 {
+    mi_s32 rval = 0;
     //close the camera and clean up
-    cam->pCamera->stopTransport(cam->pCamera);
+    rval = cam->pCamera->stopTransport(cam->pCamera);
+    if (rval != MI_CAMERA_SUCCESS) {
+        return rval;
+    }
+
     mi_CloseCameras();
 
     if (cam->pGrabframeBuff != NULL){
@@ -225,6 +249,7 @@ void stopTransport_(ugCamera *cam)
     }
 
     mi_CloseErrorLog();
+    return rval;
 }
 
 int mallocate(ugCamera *cam)
