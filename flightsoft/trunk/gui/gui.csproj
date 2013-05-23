@@ -105,6 +105,12 @@
     <Compile Include="BiteCASPanel.Designer.cs">
       <DependentUpon>BiteCASPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="BiteCASPanelControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BiteCASPanelControl.Designer.cs">
+      <DependentUpon>BiteCASPanelControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ConfigLoader.cs" />
     <Compile Include="DataPoint.cs" />
     <Compile Include="Form1.cs">
@@ -113,13 +119,26 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form2.Designer.cs">
+      <DependentUpon>Form2.cs</DependentUpon>
+    </Compile>
     <Compile Include="GuiMain.cs" />
     <Compile Include="GuiUpdater.cs" />
+    <Compile Include="GUIUpdater2.cs" />
     <Compile Include="ImageDisplay.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ImageDisplay.Designer.cs">
       <DependentUpon>ImageDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageDisplayControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImageDisplayControl.Designer.cs">
+      <DependentUpon>ImageDisplayControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -128,13 +147,22 @@
       <DependentUpon>BiteCASPanel.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="BiteCASPanelControl.resx">
+      <DependentUpon>BiteCASPanelControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form2.resx">
+      <DependentUpon>Form2.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ImageDisplay.resx">
       <DependentUpon>ImageDisplay.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageDisplayControl.resx">
+      <DependentUpon>ImageDisplayControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
