@@ -25,6 +25,7 @@ namespace uGCapture
         STAT_GOOD_485
     }
 
+    
 
     public enum CommandStr
     {
@@ -43,7 +44,7 @@ namespace uGCapture
 
     public enum ErrStr 
     {
-        ERR_EMPTY = 0,
+        ERR_NONE = 0,
         // INIT FAIL 
         INIT_FAIL_PHID_1018,
         INIT_FAIL_PHID_SPTL,
@@ -79,6 +80,7 @@ namespace uGCapture
 
         // APTINA
         APTINA_DISCONNECT,
+        APTINA_RECONNECT,
         APTINA_FAIL_CAPTURE_NULLBUFFER,
         APTINA_FAIL_CAPTURE,
 
@@ -105,10 +107,8 @@ namespace uGCapture
         // WRITER
         WRITER_FAIL_CREATE_DIRS,
         WRITER_OK_CREATE_DIRS,
-        WRITER_OK_WRITE_BUFFER
-
-
-        
+        WRITER_OK_WRITE_BUFFER,
+        WRITER_FAIL_WRITE_BUFFER
     }
 
 
@@ -150,7 +150,7 @@ namespace uGCapture
         {
             switch (msg)
             {
-                case ErrStr.ERR_EMPTY:                        return "";
+                case ErrStr.ERR_NONE:                        return "";
                 case ErrStr.INIT_FAIL_PHID_1018:              return "Phidgets 1018 DAQ failed to initialize."; 
                 case ErrStr.INIT_FAIL_PHID_SPTL:              return "Phidgets Spatial failed to initialize."; 
                 case ErrStr.INIT_FAIL_PHID_ACCEL:             return "Phidgets accelerometer failed to initialize."; 
@@ -181,6 +181,7 @@ namespace uGCapture
                 case ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER:   return "Midlib2 getFrame() returned null pointer.";
                 case ErrStr.APTINA_FAIL_CAPTURE:              return "Aptina capture failed.";
                 case ErrStr.APTINA_DISCONNECT:                return "Midlib detected camera removal.";
+                case ErrStr.APTINA_RECONNECT:                 return "Aptina camera reconnected after being disconnected.";
                 
                 case ErrStr.PHID_1018_STAT_DISC:              return "Phidgits 1080 disconnected.";
                 case ErrStr.PHID_1018_STAT_ATCH:              return "Phidgits 1018 attached.";
@@ -198,6 +199,7 @@ namespace uGCapture
                 case ErrStr.WRITER_OK_CREATE_DIRS:            return "Writer successfully created storage directory.";
                 case ErrStr.WRITER_FAIL_CREATE_DIRS:          return "Writer failed to create storage directory.";
                 case ErrStr.WRITER_OK_WRITE_BUFFER:           return "Writer wrote buffer: ";
+                case ErrStr.WRITER_FAIL_WRITE_BUFFER:         return "Writer failed to write a buffer: ";
 
                 default:                                      return "Unknown Error.";
             }

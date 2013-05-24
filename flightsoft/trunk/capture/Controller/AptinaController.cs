@@ -5,8 +5,10 @@
 // ******************************************************************************
 
 using System;
+using System.Management;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace uGCapture
 {
@@ -166,6 +168,14 @@ namespace uGCapture
     private static int numCams = 2;
     private AttachCallback attach_cb;
 
+    private static ManagementEventWatcher w;
+    private object detachedMutex = new object();
+    private bool isDetached;
+
+    /****************************************************************************
+     * Constructor
+     ****************************************************************************/
+
     public AptinaController(BufferPool<byte> bp, string id, bool receiving=true, bool executing=false)
         : base(bp, id, receiving, executing)
     {
@@ -181,12 +191,68 @@ namespace uGCapture
         MiError = Str.MiErrorCode.MI_CAMERA_ERROR;
     }
 
+
+    /****************************************************************************
+     * Attach/Detach Handling
+     * ***************************************************************************/
+
+
+     
+
+    // Callback from native space informing us that a camera has disconnected.
+    // Sets isDeatched=true, which checks wmi on the next heartbeat until connected again.
+    // We can't add the usb handler event here (even though it's the best place to do it)
+    // because this callback method is executed by a thread in native space (midlib thread?).
     private void AttachCb(int camIdx)
     {
+        lock (detachedMutex)
+        {
+            isDetached = true;
+        }
+
+        IsRunning = false;
+
         dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_FAIL, ErrStr.APTINA_DISCONNECT));
         dp.BroadcastLog(this, Str.GetErrStr(ErrStr.APTINA_DISCONNECT) + " " + waveLength, 100);
+        //Add_AttachUSBHandler();
     }
-    
+
+    public static void Add_AttachUSBHandler()
+    {
+        WqlEventQuery q;
+        ManagementScope scope = new ManagementScope("root\\CIMV2");
+        scope.Options.EnablePrivileges = true;
+
+        try
+        {
+            q = new WqlEventQuery();
+            q.EventClassName = "__InstanceCreationEvent";
+            q.WithinInterval = new TimeSpan(0, 0, 3);
+            q.Condition = @"TargetInstance ISA Win32_USBControllerdevice";
+            w = new ManagementEventWatcher(scope, q);
+            w.EventArrived += USBAdded;
+            w.Start();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            if (w != null)
+            {
+                w.Stop();
+            }
+        }
+    }
+
+    public static void USBAdded(object sender, EventArgs e)
+    {
+        Console.WriteLine("something added");
+    }
+
+
+
+    /*************************************************
+     * init()
+     ************************************************/
     
     protected override bool init()
     {
@@ -230,19 +296,37 @@ namespace uGCapture
         return rval;
     }
 
+    // helper to init
+    private void setErrorTypes(int wl)
+    {
+        if (wl == 405)
+        {
+            bufferType = BufferType.USHORT_IMAGE405;
+            STATUSSTR_FAIL = Status.STAT_FAIL_405;
+            STATUSSTR_GOOD = Status.STAT_GOOD_405;
+            STATUSSTR_ERR = Status.STAT_ERR_405;
+        }
+        else
+        {
+            bufferType = BufferType.USHORT_IMAGE485;
+            STATUSSTR_FAIL = Status.STAT_FAIL_485;
+            STATUSSTR_GOOD = Status.STAT_GOOD_485;
+            STATUSSTR_ERR = Status.STAT_ERR_485;
+        }
+    }
 
 
+
+
+    /****************************************************************************
+     * Thread func
+     ****************************************************************************/
     public void stop()
     {
         lock (runningMutex)
         {
             IsRunning = false;
         }
-    }
-
-    private void updateStatus()
-    {
-        
     }
 
     public static void go(AptinaController me)
@@ -275,6 +359,7 @@ namespace uGCapture
             }
             
             int miErr = 0;
+            long time = me.GetUTCMillis();
             unsafe
             {
                 byte* data = (byte*)doCaptureIdx(me.tnum, ref miErr); 
@@ -289,31 +374,82 @@ namespace uGCapture
 
             Buffer<Byte> imagebuffer = me.BufferPool.PopEmpty();            
             imagebuffer.setData(me.dest, me.bufferType);
-            imagebuffer.FillTime = me.GetUTCMillis();
+            imagebuffer.FillTime = time;
             me.BufferPool.PostFull(imagebuffer);
-            me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_GOOD));        // Salmon? No.
+            me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_GOOD, 0));        // Salmon? No.
         }
 
         //TODO: stop transport.   
     }
 
-    private void setErrorTypes(int wl)
-    {
-        if (wl == 405)
+        public override void exHeartBeatMessage(Receiver r, Message m)
         {
-            bufferType = BufferType.USHORT_IMAGE405;
-            STATUSSTR_FAIL = Status.STAT_FAIL_405;
-            STATUSSTR_GOOD = Status.STAT_GOOD_405;
-            STATUSSTR_ERR = Status.STAT_ERR_405;
+            bool detached;
+            lock (detachedMutex)
+            {
+                detached = isDetached;
+            }
+
+            if (detached)
+            {
+
+                int err = stopTransportIdx(tnum);
+                if (err != (int) Str.MiErrorCode.MI_CAMERA_SUCCESS)
+                {
+                    Console.WriteLine("Camera was detached, and stopTransportIdx returned an error.");
+                }
+               err = openTransportIdx(tnum);
+               if (err == 0)
+               {
+                   detached = false;
+                   dp.Broadcast(new AptinaStatusMessage(this, Status_Good,
+                       Str.GetErrStr(ErrStr.APTINA_RECONNECT) + " " + waveLength));
+
+                   Console.Error.WriteLine("Reconnected to Aptina camera " + waveLength);
+                   
+                   Errno = ErrStr.ERR_NONE;
+               }
+               else
+               {
+                   Errno = ErrStr.APTINA_DISCONNECT;
+               }
+            }
+
+            lock (detachedMutex)
+            {
+                isDetached = detached;
+            }
         }
-        else
-        {
-            bufferType = BufferType.USHORT_IMAGE485;
-            STATUSSTR_FAIL = Status.STAT_FAIL_485;
-            STATUSSTR_GOOD = Status.STAT_GOOD_485;
-            STATUSSTR_ERR = Status.STAT_ERR_485;
-        }
-    }
+
+
+        //public void WaitForUSBChangeEvent(object sender, EventArrivedEventArgs e)
+        //{
+        //    (sender as ManagementEventWatcher).Stop();
+        //    // watcher.Stop();
+        //    Invoke((MethodInvoker)delegate
+        //    {
+        //        ManagementObjectSearcher usbDevs = new ManagementObjectSearcher("SELECT * FROM Win32_USBHub");
+        //        // Loop through each object (disk) retrieved by WMI
+        //        //this.comboBox1.Items.Clear();
+        //        //
+        //        foreach (ManagementObject manObj in usbDevs.Get())
+        //        {
+        //            if (manObj.)
+
+        //            if (!listBox1.Items.Contains(moDiskete["DeviceID"]))
+        //            {
+        //                // Add the HDD to the list (use the Model field as the item's caption)
+        //                listBox1.Items.Add(moDiskete["DeviceID"].ToString() + " " + moDiskete["Description"]);
+        //                listBox1.Items.Add("\t" + moDiskete["PNPDeviceID"]);
+
+        //            }
+        //        }
+        //        this.comboBox1.SelectedIndex = 0;
+        //    });
+        //    (sender as ManagementEventWatcher).Start();
+        //}
+
+
 }
 
 }

@@ -24,6 +24,8 @@ namespace uGCapture
             state = nstate;
         }
 
+
+
         public override string ToString()
         {
             return state.ToString() + " " + message;

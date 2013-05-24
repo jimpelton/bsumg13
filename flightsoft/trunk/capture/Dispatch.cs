@@ -19,7 +19,7 @@ namespace uGCapture
     /// It also contains a reference to a Thread that runs the
     /// worker method Receiver.ExecuteMessageQueue().
     /// </summary>
-    internal class ReceiverIdPair
+    public class ReceiverIdPair
     {
         public Receiver Receiver
         {
@@ -111,9 +111,6 @@ namespace uGCapture
             return me;
         }
 
-       
-
-        //TODO: CleanUpMessageThreads() is never called.
         public void CleanUpMessageThreads()
         {
             Console.Error.WriteLine("Cleaning up messaging threads.");
@@ -183,6 +180,8 @@ namespace uGCapture
             Console.WriteLine("Dispatch: Registered Id: [{0}]", r.Id);
         }
 
+        public void RegisterAsLogger(Receiver r) { }
+
         private ReceiverIdPair makeNewQueue(Receiver r)
         {
             return new ReceiverIdPair(r);
@@ -222,12 +221,15 @@ namespace uGCapture
         /// <param name="m">The message to enqueue.</param>
         public void Broadcast(Message m)
         {
-            Parallel.ForEach(m_receiversMap, 
-                (q) =>
-                    {
-                        if (q.Value.Receiver.IsReceiving)
-                            q.Value.Enqueue(m);
-                    });
+            ICollection<ReceiverIdPair> receivers = 
+                m.GetSpecificReceivers() ?? m_receiversMap.Values;
+
+            Parallel.ForEach(receivers,
+                                 (q) =>
+                                     {
+                                         if (q.Receiver.IsReceiving)
+                                             q.Enqueue(m);
+                                     });
         }
 
         /// <summary>

@@ -35,7 +35,6 @@ namespace gui
         {
             InitializeComponent();
             ConfigLoader.LoadConfig(configPath);
-            setupCASPanelDelegates();
             guiUpdater = new GUIUpdater2("Updater")
                 {
                     DebugOutput = this.DebugOutput

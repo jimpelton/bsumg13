@@ -6,9 +6,6 @@
 
 using System;
 using System.Threading;
-using System.Timers;
-using System.IO;
-using System.Collections.Generic;
 
 namespace uGCapture
 {

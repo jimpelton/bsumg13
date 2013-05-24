@@ -34,7 +34,6 @@ namespace gui
                {
                    Application.Run(new Form1(args[0]));
                }
-
            }
            else
            {

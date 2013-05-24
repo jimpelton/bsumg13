@@ -9,6 +9,11 @@ namespace uGCapture
         {
         }
 
+        public AptinaStatusMessage(Receiver s, Status nstate, string mes = "")
+            : base(s,nstate,mes)
+        {
+        }
+
         public override void execute(Receiver r)
         {
             r.exAptinaStatusMessage(r, this);

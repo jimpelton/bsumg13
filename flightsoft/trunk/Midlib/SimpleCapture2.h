@@ -54,6 +54,7 @@ extern "C"
     UGEXPORT unsigned char* doCaptureIdx(int camIdx, int *errval);
     UGEXPORT int getWavelengthIdx(int camIdx);
     UGEXPORT int stopTransportIdx(int camIdx);
+    UGEXPORT int cleanUpIdx(int camIdx);
     UGEXPORT unsigned long sensorBufferSizeIdx(int camIdx);
     UGEXPORT void printCameraInfo();
     UGEXPORT int setDeviceCallback(void * hwnd);
