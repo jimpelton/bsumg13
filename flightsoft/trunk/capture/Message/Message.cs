@@ -17,6 +17,7 @@ namespace uGCapture
             get { return m_createTime; }
             private set { m_createTime = value; }
         }
+
         private DateTime m_createTime;
 
         /// <summary>
@@ -27,7 +28,10 @@ namespace uGCapture
             get { return m_sender; }
             private set { m_sender = value; }
         }
+
         private Receiver m_sender;
+
+
 
         /// <summary>
         /// Creates this message. The receiver that generated this message
@@ -40,12 +44,13 @@ namespace uGCapture
             m_sender = sender;
         }
 
-        public virtual void executeLog(Receiver r) { ; }
+        public virtual void executeLog(Receiver r){ }
 
         public abstract void execute(Receiver r);
 
-        
+        public virtual IList<ReceiverIdPair> GetSpecificReceivers() { return null; }
 
-
+        public virtual void AddSpecificReceiver(ReceiverIdPair r)
+        {}
     }
 }

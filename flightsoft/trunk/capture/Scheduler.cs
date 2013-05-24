@@ -14,6 +14,7 @@ namespace uGCapture
     public class Scheduler : Receiver
     {
 
+        
         Timer baseClock;
         private DateTime lastBeat;
         private DateTime lastAccum;

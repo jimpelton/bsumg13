@@ -1,8 +1,13 @@
 ﻿
+using System.Collections.Generic;
+
 namespace uGCapture
 {
     public class AccumulateMessage : Message
     {     
+
+        private static IList<ReceiverIdPair> accumulaters = new List<ReceiverIdPair>();
+
         public AccumulateMessage(Receiver s)
             : base(s) { ; }
 
@@ -10,5 +15,12 @@ namespace uGCapture
         {
             r.exAccumulateMessage(r, this);
         }
+
+        public override IList<ReceiverIdPair> GetSpecificReceivers()
+        {
+            return null;
+        }
+
+        public override void AddSpecificReceiver(ReceiverIdPair r) {}
     }
 }

@@ -26,6 +26,7 @@ int mallocate(ugCamera *);
 int openTransport_(ugCamera*);
 unsigned char * doCapture_(ugCamera *, int *);
 int stopTransport_(ugCamera *cam);
+int cleanUp_(ugCamera *cam);
 
 AttachCallback attachCallbackAddr;
 
@@ -56,6 +57,11 @@ unsigned char* doCaptureIdx(int cam_idx, int *errval)
 int stopTransportIdx(int camIdx)
 {
     return stopTransport_(&g_cameras[camIdx]);
+}
+
+int cleanUpIdx(int camIdx)
+{
+    return cleanUp_(&g_cameras[camIdx]);
 }
 
 int initMidLib2(int nCamsReq, void *hwnd, long attach_cb_addr)
@@ -217,7 +223,7 @@ unsigned char *doCapture_(ugCamera *cam, int *rval)
     int count=0;
     nRet = cam->pCamera->grabFrame(cam->pCamera, 
         cam->pGrabframeBuff, 
-        cam->pCamera->sensor->bufferSize); 
+         cam->pCamera->sensor->bufferSize); 
 
     *rval = (int)nRet;
     if (nRet != MI_CAMERA_SUCCESS) {
@@ -236,8 +242,12 @@ int stopTransport_(ugCamera *cam)
         return rval;
     }
 
-    mi_CloseCameras();
+    mi_CloseErrorLog();
+    return rval;
+}
 
+int cleanUp_(ugCamera *cam)
+{
     if (cam->pGrabframeBuff != NULL){
         free(cam->pGrabframeBuff);
         cam->pGrabframeBuff = NULL;
@@ -248,8 +258,9 @@ int stopTransport_(ugCamera *cam)
         cam->pCameraBuff = NULL;
     }
 
-    mi_CloseErrorLog();
-    return rval;
+    mi_CloseCameras();
+    
+    return 0;
 }
 
 int mallocate(ugCamera *cam)

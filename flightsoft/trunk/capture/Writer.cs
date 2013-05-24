@@ -84,13 +84,13 @@ namespace uGCapture
                 if (!Directory.Exists(BasePath))
                 {
                     Directory.CreateDirectory(BasePath);
-                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS), 1);
+                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS), Status.STAT_GOOD);
                 }
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e.StackTrace);
-                dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + ": " + BasePath, 5);
+                dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + ": " + BasePath, Status.STAT_ERR);
                 rval = false;
             }
 
@@ -101,13 +101,13 @@ namespace uGCapture
                     if (!Directory.Exists(BasePath + s))
                     {
                         Directory.CreateDirectory(BasePath + s);
-                        dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS), 1);
+                        dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS), Status.STAT_GOOD);
                     }
                 }
                 catch (Exception e)
                 {
                     Console.Error.WriteLine(e.StackTrace);
-                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + ": " + s, 5);
+                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + ": " + s, Status.STAT_ERR);
                     rval = false;
                 }
             }
@@ -135,10 +135,8 @@ namespace uGCapture
                     catch (Exception e)
                     {
                         Console.Error.WriteLine(e.StackTrace);
-                        dp.BroadcastLog(this,
-                                        "Data subdirectory " + s +
-                                        " could not be created\r\n" +
-                                        e.StackTrace, 100);                           
+                        dp.BroadcastLog(this, 
+                            "Data subdirectory " + s + " could not be created\r\n" + e.StackTrace, Status.STAT_ERR);                           
                     }
                 }
                 
@@ -149,9 +147,8 @@ namespace uGCapture
             {
                 Console.Error.WriteLine(e.StackTrace);
                 dp.BroadcastLog(this,
-                                "Top level data directory " + BasePath +
-                                " could not be created\r\n" +
-                    e.StackTrace, 100);
+                    "Top level data directory " + BasePath + " could not be created\r\n" + e.StackTrace,
+                    Status.STAT_ERR);
             }
         }
 
@@ -287,13 +284,13 @@ namespace uGCapture
                     default:
                         break;
                 }
-                w.dp.BroadcastLog(w, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER) + fulbuf.ToString(), 3);
+                w.dp.BroadcastLog(w, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER) + fulbuf.ToString(), Status.STAT_GOOD);
                 w.BufferPool.PostEmpty(fulbuf);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.StackTrace);
-                //return ;
+                w.dp.BroadcastLog(w, ErrStr.WRITER_FAIL_WRITE_BUFFER + e.Message, Status.STAT_ERR);
             }
         }
 

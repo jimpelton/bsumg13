@@ -6,11 +6,13 @@
 
 
 using System;
+using System.Collections.Generic;
 
 namespace uGCapture
 {
     public class LogMessage : Message
     {
+
         public String message;
         public int severity;
 
@@ -63,6 +65,15 @@ namespace uGCapture
         public override string ToString()
         {
             return message;
+        }
+
+        public override void AddSpecificReceiver(ReceiverIdPair r)
+        {
+        }
+
+        public override IList<ReceiverIdPair> GetSpecificReceivers()
+        {
+            return null;
         }
     }
 }

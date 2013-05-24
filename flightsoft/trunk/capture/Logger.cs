@@ -7,6 +7,7 @@ namespace uGCapture
     {
         private StringBuilder outputData;
         private const UInt32 MAX_LOG_FILE_LENGTH =1048576; // One megabyte.
+        private Status logLevel;
 
         public Logger(String id, bool receiving = true, bool executing = true) 
             : base(id, receiving, executing)
@@ -53,7 +54,7 @@ namespace uGCapture
                     output = "Log\r\n" + timeStamp() + " " + m + outputData.ToString();
                     outputData.Clear();
                 }
-
+                Console.WriteLine("Log message" + m);
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
@@ -61,10 +62,12 @@ namespace uGCapture
             }
             else // If we're under the write threshold, write the new log message to the output data
             {
+                string s = timeStamp() + m + "\n";
                 lock (outputData)
                 {
-                    outputData.Append(timeStamp() + m + "\n");
+                    outputData.Append(s);
                 }
+                Console.WriteLine("Log message: " + s);
             }
         }
 
@@ -72,13 +75,14 @@ namespace uGCapture
         {
             if (outputData.Length > MAX_LOG_FILE_LENGTH)
             {
+                
                 String output;
                 lock (outputData)
                 {
                     output = "Log\r\n" + timeStamp() + " " + m + outputData.ToString();
                     outputData.Clear();
                 }
-
+                Console.WriteLine("Status message: " + m);
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
@@ -86,10 +90,12 @@ namespace uGCapture
             }
             else // If we're under the write threshold, write the new log message to the output data
             {
+                string s = timeStamp() + m + "\n";
                 lock (outputData)
                 {
-                    outputData.Append(timeStamp() + m + "\n");
+                    outputData.Append(s);
                 }
+                Console.WriteLine("Status message: " + s);
             }
         }
 
