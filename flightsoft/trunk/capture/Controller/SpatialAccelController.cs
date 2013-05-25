@@ -34,7 +34,7 @@ namespace uGCapture
             bool rval = true;
             try
             {
-                dp.BroadcastLog(this, "Waiting for accelerometer to be found", 0);
+                //dp.BroadcastLog(this, "Waiting for accelerometer to be found", 0);
                 accel = new Spatial();
                 accel.open(SerialNumber);
                 accel.waitForAttachment(1000);
@@ -42,8 +42,8 @@ namespace uGCapture
                 accel.Detach += Sensor_Detach;
                 accel.Error += Sensor_Error;
 
-                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_GOOD));
-                dp.BroadcastLog(this, "Accelerometer found.", 0);
+                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_SPTL));
+                //dp.BroadcastLog(this, "Accelerometer found.", 0);
             }
             catch (PhidgetException ex)
             {
@@ -51,9 +51,9 @@ namespace uGCapture
 
                 Console.Error.WriteLine(ex.StackTrace);
 
-                dp.BroadcastLog(this,
-                    String.Format("Error waiting for Acceler-o-meter: {0}", ex.Description),
-                    100);
+                //dp.BroadcastLog(this,
+                //    String.Format("Error waiting for Acceler-o-meter: {0}", ex.Description),
+                //    100);
                 dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL, ErrStr.INIT_FAIL_PHID_SPTL));
             }
 
@@ -77,7 +77,7 @@ namespace uGCapture
             }
             catch (PhidgetException ex)
             {
-                dp.BroadcastLog(this, ex.Message, 100);
+                dp.BroadcastLog(this, Status.STAT_FAIL, ex.Message);
                 dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_SPTL_STAT_FAIL));
             }
         }
@@ -87,7 +87,7 @@ namespace uGCapture
         {
             Phidget phid = sender as Phidget;
             if (phid == null) return;
-            //dp.BroadcastLog(this, String.Format("{0} Detached", phid.Name), 5);
+            dp.BroadcastLog(this, Status.STAT_DISC, "Phidgets Spatial Detached");
             dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_DISC, ErrStr.PHID_SPTL_STAT_DISC));
         }
 

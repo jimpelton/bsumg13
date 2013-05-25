@@ -47,8 +47,8 @@ namespace uGCapture
                 accel.Attach += accel_Attach;
                 accel.Detach += Sensor_Detach;
                 accel.Error += Sensor_Error;
-                
-                dp.BroadcastLog(this, "Accelerometer found", 0);
+
+                dp.BroadcastLog(this, Status.STAT_GOOD, Str.GetErrStr(ErrStr.INIT_OK_PHID_ACCEL));
                 dp.Broadcast(new AccelStatusMessage(this,Status.STAT_GOOD));
             }
             catch (PhidgetException ex)

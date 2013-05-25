@@ -4,32 +4,28 @@ namespace uGCapture
 {
     public abstract class StatusMessage : LogMessage
     {
-        private Status state;
-        public  Status getState() { return state; }
-
-        public string getMessage()
-        {
-            return message;
-        }
+        //private Status state;
+        //public  Status getState() { return state; }
 
         protected StatusMessage(Receiver s, Status nstate, string mes = "")
-            : base(s,mes)
+            : base(s, mes, nstate)
         {
-            state = nstate;
         }
 
         protected StatusMessage(Receiver s, Status nstate, ErrStr mes = 0)
             : base(s, mes, nstate)
         {
-            state = nstate;
         }
 
-
-
-        public override string ToString()
+        public override void execute(Receiver r)
         {
-            return state.ToString() + " " + message;
+            r.exStatusMessage(r, this);
         }
+
+        //public override string ToString()
+        //{
+        //    return state.ToString() + " " + message;
+        //}
 
     }
 }

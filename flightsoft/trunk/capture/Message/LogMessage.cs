@@ -12,15 +12,26 @@ namespace uGCapture
 {
     public class LogMessage : Message
     {
-
-        public String message;
+        public string Message {
+            get
+            {
+                return message;
+            }
+            protected set
+            {
+                message = value;
+            }
+        }
+        private string message;
+        
         public int severity;
 
-        public Status Status
+        public Status Stat
         {
             get { return _status; }
+            protected set { _status = value; }
         }
-        private Status _status;
+        private Status _status = Status.STAT_NONE;
 
         public ErrStr ErrorString
         {
@@ -64,7 +75,7 @@ namespace uGCapture
 
         public override string ToString()
         {
-            return message;
+            return "(" + _status.ToString() + ") " + message;
         }
 
         public override void AddSpecificReceiver(ReceiverIdPair r)
@@ -75,5 +86,7 @@ namespace uGCapture
         {
             return null;
         }
+
+
     }
 }

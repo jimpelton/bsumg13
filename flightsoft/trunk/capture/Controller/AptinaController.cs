@@ -161,6 +161,26 @@ namespace uGCapture
         }
     }
 
+    private bool IsCurrentlyDetached
+    {
+        get
+        {
+            lock (detachedMutex)
+            {
+                return isCurrentlyIsDetached;
+            }
+        }
+        set
+        {
+            lock (detachedMutex)
+            {
+                isCurrentlyIsDetached = value;
+            }
+        }
+    }
+    private bool isCurrentlyIsDetached;
+    private object detachedMutex = new object();
+
     private static Semaphore barrierSemaphore;
     private static int barrierCounter = 0;
 
@@ -169,8 +189,7 @@ namespace uGCapture
     private AttachCallback attach_cb;
 
     private static ManagementEventWatcher w;
-    private object detachedMutex = new object();
-    private bool isDetached;
+
 
     /****************************************************************************
      * Constructor
@@ -205,15 +224,11 @@ namespace uGCapture
     // because this callback method is executed by a thread in native space (midlib thread?).
     private void AttachCb(int camIdx)
     {
-        lock (detachedMutex)
-        {
-            isDetached = true;
-        }
-
+        IsCurrentlyDetached = true;
         IsRunning = false;
 
-        dp.Broadcast(new AptinaStatusMessage(this, STATUSSTR_FAIL, ErrStr.APTINA_DISCONNECT));
-        dp.BroadcastLog(this, Str.GetErrStr(ErrStr.APTINA_DISCONNECT) + " " + waveLength, 100);
+        dp.Broadcast(new AptinaStatusMessage(WaveLength, this, Status.STAT_FAIL, ErrStr.APTINA_DISCONNECT));
+        dp.BroadcastLog(this, Status.STAT_FAIL, Str.GetErrStr(ErrStr.APTINA_DISCONNECT), WaveLength.ToString());
         //Add_AttachUSBHandler();
     }
 
@@ -282,6 +297,8 @@ namespace uGCapture
         {
             Errno = ErrStr.INIT_FAIL_APTINA_FUSE_ERROR;
         }
+        bufferType = waveLength == 405 ? 
+            BufferType.USHORT_IMAGE405 : BufferType.USHORT_IMAGE485;
         setErrorTypes(waveLength); 
 
         size = sensorBufferSizeIdx(tnum);
@@ -363,9 +380,14 @@ namespace uGCapture
             unsafe
             {
                 byte* data = (byte*)doCaptureIdx(me.tnum, ref miErr); 
+                if (miErr != 0)
+                {
+                    Console.WriteLine(Str.MiErrStr[(Str.MiErrorCode)miErr]);
+                    me.dp.BroadcastLog(me, Status.STAT_ERR, Str.MiErrStr[(Str.MiErrorCode)miErr]);
+                }
                 if (data == null)
                 {
-                    me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_FAIL, 
+                    me.dp.Broadcast(new AptinaStatusMessage(me.WaveLength, me, Status.STAT_FAIL, 
                         ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER));  // Almost salmon.
                     continue;
                 }
@@ -376,7 +398,7 @@ namespace uGCapture
             imagebuffer.setData(me.dest, me.bufferType);
             imagebuffer.FillTime = time;
             me.BufferPool.PostFull(imagebuffer);
-            me.dp.Broadcast(new AptinaStatusMessage(me, me.STATUSSTR_GOOD, 0));        // Salmon? No.
+            //me.dp.Broadcast(new AptinaStatusMessage(me.WaveLength, me, Status.STAT_GOOD, 0));        // Salmon? No.
         }
 
         //TODO: stop transport.   
@@ -387,25 +409,26 @@ namespace uGCapture
             bool detached;
             lock (detachedMutex)
             {
-                detached = isDetached;
+                detached = isCurrentlyIsDetached;
             }
 
             if (detached)
             {
-
                 int err = stopTransportIdx(tnum);
                 if (err != (int) Str.MiErrorCode.MI_CAMERA_SUCCESS)
                 {
-                    Console.WriteLine("Camera was detached, and stopTransportIdx returned an error.");
+                    dp.BroadcastLog(this, Status.STAT_FAIL, 
+                        "Camera was detached, and stopTransportIdx returned an error.");
                 }
+
                err = openTransportIdx(tnum);
                if (err == 0)
                {
                    detached = false;
-                   dp.Broadcast(new AptinaStatusMessage(this, Status_Good,
-                       Str.GetErrStr(ErrStr.APTINA_RECONNECT) + " " + waveLength));
+                   dp.Broadcast(new AptinaStatusMessage(WaveLength, this, Status.STAT_GOOD,
+                       Str.GetErrStr(ErrStr.APTINA_RECONNECT)));
 
-                   Console.Error.WriteLine("Reconnected to Aptina camera " + waveLength);
+                   Console.Error.WriteLine("Reconnected to Aptina camera " + WaveLength);
                    
                    Errno = ErrStr.ERR_NONE;
                }
@@ -417,7 +440,7 @@ namespace uGCapture
 
             lock (detachedMutex)
             {
-                isDetached = detached;
+                isCurrentlyIsDetached = detached;
             }
         }
 
@@ -456,4 +479,4 @@ namespace uGCapture
 
 //me.dp.Broadcast(new AptinaStatusMessage(me, 
 //    me.waveLength == 405 ? 
-//    Status.STAT_ERR_405 : Status.STAT_ERR_485));
+//    Stat.STAT_ERR_405 : Stat.STAT_ERR_485));

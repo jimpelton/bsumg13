@@ -120,7 +120,7 @@ public class PhidgetsController : ReceiverController
 
 
             dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_TEMP));
-            dp.BroadcastLog(this, Str.GetErrStr(ErrStr.INIT_OK_PHID_TEMP), 0);
+            //dp.BroadcastLog(this, Str.GetErrStr(ErrStr.INIT_OK_PHID_TEMP), 0);
         }
         catch (PhidgetException ex)
         {
@@ -128,8 +128,8 @@ public class PhidgetsController : ReceiverController
             dp.BroadcastLog
                 (
                     this,
-                    String.Format("Error waiting for temperature sensor: {0}", ex.Description),
-                    100
+                    Status.STAT_GOOD,
+                    "Error waiting for temperature sensor:", ex.Message
                 );
             dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_FAIL, ErrStr.INIT_FAIL_PHID_TEMP));
         }
@@ -181,7 +181,7 @@ public class PhidgetsController : ReceiverController
         }
         if (phidgets1018.Attached)
         {
-            dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_GOOD));
+            dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_GOOD, ErrStr.PHID_1018_STAT_OK));
         }
         else
         {
@@ -191,7 +191,7 @@ public class PhidgetsController : ReceiverController
 
         if (phidgetTemperature.Attached)
         {
-            dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_GOOD));
+            dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_GOOD, ErrStr.PHID_TEMP_STAT_OK));
         }
         else
         {

@@ -105,6 +105,16 @@ namespace uGCapture
             return (long) Math.Floor((DateTime.UtcNow - dateTime1970).TotalMilliseconds);
         }
 
+
+        /// <summary>
+        /// UTC timestamp with format:  yyyy MM dd HH:mm:ss.fff 
+        /// </summary>
+        /// <returns>string represented current utc time</returns>
+        protected String GetUTCTimeStamp()
+        {
+            return DateTime.UtcNow.ToString(" yyyy MM dd HH:mm:ss.fff ");
+        }
+
         /// <summary>
         /// Any receiver that should respond to the Bite test message should
         /// override this method.
@@ -136,6 +146,11 @@ namespace uGCapture
         /// </summary>
         public virtual void exLogMessage(Receiver r, Message m) { ; }
 
+        /// <summary>
+        /// Act on any status message.
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="m"></param>
         public virtual void exStatusMessage(Receiver r, Message m) { ; }
 
         // Updates given to the gui for updating as messages are passed throug the following:
@@ -167,11 +182,13 @@ namespace uGCapture
         /// </summary>
         public virtual void exReceiverCleanUpMessage(Receiver r, Message m){ ; }
 
+
         public virtual void exTest(Receiver r, Message m) { ; }
 
         public override string ToString()
         {
             return Id;
         }
+
     }
 }

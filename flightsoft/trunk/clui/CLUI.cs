@@ -34,7 +34,7 @@ namespace clui
             LogMessage mes = m as LogMessage;
             if (mes == null) return;
 
-            Console.WriteLine(mes.message);
+            Console.WriteLine(mes);
         }
     }
 }

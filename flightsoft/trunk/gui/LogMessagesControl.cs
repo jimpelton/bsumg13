@@ -19,7 +19,13 @@ namespace gui
 
         public void AppendText(string messageText)
         {
-            richTextBox1.AppendText(messageText);
+            if (richTextBox1.InvokeRequired)
+            {
+                Invoke((MethodInvoker)delegate
+                    {
+                        richTextBox1.AppendText(messageText + "\n");
+                    });
+            }
         }
     }
 }

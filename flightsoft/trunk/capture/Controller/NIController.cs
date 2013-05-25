@@ -39,7 +39,6 @@ namespace uGCapture
 
         private string[] outs;
         private String outputData;
-        private static Object hardwareMutex = new object();
 
         public enum Outputs
         {
@@ -132,8 +131,7 @@ namespace uGCapture
                 {
                     Buffer<Byte> buffer = BufferPool.PopEmpty();
                     String output = "NIDAQ \n";
-                    output += GetUTCMillis().ToString() + " ";
-                    output += outputData;
+                    output += GetUTCMillis().ToString() + " " + outputData;
                     UTF8Encoding encoding = new UTF8Encoding();
                     buffer.setData(encoding.GetBytes(output), BufferType.UTF8_NI6008);
                     BufferPool.PostFull(buffer);
@@ -223,7 +221,7 @@ namespace uGCapture
             catch (DaqException ex)
             {
                 dp.Broadcast(new NI6008StatusMessage(this, Status.STAT_FAIL, ErrStr.NI6008_STAT_FAIL));
-                dp.BroadcastLog(this, ex.Message, 100);
+                dp.BroadcastLog(this, Status.STAT_FAIL, ex.Message);
                 //lets reset it
                 Reset();
             }
@@ -248,7 +246,7 @@ namespace uGCapture
             catch (DaqException ex)
             {
                 dp.Broadcast(new NI6008StatusMessage(this, Status.STAT_FAIL, ErrStr.NI6008_STAT_FAIL));
-                dp.BroadcastLog(this, ex.Message, 100);
+                dp.BroadcastLog(this, Status.STAT_FAIL, ex.Message);
             }
         }
 
@@ -264,7 +262,7 @@ namespace uGCapture
             {
                 //probably not connected at this point. Try again next time.
                 dp.Broadcast(new NI6008StatusMessage(this, Status.STAT_DISC));
-                dp.BroadcastLog(this, ex.Message, 100);
+                dp.BroadcastLog(this, Status.STAT_FAIL, ex.Message);
             }
         }
 
