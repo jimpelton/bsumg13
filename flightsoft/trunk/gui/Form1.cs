@@ -14,7 +14,7 @@ namespace gui
     {
         private GuiMain guiMain=null;
         private GuiUpdater guiUpdater=null;
-        private delegate void SetTextCallback(string s, Color col);
+        private delegate void SetTextCallback(string s);
         private ImageDisplay guiImageDisplay = null;
         private BiteCASPanel CAS = null;
 
@@ -63,7 +63,7 @@ namespace gui
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            DebugOutput("Gui Initialized...", 1);
+            DebugOutput("Gui Initialized...");
         }
 
         private void rTB_Debug_Output_TextChanged(object sender, EventArgs e)
@@ -81,31 +81,37 @@ namespace gui
             
         }
 
-        public void DebugOutput(String s, int severity)
+        public void DebugOutput(String s)
         {
-            DebugOutput(s, SeverityColor.GetColor(severity));
-        }
-
-        public void DebugOutput(String s, Color col)
-        {
-
             if (rTB_Debug_Output.InvokeRequired)
             {
-                SetTextCallback a = new SetTextCallback(setDebugText);
-                this.Invoke(a, new object[] { s, col });
+                SetTextCallback a = setDebugText;
+                this.Invoke(a, new object[] { s });
             }
             else
             {
-                setDebugText(s, col);
+                setDebugText(s);
             }
-            
         }
 
-        //TODO: Fix the colors!
-        private void setDebugText(string s, Color col)
+        //public void DebugOutput(String s, Color col)
+        //{
+
+        //    if (rTB_Debug_Output.InvokeRequired)
+        //    {
+        //        SetTextCallback a = new SetTextCallback(setDebugText);
+        //        this.Invoke(a, new object[] { s, col });
+        //    }
+        //    else
+        //    {
+        //        setDebugText(s, col);
+        //    }
+            
+        //}
+
+        private void setDebugText(string s)
         {           
-            String s2 = GetTimestamp() + s + "\n";
-            rTB_Debug_Output.AppendText(s2);
+            rTB_Debug_Output.AppendText(s);
             //rTB_Debug_Output.SelectionLength = rTB_Debug_Output.Text.Length;
             //rTB_Debug_Output.ScrollToCaret();
         }

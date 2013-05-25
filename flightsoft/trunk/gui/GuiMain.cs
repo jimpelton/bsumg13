@@ -117,24 +117,10 @@ namespace gui
             return boolCapturing;
         }
 
-        public void DebugOutput(String s, int severity = 0)
+        public void DebugOutput(String s)
         {
-            mainForm.DebugOutput(s, severity);
+            mainForm.DebugOutput(s);
         }
-
-        //public void insertDataPoint(DataPoint p)
-        //{
-        //    if (dataFrames.Count > 0)
-        //    {
-        //        //we are adding to the end of the list so the previous data point will be last.
-        //        dataFrames.Last().image405 = null;
-        //        dataFrames.Last().image485 = null;
-        //    }
-        //    //and place us at last.
-        //    dataFrames.Add(p);
-        //    if (dataFrames.Count > MAX_DATA_POINTS)
-        //        dataFrames.RemoveAt(0);
-        //}
 
         /// <summary>
         /// Broadcasts the ReceiverCleanupMessage() from the Guimain instance.

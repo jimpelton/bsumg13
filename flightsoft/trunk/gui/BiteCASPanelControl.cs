@@ -10,10 +10,10 @@ namespace gui
 {
     public partial class BiteCASPanelControl : UserControl
     {
+
         private Status lastAccelState = Status.STAT_ERR;
         private Status lastSpatialState = Status.STAT_ERR;
         private Status lastTemperatureState = Status.STAT_ERR;
-
         private long last1018update = 0;
 
         public ConfigData CurrentConfig { get; set; }
