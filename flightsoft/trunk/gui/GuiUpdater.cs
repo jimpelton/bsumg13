@@ -522,7 +522,7 @@ namespace gui
         {
             LogMessage lm = m as LogMessage;
             if (lm != null)
-                mainform.DebugOutput(lm.message, lm.severity);
+                mainform.DebugOutput(lm.ToString());
         }
 
         private static byte[] pixels = new byte[2592 * 1944 * 3];
@@ -564,7 +564,7 @@ namespace gui
             try
             {
                 UPSStatusMessage msg = (UPSStatusMessage)m;
-                Status st = msg.getState();
+                Status st = msg.Stat;
                 if (st == Status.STAT_FAIL)
                 {
                     CAS.b_Battery_Com.BackColor = Color.OrangeRed;
@@ -593,7 +593,7 @@ namespace gui
             try
             {
                 AccelStatusMessage msg = (AccelStatusMessage)m;
-                lastAccelState = msg.getState();
+                lastAccelState = msg.Stat;
                 if (lastAccelState == Status.STAT_FAIL)
                 {
                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
@@ -624,7 +624,7 @@ namespace gui
             try
             {
                 SpatialStatusMessage msg = (SpatialStatusMessage)m;
-                lastSpatialState = msg.getState();
+                lastSpatialState = msg.Stat;
                 if (lastSpatialState == Status.STAT_FAIL)
                 {
                     CAS.b_Accel_2.BackColor = Color.OrangeRed;
@@ -668,7 +668,7 @@ namespace gui
             try
             {
                 NI6008StatusMessage msg = (NI6008StatusMessage)m;
-                Status status = msg.getState();
+                Status status = msg.Stat;
 
                 if (status == Status.STAT_FAIL)
                 {
@@ -700,35 +700,62 @@ namespace gui
             {
                 //todo: convert to a switch
                 AptinaStatusMessage msg = (AptinaStatusMessage)m;
-                Status status = msg.getState();
-                if (status == Status.STAT_FAIL_405)
+                Status status = msg.Stat;
+                if (status == Status.STAT_FAIL)
                 {
-                    CAS.b_Camera_405.BackColor = Color.OrangeRed;
+                    switch (msg.WaveLength)
+                    {
+                        case 405:
+                            CAS.b_Camera_405.BackColor = Color.OrangeRed;
+                            break;
+                        case 485:
+                            CAS.b_Camera_485.BackColor = Color.OrangeRed;       
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                else if (status == Status.STAT_FAIL_485)
+                else if (status == Status.STAT_ERR)
                 {
-                    CAS.b_Camera_485.BackColor = Color.OrangeRed;
+                    switch (msg.WaveLength)
+                    {
+                        case (405):
+                            CAS.b_Camera_405.BackColor = Color.OrangeRed;
+                            break;
+                        case(485):
+                            CAS.b_Camera_485.BackColor = Color.OrangeRed;
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                else if (status == Status.STAT_ERR_405)
+                else if (status == Status.STAT_GOOD)
                 {
-                    CAS.b_Camera_405.BackColor = Color.OrangeRed;
-                }
-                else if (status == Status.STAT_ERR_485)
-                {
-                    CAS.b_Camera_485.BackColor = Color.OrangeRed;
-                }
-                else if (status == Status.STAT_GOOD_405)
-                {
-                    CAS.b_Camera_405.BackColor = Color.Black;
-                }
-                else if (status == Status.STAT_GOOD_485)
-                {
-                    CAS.b_Camera_485.BackColor = Color.Black;
+                    switch (msg.WaveLength)
+                    {
+                        case (405):
+                            CAS.b_Camera_405.BackColor = Color.Black;
+                            break;
+                        case (485):
+                            CAS.b_Camera_485.BackColor = Color.Black;
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 else
                 {
-                    CAS.b_Camera_405.BackColor = Color.Salmon;//Something is fishy here.
-                    CAS.b_Camera_485.BackColor = Color.Salmon;
+                    switch (msg.WaveLength)
+                    {
+                        case (405):
+                            CAS.b_Camera_405.BackColor = Color.Salmon;
+                            break;
+                        case (485):
+                            CAS.b_Camera_485.BackColor = Color.Salmon;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             catch (InvalidOperationException e)
@@ -743,7 +770,7 @@ namespace gui
             try
             {
                 PhidgetsStatusMessage msg = (PhidgetsStatusMessage)m;
-                Status status = msg.getState();
+                Status status = msg.Stat;
                 if (status == Status.STAT_FAIL)
                 {
                     CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
@@ -778,7 +805,7 @@ namespace gui
         public override void exPhidgetsTempStatusMessage(Receiver r, Message m)
         {
             PhidgetsTempStatusMessage msg = (PhidgetsTempStatusMessage)m;
-            lastTemperatureState = msg.getState();
+            lastTemperatureState = msg.Stat;
         }
 
         private void WellStatusPanelPaintage(object sender, System.Windows.Forms.PaintEventArgs e)

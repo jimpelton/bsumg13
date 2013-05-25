@@ -24,7 +24,7 @@ namespace gui
         private GuiMain guiMain;
         private GUIUpdater2 guiUpdater;
         private CaptureClass capture;
-        private ConfigData loader;
+        private ConfigData configData;
 
         public Form2()
         {
@@ -34,23 +34,25 @@ namespace gui
         public Form2(string configPath)
         {
             InitializeComponent();
-            ConfigLoader.LoadConfig(configPath);
+            configData = ConfigLoader.LoadConfig(configPath);
             guiUpdater = new GUIUpdater2("Updater")
                 {
                     DebugOutput = this.DebugOutput
                 };
             
+            setupCASPanelDelegates();
+
         }
         private void setupCASPanelDelegates()
         {
             biteCASPanelControl1.BroadcastLog = guiUpdater.BroadcastLogError;
             biteCASPanelControl1.BroadcastCmd = guiUpdater.BroadcastCmd;
-
         }
+
         public void UpdateContents(DataSet<byte> dat)
         {
             biteCASPanelControl1.UpdateContents(dat);
-            imageDisplayControl1.UpdateContents(dat);
+            imageDisplayControl.UpdateContents(dat);
         }
 
         private void guiUpdateTimer_Tick(object sender, EventArgs e)
@@ -66,23 +68,33 @@ namespace gui
 
         public void DebugOutput(Message s)
         {
-            //if (rTB_Debug_Output.InvokeRequired)
-            //{
-            //    SetTextCallback a = new SetTextCallback(setDebugText);
-            //    this.Invoke(a, new object[] { s, col });
-            //}
-            //else
-            //{
-            //    setDebugText(s, col);
-            //}
+            logMessagesControl.AppendText(s.ToString());
         }
 
-        private void setDebugText(string s, Color col)
+        private void setDebugText(string s)
         {
-            //String s2 = GetTimestamp() + s + "\n";
+            String s2 = timestamp() + s + "\n";
             //rTB_Debug_Output.AppendText(s2);
             //rTB_Debug_Output.SelectionLength = rTB_Debug_Output.Text.Length;
             //rTB_Debug_Output.ScrollToCaret();
+        }
+
+        private String timestamp()
+        {
+            return DateTime.Now.ToString("yyyy MM dd HH:mm:ss.fff ");
+        }
+
+        private void initCaptureClass(ConfigData configData)
+        {
+            guiUpdater.init();
+            capture = new CaptureClass(this.Handle, "CaptureClass")
+                {
+                    StorageDir = configData.Path
+                };
+
+            capture.init();
+
+
         }
 
     }
