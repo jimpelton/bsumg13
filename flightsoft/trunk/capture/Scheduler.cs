@@ -13,8 +13,6 @@ namespace uGCapture
     /// </summary>
     public class Scheduler : Receiver
     {
-
-        
         Timer baseClock;
         private DateTime lastBeat;
         private DateTime lastAccum;
@@ -33,6 +31,11 @@ namespace uGCapture
             baseClock.Enabled = true;
         }
 
+        public void Stop()
+        {
+            baseClock.Enabled = false;
+        }
+
         private void beat(object sender, ElapsedEventArgs e)
         {
             int dt = (DateTime.Now - lastBeat).Milliseconds;
@@ -48,7 +51,5 @@ namespace uGCapture
                 lastAccum = DateTime.Now;
             }
         }
-
- 
     }
 }

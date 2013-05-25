@@ -79,18 +79,65 @@ namespace uGCapture
         {
             bool rval = true;
             makePaths(BasePath);
+            rval = createDirs(BasePath);
+            return rval;
+        }
+
+        //private void checkCurrentPathForUpdate()
+        //{
+        //    try
+        //    {
+        //        if (!Directory.Exists(BasePath))
+        //        {
+        //            Directory.CreateDirectory(BasePath);
+        //            makePaths(BasePath);
+        //        }
+        //        foreach (string s in Str.Dirs.Values)
+        //        {
+        //            try
+        //            {
+        //                if (!Directory.Exists(BasePath + s))
+        //                {
+        //                    Directory.CreateDirectory(BasePath + s);
+        //                }
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                Console.Error.WriteLine(e.StackTrace);
+        //                dp.BroadcastLog(this, 
+        //                    "Data subdirectory " + s + " could not be created\r\n" + e.StackTrace, Stat.STAT_ERR);                           
+        //            }
+        //        }
+                
+        //    }
+
+
+        //    catch (Exception e)
+        //    {
+        //        Console.Error.WriteLine(e.StackTrace);
+        //        dp.BroadcastLog(this,
+        //            "Top level data directory " + BasePath + " could not be created\r\n" + e.StackTrace,
+        //            Stat.STAT_ERR);
+        //    }
+        //}
+
+        private bool createDirs(string basePath)
+        {
+            bool rval = true;
             try
             {
-                if (!Directory.Exists(BasePath))
+                if (!Directory.Exists(basePath))
                 {
-                    Directory.CreateDirectory(BasePath);
-                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS), Status.STAT_GOOD);
+                    Directory.CreateDirectory(basePath);
+                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS) + 
+                        ": " + basePath, Status.STAT_GOOD);
                 }
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine(e.StackTrace);
-                dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + ": " + BasePath, Status.STAT_ERR);
+                dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + 
+                    ": " + basePath, Status.STAT_ERR);
                 rval = false;
             }
 
@@ -98,60 +145,23 @@ namespace uGCapture
             {
                 try
                 {
-                    if (!Directory.Exists(BasePath + s))
+                    if (!Directory.Exists(basePath + s))
                     {
                         Directory.CreateDirectory(BasePath + s);
-                        dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS), Status.STAT_GOOD);
+                        dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_OK_CREATE_DIRS) + 
+                            ": " + basePath + s, Status.STAT_GOOD);
                     }
                 }
                 catch (Exception e)
                 {
                     Console.Error.WriteLine(e.StackTrace);
-                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + ": " + s, Status.STAT_ERR);
+                    dp.BroadcastLog(this, Str.GetErrStr(ErrStr.WRITER_FAIL_CREATE_DIRS) + 
+                        ": " + s, Status.STAT_ERR);
                     rval = false;
                 }
             }
             return rval;
         }
-
-        private void checkCurrentPathForUpdate()
-        {
-            try
-            {
-                if (!Directory.Exists(BasePath))
-                {
-                    Directory.CreateDirectory(BasePath);
-                    makePaths(BasePath);
-                }
-                foreach (string s in Str.Dirs.Values)
-                {
-                    try
-                    {
-                        if (!Directory.Exists(BasePath + s))
-                        {
-                            Directory.CreateDirectory(BasePath + s);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.Error.WriteLine(e.StackTrace);
-                        dp.BroadcastLog(this, 
-                            "Data subdirectory " + s + " could not be created\r\n" + e.StackTrace, Status.STAT_ERR);                           
-                    }
-                }
-                
-            }
-
-
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e.StackTrace);
-                dp.BroadcastLog(this,
-                    "Top level data directory " + BasePath + " could not be created\r\n" + e.StackTrace,
-                    Status.STAT_ERR);
-            }
-        }
-
 
         private void makePaths(string basePath)
         {
@@ -210,13 +220,12 @@ namespace uGCapture
 
             while (true)
             {
-                if (!w.IsRunning)
-                {
-                    return;
-                }
-
+                if (!w.IsRunning) { break; }
                 DoWrite(w);
-            } // while...
+            }
+
+            Console.Error.WriteLine("Writer thread exiting loop.");
+            w.dp.BroadcastLog(w, Status.STAT_GOOD, Str.GetErrStr(ErrStr.WRITER_OK_EXIT_LOOP));
         }
 
         /// <summary>
@@ -227,7 +236,7 @@ namespace uGCapture
         /// <param name="w">The writer which should do the writing.</param>
         public static void DoWrite(Writer w)
         {
-            w.checkCurrentPathForUpdate();
+            //w.checkCurrentPathForUpdate();
             try
             {
                 Buffer<byte> fulbuf = w.BufferPool.PopFull();
@@ -284,7 +293,7 @@ namespace uGCapture
                     default:
                         break;
                 }
-                w.dp.BroadcastLog(w, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER) + fulbuf.ToString(), Status.STAT_GOOD);
+                w.dp.BroadcastLog(w, Status.STAT_GOOD, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER), fulbuf.ToString());
                 w.BufferPool.PostEmpty(fulbuf);
             }
             catch (Exception e)

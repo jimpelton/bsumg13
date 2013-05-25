@@ -9,6 +9,7 @@ namespace uGCapture
 {
     public enum Status
     {
+        STAT_NONE=0,       // status default, or N/A, or never given.
         STAT_ERR,        // device error
         STAT_FAIL,       // device failed
         STAT_GOOD,       // device status ok
@@ -85,11 +86,13 @@ namespace uGCapture
         APTINA_FAIL_CAPTURE,
 
         //PHIDGITS
+        PHID_1018_STAT_OK,
         PHID_1018_STAT_DISC,
         PHID_1018_STAT_ATCH,
         PHID_1018_STAT_FAIL,
         
         //PHID TEMP
+        PHID_TEMP_STAT_OK,
         PHID_TEMP_STAT_DISC,
         PHID_TEMP_STAT_ATCH,
         PHID_TEMP_STAT_FAIL,
@@ -106,9 +109,10 @@ namespace uGCapture
 
         // WRITER
         WRITER_FAIL_CREATE_DIRS,
+        WRITER_FAIL_WRITE_BUFFER,
         WRITER_OK_CREATE_DIRS,
         WRITER_OK_WRITE_BUFFER,
-        WRITER_FAIL_WRITE_BUFFER
+        WRITER_OK_EXIT_LOOP
     }
 
 
@@ -183,13 +187,16 @@ namespace uGCapture
                 case ErrStr.APTINA_DISCONNECT:                return "Midlib detected camera removal.";
                 case ErrStr.APTINA_RECONNECT:                 return "Aptina camera reconnected after being disconnected.";
                 
+                case ErrStr.PHID_1018_STAT_OK:                return "Phidgits 1018 reports good status.";
                 case ErrStr.PHID_1018_STAT_DISC:              return "Phidgits 1080 disconnected.";
                 case ErrStr.PHID_1018_STAT_ATCH:              return "Phidgits 1018 attached.";
                 case ErrStr.PHID_1018_STAT_FAIL:              return "Phidgits 1018 failure!.";
 
+                case ErrStr.PHID_TEMP_STAT_OK:                return "Phidgits temperature probe reports good status.";
                 case ErrStr.PHID_TEMP_STAT_DISC:              return "Phidgits Temperature probe diconnected.";
                 case ErrStr.PHID_TEMP_STAT_ATCH:              return "Phidgits temperature probe attached.";
                 case ErrStr.PHID_TEMP_STAT_FAIL:              return "Phidgits temperature probe failed!.";
+
 
                 case ErrStr.NI6008_STAT_FAIL:                 return "NI-6008 failure!.";
 
@@ -197,9 +204,10 @@ namespace uGCapture
                 case ErrStr.UPS_ERR_STATUS_PROPERTY_NOT_FOUND:return "UPS status property is unavailable.";
                 
                 case ErrStr.WRITER_OK_CREATE_DIRS:            return "Writer successfully created storage directory.";
+                case ErrStr.WRITER_FAIL_WRITE_BUFFER:         return "Writer failed to write a buffer: ";
                 case ErrStr.WRITER_FAIL_CREATE_DIRS:          return "Writer failed to create storage directory.";
                 case ErrStr.WRITER_OK_WRITE_BUFFER:           return "Writer wrote buffer: ";
-                case ErrStr.WRITER_FAIL_WRITE_BUFFER:         return "Writer failed to write a buffer: ";
+                case ErrStr.WRITER_OK_EXIT_LOOP:              return "Writer exited write loop.";
 
                 default:                                      return "Unknown Error.";
             }

@@ -25,6 +25,7 @@ namespace gui
         private GUIUpdater2 guiUpdater;
         private CaptureClass capture;
         private ConfigData configData;
+        private bool startButtonIsCaptureToggle;
 
         public Form2()
         {
@@ -41,6 +42,7 @@ namespace gui
                 };
             
             setupCASPanelDelegates();
+            initCaptureClass(configData);
 
         }
         private void setupCASPanelDelegates()
@@ -55,28 +57,12 @@ namespace gui
             imageDisplayControl.UpdateContents(dat);
         }
 
-        private void guiUpdateTimer_Tick(object sender, EventArgs e)
-        {
-            DataSet<byte> dat = capture.GetLastData();
-            if (dat == null)
-            {
-                Console.Error.WriteLine("Data from capture.GetLastData() was null!");
-                return;
-            }
-            UpdateContents(dat);
-        }
+
+
 
         public void DebugOutput(Message s)
         {
-            logMessagesControl.AppendText(s.ToString());
-        }
-
-        private void setDebugText(string s)
-        {
-            String s2 = timestamp() + s + "\n";
-            //rTB_Debug_Output.AppendText(s2);
-            //rTB_Debug_Output.SelectionLength = rTB_Debug_Output.Text.Length;
-            //rTB_Debug_Output.ScrollToCaret();
+            logMessagesControl.AppendText(timestamp() + s.ToString());
         }
 
         private String timestamp()
@@ -95,6 +81,45 @@ namespace gui
             capture.init();
 
 
+        }
+        
+        private void stopCapture()
+        {
+            capture.StopCapture();
+        }
+
+        private void startCaptureButton_Click(object sender, EventArgs e)
+        {
+            if (startButtonIsCaptureToggle == false)
+            {
+                startCaptureButton.Text = "Starting Up...";
+                initCaptureClass(configData);
+                startCaptureButton.Text = "Stop Data Capture";
+
+            }
+            else
+            {
+                startCaptureButton.Text = "Stopping capture...";
+                stopCapture();
+                startCaptureButton.Text = "Start Capture.";
+            }
+        }
+
+        private void guiUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            DataSet<byte> dat = capture.GetLastData();
+            if (dat == null)
+            {
+                Console.Error.WriteLine("Data from capture.GetLastData() was null!");
+                return;
+            }
+            UpdateContents(dat);
+        }
+
+        private void Form2_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            capture.StopCapture();
+            capture.Shutdown();
         }
 
     }

@@ -12,6 +12,7 @@ namespace uGCapture
 
         public override void execute(Receiver r)
         {
+            base.execute(r);
             r.exSpatialStatusMessage(r, this);
         }
     }

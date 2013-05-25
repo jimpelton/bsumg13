@@ -36,10 +36,10 @@
             this.loggerTextGroupBox = new System.Windows.Forms.GroupBox();
             this.logMessagesControl = new gui.LogMessagesControl();
             this.componentStatusGroupBox = new System.Windows.Forms.GroupBox();
-            this.guiUpdateTimer = new System.Windows.Forms.Timer(this.components);
-            this.startCaptureButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.biteTestButton = new System.Windows.Forms.Button();
+            this.startCaptureButton = new System.Windows.Forms.Button();
+            this.guiUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.form2TopLevelLayoutPanel.SuspendLayout();
             this.imageDisplayGroupBox.SuspendLayout();
             this.loggerTextGroupBox.SuspendLayout();
@@ -136,21 +136,6 @@
             this.componentStatusGroupBox.TabStop = false;
             this.componentStatusGroupBox.Text = "Component Status";
             // 
-            // guiUpdateTimer
-            // 
-            this.guiUpdateTimer.Interval = 1000;
-            this.guiUpdateTimer.Tick += new System.EventHandler(this.guiUpdateTimer_Tick);
-            // 
-            // startCaptureButton
-            // 
-            this.startCaptureButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.startCaptureButton.Location = new System.Drawing.Point(3, 3);
-            this.startCaptureButton.Name = "startCaptureButton";
-            this.startCaptureButton.Size = new System.Drawing.Size(389, 83);
-            this.startCaptureButton.TabIndex = 7;
-            this.startCaptureButton.Text = "Start Capture";
-            this.startCaptureButton.UseVisualStyleBackColor = true;
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
@@ -175,6 +160,22 @@
             this.biteTestButton.Text = "Start BITE Test";
             this.biteTestButton.UseVisualStyleBackColor = true;
             // 
+            // startCaptureButton
+            // 
+            this.startCaptureButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.startCaptureButton.Location = new System.Drawing.Point(3, 3);
+            this.startCaptureButton.Name = "startCaptureButton";
+            this.startCaptureButton.Size = new System.Drawing.Size(389, 83);
+            this.startCaptureButton.TabIndex = 7;
+            this.startCaptureButton.Text = "Start Capture";
+            this.startCaptureButton.UseVisualStyleBackColor = true;
+            this.startCaptureButton.Click += new System.EventHandler(this.startCaptureButton_Click);
+            // 
+            // guiUpdateTimer
+            // 
+            this.guiUpdateTimer.Interval = 1000;
+            this.guiUpdateTimer.Tick += new System.EventHandler(this.guiUpdateTimer_Tick);
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -183,6 +184,7 @@
             this.Controls.Add(this.form2TopLevelLayoutPanel);
             this.Name = "Form2";
             this.Text = "Form2";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
             this.form2TopLevelLayoutPanel.ResumeLayout(false);
             this.form2TopLevelLayoutPanel.PerformLayout();
             this.imageDisplayGroupBox.ResumeLayout(false);

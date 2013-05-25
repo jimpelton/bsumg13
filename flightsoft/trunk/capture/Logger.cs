@@ -24,7 +24,7 @@ namespace uGCapture
         /// <returns></returns>
         private String timeStamp()
         {
-            return DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            return DateTime.Now.ToString(" yyyy MM dd HH:mm:ss.fff ");
         }
 
 
@@ -51,9 +51,10 @@ namespace uGCapture
                 String output;
                 lock (outputData)
                 {
-                    output = "Log\r\n" + timeStamp() + " " + m + outputData.ToString();
+                    output = "Log\r\n" + GetUTCTimeStamp() + " " + m + outputData.ToString();
                     outputData.Clear();
                 }
+
                 Console.WriteLine("Log message" + m);
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 UTF8Encoding encoding = new UTF8Encoding();
@@ -62,7 +63,7 @@ namespace uGCapture
             }
             else // If we're under the write threshold, write the new log message to the output data
             {
-                string s = timeStamp() + m + "\n";
+                string s = GetUTCTimeStamp() + m + "\n";
                 lock (outputData)
                 {
                     outputData.Append(s);
@@ -79,10 +80,11 @@ namespace uGCapture
                 String output;
                 lock (outputData)
                 {
-                    output = "Log\r\n" + timeStamp() + " " + m + outputData.ToString();
+                    output = "Log\r\n" + GetUTCTimeStamp() + " " + m + outputData.ToString();
                     outputData.Clear();
                 }
-                Console.WriteLine("Status message: " + m);
+
+                Console.WriteLine(m);
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
@@ -90,12 +92,12 @@ namespace uGCapture
             }
             else // If we're under the write threshold, write the new log message to the output data
             {
-                string s = timeStamp() + m + "\n";
+                string s = GetUTCTimeStamp() + m + "\n";
                 lock (outputData)
                 {
                     outputData.Append(s);
                 }
-                Console.WriteLine("Status message: " + s);
+                Console.WriteLine(s);
             }
         }
 

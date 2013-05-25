@@ -29,6 +29,9 @@ namespace uGCapture
         }
         private string m_storageDir;
 
+
+        public bool IsInit { get; set; }
+
         /// <summary>
         /// Time in UTC since the capture system was initialized.
         /// </summary>
@@ -82,7 +85,8 @@ namespace uGCapture
             initNI6008Controller();
             initUPSController();
 
-            Dispatch.Scheduler.Start();
+            StartCapture();
+
         }
 
         private void initWriter()
@@ -113,12 +117,12 @@ namespace uGCapture
             if (ac1.Initialize())
             {
                 acThread1 = new Thread(() => AptinaController.go(ac1));
-                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Good, ac1.Errno));
+                dp.Broadcast(new AptinaStatusMessage(ac1.WaveLength, this, Status.STAT_GOOD, ac1.Errno));
             }
             else
             {
-                dp.BroadcastLog(this, Str.MiErrStr[ac1.MiError] + ": Camera 1.", 100);
-                dp.Broadcast(new AptinaStatusMessage(this, ac1.Status_Fail, ac1.Errno));
+                dp.BroadcastLog(this, Status.STAT_FAIL, Str.MiErrStr[ac1.MiError], ac1.WaveLength.ToString());
+                dp.Broadcast(new AptinaStatusMessage(ac1.WaveLength, this, Status.STAT_FAIL, ac1.Errno));
             }
             dp.Register(ac1);
 
@@ -129,12 +133,12 @@ namespace uGCapture
             if (ac2.Initialize())
             {
                 acThread2 = new Thread(() => AptinaController.go(ac2));
-                dp.Broadcast(new AptinaStatusMessage(this, ac2.Status_Good, ac2.Errno));
+                dp.Broadcast(new AptinaStatusMessage(ac2.WaveLength, this, Status.STAT_GOOD, ac2.Errno));
             }
             else
             {
-                dp.BroadcastLog(this, Str.MiErrStr[ac2.MiError] + ": Camera 2.", 100);
-                dp.Broadcast(new AptinaStatusMessage(this, ac2.Status_Fail, ac2.Errno));
+                dp.BroadcastLog(this,Status.STAT_FAIL, Str.MiErrStr[ac2.MiError], ac2.WaveLength.ToString());
+                dp.Broadcast(new AptinaStatusMessage(ac2.WaveLength, this, Status.STAT_GOOD, ac2.Errno));
             }
             dp.Register(ac2);
 
@@ -152,12 +156,12 @@ namespace uGCapture
             if (phidgetsController.Initialize())
             {
                 dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_1018));
-                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_1018));
+                //Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_1018));
             }
             else
             {
                 dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_ERR, ErrStr.INIT_FAIL_PHID_1018));
-                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_1018));
+                //Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_1018));
             }
             dp.Register(phidgetsController);
 
@@ -173,12 +177,12 @@ namespace uGCapture
             if (accelControler.Initialize())
             {
                 dp.Broadcast(new AccelStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_ACCEL));
-                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_ACCEL));
+                //Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_ACCEL));
             }
             else
             {
                 dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL, ErrStr.INIT_FAIL_PHID_ACCEL));
-                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_ACCEL));
+                //Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_ACCEL));
             }
             dp.Register(accelControler);
 
@@ -194,12 +198,12 @@ namespace uGCapture
             if (spatialController.Initialize())
             {
                 dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_SPTL));
-                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_SPTL));
+                //Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_OK_PHID_SPTL));
             }
             else
             {
                 dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL, ErrStr.INIT_FAIL_PHID_SPTL));
-                Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_SPTL));
+                //Console.Error.WriteLine(Str.GetErrStr(ErrStr.INIT_FAIL_PHID_SPTL));
             }
             dp.Register(spatialController);
 
@@ -234,17 +238,16 @@ namespace uGCapture
             if (ni6008.Initialize())
             {
                 string s = Str.GetErrStr(ErrStr.INIT_OK_NI_6008);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.BroadcastLog(this, Status.STAT_GOOD, s);
+                //Console.Error.WriteLine(s);
             }
             else
             {
                 string s = Str.GetErrStr(ErrStr.INIT_FAIL_NI_6008);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.BroadcastLog(this, Status.STAT_FAIL, s);
+                //Console.Error.WriteLine(s);
             }
             dp.Register(ni6008);
-
         }
 
         // APC UTF8_UPS Data Getter
@@ -255,14 +258,14 @@ namespace uGCapture
             if (UPS.Initialize())
             {
                 string s = Str.GetErrStr(ErrStr.INIT_OK_UPS);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.BroadcastLog(this, Status.STAT_GOOD, s);
+                //Console.Error.WriteLine(s);
             }
             else
             {
                 string s = Str.GetErrStr(ErrStr.INIT_FAIL_UPS);
-                dp.BroadcastLog(this, s, 100);
-                Console.Error.WriteLine(s);
+                dp.BroadcastLog(this, Status.STAT_GOOD, s);
+                //Console.Error.WriteLine(s);
             }
             dp.Register(UPS);
 
@@ -279,6 +282,10 @@ namespace uGCapture
             return bufferPool.Staging.GetLastData();   
         }
 
+        /// <summary>
+        /// Signal the writer to switch to newPath as a base path to write data to.
+        /// </summary>
+        /// <param name="newPath">the path to save to</param>
         public void switchToBackupDrive(string newPath)
         {
             wrtThread.Suspend();//depricated. Find alternative.
@@ -286,13 +293,29 @@ namespace uGCapture
             wrtThread.Resume();//depricated.
         }
 
-        public override void exSetCaptureStateMessage(Receiver r, Message m)
+        /// <summary>
+        /// start capture process.
+        /// </summary>
+        public void StartCapture()
         {
-            SetCaptureStateMessage lm = m as SetCaptureStateMessage;
-            if (lm == null) return;
-            boolCapturing = lm.running;
+            Dispatch.Scheduler.Start();
+            dp.BroadcastLog(this, Status.STAT_GOOD, "Scheduler started.");
+
         }
 
+        /// <summary>
+        /// pause capture (paritally implemented)
+        /// </summary>
+        public void StopCapture()
+        {
+            Dispatch.Scheduler.Stop();
+            dp.BroadcastLog(this, Status.STAT_GOOD, "Scheduler stopped.");
+        }
+
+        /// <summary>
+        /// Stop all message threads, camera threads and the writer thread and
+        /// join them.
+        /// </summary>
         public void Shutdown()
         {
             Dispatch.Instance().CleanUpMessageThreads();

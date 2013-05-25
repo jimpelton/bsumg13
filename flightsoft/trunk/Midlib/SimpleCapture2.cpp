@@ -242,7 +242,6 @@ int stopTransport_(ugCamera *cam)
         return rval;
     }
 
-    mi_CloseErrorLog();
     return rval;
 }
 
@@ -259,6 +258,7 @@ int cleanUp_(ugCamera *cam)
     }
 
     mi_CloseCameras();
+    mi_CloseErrorLog();
     
     return 0;
 }

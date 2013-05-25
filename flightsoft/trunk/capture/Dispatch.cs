@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -176,7 +177,9 @@ namespace uGCapture
             ReceiverIdPair p = m_receiversMap.GetOrAdd(r.Id, makeNewQueue(r));
             p.Receiver.IsExecuting = true;            
             p.T = new Thread(() => ExecuteMessageQueue(r));
+            p.T.Name = "mes_thread" + r.Id;
             p.T.Start();
+
             Console.WriteLine("Dispatch: Registered Id: [{0}]", r.Id);
         }
 
@@ -261,6 +264,16 @@ namespace uGCapture
                 (
                     new LogMessage(sender, message, severity)
                 );
+        }
+
+        public void BroadcastLog(Receiver sender, Status severity, params string[] messages)
+        {
+            StringBuilder mes = new StringBuilder(256);
+            foreach (string s in messages)
+            {
+                mes.Append(s).Append(" ");
+            }
+            Broadcast(new LogMessage(sender, mes.ToString(), severity));
         }
 
         /// <summary>
