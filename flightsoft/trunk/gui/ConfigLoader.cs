@@ -5,6 +5,9 @@ namespace gui
 {
     class ConfigLoader
     {
+        public const long Default_GreenSpace = 1024L * 1024L * 1024L * 100L;
+        public const long Default_YellowSpace = 1024L * 1024L * 1024L * 50L;
+        public const long Default_RedSpace = 1024L * 1024L * 1024L * 20L;
 
         public ConfigLoader()
         {
@@ -13,6 +16,7 @@ namespace gui
 
         public static ConfigData LoadConfig(string configpath)
         {
+
             ConfigData config = new ConfigData();
             StreamReader reader = null;
             configDefaults(config);
@@ -42,9 +46,12 @@ namespace gui
                     spot++;
                 }
                 while (spot<tokens.Length);
-                config.GreenSpace *= 1024 * 1024 * 1024;
-                config.YellowSpace *= 1024 * 1024 * 1024;
-                config.RedSpace *= 1024 * 1024 * 1024;
+                if(config.GreenSpace<Default_GreenSpace)
+                    config.GreenSpace *= 1024 * 1024 * 1024;
+                if(config.YellowSpace<Default_YellowSpace)
+                    config.YellowSpace *= 1024 * 1024 * 1024;   
+                if(config.RedSpace<Default_RedSpace)
+                    config.RedSpace *= 1024 * 1024 * 1024;
             }
             catch (Exception)
             {
@@ -61,9 +68,9 @@ namespace gui
         private static void configDefaults(ConfigData config)
         {
             config.Path = @"C:\Data";
-            config.GreenSpace = 1024L * 1024L * 1024L * 100L;
-            config.YellowSpace = 1024L * 1024L * 1024L * 50L;
-            config.RedSpace = 1024L * 1024L * 1024L * 20L;
+            config.GreenSpace = Default_GreenSpace;
+            config.YellowSpace = Default_YellowSpace;
+            config.RedSpace = Default_RedSpace;
             config.GreenBattery = 95;
             config.YellowBattery = 85;
             config.RedBattery = 50;
