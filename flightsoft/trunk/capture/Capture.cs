@@ -295,11 +295,15 @@ namespace uGCapture
         /// <param name="newPath">the path to save to</param>
         public void switchToBackupDrive(string newPath)
         {
-            StopCapture();
-
+            Dispatch.Scheduler.Stop();
             writer.stop();
+            if (wrtThread.IsAlive)
+                wrtThread.Join();            
             writer.BasePath = newPath;
-            
+            writer.Initialize();
+            wrtThread = new Thread(() => Writer.WriteData(writer));
+            wrtThread.Start();
+            Dispatch.Scheduler.Start();
         }
 
         /// <summary>
