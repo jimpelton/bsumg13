@@ -76,7 +76,7 @@ namespace uGCapture
             Buffer<Byte> buffer = BufferPool.PopEmpty();
             
             String output = "UPS \n" + GetUTCMillis().ToString() + " " + stat + " " + 
-                charge + " " + lifeRemaining + " " + chargeStatus+" \n\0";
+                charge + " " + lifeRemaining + " " + chargeStatus;
 
             UTF8Encoding encoding = new UTF8Encoding();
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_UPS);

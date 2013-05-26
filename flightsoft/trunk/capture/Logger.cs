@@ -56,7 +56,7 @@ namespace uGCapture
                 }
 
                 Console.WriteLine("Log message" + m);
-                Buffer<Byte> buffer = BufferPool.PopEmpty();
+                Buffer<Byte> buffer = BufferPool.PopEmpty();//let it run for a few hours and it died here. Null Reference Exception. Bufferpool is null?
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
                 BufferPool.PostFull(buffer);
