@@ -83,43 +83,43 @@ namespace uGCapture
             return rval;
         }
 
-        //private void checkCurrentPathForUpdate()
-        //{
-        //    try
-        //    {
-        //        if (!Directory.Exists(BasePath))
-        //        {
-        //            Directory.CreateDirectory(BasePath);
-        //            makePaths(BasePath);
-        //        }
-        //        foreach (string s in Str.Dirs.Values)
-        //        {
-        //            try
-        //            {
-        //                if (!Directory.Exists(BasePath + s))
-        //                {
-        //                    Directory.CreateDirectory(BasePath + s);
-        //                }
-        //            }
-        //            catch (Exception e)
-        //            {
-        //                Console.Error.WriteLine(e.StackTrace);
-        //                dp.BroadcastLog(this, 
-        //                    "Data subdirectory " + s + " could not be created\r\n" + e.StackTrace, Stat.STAT_ERR);                           
-        //            }
-        //        }
-                
-        //    }
+        private void checkCurrentPathForUpdate()
+        {
+            try
+            {
+                if (!Directory.Exists(BasePath))
+                {
+                    Directory.CreateDirectory(BasePath);
+                    makePaths(BasePath);
+                }
+                foreach (string s in Str.Dirs.Values)
+                {
+                    try
+                    {
+                        if (!Directory.Exists(BasePath + s))
+                        {
+                            Directory.CreateDirectory(BasePath + s);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Error.WriteLine(e.StackTrace);
+                        dp.BroadcastLog(this,
+                            "Data subdirectory " + s + " could not be created\r\n" + e.StackTrace, Status.STAT_ERR);
+                    }
+                }
+
+            }
 
 
-        //    catch (Exception e)
-        //    {
-        //        Console.Error.WriteLine(e.StackTrace);
-        //        dp.BroadcastLog(this,
-        //            "Top level data directory " + BasePath + " could not be created\r\n" + e.StackTrace,
-        //            Stat.STAT_ERR);
-        //    }
-        //}
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.StackTrace);
+                dp.BroadcastLog(this,
+                    "Top level data directory " + BasePath + " could not be created\r\n" + e.StackTrace,
+                    Status.STAT_ERR);
+            }
+        }
 
         private bool createDirs(string basePath)
         {
@@ -205,6 +205,7 @@ namespace uGCapture
             BufferPool.PostFull(b);
         }
 
+
         /// <summary>
         /// Writes data to the disk.
         /// WriteData should be executed by a worker thread.
@@ -235,8 +236,7 @@ namespace uGCapture
         /// </summary>
         /// <param name="w">The writer which should do the writing.</param>
         public static void DoWrite(Writer w)
-        {
-            //w.checkCurrentPathForUpdate();
+        {            
             try
             {
                 Buffer<byte> fulbuf = w.BufferPool.PopFull();
