@@ -83,44 +83,6 @@ namespace uGCapture
             return rval;
         }
 
-        private void checkCurrentPathForUpdate()
-        {
-            try
-            {
-                if (!Directory.Exists(BasePath))
-                {
-                    Directory.CreateDirectory(BasePath);
-                    makePaths(BasePath);
-                }
-                foreach (string s in Str.Dirs.Values)
-                {
-                    try
-                    {
-                        if (!Directory.Exists(BasePath + s))
-                        {
-                            Directory.CreateDirectory(BasePath + s);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.Error.WriteLine(e.StackTrace);
-                        dp.BroadcastLog(this,
-                            "Data subdirectory " + s + " could not be created\r\n" + e.StackTrace, Status.STAT_ERR);
-                    }
-                }
-
-            }
-
-
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e.StackTrace);
-                dp.BroadcastLog(this,
-                    "Top level data directory " + BasePath + " could not be created\r\n" + e.StackTrace,
-                    Status.STAT_ERR);
-            }
-        }
-
         private bool createDirs(string basePath)
         {
             bool rval = true;
