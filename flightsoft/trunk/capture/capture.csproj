@@ -120,6 +120,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BITE.cs" />
     <Compile Include="Buffer\Buffer.cs" />
     <Compile Include="Buffer\BufferType.cs" />
     <Compile Include="Buffer\BufferPool.cs" />

@@ -22,11 +22,16 @@ namespace gui
         {
             InitializeComponent();
             var childForm = new BiteCASPanel() { TopLevel = false, Visible = true };
+            var infoControl = new InformationPanel();
             var guiimagedisp = new ImageDisplay() { TopLevel = false, Visible = true };
-            Tab_Control_Main.TabPages[0].Controls.Add(childForm);
-            Tab_Control_Main.TabPages[0].Controls.Add(guiimagedisp);
-            childForm.SetBounds(0, 700, childForm.Width, childForm.Height);
-            guiimagedisp.SetBounds(0, 250, guiimagedisp.Width, guiimagedisp.Height);
+            this.Controls.Add(childForm);
+            this.Controls.Add(infoControl);
+            this.Controls.Add(guiimagedisp);
+            
+            
+            guiimagedisp.SetBounds(0, 0, 1100, 400);
+            infoControl.SetBounds(0, 410, 1100, 350);
+            childForm.SetBounds(0, 770, 1100, 290);
             CAS = childForm;
             guiImageDisplay = guiimagedisp;
 
@@ -36,29 +41,10 @@ namespace gui
             guiMain.Startup_Init();
             guiUpdater = guiMain.GuiUpdater;
 
-            Tab_Control_Main.SelectedIndex=4;
             //TODO: this updating should be handled externally to the form.
             //TODO: make an alternative thread-safe way to do this.
             //it likes it when the timer is in here...
-            DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);
-            Tab_Control_Main.SelectedIndexChanged+=Tab_Control_Main_SelectedIndexChanged;
-
-        }
-
-        void Tab_Control_Main_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (Tab_Control_Main.SelectedIndex == 0)
-            {
-                Tab_Control_Main.TabPages[2].Controls.Remove(CAS);
-                Tab_Control_Main.TabPages[0].Controls.Add(CAS);
-                CAS.SetBounds(0, 700, CAS.Width, CAS.Height);
-            }
-            else
-            {
-                Tab_Control_Main.TabPages[0].Controls.Remove(CAS);
-                Tab_Control_Main.TabPages[2].Controls.Add(CAS);
-                CAS.SetBounds(0, 700, CAS.Width, CAS.Height);
-            }
+            DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);         
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -116,7 +102,6 @@ namespace gui
             //rTB_Debug_Output.ScrollToCaret();
         }
 
-
         private String GetTimestamp()
         {
             return DateTime.Now.ToString("dd:HH:mm:ss ");
@@ -137,6 +122,5 @@ namespace gui
         {
 
         }
-
     }
 }

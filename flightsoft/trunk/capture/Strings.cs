@@ -131,6 +131,7 @@ namespace uGCapture
         ID_VCOMM,    
         ID_NI_DAQ,
         ID_UPS,
+        ID_BITE,
 	    ID_LOGGER
     }
     
@@ -227,6 +228,7 @@ namespace uGCapture
                 case IdStr.ID_NI_DAQ: return "NI6008";
                 case IdStr.ID_UPS: return "Ups";
 		        case IdStr.ID_LOGGER: return "Logger";
+                case IdStr.ID_BITE: return "BITE";
                 default: return "UnknownId";
             }
         }
