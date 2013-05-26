@@ -53,7 +53,7 @@ namespace uGCapture
         private NIController ni6008;
         private UPSController UPS;
         private Logger logger;
-
+        private BITE BITEController;
         private Thread acThread1;
         private Thread acThread2;
         private Thread wrtThread;
@@ -84,7 +84,7 @@ namespace uGCapture
             initWeatherBoard();
             initNI6008Controller();
             initUPSController();
-
+            initBITE();
             StartCapture();
 
         }
@@ -276,7 +276,13 @@ namespace uGCapture
 	        logger = new Logger(Str.GetIdStr(IdStr.ID_LOGGER));
             dp.Register(logger);
 	    }
-	
+
+        public void initBITE()
+        {
+            BITEController = new BITE(Str.GetIdStr(IdStr.ID_BITE), this);
+            dp.Register(BITEController);
+        }
+
         public DataSet<byte> GetLastData()
         {
             return bufferPool.Staging.GetLastData();   

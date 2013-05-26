@@ -60,11 +60,6 @@ namespace gui
             //graph1data = new Series("Points");
             Guimain = m;
             dp.Register(this);  //yikes!
-            mainform.panel_Wells.Paint += WellStatusPanelPaintage;
-            lowpassfilteredwells = new double[16 * 12];
-            lowlowpassfilteredwells = new double[16 * 12];
-            lowlowlowpassfilteredwells = new double[16 * 12];
-            lowlowlowlowpassfilteredwells = new double[16 * 12];
         }
 
         public GuiUpdater(string id, bool receiving = true)
@@ -75,14 +70,6 @@ namespace gui
             //graph1data = new Series("Points");
             //Guimain = m;
             dp.Register(this);  //yikes!
-            mainform.panel_Wells.Paint += WellStatusPanelPaintage;
-            lowpassfilteredwells = new double[16 * 12];
-            lowlowpassfilteredwells = new double[16 * 12];
-            lowlowlowpassfilteredwells = new double[16 * 12];
-            lowlowlowlowpassfilteredwells = new double[16 * 12];
-
-
-
         }
 
         public void UpdateGUI(object sender, EventArgs e)
@@ -808,124 +795,5 @@ namespace gui
             lastTemperatureState = msg.Stat;
         }
 
-        private void WellStatusPanelPaintage(object sender, System.Windows.Forms.PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            
-            
-            if(Guimain.DataFrames.Count>1)
-            {
-                DataPoint frame = Guimain.DataFrames.Last();
-                int widthIncrement = (mainform.panel_Wells.Width / 16)-1;
-                int heightIncrement = (mainform.panel_Wells.Height / 12)-1;
-
-                Pen pen = new Pen(Color.Gray);
-                Brush b = new SolidBrush(Color.Black);
-                Font f = new Font("Calibri",8);
-                Random random = new Random();
-                Point p = new Point(0,0);
-                Rectangle r = new Rectangle(0,0,1,1);
- 	
-                for (int x = 0; x < 16; x++)
-                {
-                    for (int y = 0; y < 12; y++)
-                    {
-                        pen = new Pen(Color.Gray);
-                        //405 over 485
-                        double ratio = ((double)frame.WellIntensities405[x + (y * 16)]) / ((double)frame.WellIntensities485[x + (y * 16)] + 1);
-
-                        lowpassfilteredwells[x + (y * 16)] = ratio * 0.1;
-                        lowpassfilteredwells[x + (y * 16)] *= 0.9;
-
-                        lowlowpassfilteredwells[x + (y * 16)] = ratio * 0.01;
-                        lowlowpassfilteredwells[x + (y * 16)] *= 0.99;
-
-                        lowlowlowpassfilteredwells[x + (y * 16)] = ratio * 0.001;
-                        lowlowlowpassfilteredwells[x + (y * 16)] *= 0.999;
-
-                        lowlowlowlowpassfilteredwells[x + (y * 16)] = ratio * 0.0001;
-                        lowlowlowlowpassfilteredwells[x + (y * 16)] *= 0.9999;
-
-                        p.X = x * widthIncrement;
-                        p.Y = y * heightIncrement;
-                        r.X = x * widthIncrement;
-                        r.Y = y * heightIncrement;
-                        r.Width = widthIncrement;
-                        r.Height = heightIncrement;
-
-                        g.DrawRectangle(pen, r);
-
-                        g.DrawString("" + (x + 1) + "," + (y + 1), f, b, p);
-                        
-                        r.X = (x * widthIncrement)+10;
-                        r.Y = (y * heightIncrement)+10;
-                        r.Width = widthIncrement-20;
-                        r.Height = heightIncrement-20;
-
-                        int rend = (int)(lowlowlowlowpassfilteredwells[x + (y * 16)] - lowpassfilteredwells[x + (y * 16)]);
-                        //debug
-                        rend = (int)((random.NextDouble() - random.NextDouble()) * 10.0);
-
-                        p.X = (x * widthIncrement) + (widthIncrement/2) - 10;
-                        p.Y = (y * heightIncrement) + (heightIncrement/2) - 10;
-                        g.DrawString(String.Format("{0}\n{1:0.00}\n{2} {3}", rend, ratio, frame.WellIntensities405[x + (y * 16)] / 100, frame.WellIntensities485[x + (y * 16)] / 100), f, b, p);
-
-                        if (rend > 0)
-                        {
-                            pen.Color = Color.Green;
-                            pen.Width = 10;                               
-                        }
-                        else
-                        {
-                            pen.Color = Color.Red;
-                            pen.Width = 10;                               
-                        }
-
-                        g.DrawArc(pen, r, 270.0f, (float)rend);
-
-                        rend = (int)(lowlowlowlowpassfilteredwells[x + (y * 16)] - lowlowpassfilteredwells[x + (y * 16)]);
-                        //debug
-                        rend = (int)((random.NextDouble() - random.NextDouble()) * 10.0);
-                            
-                        if (rend > 0)
-                        {
-                            pen.Color = Color.Green;
-                            pen.Width = 10;
-                        }
-                        else
-                        {
-                            pen.Color = Color.Red;
-                            pen.Width = 10;
-        }
-                        Point p1 = new Point((x * widthIncrement) + 5, (y * heightIncrement) + (heightIncrement / 2) + rend);
-                        Point p2 = new Point((x * widthIncrement) + 5, (y * heightIncrement) + (heightIncrement / 2));
-
-                        g.DrawLine(pen, p1, p2);
-
-                        rend = (int)(lowlowlowlowpassfilteredwells[x + (y * 16)] - lowlowlowpassfilteredwells[x + (y * 16)]);
-                        //debug
-                        rend = (int)((random.NextDouble() - random.NextDouble()) * 10.0);
-
-                        if (rend > 0)
-                        {
-                            pen.Color = Color.Green;
-                            pen.Width = 10;
-                        }
-                        else
-                        {
-                            pen.Color = Color.Red;
-                            pen.Width = 10;
-                        }
-                        p1 = new Point((x * widthIncrement) + widthIncrement - 5, (y * heightIncrement) + (heightIncrement / 2) + rend);
-                        p2 = new Point((x * widthIncrement) + widthIncrement - 5, (y * heightIncrement) + (heightIncrement / 2));
-
-                        g.DrawLine(pen, p1, p2);
-
-
-                        
-                    }
-                }
-            }
-        }
     } /*  class GuiUpdater  */
 } /*  namespace gui */
