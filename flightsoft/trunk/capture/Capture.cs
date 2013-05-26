@@ -274,6 +274,7 @@ namespace uGCapture
 	    public void initLogger()
 	    {
 	        logger = new Logger(Str.GetIdStr(IdStr.ID_LOGGER));
+            logger.BufferPool = bufferPool;
             dp.Register(logger);
 	    }
 

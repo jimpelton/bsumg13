@@ -34,7 +34,7 @@ namespace uGCapture
         public BufferPool<byte> BufferPool
         {
             get { return m_bufferPool; }
-            protected set { m_bufferPool = value; }
+            set { m_bufferPool = value; }
         }
         private BufferPool<byte> m_bufferPool;
 
@@ -56,7 +56,7 @@ namespace uGCapture
                 }
 
                 Console.WriteLine("Log message" + m);
-                Buffer<Byte> buffer = BufferPool.PopEmpty();//let it run for a few hours and it died here. Null Reference Exception. Bufferpool is null?
+                Buffer<Byte> buffer = BufferPool.PopEmpty();// let it run for a few hours and it died here. Null Reference Exception. Bufferpool is null?
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
                 BufferPool.PostFull(buffer);
