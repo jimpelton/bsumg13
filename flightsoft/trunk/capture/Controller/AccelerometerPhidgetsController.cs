@@ -11,7 +11,7 @@ using System.Text;
 using Phidgets;
 using Phidgets.Events;
 using System.Timers;
-
+using System.Threading;
 
 namespace uGCapture
 {
@@ -68,14 +68,15 @@ namespace uGCapture
             if (attached == null) return;
             try
             {
-                attached.axes[0].Sensitivity = 0;
-                attached.axes[1].Sensitivity = 0;
-                attached.axes[2].Sensitivity = 0;
 
                 Phidget phid = sender as Phidget;
                 if (phid == null) return;
                 dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
                 dp.Broadcast(new AccelStatusMessage(this, Status.STAT_ATCH));
+                attached.axes[0].Sensitivity = 0;
+                attached.axes[1].Sensitivity = 0;
+                attached.axes[2].Sensitivity = 0;
+                this.IsReceiving = true;
             }
             catch (PhidgetException ex)
             {
@@ -85,6 +86,16 @@ namespace uGCapture
                 //we are probably already holding a bad state. but lets make sure
                 dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL));
             }
+            catch (IndexOutOfRangeException Err)
+            {
+                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                ErrStr.PHID_TEMP_STAT_FAIL));
+            }
+            catch (ArgumentOutOfRangeException Err)
+            {
+                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                ErrStr.PHID_TEMP_STAT_FAIL));
+            }
         }
 
         private void Sensor_Detach(object sender, DetachEventArgs e)
@@ -93,6 +104,7 @@ namespace uGCapture
             if (phid == null) return;
             dp.BroadcastLog(this, String.Format("{0} Detached", phid.Name), 5);
             dp.Broadcast(new AccelStatusMessage(this, Status.STAT_DISC));
+            this.IsReceiving = false;
         }
 
         private void Sensor_Error(object sender, ErrorEventArgs e)
@@ -107,7 +119,6 @@ namespace uGCapture
 
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
-            //base.exHeartBeatMessage(r, m);
             if (accel.Attached)
             {
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
@@ -126,23 +137,24 @@ namespace uGCapture
 
         public override void exAccumulateMessage(Receiver r, Message m)
         {
-
             if (accel.Attached)
-            {
-             try
-            {
-                for (int i = 0; i < 3; i++)
-                    outputData += accel.axes[i].Acceleration + " ";
+                {
+                try
+                {
+                    for (int i = 0; i < 3; i++)
+                        outputData += accel.axes[i].Acceleration + " ";
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL));
+                }
+                catch (IndexOutOfRangeException Err)
+                {
+                    dp.Broadcast(new AccelStatusMessage(this, Status.STAT_DISC,
+                     ErrStr.PHID_TEMP_STAT_FAIL));
+                }
             }
-            catch (ArgumentOutOfRangeException e)
-            {
-                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL));
-            }
-            }
-
         }
-
-
     }
 
 

@@ -9,6 +9,7 @@ using System;
 using Phidgets;
 using Phidgets.Events;
 using System.Text;
+using System.Threading;
 
 namespace uGCapture
 {
@@ -74,6 +75,7 @@ namespace uGCapture
                 if (phid == null) return;
                 //dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
                 dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_ATCH, ErrStr.PHID_SPTL_STAT_ATCH));
+                this.IsReceiving = true;
             }
             catch (PhidgetException ex)
             {
@@ -89,6 +91,7 @@ namespace uGCapture
             if (phid == null) return;
             dp.BroadcastLog(this, Status.STAT_DISC, "Phidgets Spatial Detached");
             dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_DISC, ErrStr.PHID_SPTL_STAT_DISC));
+            this.IsReceiving = false;
         }
 
         void Sensor_Error(object sender, ErrorEventArgs e)
@@ -129,13 +132,14 @@ namespace uGCapture
                         outputData += accel.accelerometerAxes[i].Acceleration + " ";// arguementoutofrangeexception was unhandled with plugging in the accelerometer while it was running.
                 }
             }
+            catch (PhidgetException e)
+            {
+                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL));
+            }
             catch (ArgumentOutOfRangeException e)
             {
                 dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL));
             }
         }
-
-
     }
-
 }

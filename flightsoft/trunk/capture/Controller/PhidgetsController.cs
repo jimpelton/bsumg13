@@ -215,11 +215,19 @@ public class PhidgetsController : ReceiverController
             {
                 dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
                 ErrStr.PHID_TEMP_STAT_FAIL));
+                outputData += "0 0 ";
             }
             catch (IndexOutOfRangeException Err)
             {
                 dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
                 ErrStr.PHID_TEMP_STAT_FAIL));
+                outputData += "0 0 ";
+            }
+            catch (ArgumentOutOfRangeException Err)
+            {
+                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                ErrStr.PHID_TEMP_STAT_FAIL));
+                outputData += "0 0 ";
             }
         }
         else
@@ -231,9 +239,30 @@ public class PhidgetsController : ReceiverController
         {
             for (int i = 0; i < 8; i++)
             {
+                try
+                {
                 outputData += phidgets1018.sensors[i].RawValue + " ";
                 outputData += phidgets1018.inputs[i] + " ";
                 outputData += phidgets1018.outputs[i] + " ";
+                }
+                catch (PhidgetException Uhhh)
+                {
+                    dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_DISC,
+                    ErrStr.PHID_TEMP_STAT_FAIL));
+                    outputData += "0 0 0 ";
+                }
+                catch (IndexOutOfRangeException Err)
+                {
+                    dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_DISC,
+                    ErrStr.PHID_TEMP_STAT_FAIL));
+                    outputData += "0 0 0 ";
+                }
+                catch (ArgumentOutOfRangeException Err)
+                {
+                    dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_DISC,
+                    ErrStr.PHID_TEMP_STAT_FAIL));
+                    outputData += "0 0 0 ";
+                }
             }
         }
         else
