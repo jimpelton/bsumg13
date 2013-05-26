@@ -37,6 +37,13 @@ namespace gui
             set { CAS = value; }
         }
 
+        private InformationPanel IP;
+        public InformationPanel guiIP
+        {
+            get { return IP; }
+            set { IP = value; }
+        }
+
         private ImageDisplay ImageDisplay;
         public ImageDisplay guiImageDisplay
         {
@@ -83,7 +90,7 @@ namespace gui
             guiDataPath = path;
             String directoryName = DateTime.Now.ToString("yyyy_MM_dd_HHmm");
 
-            guiUpdater = new GuiUpdater(mainForm, this, CAS, "GuiUpdater")
+            guiUpdater = new GuiUpdater(mainForm, this, CAS, IP, "GuiUpdater")
                 {
                     DataFrames = this.dataFrames
                 };

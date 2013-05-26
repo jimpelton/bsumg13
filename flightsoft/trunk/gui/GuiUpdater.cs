@@ -32,7 +32,7 @@ namespace gui
         private GuiMain Guimain;
         //private Series graph1data;
         private BiteCASPanel CAS;
-
+        private InformationPanel IPee;
 
         public IList<DataPoint> DataFrames
         {
@@ -52,11 +52,12 @@ namespace gui
         private double[] lowlowlowpassfilteredwells;
         private double[] lowlowlowlowpassfilteredwells;
 
-        public GuiUpdater(Form1 f, GuiMain m, BiteCASPanel c, string id, bool receiving=true) 
+        public GuiUpdater(Form1 f, GuiMain m, BiteCASPanel c,InformationPanel ip, string id, bool receiving=true) 
             : base(id, receiving)
         {         
             mainform = f;
             CAS = c;
+            IPee = ip;
             //graph1data = new Series("Points");
             Guimain = m;
             dp.Register(this);  //yikes!
@@ -73,7 +74,7 @@ namespace gui
         }
 
         public void UpdateGUI(object sender, EventArgs e)
-        {
+        {            
             updateCASPanel();
             updateImages();
             updateFrames();
@@ -159,7 +160,6 @@ namespace gui
                 else if (freespace < Guimain.CurrentConfig.GreenSpace)
                 {
                     CAS.b_Drive_Full.BackColor = Color.Green;
-                    
                 }
                 else
                 {
@@ -384,43 +384,46 @@ namespace gui
 
                 if (lastTemperatureState == Status.STAT_GOOD)
                 {
-                    temp = double.Parse(pdats[6]);
-                    if (temp > 2000000000)
+                    if (pdats.Length > 6)
                     {
-                        CAS.b_Heater_High.BackColor = Color.Salmon;
-                    }
-                    else if (temp > 40)
-                    {
-                        CAS.b_Heater_High.BackColor = Color.OrangeRed;
-                        CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
-                        dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
-                    }
-                    else if (temp > 38)
-                    {
-                        CAS.b_Heater_High.BackColor = Color.OrangeRed;
-                    }
-                    else
-                    {
-                        CAS.b_Heater_Auto_Shutoff.BackColor = Color.Black;
-                        CAS.b_Heater_High.BackColor = Color.Black;
-                        dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_ON));
-                    }
+                        temp = double.Parse(pdats[6]);
+                        if (temp > 2000000000)
+                        {
+                            CAS.b_Heater_High.BackColor = Color.Salmon;
+                        }
+                        else if (temp > 40)
+                        {
+                            CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                            CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
+                            dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
+                        }
+                        else if (temp > 38)
+                        {
+                            CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                        }
+                        else
+                        {
+                            CAS.b_Heater_Auto_Shutoff.BackColor = Color.Black;
+                            CAS.b_Heater_High.BackColor = Color.Black;
+                            dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_ON));
+                        }
 
-                    if (temp < 1)
-                    {
-                        CAS.b_Heater_Low.BackColor = Color.White;
-                    }
-                    else if (temp < 20)
-                    {
-                        CAS.b_Heater_Low.BackColor = Color.LightBlue;
-                    }
-                    else if (temp < 35)
-                    {
-                        CAS.b_Heater_Low.BackColor = Color.OrangeRed;
-                    }
-                    else
-                    {
-                        CAS.b_Heater_Low.BackColor = Color.Black;
+                        if (temp < 1)
+                        {
+                            CAS.b_Heater_Low.BackColor = Color.White;
+                        }
+                        else if (temp < 20)
+                        {
+                            CAS.b_Heater_Low.BackColor = Color.LightBlue;
+                        }
+                        else if (temp < 35)
+                        {
+                            CAS.b_Heater_Low.BackColor = Color.OrangeRed;
+                        }
+                        else
+                        {
+                            CAS.b_Heater_Low.BackColor = Color.Black;
+                        }
                     }
                 }
                 else
@@ -465,6 +468,7 @@ namespace gui
                 updateCASAccel(dat);
                 updateCASPhidgets(dat);
                 updateCASLights(dat);
+                updateInformationPanel(dat);
             }           
         }
 
@@ -543,8 +547,161 @@ namespace gui
             }
             return bitmap;
         }
-  
 
+
+        private void updateInformationPanel(DataSet<byte> dat)
+        {
+            updateAccelerometerInformation(dat);
+            updatePhidgetsInformation(dat);
+            updateWeatherInformation(dat);
+        }
+
+        private void updateAccelerometerInformation(DataSet<byte> dat)
+        {
+            UTF8Encoding encoding = new UTF8Encoding();
+
+            try
+            {
+                if (lastAccelState == Status.STAT_GOOD)
+                    CAS.b_Accel_1.BackColor = Color.Black;
+                if (lastSpatialState == Status.STAT_GOOD)
+                    CAS.b_Accel_2.BackColor = Color.Black;
+
+                //get the difference between accel and spacials acceleration vector magnitudes.
+                double x1 = 0, x2 = 0, x3 = 0, y1 = 0, y2 = 0, y3 = 0, z1 = 0, z2 = 0, z3 = 0;
+                string Acceldat = encoding.GetString(dat.lastData[BufferType.UTF8_ACCEL]);
+                string[] Acceldats = Acceldat.Split();
+                string AAcceldat = encoding.GetString(dat.lastData[BufferType.UTF8_NI6008]);
+                string[] AAcceldats = AAcceldat.Split();
+                double m1 = 0;
+                double m2 = 0;
+                double m3 = 0;
+
+                if (Acceldats.Length > 5)
+                {
+                    x1 = double.Parse(Acceldats[3]);
+                    y1 = double.Parse(Acceldats[4]);
+                    z1 = double.Parse(Acceldats[5]);
+                    m1 = Math.Sqrt((x1 * x1) + (y1 * y1) + (z1 * z1));
+                    Guimain.guiIP.lbl_accel1x.Text = "Accel 1 X: " + x1;
+                    Guimain.guiIP.lbl_accel1y.Text = "Accel 1 Y: " + y1;
+                    Guimain.guiIP.lbl_accel1z.Text = "Accel 1 Z: " + z1;
+                    Guimain.guiIP.lbl_accel1total.Text = "Accel 1 Mag: " + m1;
+                }
+                else
+                {
+                    Guimain.guiIP.lbl_accel1x.Text = "Accel 1 Disconnected";
+                    Guimain.guiIP.lbl_accel1y.Text = "Accel 1 Disconnected";
+                    Guimain.guiIP.lbl_accel1z.Text = "Accel 1 Disconnected";
+                    Guimain.guiIP.lbl_accel1total.Text = "Accel 1 Disconnected";
+                }
+
+
+                Acceldat = encoding.GetString(dat.lastData[BufferType.UTF8_SPATIAL]);
+                Acceldats = Acceldat.Split();
+                if (Acceldats.Length > 5)
+                {
+                    x2 = double.Parse(Acceldats[3]);
+                    y2 = double.Parse(Acceldats[4]);
+                    z2 = double.Parse(Acceldats[5]);
+                    m2 = Math.Sqrt((x2 * x2) + (y2 * y2) + (z2 * z2));
+                    Guimain.guiIP.lbl_accel2x.Text = "Accel 2 X: " + x2;
+                    Guimain.guiIP.lbl_accel2y.Text = "Accel 2 Y: " + y2;
+                    Guimain.guiIP.lbl_accel2z.Text = "Accel 2 Z: " + z2;
+                    Guimain.guiIP.lbl_accel2total.Text = "Accel 2 Mag: " + m2;
+                }
+                else
+                {
+                    Guimain.guiIP.lbl_accel2x.Text = "Accel 2 Disconnected";
+                    Guimain.guiIP.lbl_accel2y.Text = "Accel 2 Disconnected";
+                    Guimain.guiIP.lbl_accel2z.Text = "Accel 2 Disconnected";
+                    Guimain.guiIP.lbl_accel2total.Text = "Accel 2 Disconnected";
+                }
+
+                if (AAcceldats.Length > 5)
+                {
+                    if (double.Parse(AAcceldats[3 + 0]) > 0)//if one is above zero then it must be connected.
+                    {
+                        //convert these from voltages to Gs.... 
+                        x3 = double.Parse(AAcceldats[3 + 0]);//3 is the zeroth element. x is on 0
+                        y3 = double.Parse(AAcceldats[3 + 4]);//y is on 4
+                        z3 = double.Parse(AAcceldats[3 + 1]);//z is on 1
+                        m3 = (x3 + y3 + z3) / 3.0;
+                        Guimain.guiIP.lbl_accel3x.Text = "Accel 3 X V: " + x3;
+                        Guimain.guiIP.lbl_accel3y.Text = "Accel 3 Y V: " + y3;
+                        Guimain.guiIP.lbl_accel3z.Text = "Accel 3 Z V: " + z3;
+                        Guimain.guiIP.lbl_accel3total.Text = "Accel 3 avg V: " + m3;
+                    }
+                    else
+                    {
+                        Guimain.guiIP.lbl_accel3x.Text = "Accel 3 Disconnected";
+                        Guimain.guiIP.lbl_accel3y.Text = "Accel 3 Disconnected";
+                        Guimain.guiIP.lbl_accel3z.Text = "Accel 3 Disconnected";
+                        Guimain.guiIP.lbl_accel3total.Text = "Accel 3 Disconnected";
+                    }
+                }
+                else
+                {
+                    Guimain.guiIP.lbl_accel3x.Text = "Accel 3 Disconnected";
+                    Guimain.guiIP.lbl_accel3y.Text = "Accel 3 Disconnected";
+                    Guimain.guiIP.lbl_accel3z.Text = "Accel 3 Disconnected";
+                    Guimain.guiIP.lbl_accel3total.Text = "Accel 3 Disconnected";
+                }
+            }
+            catch (FormatException e)
+            {
+                dp.BroadcastLog(this, "Accel Info update handler has encountered a malformed packet", 1);
+            }
+        }
+        private void updatePhidgetsInformation(DataSet<byte> dat)
+        {
+            UTF8Encoding encoding = new UTF8Encoding();
+            try
+            {
+                double temp = 0;
+                bool door = false;
+                string pdat = encoding.GetString(dat.lastData[BufferType.UTF8_PHIDGETS]);
+                string[] pdats = pdat.Split();
+
+                if (lastTemperatureState == Status.STAT_GOOD)
+                {
+                    if (pdats.Length > 7)
+                    {
+                        temp = double.Parse(pdats[6]);
+                        Guimain.guiIP.lbl_temp1.Text = "Well Plate Temp: " + temp + "C";
+                        temp = double.Parse(pdats[7]);
+                        Guimain.guiIP.lbl_temp2.Text = "Ambient Sensor Temp: " + temp + "C";
+                    }
+                }
+                else
+                {
+                    Guimain.guiIP.lbl_temp1.Text = "Temperature Daq Disconnected";
+                    Guimain.guiIP.lbl_temp2.Text = "Temperature Daq Disconnected";
+                }
+
+                if (pdats.Length > 10)
+                {
+                    door = bool.Parse(pdats[9]);
+                }
+
+                if (door)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            catch (FormatException e)
+            {
+                dp.BroadcastLog(this, "Phidgets Info update handler has encountered a malformed packet", 1);
+            }
+        }
+        private void updateWeatherInformation(DataSet<byte> dat)
+        {
+
+        }
         
         override public void exUPSStatusMessage(Receiver r, Message m) 
         {

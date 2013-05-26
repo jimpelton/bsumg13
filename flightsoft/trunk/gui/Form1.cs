@@ -36,6 +36,7 @@ namespace gui
             guiImageDisplay = guiimagedisp;
 
             guiMain = new GuiMain(this, "GuiMain", config);
+            guiMain.guiIP = infoControl;
             guiMain.guiCAS = CAS;
             guiMain.guiImageDisplay = guiimagedisp;
             guiMain.Startup_Init();
@@ -72,7 +73,8 @@ namespace gui
             if (rTB_Debug_Output.InvokeRequired)
             {
                 SetTextCallback a = setDebugText;
-                this.Invoke(a, new object[] { s });
+                if(!this.IsDisposed)
+                    this.Invoke(a, new object[] { s }); //System.ObjectDisposedException was unhandled on close. (cannot access a disposed object)(added an isdisposed check on previous line)
             }
             else
             {
@@ -98,8 +100,11 @@ namespace gui
         private void setDebugText(string s)
         {           
             rTB_Debug_Output.AppendText(s);
-            //rTB_Debug_Output.SelectionLength = rTB_Debug_Output.Text.Length;
-            //rTB_Debug_Output.ScrollToCaret();
+            if (cb_Autoscroll.Checked)
+            {
+                rTB_Debug_Output.SelectionLength = rTB_Debug_Output.Text.Length;
+                rTB_Debug_Output.ScrollToCaret();
+            }
         }
 
         private String GetTimestamp()

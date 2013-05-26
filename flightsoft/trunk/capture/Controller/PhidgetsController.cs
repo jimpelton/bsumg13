@@ -206,8 +206,21 @@ public class PhidgetsController : ReceiverController
         outputData += "\r\n";
         if (phidgetTemperature.Attached)
         {
-            outputData += phidgetTemperature.thermocouples[0].Temperature + " ";
-            outputData += phidgetTemperature.ambientSensor.Temperature + " ";
+            try
+            {
+                outputData += phidgetTemperature.thermocouples[0].Temperature + " ";// if the THERMOCOUPLE is not connected to the temp sensor this will throw.
+                outputData += phidgetTemperature.ambientSensor.Temperature + " ";// can also happen if the therocouple is plugged in backwards or just loose.
+            }
+            catch (PhidgetException Uhhh)
+            {
+                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                ErrStr.PHID_TEMP_STAT_FAIL));
+            }
+            catch (IndexOutOfRangeException Err)
+            {
+                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                ErrStr.PHID_TEMP_STAT_FAIL));
+            }
         }
         else
         {
