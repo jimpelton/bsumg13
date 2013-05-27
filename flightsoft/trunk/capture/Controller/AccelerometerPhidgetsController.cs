@@ -49,7 +49,7 @@ namespace uGCapture
                 accel.Error += Sensor_Error;
 
                 dp.BroadcastLog(this, ErrStr.INIT_OK_PHID_ACCEL, Status.STAT_GOOD);
-                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_GOOD, 
+                CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_GOOD, 
                     ErrStr.PHID_ACCL_STAT_OK));
             }
             catch (PhidgetException ex)
@@ -58,7 +58,7 @@ namespace uGCapture
                 dp.BroadcastLog( this, 
                     "Error waiting for Accelerometer: "+ex.Description,
                     100 );
-                dp.Broadcast(new AccelStatusMessage(this,  Status.STAT_FAIL, 
+                CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_FAIL, 
                     ErrStr.INIT_FAIL_PHID_ACCEL));
             }
             return rval;
@@ -71,7 +71,7 @@ namespace uGCapture
             try
             {
                 dp.BroadcastLog(this, String.Format("{0} Attached", attached.Name), 5);
-                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_ATCH, ErrStr.PHID_ACCL_STAT_ATCH));
+                CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_ATCH, ErrStr.PHID_ACCL_STAT_ATCH));
                 attached.axes[0].Sensitivity = 0;
                 attached.axes[1].Sensitivity = 0;
                 attached.axes[2].Sensitivity = 0;
@@ -83,16 +83,16 @@ namespace uGCapture
                     "Error while attaching accelerometer: {0}", ex.Description);
                                               
                 //we are probably already holding a bad state. but lets make sure
-                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_ACCL_STAT_ERR));
+                CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_ACCL_STAT_ERR));
             }
             catch (IndexOutOfRangeException Err)
             {
-                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                CheckedStatusBroadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
                     ErrStr.PHID_TEMP_STAT_FAIL));
             }
             catch (ArgumentOutOfRangeException Err)
             {
-                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                CheckedStatusBroadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
                     ErrStr.PHID_TEMP_STAT_FAIL));
             }
         }
@@ -102,7 +102,7 @@ namespace uGCapture
             Phidget phid = sender as Phidget;
             if (phid == null) return;
             dp.BroadcastLog(this, String.Format("{0} Detached", phid.Name), 5);
-            dp.Broadcast(new AccelStatusMessage(this, Status.STAT_DISC));
+            CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_DISC));
             this.IsReceiving = false;
         }
 
@@ -113,7 +113,7 @@ namespace uGCapture
 
             dp.BroadcastLog(this, Status.STAT_ERR,
                 String.Format("{0} Error: {1}", phid.Name, e.Description));
-            dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL, 
+            CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_FAIL, 
                 ErrStr.PHID_ACCL_STAT_ERR));
         }
 
@@ -125,13 +125,12 @@ namespace uGCapture
                 String output = "Accel \n";
 
                 output += GetUTCMillis().ToString() + " " + outputData;
-                //output += outputData;
                 UTF8Encoding encoding = new UTF8Encoding();
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_ACCEL);
                 buffer.Text = accel.SerialNumber.ToString();
                 BufferPool.PostFull(buffer);
                 outputData = "";
-                dp.Broadcast(new AccelStatusMessage(this, Status.STAT_GOOD, 
+                CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_GOOD, 
                     ErrStr.PHID_ACCL_STAT_OK));
             }
         }
@@ -147,12 +146,11 @@ namespace uGCapture
                 }
                 catch (ArgumentOutOfRangeException e)
                 {
-                    dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL, 
-                        ErrStr.PHID_ACCL_STAT_ERR));
+                    CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_ACCL_STAT_ERR));
                 }
                 catch (IndexOutOfRangeException Err)
                 {
-                    dp.Broadcast(new AccelStatusMessage(this, Status.STAT_DISC,
+                    CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_DISC,
                         ErrStr.PHID_TEMP_STAT_FAIL));
                 }
             }

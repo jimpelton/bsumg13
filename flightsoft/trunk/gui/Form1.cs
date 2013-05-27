@@ -74,7 +74,7 @@ namespace gui
             {
                 SetTextCallback a = setDebugText;
                 if(!this.IsDisposed)
-                    this.Invoke(a, new object[] { s }); //System.ObjectDisposedException was unhandled on close. (cannot access a disposed object)(added an isdisposed check on previous line)
+                    this.Invoke(a, new object[] { s }); //System.ObjectDisposedException was unhandled on close. (cannot access a disposed object)(added an isdisposed check on previous line)(still throws an exception)
             }
             else
             {

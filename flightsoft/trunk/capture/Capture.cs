@@ -74,7 +74,7 @@ namespace uGCapture
                                                                                // 10M, 4K
             Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096);     // image buffer size, utf8 buffer size
             bufferPool = new BufferPool<byte>(20, (int)Math.Pow(2,24), sBuf);
-            
+            initBITE();
             initLogger();   
             initWriter();
             initAptina();
@@ -84,7 +84,7 @@ namespace uGCapture
             initWeatherBoard();
             initNI6008Controller();
             initUPSController();
-            initBITE();
+            
 
             StartCapture();
         }
@@ -138,7 +138,7 @@ namespace uGCapture
             else
             {
                 dp.BroadcastLog(this,Status.STAT_FAIL, Str.GetMiErrStr(ac2.MiError), ac2.WaveLength.ToString());
-                dp.Broadcast(new AptinaStatusMessage(ac2.WaveLength, this, Status.STAT_GOOD, ac2.Errno));
+                dp.Broadcast(new AptinaStatusMessage(ac2.WaveLength, this, Status.STAT_FAIL, ac2.Errno));
             }
             dp.Register(ac2);
 

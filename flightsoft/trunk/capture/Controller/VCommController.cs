@@ -48,7 +48,7 @@ namespace uGCapture
             {
                 Console.WriteLine(e.StackTrace);
                 rval = false;
-                dp.Broadcast(new VcommStatusMessage(this, Status.STAT_FAIL, ErrStr.VCOMM_STAT_ERR));
+                CheckedStatusBroadcast(new VcommStatusMessage(this, Status.STAT_FAIL, ErrStr.VCOMM_STAT_ERR));
             }
             catch (UnauthorizedAccessException e)
             {
@@ -56,7 +56,7 @@ namespace uGCapture
                 port.Close();
                 port = null;
                 rval = false;
-                dp.Broadcast(new VcommStatusMessage(this, Status.STAT_FAIL, ErrStr.VCOMM_STAT_ERR));              
+                CheckedStatusBroadcast(new VcommStatusMessage(this, Status.STAT_FAIL, ErrStr.VCOMM_STAT_ERR));              
             }
             return rval;
         }
@@ -73,7 +73,7 @@ namespace uGCapture
                         outputData = data;
                         hasNewData = true;
                     }
-                    dp.Broadcast(new VcommStatusMessage(this, Status.STAT_GOOD, ErrStr.VCOMM_STAT_OK));
+                    CheckedStatusBroadcast(new VcommStatusMessage(this, Status.STAT_GOOD, ErrStr.VCOMM_STAT_OK));
                 }
             }
             catch (InvalidOperationException err) 
@@ -130,7 +130,7 @@ namespace uGCapture
             catch (UnauthorizedAccessException err)
             {
                 //Reset();
-                dp.Broadcast(new VcommStatusMessage(this, Status.STAT_FAIL, 
+                CheckedStatusBroadcast(new VcommStatusMessage(this, Status.STAT_FAIL, 
                     ErrStr.VCOMM_STAT_ERR));
                 Console.Error.WriteLine(err.StackTrace);
             }
@@ -158,9 +158,6 @@ namespace uGCapture
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
                 BufferPool.PostFull(buffer);
             }
-
         }
-
-
     }
 }
