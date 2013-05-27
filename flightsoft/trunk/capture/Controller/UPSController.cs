@@ -58,11 +58,11 @@ namespace uGCapture
                         {
                             stat = property.Value.ToString();
                             //property.Value//"OK""Error""Degraded""Unknown""Starting""Stopping""Service""Stressed""NonRecover""No Contact""Lost Comm"
-                            dp.Broadcast(new UPSStatusMessage(this, Status.STAT_GOOD, ErrStr.UPS_STAT_GOOD));
+                            CheckedStatusBroadcast(new UPSStatusMessage(this, Status.STAT_GOOD, ErrStr.UPS_STAT_GOOD));
                         }
                         else
                         {
-                            dp.Broadcast(new UPSStatusMessage(this, Status.STAT_ERR, 
+                            CheckedStatusBroadcast(new UPSStatusMessage(this, Status.STAT_ERR, 
                                 ErrStr.UPS_ERR_STATUS_PROPERTY_NOT_FOUND));
                         }
                     }
@@ -70,7 +70,7 @@ namespace uGCapture
             }
             if (!found)
             {
-                dp.Broadcast(new UPSStatusMessage(this, Status.STAT_ERR, ErrStr.UPS_ERR_NOT_FOUND));
+                CheckedStatusBroadcast(new UPSStatusMessage(this, Status.STAT_ERR, ErrStr.UPS_ERR_NOT_FOUND));
             }
 
             Buffer<Byte> buffer = BufferPool.PopEmpty();
@@ -90,7 +90,7 @@ namespace uGCapture
             ManagementObjectCollection collection = searcher.Get();
             if (collection.Count == 0)
             {
-                dp.Broadcast(new UPSStatusMessage(this, Status.STAT_ERR, ErrStr.UPS_ERR_NOT_FOUND));
+                CheckedStatusBroadcast(new UPSStatusMessage(this, Status.STAT_ERR, ErrStr.UPS_ERR_NOT_FOUND));
             }
             return true;
         }

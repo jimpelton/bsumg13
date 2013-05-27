@@ -47,11 +47,6 @@ namespace gui
 
         private long last1018update = 0;
 
-        private double[] lowpassfilteredwells ;
-        private double[] lowlowpassfilteredwells;
-        private double[] lowlowlowpassfilteredwells;
-        private double[] lowlowlowlowpassfilteredwells;
-
         public GuiUpdater(Form1 f, GuiMain m, BiteCASPanel c,InformationPanel ip, string id, bool receiving=true) 
             : base(id, receiving)
         {         
@@ -671,6 +666,12 @@ namespace gui
                         Guimain.guiIP.lbl_temp1.Text = "Well Plate Temp: " + temp + "C";
                         temp = double.Parse(pdats[7]);
                         Guimain.guiIP.lbl_temp2.Text = "Ambient Sensor Temp: " + temp + "C";
+
+                        Guimain.guiIP.lbl_pressure1.Text = "Pressure Dif Value: " + int.Parse(pdats[8]); 
+                        Guimain.guiIP.lbl_lightlevel1.Text = "Light Sensor 1: " + int.Parse(pdats[11]);
+                        Guimain.guiIP.lbl_lightlevel2.Text = "Light Sensor 2: " + int.Parse(pdats[14]);
+                        Guimain.guiIP.lbl_lightlevel3.Text = "Light Sensor 3: " + int.Parse(pdats[17]);
+                        Guimain.guiIP.lbl_lightleveltotal.Text = "Light Sensor Total: " + (int.Parse(pdats[11]) + int.Parse(pdats[14]) + int.Parse(pdats[17]));
                     }
                 }
                 else
@@ -700,7 +701,30 @@ namespace gui
         }
         private void updateWeatherInformation(DataSet<byte> dat)
         {
+            UTF8Encoding encoding = new UTF8Encoding();
+            try
+            {
+                string pdat = encoding.GetString(dat.lastData[BufferType.UTF8_VCOMM]);
+                char[] delims = { ' ', '#', ',' };
 
+                string[] pdats = pdat.Split(delims);
+                if (pdats.Length > 10)
+                {
+                    Guimain.guiIP.lbl_humidity.Text = "Humidity: " + pdats[3]+"%";
+                    Guimain.guiIP.lbl_temp3.Text = "WB Temp 1: " + pdats[4] + "F";
+                    Guimain.guiIP.lbl_temp4.Text = "WB Temp 2: " + pdats[6] + "F";
+                    Guimain.guiIP.lbl_pressure2.Text = "Pressure: " + int.Parse(pdats[7]) +" Pascal";
+                    Guimain.guiIP.lbl_altitude.Text = "Altitude: " + (int)(-26216 * Math.Log((double.Parse(pdats[7])/1000) / 101.304)) + " Feet";
+                }
+                
+
+
+
+            }
+            catch (FormatException e)
+            {
+                dp.BroadcastLog(this, "Phidgets Info update handler has encountered a malformed packet", 1);
+            }
         }
         
         override public void exUPSStatusMessage(Receiver r, Message m) 

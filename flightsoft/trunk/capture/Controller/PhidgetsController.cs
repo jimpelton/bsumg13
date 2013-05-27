@@ -21,7 +21,8 @@ public class PhidgetsController : ReceiverController
     private TemperatureSensor phidgetTemperature;
     private InterfaceKit phidgets1018;
     private String outputData;
-
+    private Status Status_1018 = Status.STAT_ERR;
+    private Status Status_Temp = Status.STAT_ERR;
     public PhidgetsController(BufferPool<byte> bp, string id, bool receiving = true) 
         : base(bp, id, receiving)
     {
@@ -68,7 +69,7 @@ public class PhidgetsController : ReceiverController
         {
             success = false;
             dp.BroadcastLog(this, String.Format("Error opening Phidgets DAQ {0}", ex.Description), 6);
-            dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_FAIL, ErrStr.INIT_FAIL_PHID_1018));
+            CheckedStatusBroadcast(Status_1018,new PhidgetsStatusMessage(this, Status.STAT_FAIL, ErrStr.INIT_FAIL_PHID_1018));
         }
         return success;
     }
@@ -78,7 +79,7 @@ public class PhidgetsController : ReceiverController
     {
         Phidget phid = sender as Phidget;
         if (phid == null) return;
-        dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_DISC, ErrStr.PHID_1018_STAT_DISC));
+        CheckedStatusBroadcast(Status_1018,new PhidgetsStatusMessage(this, Status.STAT_DISC, ErrStr.PHID_1018_STAT_DISC));
     }
 
     void Sensor1018_Error(object sender, ErrorEventArgs e)
@@ -87,14 +88,14 @@ public class PhidgetsController : ReceiverController
         if (phid == null) return;
 
         dp.BroadcastLog(this, String.Format("Phidgets Sensor {0} Error: {1}", phid.Name, e.Description), 5);
-        dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_1018_STAT_ERR));
+        CheckedStatusBroadcast(Status_1018,new PhidgetsStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_1018_STAT_ERR));
     }
 
     void Sensor1018_Attach(object sender, AttachEventArgs e)
     {
         Phidget phid = sender as Phidget;
         if (phid == null) return;
-        dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_ATCH, ErrStr.PHID_1018_STAT_ATCH));
+        CheckedStatusBroadcast(Status_1018,new PhidgetsStatusMessage(this, Status.STAT_ATCH, ErrStr.PHID_1018_STAT_ATCH));
     }
 
     /************************************************************************/
@@ -119,7 +120,7 @@ public class PhidgetsController : ReceiverController
             phidgetTemperature.thermocouples[0].Sensitivity = 0.001;
 
 
-            dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_TEMP));
+            CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_GOOD, ErrStr.INIT_OK_PHID_TEMP));
             //dp.BroadcastLog(this, Str.GetErrStr(ErrStr.INIT_OK_PHID_TEMP), 0);
         }
         catch (PhidgetException ex)
@@ -131,7 +132,7 @@ public class PhidgetsController : ReceiverController
                     Status.STAT_ERR,
                     "Error waiting for temperature sensor:", ex.Message
                 );
-            dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_ERR, ErrStr.INIT_FAIL_PHID_TEMP));
+            CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_ERR, ErrStr.INIT_FAIL_PHID_TEMP));
         }
         return success;
     }
@@ -141,7 +142,7 @@ public class PhidgetsController : ReceiverController
         Phidget phid = sender as Phidget;
         if (phid == null) return;
         //dp.BroadcastLog(this, "Phidgets Temp Sensor Attached", 5);
-        dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_ATCH, ErrStr.PHID_TEMP_STAT_ATCH));
+        CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_ATCH, ErrStr.PHID_TEMP_STAT_ATCH));
     }
 
     void SensorTemp_Detach(object sender, DetachEventArgs e)
@@ -149,7 +150,7 @@ public class PhidgetsController : ReceiverController
         Phidget phid = sender as Phidget;
         if (phid == null) return;
         //dp.BroadcastLog(this, "Phidgets Temp Sensor Detached", 5);
-        dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC, ErrStr.PHID_TEMP_STAT_DISC));
+        CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_DISC, ErrStr.PHID_TEMP_STAT_DISC));
     }
 
     void SensorTemp_Error(object sender, ErrorEventArgs e)
@@ -158,7 +159,7 @@ public class PhidgetsController : ReceiverController
         if (phid == null) return;
 
         //dp.BroadcastLog(this, "Phidgets Temp Sensor Error: "+e.Description, 5);
-        dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_ERR, ErrStr.PHID_TEMP_STAT_FAIL));
+        CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_ERR, ErrStr.PHID_TEMP_STAT_FAIL));
     }
 
 
@@ -179,26 +180,26 @@ public class PhidgetsController : ReceiverController
             BufferPool.PostFull(buffer);
             outputData = "";
         }
-        //if (phidgets1018.Attached)
-        //{
-        //    dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_GOOD, 
-        //        ErrStr.PHID_1018_STAT_OK));
-        //}
-        //else
-        //{
-        //    dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_DISC,
-        //        ErrStr.PHID_1018_STAT_DISC));
-        //}
+        if (phidgets1018.Attached)
+        {
+            CheckedStatusBroadcast(Status_1018, new PhidgetsStatusMessage(this, Status.STAT_GOOD, 
+                ErrStr.PHID_1018_STAT_OK));
+        }
+        else
+        {
+            CheckedStatusBroadcast(Status_1018, new PhidgetsStatusMessage(this, Status.STAT_DISC,
+                ErrStr.PHID_1018_STAT_DISC));
+        }
 
-        //if (phidgetTemperature.Attached)
-        //{
-        //    dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_GOOD, ErrStr.PHID_TEMP_STAT_OK));
-        //}
-        //else
-        //{
-        //    dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC, 
-        //        ErrStr.PHID_TEMP_STAT_DISC));
-        //}
+        if (phidgetTemperature.Attached)
+        {
+            CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_GOOD, ErrStr.PHID_TEMP_STAT_OK));
+        }
+        else
+        {
+            CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_DISC, 
+                ErrStr.PHID_TEMP_STAT_DISC));
+        }
     }
 
     public override void exAccumulateMessage(Receiver r, Message m)
@@ -214,19 +215,19 @@ public class PhidgetsController : ReceiverController
             }
             catch (PhidgetException Uhhh)
             {
-                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
                     ErrStr.PHID_TEMP_STAT_FAIL));
                 outputData += "0 0 ";
             }
             catch (IndexOutOfRangeException Err)
             {
-                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
                     ErrStr.PHID_TEMP_STAT_FAIL));
                 outputData += "0 0 ";
             }
             catch (ArgumentOutOfRangeException Err)
             {
-                dp.Broadcast(new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
+                CheckedStatusBroadcast(Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_DISC,
                 ErrStr.PHID_TEMP_STAT_FAIL));
                 outputData += "0 0 ";
             }
@@ -248,19 +249,19 @@ public class PhidgetsController : ReceiverController
                 }
                 catch (PhidgetException Uhhh)
                 {
-                    dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_DISC,
+                    CheckedStatusBroadcast(Status_1018, new PhidgetsStatusMessage(this, Status.STAT_DISC,
                     ErrStr.PHID_TEMP_STAT_FAIL));
                     outputData += "0 0 0 ";
                 }
                 catch (IndexOutOfRangeException Err)
                 {
-                    dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_DISC,
+                    CheckedStatusBroadcast(Status_1018, new PhidgetsStatusMessage(this, Status.STAT_DISC,
                     ErrStr.PHID_TEMP_STAT_FAIL));
                     outputData += "0 0 0 ";
                 }
                 catch (ArgumentOutOfRangeException Err)
                 {
-                    dp.Broadcast(new PhidgetsStatusMessage(this, Status.STAT_DISC,
+                    CheckedStatusBroadcast(Status_1018, new PhidgetsStatusMessage(this, Status.STAT_DISC,
                     ErrStr.PHID_TEMP_STAT_FAIL));
                     outputData += "0 0 0 ";
                 }

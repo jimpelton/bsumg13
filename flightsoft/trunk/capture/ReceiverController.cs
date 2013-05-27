@@ -20,6 +20,7 @@ namespace uGCapture
     public abstract class ReceiverController : Receiver
     {
         private static DateTime date1970 = new DateTime(1970, 1, 1);
+        private Status lastStatus = Status.STAT_ERR;
 
         /// <summary>
         /// Main pool that every Receiver controller writes into.
@@ -70,7 +71,46 @@ namespace uGCapture
         /// hardware and other objects when called.
         /// </summary>
         /// <param name="lastErr"></param>
-        protected abstract bool init(); 
+        protected abstract bool init();
 
+
+        protected void CheckedStatusBroadcast(LogMessage msg)
+        {
+            if (lastStatus != msg.getState())
+            {
+                lastStatus = msg.getState();
+                dp.Broadcast(msg);
+            }
+        }
+
+        protected void CheckedStatusBroadcast(Status lastStatus, LogMessage msg)
+        {
+            if (lastStatus != msg.getState())
+            {
+                lastStatus = msg.getState();
+                dp.Broadcast(msg);
+            }
+        }
+
+        /*
+        protected void CheckedStatusBroadcast<T>(T m) where T : LogMessage
+        {
+            LogMessage msg =  m;
+            if(lastStatus!=msg.getState())
+            {
+                lastStatus = msg.getState();
+                dp.Broadcast(m);
+            }
+        }
+
+        protected void CheckedStatusBroadcast<T>(Status lastStatus, T m) where T : LogMessage
+        {
+            LogMessage msg = m;
+            if (lastStatus != msg.getState())
+            {
+                lastStatus = msg.getState();
+                dp.Broadcast(m);
+            }
+        }*/
     }
 }
