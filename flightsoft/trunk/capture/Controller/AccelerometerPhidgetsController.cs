@@ -147,7 +147,8 @@ namespace uGCapture
                 }
                 catch (ArgumentOutOfRangeException e)
                 {
-                    dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_ACCL_STAT_ERR));
+                    dp.Broadcast(new AccelStatusMessage(this, Status.STAT_FAIL, 
+                        ErrStr.PHID_ACCL_STAT_ERR));
                 }
                 catch (IndexOutOfRangeException Err)
                 {
