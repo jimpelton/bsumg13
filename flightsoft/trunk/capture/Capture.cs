@@ -85,6 +85,7 @@ namespace uGCapture
             initNI6008Controller();
             initUPSController();
             initBITE();
+
             StartCapture();
         }
 
@@ -328,10 +329,13 @@ namespace uGCapture
         /// </summary>
         public void Shutdown()
         {
+            StopCapture();
             Dispatch.Instance().CleanUpMessageThreads();
+            logger.FlushLogMessage();
+            
             ac1.stop();
             ac2.stop();
-
+            writer.stop();
             try
             {
                 if (ac1.IsInit)
@@ -344,8 +348,7 @@ namespace uGCapture
                 }
 
                 //dp.BroadcastLog(this, Status.STAT_NONE, "Flushing log messages before stopping writer. Byebye.");
-                logger.FlushLogMessage();
-                writer.stop();
+                
                 if (writer.IsInit)
                 {
                     wrtThread.Join(500);

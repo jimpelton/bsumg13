@@ -267,7 +267,8 @@ namespace uGCapture
                 case ErrStr.NI6008_STAT_FAIL:                 return "NI-6008 failure!.";
                 case ErrStr.NI6008_STAT_OK:                   return "NI-6008 returned ok status.";
                 case ErrStr.NI6008_STAT_DISC:                 return "NI-6008 returned disconnected status.";
-
+                
+                case ErrStr.UPS_STAT_GOOD:                    return "UPS reported good status.";
                 case ErrStr.UPS_ERR_NOT_FOUND:                return "A ups was not found!";
                 case ErrStr.UPS_ERR_STATUS_PROPERTY_NOT_FOUND:return "UPS status property is unavailable.";
                 

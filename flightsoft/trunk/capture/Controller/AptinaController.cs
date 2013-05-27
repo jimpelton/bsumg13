@@ -203,31 +203,7 @@ public class AptinaController : ReceiverController
         dp.BroadcastLog(this, Status.STAT_FAIL, Str.GetErrStr(ErrStr.APTINA_DISCONNECT), WaveLength.ToString());
     }
 
-    //public static void Add_AttachUSBHandler()
-    //{
-    //    WqlEventQuery q;
-    //    ManagementScope scope = new ManagementScope("root\\CIMV2");
-    //    scope.Options.EnablePrivileges = true;
 
-    //    try
-    //    {
-    //        q = new WqlEventQuery();
-    //        q.EventClassName = "__InstanceCreationEvent";
-    //        q.WithinInterval = new TimeSpan(0, 0, 3);
-    //        q.Condition = @"TargetInstance ISA Win32_USBControllerdevice";
-    //        w = new ManagementEventWatcher(scope, q);
-    //        w.EventArrived += USBAdded;
-    //        w.WaitForNextEvent();
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Console.WriteLine(e.Message);
-    //        if (w != null)
-    //        {
-    //            w.Stop();
-    //        }
-    //    }
-    //}
 
     /*************************************************
      * init()
@@ -300,10 +276,7 @@ public class AptinaController : ReceiverController
      ****************************************************************************/
     public void stop()
     {
-        lock (runningMutex)
-        {
-            IsRunning = false;
-        }
+        IsRunning = false;
         dp.BroadcastLog(this, Status.STAT_ERR, "Aptina controller stopping.", WaveLength.ToString());
     }
 
@@ -465,35 +438,59 @@ public class AptinaController : ReceiverController
     //    }
     //}
 
-
-    //public void WaitForUSBChangeEvent(object sender, EventArrivedEventArgs e)
-    //{
-    //    (sender as ManagementEventWatcher).Stop();
-    //    // watcher.Stop();
-    //    Invoke((MethodInvoker)delegate
-    //    {
-    //        ManagementObjectSearcher usbDevs = new ManagementObjectSearcher("SELECT * FROM Win32_USBHub");
-    //        // Loop through each object (disk) retrieved by WMI
-    //        //this.comboBox1.Items.Clear();
-    //        //
-    //        foreach (ManagementObject manObj in usbDevs.Get())
-    //        {
-    //            if (manObj.)
-
-    //            if (!listBox1.Items.Contains(moDiskete["DeviceID"]))
-    //            {
-    //                // Add the HDD to the list (use the Model field as the item's caption)
-    //                listBox1.Items.Add(moDiskete["DeviceID"].ToString() + " " + moDiskete["Description"]);
-    //                listBox1.Items.Add("\t" + moDiskete["PNPDeviceID"]);
-
-    //            }
-    //        }
-    //        this.comboBox1.SelectedIndex = 0;
-    //    });
-    //    (sender as ManagementEventWatcher).Start();
-    //}
-
-
 }
 
 }
+
+//public void WaitForUSBChangeEvent(object sender, EventArrivedEventArgs e)
+//{
+//    (sender as ManagementEventWatcher).Stop();
+//    // watcher.Stop();
+//    Invoke((MethodInvoker)delegate
+//    {
+//        ManagementObjectSearcher usbDevs = new ManagementObjectSearcher("SELECT * FROM Win32_USBHub");
+//        // Loop through each object (disk) retrieved by WMI
+//        //this.comboBox1.Items.Clear();
+//        //
+//        foreach (ManagementObject manObj in usbDevs.Get())
+//        {
+//            if (manObj.)
+
+//            if (!listBox1.Items.Contains(moDiskete["DeviceID"]))
+//            {
+//                // Add the HDD to the list (use the Model field as the item's caption)
+//                listBox1.Items.Add(moDiskete["DeviceID"].ToString() + " " + moDiskete["Description"]);
+//                listBox1.Items.Add("\t" + moDiskete["PNPDeviceID"]);
+
+//            }
+//        }
+//        this.comboBox1.SelectedIndex = 0;
+//    });
+//    (sender as ManagementEventWatcher).Start();
+//}
+
+//public static void Add_AttachUSBHandler()
+//{
+//    WqlEventQuery q;
+//    ManagementScope scope = new ManagementScope("root\\CIMV2");
+//    scope.Options.EnablePrivileges = true;
+
+//    try
+//    {
+//        q = new WqlEventQuery();
+//        q.EventClassName = "__InstanceCreationEvent";
+//        q.WithinInterval = new TimeSpan(0, 0, 3);
+//        q.Condition = @"TargetInstance ISA Win32_USBControllerdevice";
+//        w = new ManagementEventWatcher(scope, q);
+//        w.EventArrived += USBAdded;
+//        w.WaitForNextEvent();
+//    }
+//    catch (Exception e)
+//    {
+//        Console.WriteLine(e.Message);
+//        if (w != null)
+//        {
+//            w.Stop();
+//        }
+//    }
+//}
