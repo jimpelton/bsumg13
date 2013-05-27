@@ -120,5 +120,21 @@ namespace uGCapture
             buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
             BufferPool.PostFull(buffer);
         }
+
+
+        public void FlushLogMessage()
+        {
+            String output;
+            lock (outputData)
+            {
+                output = "Log\r\n" + timeStamp() + "\n" + outputData.ToString();
+                outputData.Clear();
+            }
+
+            Buffer<Byte> buffer = BufferPool.PopEmpty();
+            UTF8Encoding encoding = new UTF8Encoding();
+            buffer.setData(encoding.GetBytes(output), BufferType.UTF8_LOG);
+            BufferPool.PostFull(buffer);
+        }
     }
 }

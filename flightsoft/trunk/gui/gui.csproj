@@ -168,9 +168,7 @@
     <Compile Include="InformationPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InformationPanel.Designer.cs">
-      <DependentUpon>InformationPanel.cs</DependentUpon>
-    </Compile>
+    <Compile Include="InformationPanel.Designer.cs" />
     <Compile Include="LogMessagesControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -204,9 +202,7 @@
     <EmbeddedResource Include="ImageDisplayControl.resx">
       <DependentUpon>ImageDisplayControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InformationPanel.resx">
-      <DependentUpon>InformationPanel.cs</DependentUpon>
-    </EmbeddedResource>
+    <EmbeddedResource Include="InformationPanel.resx" />
     <EmbeddedResource Include="LogMessagesControl.resx">
       <DependentUpon>LogMessagesControl.cs</DependentUpon>
     </EmbeddedResource>

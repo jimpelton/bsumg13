@@ -26,7 +26,7 @@ namespace uGCapture
 
         public override string ToString()
         {
-            return base.ToString() + " " + WaveLength;
+            return base.ToString() + " for camera" + WaveLength;
         }
     }
 }

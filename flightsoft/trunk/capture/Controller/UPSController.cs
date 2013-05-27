@@ -58,7 +58,7 @@ namespace uGCapture
                         {
                             stat = property.Value.ToString();
                             //property.Value//"OK""Error""Degraded""Unknown""Starting""Stopping""Service""Stressed""NonRecover""No Contact""Lost Comm"
-                            dp.Broadcast(new UPSStatusMessage(this, Status.STAT_GOOD));
+                            dp.Broadcast(new UPSStatusMessage(this, Status.STAT_GOOD, ErrStr.UPS_STAT_GOOD));
                         }
                         else
                         {
@@ -90,7 +90,6 @@ namespace uGCapture
             ManagementObjectCollection collection = searcher.Get();
             if (collection.Count == 0)
             {
-                dp.BroadcastLog(this, "UPS Battery not detected.", 0);
                 dp.Broadcast(new UPSStatusMessage(this, Status.STAT_ERR, ErrStr.UPS_ERR_NOT_FOUND));
             }
             return true;

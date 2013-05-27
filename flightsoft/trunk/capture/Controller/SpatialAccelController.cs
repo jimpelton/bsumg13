@@ -67,40 +67,28 @@ namespace uGCapture
 
         void accel_Attach(object sender, AttachEventArgs e)
         {
-            Spatial attached = sender as Spatial;
-            if (attached == null) return;
             try
             {
-                Phidget phid = sender as Phidget;
-                if (phid == null) return;
-                //dp.BroadcastLog(this, String.Format("{0} Attached", phid.Name), 5);
                 dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_ATCH, ErrStr.PHID_SPTL_STAT_ATCH));
                 this.IsReceiving = true;
             }
             catch (PhidgetException ex)
             {
                 dp.BroadcastLog(this, Status.STAT_FAIL, ex.Message);
-                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_SPTL_STAT_FAIL));
+                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_SPTL_STAT_ERR));
             }
         }
 
 
         void Sensor_Detach(object sender, DetachEventArgs e)
         {
-            Phidget phid = sender as Phidget;
-            if (phid == null) return;
-            dp.BroadcastLog(this, Status.STAT_DISC, "Phidgets Spatial Detached");
             dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_DISC, ErrStr.PHID_SPTL_STAT_DISC));
             this.IsReceiving = false;
         }
 
         void Sensor_Error(object sender, ErrorEventArgs e)
         {
-            Phidget phid = sender as Phidget;
-            if (phid == null) return;
-
-            dp.BroadcastLog(this, String.Format("{0} Error: {1}", phid.Name, e.Description), 5);
-            dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_SPTL_STAT_FAIL));
+            dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_ERR, ErrStr.PHID_SPTL_STAT_ERR));
         }
 
 
@@ -118,7 +106,7 @@ namespace uGCapture
                 buffer.Text = accel.SerialNumber.ToString(); 
                 BufferPool.PostFull(buffer);
                 outputData = "";
-                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_GOOD));
+                //dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_GOOD, ErrStr.PHID_SPTL_STAT_OK));
             }
         }
 
@@ -136,9 +124,9 @@ namespace uGCapture
             {
                 dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL));
             }
-            catch (ArgumentOutOfRangeException e)
+            catch (ArgumentOutOfRangeException)
             {
-                dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL));
+                //dp.Broadcast(new SpatialStatusMessage(this, Status.STAT_FAIL, ErrStr.PHID_SPTL_STAT_ERR));
             }
         }
     }

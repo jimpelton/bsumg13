@@ -43,7 +43,6 @@ namespace gui
             
             setupCASPanelDelegates();
             initCaptureClass(configData);
-
         }
         private void setupCASPanelDelegates()
         {
