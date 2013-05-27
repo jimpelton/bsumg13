@@ -1,4 +1,3 @@
-
 // ******************************************************************************
 //  BSU Microgravity Team 2013                                                 
 //  In-Flight Data Capture Software                                            
@@ -69,7 +68,7 @@ int initMidLib2(int nCamsReq, void *hwnd, long attach_cb_addr)
     if (g_isMidLibInit) return 0;
 
     if (nCamsReq <= 0) {
-        printf("You requested %d cams!" \
+        printf("You requested %d cams! " \
             "That is not a good number of cams to request!\n", 
             nCamsReq);
         return 1;
@@ -111,6 +110,10 @@ void setInitPath(char *path)
 
 }
 
+/************************************************************************/
+/* device disconnect callback                                           */
+/************************************************************************/
+
 mi_u32 miDevCallBack(HWND handle, _mi_camera_t* cam, mi_u32 flag)
 {
     printf("inside miDevCallBack.");
@@ -119,7 +122,7 @@ mi_u32 miDevCallBack(HWND handle, _mi_camera_t* cam, mi_u32 flag)
         idx = 0;
     } else { idx = 1; }
 
-    attachCallbackAddr(idx);
+    attachCallbackAddr(idx);  //call back to managed space.
     return 0;
 }
 
@@ -256,6 +259,8 @@ int cleanUp_(ugCamera *cam)
         free(cam->pCameraBuff);
         cam->pCameraBuff = NULL;
     }
+    
+    mi_SetDeviceChangeCallback(NULL, NULL); //stop device notification
 
     mi_CloseCameras();
     mi_CloseErrorLog();

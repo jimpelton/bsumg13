@@ -33,6 +33,11 @@ namespace uGCapture
         }
         private Status _status = Status.STAT_NONE;
 
+        public Status getState()
+        {
+            return Stat;
+        }
+
         public ErrStr ErrorString
         {
             get { return estr; }
@@ -75,7 +80,7 @@ namespace uGCapture
 
         public override string ToString()
         {
-            return "(" + _status.ToString() + ") " + message;
+            return "(" + _status.ToString() + ") " + message + "\n";
         }
 
         public override void AddSpecificReceiver(ReceiverIdPair r)

@@ -86,7 +86,6 @@ namespace uGCapture
             initUPSController();
             initBITE();
             StartCapture();
-
         }
 
         private void initWriter()
@@ -121,7 +120,7 @@ namespace uGCapture
             }
             else
             {
-                dp.BroadcastLog(this, Status.STAT_FAIL, Str.MiErrStr[ac1.MiError], ac1.WaveLength.ToString());
+                dp.BroadcastLog(this, Status.STAT_FAIL, Str.GetMiErrStr(ac1.MiError), ac1.WaveLength.ToString());
                 dp.Broadcast(new AptinaStatusMessage(ac1.WaveLength, this, Status.STAT_FAIL, ac1.Errno));
             }
             dp.Register(ac1);
@@ -137,7 +136,7 @@ namespace uGCapture
             }
             else
             {
-                dp.BroadcastLog(this,Status.STAT_FAIL, Str.MiErrStr[ac2.MiError], ac2.WaveLength.ToString());
+                dp.BroadcastLog(this,Status.STAT_FAIL, Str.GetMiErrStr(ac2.MiError), ac2.WaveLength.ToString());
                 dp.Broadcast(new AptinaStatusMessage(ac2.WaveLength, this, Status.STAT_GOOD, ac2.Errno));
             }
             dp.Register(ac2);
@@ -264,8 +263,7 @@ namespace uGCapture
             else
             {
                 string s = Str.GetErrStr(ErrStr.INIT_FAIL_UPS);
-                dp.BroadcastLog(this, Status.STAT_GOOD, s);
-                //Console.Error.WriteLine(s);
+                dp.BroadcastLog(this, Status.STAT_FAIL, s);
             }
             dp.Register(UPS);
 
@@ -313,7 +311,6 @@ namespace uGCapture
         {
             Dispatch.Scheduler.Start();
             dp.BroadcastLog(this, Status.STAT_GOOD, "Scheduler started.");
-
         }
 
         /// <summary>
@@ -334,7 +331,7 @@ namespace uGCapture
             Dispatch.Instance().CleanUpMessageThreads();
             ac1.stop();
             ac2.stop();
-            writer.stop();
+
             try
             {
                 if (ac1.IsInit)
@@ -345,6 +342,10 @@ namespace uGCapture
                 {
                     acThread2.Join(500);
                 }
+
+                //dp.BroadcastLog(this, Status.STAT_NONE, "Flushing log messages before stopping writer. Byebye.");
+                logger.FlushLogMessage();
+                writer.stop();
                 if (writer.IsInit)
                 {
                     wrtThread.Join(500);
