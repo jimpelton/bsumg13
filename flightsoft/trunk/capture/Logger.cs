@@ -6,7 +6,6 @@ namespace uGCapture
     public class Logger : Receiver
     {
         private StringBuilder outputData;
-        private const UInt32 MAX_LOG_FILE_LENGTH =1048576; // One megabyte.
         private Status logLevel;
 
         public Logger(String id, bool receiving = true, bool executing = true) 
@@ -46,7 +45,7 @@ namespace uGCapture
         /// </summary>    
         public override void exLogMessage(Receiver r, Message m)
         {
-            if (outputData.Length > MAX_LOG_FILE_LENGTH)
+            if (outputData.Length > MAX_FILE_LENGTH)
             {
                 String output;
                 lock (outputData)
@@ -74,7 +73,7 @@ namespace uGCapture
 
         public override void exStatusMessage(Receiver r, Message m)
         {
-            if (outputData.Length > MAX_LOG_FILE_LENGTH)
+            if (outputData.Length > MAX_FILE_LENGTH)
             {
                 
                 String output;

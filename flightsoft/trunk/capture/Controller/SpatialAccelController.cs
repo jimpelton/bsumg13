@@ -96,17 +96,19 @@ namespace uGCapture
         {
             if (accel.Attached)
             {
-                Buffer<Byte> buffer = BufferPool.PopEmpty();
-                String output = "Accel \n";
+                if (outputData.Length > MAX_FILE_LENGTH)
+                {
+                    Buffer<Byte> buffer = BufferPool.PopEmpty();
+                    String output = "Accel \n";
 
-                output += GetUTCMillis().ToString() + " ";
-                output += outputData;
-                UTF8Encoding encoding = new UTF8Encoding();
-                buffer.setData(encoding.GetBytes(output), BufferType.UTF8_SPATIAL);
-                buffer.Text = accel.SerialNumber.ToString(); 
-                BufferPool.PostFull(buffer);
-                outputData = "";
-                CheckedStatusBroadcast(new SpatialStatusMessage(this, Status.STAT_GOOD, ErrStr.PHID_SPTL_STAT_OK));
+                    output += " " + outputData;
+                    UTF8Encoding encoding = new UTF8Encoding();
+                    buffer.setData(encoding.GetBytes(output), BufferType.UTF8_SPATIAL);
+                    buffer.Text = accel.SerialNumber.ToString();
+                    BufferPool.PostFull(buffer);
+                    outputData = "";
+                    CheckedStatusBroadcast(new SpatialStatusMessage(this, Status.STAT_GOOD, ErrStr.PHID_SPTL_STAT_OK));
+                }
             }
         }
 
@@ -116,8 +118,12 @@ namespace uGCapture
             {
                 if (accel.Attached)
                 {
+
+                    outputData += GetUTCMillis().ToString() + " ";
                     for (int i = 0; i < 3; i++)
                         outputData += accel.accelerometerAxes[i].Acceleration + " ";// arguementoutofrangeexception was unhandled with plugging in the accelerometer while it was running.
+                    outputData += "\n";
+
                 }
             }
             catch (PhidgetException e)

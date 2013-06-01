@@ -193,7 +193,7 @@
             this.b_Doors.Name = "b_Doors";
             this.b_Doors.Size = new System.Drawing.Size(152, 56);
             this.b_Doors.TabIndex = 9;
-            this.b_Doors.Text = "Doors";
+            this.b_Doors.Text = "Unimplemented";
             this.b_Doors.UseVisualStyleBackColor = false;
             // 
             // b_Phidgets_1018

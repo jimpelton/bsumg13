@@ -112,6 +112,8 @@ namespace gui
         private void updateImages()
         {
             DataSet<byte> dat = Guimain.getLatestData();
+            if (dat == null)
+                return;
             byte[] i405 = dat.lastData[BufferType.USHORT_IMAGE405];
             byte[] i485 = dat.lastData[BufferType.USHORT_IMAGE485];
 
@@ -141,7 +143,8 @@ namespace gui
         private void updateCASFreeSpace()
         {
             ulong freespace;//freespace was an awesome game.
-            if (DriveFreeBytes(Guimain.guiDataPath, out freespace))
+            //if (DriveFreeBytes(Guimain.guiDataPath, out freespace))
+            if (false)
             {
                 if (freespace < Guimain.CurrentConfig.RedSpace)                   
                 {
@@ -431,6 +434,9 @@ namespace gui
                 {
                     door = bool.Parse(pdats[9]);
                 }
+
+                CAS.b_Doors.BackColor = Color.Black;
+                /*
                 //TODO Make this change based on the capture status.
                 bool running = true;
                 if (door)
@@ -444,6 +450,7 @@ namespace gui
                     else
                         CAS.b_Doors.BackColor = Color.Yellow;
                 }
+                */
             }
             catch (FormatException e)
             {
@@ -682,17 +689,9 @@ namespace gui
 
                 if (pdats.Length > 10)
                 {
-                    door = bool.Parse(pdats[9]);
+                    door = bool.Parse(pdats[9]);                  
                 }
 
-                if (door)
-                {
-
-                }
-                else
-                {
-
-                }
             }
             catch (FormatException e)
             {
@@ -817,7 +816,7 @@ namespace gui
                 dp.BroadcastLog(this, e.Message, 0);
             }
         }
-
+        /*
         override public void exVcommStatusMessage(Receiver r, Message m)
         {
             try
@@ -830,7 +829,7 @@ namespace gui
                 dp.BroadcastLog(this, e.Message, 0);
             }
         }
-
+        */
         override public void exNI6008StatusMessage(Receiver r, Message m)
         {
             try

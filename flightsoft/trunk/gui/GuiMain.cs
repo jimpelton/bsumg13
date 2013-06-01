@@ -96,10 +96,15 @@ namespace gui
                 };
 
             captureClass = new CaptureClass(mainForm.Handle, "CaptureClass") { StorageDir = path + directoryName };
-            captureClass.init();
             //dp.StartAllExecuting();
-            dp.BroadcastLog(this, "Begin config:\n" + config.Path + "End config\n", 1);
+            dp.BroadcastLog(this, "Begin config: " + config.Path + "End config", 1);
         }
+
+        public void StartCapture()
+        {
+            dp.Broadcast(new SetCaptureStateMessage(this, true));
+        }
+
 
         public bool ToggleCapture()
         {
@@ -117,7 +122,7 @@ namespace gui
                 if (dr == DialogResult.Yes)
                 {
                     boolCapturing = false;
-                    dp.Broadcast(new SetCaptureStateMessage(this, false));
+                   // dp.Broadcast(new SetCaptureStateMessage(this, false));
                 }
 
             }
