@@ -44,17 +44,12 @@ namespace gui
             //TODO: this updating should be handled externally to the form.
             //TODO: make an alternative thread-safe way to do this.
             //it likes it when the timer is in here...
-            DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);         
+            DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);      
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             DebugOutput("Gui Initialized...");
-        }
-
-        private void rTB_Debug_Output_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void btn_Go_Click(object sender, EventArgs e)
@@ -115,11 +110,6 @@ namespace gui
         {
             if (guiMain != null)
                 guiMain.executeBiteTest();
-        }
-
-        private void TabPage_Capture_Click(object sender, EventArgs e)
-        {
-
         }
 
     }

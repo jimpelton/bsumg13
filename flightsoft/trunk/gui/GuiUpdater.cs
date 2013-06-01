@@ -716,9 +716,6 @@ namespace gui
                     Guimain.guiIP.lbl_altitude.Text = "Altitude: " + (int)(-26216 * Math.Log((double.Parse(pdats[7])/1000) / 101.304)) + " Feet";
                 }
                 
-
-
-
             }
             catch (FormatException e)
             {

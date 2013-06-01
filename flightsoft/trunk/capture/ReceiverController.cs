@@ -92,25 +92,25 @@ namespace uGCapture
             }
         }
 
-        /*
-        protected void CheckedStatusBroadcast<T>(T m) where T : LogMessage
-        {
-            LogMessage msg =  m;
-            if(lastStatus!=msg.getState())
-            {
-                lastStatus = msg.getState();
-                dp.Broadcast(m);
-            }
-        }
+        
+        //protected void CheckedStatusBroadcast<T>(T m) where T : LogMessage
+        //{
+        //    T msg =  m;
+        //    if(lastStatus!=msg.getState())
+        //    {
+        //        lastStatus = msg.getState();
+        //        dp.Broadcast(m);
+        //    }
+        //}
 
-        protected void CheckedStatusBroadcast<T>(Status lastStatus, T m) where T : LogMessage
-        {
-            LogMessage msg = m;
-            if (lastStatus != msg.getState())
-            {
-                lastStatus = msg.getState();
-                dp.Broadcast(m);
-            }
-        }*/
+        //protected void CheckedStatusBroadcast<T>(Status lastStatus, T m) where T : LogMessage
+        //{
+        //    T msg = m;
+        //    if (lastStatus != msg.getState())
+        //    {
+        //        lastStatus = msg.getState();
+        //        dp.Broadcast(m);
+        //    }
+        //}
     }
 }
