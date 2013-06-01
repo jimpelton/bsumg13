@@ -27,8 +27,7 @@ namespace gui
             this.Controls.Add(childForm);
             this.Controls.Add(infoControl);
             this.Controls.Add(guiimagedisp);
-            
-            
+                        
             guiimagedisp.SetBounds(0, 0, 1100, 400);
             infoControl.SetBounds(0, 410, 1100, 350);
             childForm.SetBounds(0, 770, 1100, 290);
@@ -60,12 +59,7 @@ namespace gui
 
         private void btn_Go_Click(object sender, EventArgs e)
         {
-            bool capting = guiMain.ToggleCapture();           
-            if(capting)
-                btn_Go.Text = "Stop Capture";
-            else
-                btn_Go.Text = "Start Capture";
-            
+            guiMain.StartCapture();        
         }
 
         public void DebugOutput(String s)
@@ -127,5 +121,6 @@ namespace gui
         {
 
         }
+
     }
 }

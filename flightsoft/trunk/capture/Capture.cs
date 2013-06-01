@@ -65,12 +65,13 @@ namespace uGCapture
             : base(id)
         {
             this.hwnd = hwnd;
+            dp.Register(this);
         }
 
         public void init()
         {
             m_startTimeUTC = DateTime.UtcNow;
-            dp.Register(this);
+            
                                                                                // 10M, 4K
             Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096);     // image buffer size, utf8 buffer size
             bufferPool = new BufferPool<byte>(20, (int)Math.Pow(2,24), sBuf);
@@ -87,6 +88,7 @@ namespace uGCapture
             
 
             StartCapture();
+            boolCapturing = true;
         }
 
         private void initWriter()
@@ -285,7 +287,10 @@ namespace uGCapture
 
         public DataSet<byte> GetLastData()
         {
-            return bufferPool.Staging.GetLastData();   
+            if(bufferPool!=null)
+                if(bufferPool.Staging!=null)
+                    return bufferPool.Staging.GetLastData();
+            return null;
         }
 
         /// <summary>
@@ -361,5 +366,16 @@ namespace uGCapture
             }
             
         }
+
+        
+        public override void exSetCaptureStateMessage(Receiver r, Message m)
+        {
+            SetCaptureStateMessage msg = (SetCaptureStateMessage)m;
+            if (msg.running)
+            {
+                if (!boolCapturing)
+                    init();               
+            }
+        }       
     }
 }

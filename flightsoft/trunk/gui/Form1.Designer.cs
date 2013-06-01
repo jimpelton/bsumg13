@@ -72,6 +72,7 @@
             this.btn_Go.TabIndex = 4;
             this.btn_Go.Text = "Start Capture";
             this.btn_Go.UseVisualStyleBackColor = true;
+            this.btn_Go.Click += new System.EventHandler(this.btn_Go_Click);
             // 
             // chart2
             // 

@@ -83,11 +83,11 @@ namespace uGCapture
             }
         }
 
-        protected void CheckedStatusBroadcast(Status lastStatus, LogMessage msg)
+        protected void CheckedStatusBroadcast(ref Status lastStat, LogMessage msg)
         {
-            if (lastStatus != msg.getState())
+            if (lastStat != msg.getState())
             {
-                lastStatus = msg.getState();
+                lastStat = msg.getState();
                 dp.Broadcast(msg);
             }
         }

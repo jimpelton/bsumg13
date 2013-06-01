@@ -121,17 +121,19 @@ namespace uGCapture
         {
             if (accel.Attached)
             {
-                Buffer<Byte> buffer = BufferPool.PopEmpty();
-                String output = "Accel \n";
-
-                output += GetUTCMillis().ToString() + " " + outputData;
-                UTF8Encoding encoding = new UTF8Encoding();
-                buffer.setData(encoding.GetBytes(output), BufferType.UTF8_ACCEL);
-                buffer.Text = accel.SerialNumber.ToString();
-                BufferPool.PostFull(buffer);
-                outputData = "";
-                CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_GOOD, 
-                    ErrStr.PHID_ACCL_STAT_OK));
+                if (outputData.Length > MAX_FILE_LENGTH)
+                {
+                    Buffer<Byte> buffer = BufferPool.PopEmpty();
+                    String output = "Accel \n";
+                    output += " " + outputData;
+                    UTF8Encoding encoding = new UTF8Encoding();
+                    buffer.setData(encoding.GetBytes(output), BufferType.UTF8_ACCEL);
+                    buffer.Text = accel.SerialNumber.ToString();
+                    BufferPool.PostFull(buffer);
+                    outputData = "";
+                    CheckedStatusBroadcast(new AccelStatusMessage(this, Status.STAT_GOOD,
+                        ErrStr.PHID_ACCL_STAT_OK));
+                }
             }
         }
 
@@ -141,8 +143,10 @@ namespace uGCapture
                 {
                 try
                 {
+                    outputData += GetUTCMillis().ToString() + " ";
                     for (int i = 0; i < 3; i++)
                         outputData += accel.axes[i].Acceleration + " ";
+                    outputData += "\n";
                 }
                 catch (ArgumentOutOfRangeException e)
                 {

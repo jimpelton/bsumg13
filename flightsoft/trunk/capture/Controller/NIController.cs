@@ -131,13 +131,16 @@ namespace uGCapture
                 if (DaqSystem.Local.Devices.Length > 0)
                     //we have a (the) NI device connected
                 {
-                    Buffer<Byte> buffer = BufferPool.PopEmpty();
-                    String output = "NIDAQ \n";
-                    output += GetUTCMillis().ToString() + " " + outputData;
-                    UTF8Encoding encoding = new UTF8Encoding();
-                    buffer.setData(encoding.GetBytes(output), BufferType.UTF8_NI6008);
-                    BufferPool.PostFull(buffer);
-                    outputData = "";
+                    if (outputData.Length > MAX_FILE_LENGTH)
+                    {
+                        Buffer<Byte> buffer = BufferPool.PopEmpty();
+                        String output = "NIDAQ \n";
+                        output += " " + outputData;
+                        UTF8Encoding encoding = new UTF8Encoding();
+                        buffer.setData(encoding.GetBytes(output), BufferType.UTF8_NI6008);
+                        BufferPool.PostFull(buffer);
+                        outputData = "";
+                    }
                 }
             }
             catch (DaqException ex)
@@ -157,6 +160,8 @@ namespace uGCapture
                 if (DaqSystem.Local.Devices.Length > 0)
                     //we have a (the) NI device connected
                 {
+
+                    outputData += GetUTCMillis().ToString() + " ";
                     double analogDataIn_X_A = 0;
                     double analogDataIn_Y_A = 0;
                     double analogDataIn_Z_A = 0;
@@ -177,6 +182,7 @@ namespace uGCapture
                     outputData += analogDataIn_X_T + " ";
                     outputData += analogDataIn_Y_T + " ";
                     outputData += analogDataIn_Z_T + " ";
+                    outputData += "\n";
                 }
             }
             catch (DaqException ex)
