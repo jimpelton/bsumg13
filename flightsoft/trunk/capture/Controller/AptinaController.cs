@@ -64,8 +64,9 @@ public class AptinaController : ReceiverController
     }
     private unsafe IntPtr m_hwnd = IntPtr.Zero;
 
-    protected Status Status_405 = Status.STAT_ERR;
-    protected Status Status_485 = Status.STAT_ERR;
+    //protected Status Status_405 = Status.STAT_ERR;
+    //protected Status Status_485 = Status.STAT_ERR;
+    private Status last_status = Status.STAT_ERR;
 
     //the buffer size for this controller
     private ulong size;
@@ -166,6 +167,7 @@ public class AptinaController : ReceiverController
 
     private static ManagementEventWatcher w;
     private static string[] pnpIDs = new string[2];
+    private const int MAX_CAMS=2;
 
 
     /****************************************************************************
@@ -200,13 +202,11 @@ public class AptinaController : ReceiverController
         IsCurrentlyDetached = true;
         IsRunning = false;
         IsExecuting = false;
-        if (WaveLength == 405)
-            CheckedStatusBroadcast(ref Status_405, new AptinaStatusMessage(WaveLength, this, Status.STAT_FAIL, ErrStr.APTINA_DISCONNECT));
-        else
-            CheckedStatusBroadcast(ref Status_485, new AptinaStatusMessage(WaveLength, this, Status.STAT_FAIL, ErrStr.APTINA_DISCONNECT));
+
+        CheckedStatusBroadcast(last_status, 
+            new AptinaStatusMessage(WaveLength, this, Status.STAT_FAIL, ErrStr.APTINA_DISCONNECT));
         dp.BroadcastLog(this, Status.STAT_FAIL, Str.GetErrStr(ErrStr.APTINA_DISCONNECT), WaveLength.ToString());
     }
-
 
 
     /*************************************************
@@ -258,6 +258,7 @@ public class AptinaController : ReceiverController
         dest = new byte[size];
 
         MiError = MiErrorCode.MI_CAMERA_SUCCESS;
+        last_status = Status.STAT_GOOD;
         return rval;
     }
 
@@ -321,25 +322,18 @@ public class AptinaController : ReceiverController
         int err = stopTransportIdx(me.tnum);
         if ((MiErrorCode) err != MiErrorCode.MI_CAMERA_SUCCESS)
         {
-            me.dp.BroadcastLog(me, Status.STAT_ERR, 
-                "Aptina controller couldn't stop transport.");
-            if(me.waveLength==405)
-                me.CheckedStatusBroadcast(ref me.Status_405, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_ERR, 
-                "Aptina controller couldn't stop transport."));
-            else
-                me.CheckedStatusBroadcast(ref me.Status_485, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_ERR,
-                "Aptina controller couldn't stop transport."));
+            //me.dp.BroadcastLog(me, Status.STAT_ERR, 
+            //    "Aptina controller couldn't stop transport.");
 
+            me.CheckedStatusBroadcast(me.last_status, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_ERR, 
+                "Aptina controller couldn't stop transport."));
         }
         else
         {
-            me.dp.BroadcastLog(me, Status.STAT_FAIL, 
-                "Aptina controller stopped transport and worker thread is exiting.");
-            if (me.waveLength == 405)
-                me.CheckedStatusBroadcast(ref me.Status_405, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_FAIL, 
-                "Aptina thread exiting."));
-            else
-                me.CheckedStatusBroadcast(ref me.Status_485, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_FAIL,
+            //me.dp.BroadcastLog(me, Status.STAT_FAIL, 
+            //    "Aptina controller stopped transport and worker thread is exiting.");
+
+            me.CheckedStatusBroadcast(me.last_status, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_FAIL, 
                 "Aptina thread exiting."));
         }
     }
@@ -357,16 +351,8 @@ public class AptinaController : ReceiverController
             }
             if (data == null)
             {
-                if (me.waveLength == 405)
-                    me.CheckedStatusBroadcast(ref me.Status_405, new AptinaStatusMessage(me.WaveLength, 
+                me.CheckedStatusBroadcast(me.last_status, new AptinaStatusMessage(me.WaveLength, 
                     me, Status.STAT_ERR, ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER));  // Almost salmon.
-                else
-                    me.CheckedStatusBroadcast(ref me.Status_485, new AptinaStatusMessage(me.WaveLength,
-                    me, Status.STAT_ERR, ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER));  // Almost salmon.
-
-
-
-
                 return;
             }
             Marshal.Copy(new IntPtr(data), me.dest, 0, me.dest.Length);
@@ -418,12 +404,7 @@ public class AptinaController : ReceiverController
             MiError = (MiErrorCode)openTransportIdx(camIdx);
             if (MiError == MiErrorCode.MI_CAMERA_SUCCESS)
             {
-                if(WaveLength == 405)
-                    CheckedStatusBroadcast(ref Status_405, new AptinaStatusMessage(WaveLength, this, Status.STAT_ATCH, 
-                    "Camera transport reopened."));
-                else
-
-                    CheckedStatusBroadcast(ref Status_485, new AptinaStatusMessage(WaveLength, this, Status.STAT_ATCH,
+                CheckedStatusBroadcast(last_status, new AptinaStatusMessage(WaveLength, this, Status.STAT_ATCH, 
                     "Camera transport reopened."));
                 break;
             }
