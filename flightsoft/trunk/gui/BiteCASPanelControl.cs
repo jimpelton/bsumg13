@@ -59,13 +59,13 @@ namespace gui
                     }
                     else if (temp > 40)
                     {
-                         b_Heater_High.BackColor = Color.OrangeRed;
-                         b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
+                         b_Heater_High.BackColor = Color.Red;
+                         b_Heater_Auto_Shutoff.BackColor = Color.Red;
                          BroadcastCmd(CommandStr.CMD_NI_HEATER_OFF);
                     }
                     else if (temp > 38)
                     {
-                         b_Heater_High.BackColor = Color.OrangeRed;
+                         b_Heater_High.BackColor = Color.Red;
                     }
                     else
                     {
@@ -84,7 +84,7 @@ namespace gui
                     }
                     else if (temp < 35)
                     {
-                         b_Heater_Low.BackColor = Color.OrangeRed;
+                         b_Heater_Low.BackColor = Color.Red;
                     }
                     else
                     {
@@ -93,9 +93,9 @@ namespace gui
                 }
                 else
                 {
-                     b_Heater_Low.BackColor = Color.OrangeRed;
-                     b_Heater_High.BackColor = Color.OrangeRed;
-                     b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
+                     b_Heater_Low.BackColor = Color.Red;
+                     b_Heater_High.BackColor = Color.Red;
+                     b_Heater_Auto_Shutoff.BackColor = Color.Red;
                 }
                 if (pdats.Length > 10)
                 {
@@ -110,7 +110,7 @@ namespace gui
                 else
                 {
                     if (running)
-                         b_Doors.BackColor = Color.OrangeRed;
+                         b_Doors.BackColor = Color.Red;
                     else
                          b_Doors.BackColor = Color.Yellow;
                 }
@@ -134,8 +134,8 @@ namespace gui
                     int bat = int.Parse(UPSdats[4]);
                     if (bat < CurrentConfig.RedBattery)
                     {
-                         b_Battery_Level.BackColor = Color.OrangeRed;
-                         b_Battery_Com.BackColor = Color.OrangeRed;
+                         b_Battery_Level.BackColor = Color.Red;
+                         b_Battery_Com.BackColor = Color.Red;
                     }
                     else if (bat < CurrentConfig.YellowBattery)
                     {
@@ -197,7 +197,7 @@ namespace gui
 
                 if (l1 < 100)
                 {
-                     b_Light_1.BackColor = Color.OrangeRed;
+                     b_Light_1.BackColor = Color.Red;
                 }
                 else if (l1 < 200)
                 {
@@ -214,7 +214,7 @@ namespace gui
 
                 if (l2 < 10)
                 {
-                     b_Light_2.BackColor = Color.OrangeRed;
+                     b_Light_2.BackColor = Color.Red;
                 }
                 else if (l2 < 200)
                 {
@@ -271,7 +271,7 @@ namespace gui
                 }
                 else
                 {
-                     b_Accel_1.BackColor = Color.OrangeRed;
+                     b_Accel_1.BackColor = Color.Red;
                 }
 
 
@@ -285,7 +285,7 @@ namespace gui
                 }
                 else
                 {
-                     b_Accel_1.BackColor = Color.OrangeRed;
+                     b_Accel_1.BackColor = Color.Red;
                 }
 
                 if (AAcceldats.Length > 5)
@@ -298,7 +298,7 @@ namespace gui
 
                 if (Math.Abs(x3 - y3) < 0.01 && Math.Abs(y3 - z3) < 0.01 && Math.Abs(z3 - x3) < 0.01)
                 {
-                    if ( b_Accel_Aircraft.BackColor != Color.OrangeRed)
+                    if ( b_Accel_Aircraft.BackColor != Color.Red)
                          b_Accel_Aircraft.BackColor = Color.Yellow;
                 }
 
@@ -308,9 +308,9 @@ namespace gui
 
                 if (dif > 0.5)
                 {
-                    if ( b_Accel_1.BackColor != Color.OrangeRed && lastAccelState == Status.STAT_GOOD)
+                    if ( b_Accel_1.BackColor != Color.Red && lastAccelState == Status.STAT_GOOD)
                          b_Accel_1.BackColor = Color.Green;
-                    if ( b_Accel_2.BackColor != Color.OrangeRed && lastSpatialState == Status.STAT_GOOD)
+                    if ( b_Accel_2.BackColor != Color.Red && lastSpatialState == Status.STAT_GOOD)
                          b_Accel_2.BackColor = Color.Green;
                 }
             }

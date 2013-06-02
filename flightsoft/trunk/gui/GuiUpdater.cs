@@ -124,18 +124,19 @@ namespace gui
             b.Close();
             b.Dispose();
             */
-
+            /*
             ImageDisplay iee = Guimain.guiImageDisplay;
             if (i405 != null)
             {
-                iee.pictureBox1.Image = ConvertCapturedRawImage(i405);
+                iee.pictureBox1.Image = ConvertCapturedRawImage(i405,405);
                 iee.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             }
             if (i485 != null)
             {
-                iee.pictureBox2.Image = ConvertCapturedRawImage(i485);
+                iee.pictureBox2.Image = ConvertCapturedRawImage(i485,485);
                 iee.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             }
+             */
         }
 
 
@@ -145,11 +146,12 @@ namespace gui
             ulong freespace;//freespace was an awesome game.
             //if (DriveFreeBytes(Guimain.guiDataPath, out freespace))
             if (false)
+            //if (false)
             {
                 if (freespace < Guimain.CurrentConfig.RedSpace)                   
                 {
-                    CAS.b_Drive_Full.BackColor = Color.OrangeRed;
-                    Guimain.switchToAlternateDrive();
+                    CAS.b_Drive_Full.BackColor = Color.Red;
+                    //Guimain.switchToAlternateDrive();
                 }
                 else if (freespace < Guimain.CurrentConfig.YellowSpace)
                 {
@@ -180,8 +182,8 @@ namespace gui
                     int bat = int.Parse(UPSdats[4]);
                     if (bat < Guimain.CurrentConfig.RedBattery)
                     {
-                        CAS.b_Battery_Level.BackColor = Color.OrangeRed;
-                        CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+                        CAS.b_Battery_Level.BackColor = Color.Red;
+                        CAS.b_Battery_Com.BackColor = Color.Red;
                     }
                     else if (bat < Guimain.CurrentConfig.YellowBattery)
                     {
@@ -242,38 +244,38 @@ namespace gui
                     l2 = double.Parse(lightdats[14]);
             }
 
-                if (l1 < 100)
+                if (l1 < 500)
                 {
-                    CAS.b_Light_1.BackColor = Color.OrangeRed;
+                    CAS.b_Light_2.BackColor = Color.Red;
                 }
-                else if (l1 < 200)
-                {
-                    CAS.b_Light_1.BackColor = Color.Yellow;
-                }
-                else if (l1 < 300)
-                {
-                    CAS.b_Light_1.BackColor = Color.Green;
-                }
-            else
-            {
-                    CAS.b_Light_1.BackColor = Color.Black;
-            }
-
-                if (l2 < 10)
-                {
-                    CAS.b_Light_2.BackColor = Color.OrangeRed;
-        }
-                else if (l2 < 200)
+                else if (l1 < 1000)
                 {
                     CAS.b_Light_2.BackColor = Color.Yellow;
                 }
-                else if (l2 < 300)
+                else if (l1 < 1100)
                 {
                     CAS.b_Light_2.BackColor = Color.Green;
                 }
+            else
+            {
+                    CAS.b_Light_2.BackColor = Color.Black;
+            }
+
+                if (l2 < 500)
+                {
+                    CAS.b_Light_1.BackColor = Color.Red;
+        }
+                else if (l2 < 1000)
+                {
+                    CAS.b_Light_1.BackColor = Color.Yellow;
+                }
+                else if (l2 < 1100)
+                {
+                    CAS.b_Light_1.BackColor = Color.Green;
+                }
                 else
                 {
-                    CAS.b_Light_2.BackColor = Color.Black;
+                    CAS.b_Light_1.BackColor = Color.Black;
                 }
 
 
@@ -319,7 +321,7 @@ namespace gui
                 }
                 else
                 {
-                     CAS.b_Accel_1.BackColor = Color.OrangeRed;
+                     CAS.b_Accel_1.BackColor = Color.Red;
                 }
                
 
@@ -333,7 +335,7 @@ namespace gui
                 }
                 else
                 {
-                    CAS.b_Accel_1.BackColor = Color.OrangeRed;                 
+                    CAS.b_Accel_1.BackColor = Color.Red;                 
                 }
 
                 if (AAcceldats.Length > 5)
@@ -346,7 +348,7 @@ namespace gui
 
                 if (Math.Abs(x3 - y3) < 0.01 && Math.Abs(y3 - z3) < 0.01 && Math.Abs(z3 - x3) < 0.01)
                 {
-                    if(CAS.b_Accel_Aircraft.BackColor!= Color.OrangeRed)
+                    if(CAS.b_Accel_Aircraft.BackColor!= Color.Red)
                         CAS.b_Accel_Aircraft.BackColor = Color.Yellow;  
                 }
 
@@ -356,9 +358,9 @@ namespace gui
 
                 if (dif > 0.5)
                 {
-                    if(CAS.b_Accel_1.BackColor!=Color.OrangeRed && lastAccelState == Status.STAT_GOOD)
+                    if(CAS.b_Accel_1.BackColor!=Color.Red && lastAccelState == Status.STAT_GOOD)
                         CAS.b_Accel_1.BackColor = Color.Green;
-                    if (CAS.b_Accel_2.BackColor != Color.OrangeRed && lastSpatialState == Status.STAT_GOOD)
+                    if (CAS.b_Accel_2.BackColor != Color.Red && lastSpatialState == Status.STAT_GOOD)
                         CAS.b_Accel_2.BackColor = Color.Green;
                 }
             }
@@ -389,15 +391,15 @@ namespace gui
                         {
                             CAS.b_Heater_High.BackColor = Color.Salmon;
                         }
-                        else if (temp > 40)
+                        else if (temp > 34)
                         {
-                            CAS.b_Heater_High.BackColor = Color.OrangeRed;
-                            CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
+                            CAS.b_Heater_High.BackColor = Color.Red;
+                            CAS.b_Heater_Auto_Shutoff.BackColor = Color.Red;
                             dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
                         }
-                        else if (temp > 38)
+                        else if (temp > 32)
                         {
-                            CAS.b_Heater_High.BackColor = Color.OrangeRed;
+                            CAS.b_Heater_High.BackColor = Color.Red;
                         }
                         else
                         {
@@ -416,7 +418,7 @@ namespace gui
                         }
                         else if (temp < 35)
                         {
-                            CAS.b_Heater_Low.BackColor = Color.OrangeRed;
+                            CAS.b_Heater_Low.BackColor = Color.Red;
                         }
                         else
                         {
@@ -426,9 +428,9 @@ namespace gui
                 }
                 else
                 {
-                    CAS.b_Heater_Low.BackColor = Color.OrangeRed;
-                    CAS.b_Heater_High.BackColor = Color.OrangeRed;
-                    CAS.b_Heater_Auto_Shutoff.BackColor = Color.OrangeRed;
+                    CAS.b_Heater_Low.BackColor = Color.Red;
+                    CAS.b_Heater_High.BackColor = Color.Red;
+                    CAS.b_Heater_Auto_Shutoff.BackColor = Color.Red;
                 }
                 if (pdats.Length > 10)
                 {
@@ -446,7 +448,7 @@ namespace gui
                 else
                 {
                     if(running)
-                        CAS.b_Doors.BackColor = Color.OrangeRed;
+                        CAS.b_Doors.BackColor = Color.Red;
                     else
                         CAS.b_Doors.BackColor = Color.Yellow;
                 }
@@ -518,32 +520,65 @@ namespace gui
                 mainform.DebugOutput(lm.ToString());
         }
 
-        private static byte[] pixels = new byte[2592 * 1944 * 3];
-        static unsafe public Bitmap ConvertCapturedRawImage(byte[] indata)
+        private static byte[] pixels405 = new byte[2592 * 1944 * 3];
+        private static byte[] pixels485 = new byte[2592 * 1944 * 3];
+        static unsafe public Bitmap ConvertCapturedRawImage(byte[] indata, int wavelength)
         {
             Bitmap bitmap = null;
-            
-            unsafe
-            {
-                fixed (byte* ptr = indata)
-                {
-                    
-                    int a = 1;
-                    int b = 0;
-                    while (a < indata.Length)
-                    {
-                        pixels[b++] = (byte)(Math.Min(indata[a] * 4, 255));
-                        pixels[b++] = (byte)(Math.Min(indata[a] * 4, 255));
-                        pixels[b++] = (byte)(Math.Min(indata[a] * 4, 255));
-                        a+=2;
-                    }
 
-                    fixed (byte* ptr2 = pixels)
+            if (wavelength == 405)
+            {
+                unsafe
+                {
+                    fixed (byte* ptr = indata)
                     {
-                        IntPtr scan0 = new IntPtr(ptr2);
-                        bitmap = new Bitmap(2592, 1944, // Image size
-                                            2592*3, // Scan size
-                                            PixelFormat.Format24bppRgb, scan0);
+
+                        int a = 1;
+                        int b = 0;
+                        while (a < indata.Length)
+                        {
+                            pixels405[b++] = (byte)(Math.Min(indata[a] * 4, 255));
+                            pixels405[b++] = (byte)(Math.Min(indata[a] * 4, 255));
+                            pixels405[b++] = (byte)(Math.Min(indata[a] * 4, 255));
+                            a += 2;
+                        }
+                        //byte[] pixels2 = new byte[pixels.Count()];
+                        //pixels.CopyTo(pixels2,0);
+                        fixed (byte* ptr2 = pixels405)
+                        {
+                            IntPtr scan0 = new IntPtr(ptr2);
+                            bitmap = new Bitmap(2592, 1944, // Image size
+                                                2592 * 3, // Scan size
+                                                PixelFormat.Format24bppRgb, scan0);
+                        }                       
+                    }
+                }
+            }
+            else
+            {
+                unsafe
+                {
+                    fixed (byte* ptr = indata)
+                    {
+
+                        int a = 1;
+                        int b = 0;
+                        while (a < indata.Length)
+                        {
+                            pixels485[b++] = (byte)(Math.Min(indata[a] * 4, 255));
+                            pixels485[b++] = (byte)(Math.Min(indata[a] * 4, 255));
+                            pixels485[b++] = (byte)(Math.Min(indata[a] * 4, 255));
+                            a += 2;
+                        }
+                        //byte[] pixels2 = new byte[pixels.Count()];
+                        //pixels.CopyTo(pixels2,0);
+                        fixed (byte* ptr2 = pixels485)
+                        {
+                            IntPtr scan0 = new IntPtr(ptr2);
+                            bitmap = new Bitmap(2592, 1944, // Image size
+                                                2592 * 3, // Scan size
+                                                PixelFormat.Format24bppRgb, scan0);
+                        }
                     }
                 }
             }
@@ -579,11 +614,11 @@ namespace gui
                 double m2 = 0;
                 double m3 = 0;
 
-                if (Acceldats.Length > 5)
+                if (Acceldats.Length > 6)
                 {
-                    x1 = double.Parse(Acceldats[3]);
-                    y1 = double.Parse(Acceldats[4]);
-                    z1 = double.Parse(Acceldats[5]);
+                    x1 = double.Parse(Acceldats[4]);
+                    y1 = double.Parse(Acceldats[5]);
+                    z1 = double.Parse(Acceldats[6]);
                     m1 = Math.Sqrt((x1 * x1) + (y1 * y1) + (z1 * z1));
                     Guimain.guiIP.lbl_accel1x.Text = "Accel 1 X: " + x1;
                     Guimain.guiIP.lbl_accel1y.Text = "Accel 1 Y: " + y1;
@@ -601,11 +636,11 @@ namespace gui
 
                 Acceldat = encoding.GetString(dat.lastData[BufferType.UTF8_SPATIAL]);
                 Acceldats = Acceldat.Split();
-                if (Acceldats.Length > 5)
+                if (Acceldats.Length > 6)
                 {
-                    x2 = double.Parse(Acceldats[3]);
-                    y2 = double.Parse(Acceldats[4]);
-                    z2 = double.Parse(Acceldats[5]);
+                    x2 = double.Parse(Acceldats[4]);
+                    y2 = double.Parse(Acceldats[5]);
+                    z2 = double.Parse(Acceldats[6]);
                     m2 = Math.Sqrt((x2 * x2) + (y2 * y2) + (z2 * z2));
                     Guimain.guiIP.lbl_accel2x.Text = "Accel 2 X: " + x2;
                     Guimain.guiIP.lbl_accel2y.Text = "Accel 2 Y: " + y2;
@@ -620,14 +655,14 @@ namespace gui
                     Guimain.guiIP.lbl_accel2total.Text = "Accel 2 Disconnected";
                 }
 
-                if (AAcceldats.Length > 5)
+                if (AAcceldats.Length > 6)
                 {
-                    if (double.Parse(AAcceldats[3 + 0]) > 0)//if one is above zero then it must be connected.
+                    if (double.Parse(AAcceldats[4 + 0]) > 0)//if one is above zero then it must be connected.
                     {
                         //convert these from voltages to Gs.... 
-                        x3 = double.Parse(AAcceldats[3 + 0]);//3 is the zeroth element. x is on 0
-                        y3 = double.Parse(AAcceldats[3 + 4]);//y is on 4
-                        z3 = double.Parse(AAcceldats[3 + 1]);//z is on 1
+                        x3 = double.Parse(AAcceldats[4 + 0]);//3 is the zeroth element. x is on 0
+                        y3 = double.Parse(AAcceldats[4 + 4]);//y is on 4
+                        z3 = double.Parse(AAcceldats[4 + 1]);//z is on 1
                         m3 = (x3 + y3 + z3) / 3.0;
                         Guimain.guiIP.lbl_accel3x.Text = "Accel 3 X V: " + x3;
                         Guimain.guiIP.lbl_accel3y.Text = "Accel 3 Y V: " + y3;
@@ -731,7 +766,7 @@ namespace gui
                 Status st = msg.Stat;
                 if (st == Status.STAT_FAIL)
                 {
-                    CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+                    CAS.b_Battery_Com.BackColor = Color.Red;
                     CAS.b_Battery_Com.Text = "Battery Com";    
                 }
                 else if (st == Status.STAT_GOOD)
@@ -740,7 +775,7 @@ namespace gui
                 }
                 else
                 {
-                    CAS.b_Battery_Com.BackColor = Color.OrangeRed;
+                    CAS.b_Battery_Com.BackColor = Color.Red;
                     CAS.b_Battery_Com.Text = "Battery Com";
                 }
             }
@@ -760,11 +795,11 @@ namespace gui
                 lastAccelState = msg.Stat;
                 if (lastAccelState == Status.STAT_FAIL)
                 {
-                    CAS.b_Accel_1.BackColor = Color.OrangeRed;
+                    CAS.b_Accel_1.BackColor = Color.Red;
                 }
                 else if (lastAccelState == Status.STAT_DISC)
                 {
-                    CAS.b_Accel_1.BackColor = Color.OrangeRed;
+                    CAS.b_Accel_1.BackColor = Color.Red;
                 }
                 else if (lastAccelState == Status.STAT_ATCH)
                 {
@@ -791,11 +826,11 @@ namespace gui
                 lastSpatialState = msg.Stat;
                 if (lastSpatialState == Status.STAT_FAIL)
                 {
-                    CAS.b_Accel_2.BackColor = Color.OrangeRed;
+                    CAS.b_Accel_2.BackColor = Color.Red;
                 }
                 else if (lastSpatialState == Status.STAT_DISC)
                 {
-                    CAS.b_Accel_2.BackColor = Color.OrangeRed;
+                    CAS.b_Accel_2.BackColor = Color.Red;
                 }
                 else if (lastSpatialState == Status.STAT_ATCH)
                 {
@@ -836,15 +871,15 @@ namespace gui
 
                 if (status == Status.STAT_FAIL)
                 {
-                    CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;             
+                    CAS.b_Accel_Aircraft.BackColor = Color.Red;             
                 }
                 else if (status == Status.STAT_DISC)
                 {
-                    CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;       
+                    CAS.b_Accel_Aircraft.BackColor = Color.Red;       
                 }
                 else if (status == Status.STAT_ATCH)
                 {
-                    CAS.b_Accel_Aircraft.BackColor = Color.OrangeRed;
+                    CAS.b_Accel_Aircraft.BackColor = Color.Red;
                 }
                 else if(status == Status.STAT_GOOD)
                 {
@@ -870,10 +905,10 @@ namespace gui
                     switch (msg.WaveLength)
                     {
                         case 405:
-                            CAS.b_Camera_405.BackColor = Color.OrangeRed;
+                            CAS.b_Camera_405.BackColor = Color.Red;
                             break;
                         case 485:
-                            CAS.b_Camera_485.BackColor = Color.OrangeRed;       
+                            CAS.b_Camera_485.BackColor = Color.Red;       
                             break;
                         default:
                             break;
@@ -884,10 +919,10 @@ namespace gui
                     switch (msg.WaveLength)
                     {
                         case (405):
-                            CAS.b_Camera_405.BackColor = Color.OrangeRed;
+                            CAS.b_Camera_405.BackColor = Color.Red;
                             break;
                         case(485):
-                            CAS.b_Camera_485.BackColor = Color.OrangeRed;
+                            CAS.b_Camera_485.BackColor = Color.Red;
                             break;
                         default:
                             break;
@@ -937,11 +972,11 @@ namespace gui
                 Status status = msg.Stat;
                 if (status == Status.STAT_FAIL)
                 {
-                    CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
+                    CAS.b_Phidgets_1018.BackColor = Color.Red;
                 }
                 else if (status == Status.STAT_DISC)
                 {
-                    CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
+                    CAS.b_Phidgets_1018.BackColor = Color.Red;
                 }
                 else if (status == Status.STAT_ATCH)
                 {

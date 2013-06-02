@@ -17,22 +17,33 @@ namespace gui
         private delegate void SetTextCallback(string s);
         private ImageDisplay guiImageDisplay = null;
         private BiteCASPanel CAS = null;
-
+        private Label captureStatusLabel = null;
         public Form1(String config)
         {
             InitializeComponent();
             var childForm = new BiteCASPanel() { TopLevel = false, Visible = true };
             var infoControl = new InformationPanel();
+            captureStatusLabel = new Label();
             var guiimagedisp = new ImageDisplay() { TopLevel = false, Visible = true };
             this.Controls.Add(childForm);
             this.Controls.Add(infoControl);
             this.Controls.Add(guiimagedisp);
                         
             guiimagedisp.SetBounds(0, 0, 1100, 400);
-            infoControl.SetBounds(0, 410, 1100, 350);
+            //infoControl.SetBounds(0, 410, 1100, 350);
             childForm.SetBounds(0, 770, 1100, 290);
             CAS = childForm;
             guiImageDisplay = guiimagedisp;
+
+            infoControl.Visible = false;
+            this.Controls.Add(captureStatusLabel);
+            captureStatusLabel.SetBounds(0, 410, 1100, 350);
+            captureStatusLabel.Font = new Font("Calibri", 100);
+            captureStatusLabel.Text = "Not Running";
+            captureStatusLabel.Visible = true;
+            captureStatusLabel.TextAlign = ContentAlignment.MiddleCenter;
+
+
 
             guiMain = new GuiMain(this, "GuiMain", config);
             guiMain.guiIP = infoControl;
@@ -44,7 +55,7 @@ namespace gui
             //TODO: this updating should be handled externally to the form.
             //TODO: make an alternative thread-safe way to do this.
             //it likes it when the timer is in here...
-            DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);      
+            DebugUpdateTimer.Tick += new EventHandler(guiUpdater.UpdateGUI);         
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -52,9 +63,23 @@ namespace gui
             DebugOutput("Gui Initialized...");
         }
 
+        private void rTB_Debug_Output_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void btn_Go_Click(object sender, EventArgs e)
         {
-            guiMain.StartCapture();        
+            guiMain.StartCapture();
+            btn_Go.Text = "Stop Capture and Exit";
+            btn_Go.Click -= btn_Go_Click;
+            btn_Go.Click += btn_Exit_Click;
+            captureStatusLabel.Text = "Running";
+        }
+
+        private void btn_Exit_Click(object sender, EventArgs e)
+        {
+            guiMain.Kill();
         }
 
         public void DebugOutput(String s)
@@ -110,6 +135,11 @@ namespace gui
         {
             if (guiMain != null)
                 guiMain.executeBiteTest();
+        }
+
+        private void TabPage_Capture_Click(object sender, EventArgs e)
+        {
+
         }
 
     }

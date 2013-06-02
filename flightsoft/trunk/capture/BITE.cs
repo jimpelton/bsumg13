@@ -270,11 +270,18 @@ namespace uGCapture
                 return false;
                 //a malformed packet has arrived. Tremble in fear.
             }
+            dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_LIGHT_1_1_ON));
+            dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_LIGHT_1_2_ON));
+            dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_LIGHT_2_1_ON));
+            dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_LIGHT_2_2_ON));
             return passed;
         }
 
         public override void exBiteTestMessage(Receiver r, Message m)
         {
+            dp.BroadcastLog(this, "BITE test disabled due to extended write delays", 1);
+            return;
+
             DataSet<byte> dat = capture.GetLastData();
             if (dat != null)
             {

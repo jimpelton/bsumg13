@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -105,6 +105,16 @@ namespace gui
             dp.Broadcast(new SetCaptureStateMessage(this, true));
         }
 
+        public void Kill()
+        {
+                    DialogResult dr = MessageBox.Show("Stop Capture?", "",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                            if (dr == DialogResult.Yes)
+                            {
+                                MainForm.Close();
+                            }
+        }
 
         public bool ToggleCapture()
         {

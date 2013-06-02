@@ -75,7 +75,7 @@ namespace uGCapture
                                                                                // 10M, 4K
             Staging<byte> sBuf = new Staging<byte>(2 * 2592 * 1944, 4096);     // image buffer size, utf8 buffer size
             bufferPool = new BufferPool<byte>(20, (int)Math.Pow(2,24), sBuf);
-            initBITE();
+            //initBITE();
             initLogger();   
             initWriter();
             initAptina();

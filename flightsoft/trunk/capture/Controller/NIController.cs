@@ -103,11 +103,11 @@ namespace uGCapture
                 reader_Y_T = new AnalogSingleChannelReader(analogInTask_Y_T.Stream);
                 reader_Z_T = new AnalogSingleChannelReader(analogInTask_Z_T.Stream);
 
-                SetOutputState(Outputs.NI_HEATER_OUT, State.ON);
-                SetOutputState(Outputs.NI_LIGHT11_OUT, State.ON);
-                SetOutputState(Outputs.NI_LIGHT12_OUT, State.ON);
-                SetOutputState(Outputs.NI_LIGHT21_OUT, State.ON);
-                SetOutputState(Outputs.NI_LIGHT22_OUT, State.ON);
+                //SetOutputState(Outputs.NI_HEATER_OUT, State.ON);
+                //SetOutputState(Outputs.NI_LIGHT11_OUT, State.ON);
+                //SetOutputState(Outputs.NI_LIGHT12_OUT, State.ON);
+                //SetOutputState(Outputs.NI_LIGHT21_OUT, State.ON);
+                //SetOutputState(Outputs.NI_LIGHT22_OUT, State.ON);
 
                 //dp.BroadcastLog(this, "NI-USB-6008 started up...", 1);
                 CheckedStatusBroadcast(new NI6008StatusMessage(this, Status.STAT_GOOD, 
@@ -152,9 +152,11 @@ namespace uGCapture
                 Reset();
             }
         }
-
+        private static ulong accumulateCount = 0;
         public override void exAccumulateMessage(Receiver r, Message m)
         {
+            if (accumulateCount++ % 10 != 0) return;
+
             try
             {
                 if (DaqSystem.Local.Devices.Length > 0)
@@ -168,7 +170,8 @@ namespace uGCapture
                     double analogDataIn_X_T = 0;
                     double analogDataIn_Y_T = 0;
                     double analogDataIn_Z_T = 0;
-                    analogDataIn_X_A = reader_X_A.ReadSingleSample();
+                    //long startTime = GetUTCMillis();
+                    analogDataIn_X_A = reader_X_A.ReadSingleSample();                   
                         //throws a null reference exception if we start with it unplugged and then plug it in.
                     analogDataIn_Y_A = reader_Y_A.ReadSingleSample();
                     analogDataIn_Z_A = reader_Z_A.ReadSingleSample();
@@ -176,15 +179,17 @@ namespace uGCapture
                         //throws Daqexception upon pulling the cable
                     analogDataIn_Y_T = reader_Y_T.ReadSingleSample();
                     analogDataIn_Z_T = reader_Z_T.ReadSingleSample();
-                    outputData += analogDataIn_X_A + " ";
-                    outputData += analogDataIn_Y_A + " ";
-                    outputData += analogDataIn_Z_A + " ";
-                    outputData += analogDataIn_X_T + " ";
-                    outputData += analogDataIn_Y_T + " ";
-                    outputData += analogDataIn_Z_T + " ";
+                    //long time = startTime - GetUTCMillis();
+                    outputData += analogDataIn_X_A + " " +
+                        analogDataIn_Y_A + " " +
+                        analogDataIn_Z_A + " " +
+                        analogDataIn_X_T + " " +
+                        analogDataIn_Y_T + " " +
+                        analogDataIn_Z_T + " " + "\n";
                     outputData += "\n";
                 }
             }
+            
             catch (DaqException ex)
             {
                 CheckedStatusBroadcast(new NI6008StatusMessage(this, Status.STAT_FAIL, 
@@ -286,25 +291,35 @@ namespace uGCapture
             CommandMessage c = (CommandMessage)m;
             switch (c.getCommand())
             {
-                case (CommandStr.CMD_NI_HEATER_ON): SetOutputState(Outputs.NI_HEATER_OUT, State.ON); 
+                case (CommandStr.CMD_NI_HEATER_ON): 
+                    SetOutputState(Outputs.NI_HEATER_OUT, State.ON); 
                     break;
-                case (CommandStr.CMD_NI_HEATER_OFF): SetOutputState(Outputs.NI_HEATER_OUT, State.OFF); 
+                case (CommandStr.CMD_NI_HEATER_OFF): 
+                    SetOutputState(Outputs.NI_HEATER_OUT, State.OFF); 
                     break;
-                case (CommandStr.CMD_NI_LIGHT_1_1_ON): SetOutputState(Outputs.NI_LIGHT11_OUT, State.ON); 
+                case (CommandStr.CMD_NI_LIGHT_1_1_ON): 
+                    SetOutputState(Outputs.NI_LIGHT11_OUT, State.ON); 
                     break;
-                case (CommandStr.CMD_NI_LIGHT_1_1_OFF): SetOutputState(Outputs.NI_LIGHT11_OUT, State.OFF); 
+                case (CommandStr.CMD_NI_LIGHT_1_1_OFF): 
+                    SetOutputState(Outputs.NI_LIGHT11_OUT, State.OFF); 
                     break;
-                case (CommandStr.CMD_NI_LIGHT_1_2_ON): SetOutputState(Outputs.NI_LIGHT12_OUT, State.ON); 
+                case (CommandStr.CMD_NI_LIGHT_1_2_ON): 
+                    SetOutputState(Outputs.NI_LIGHT12_OUT, State.ON); 
                     break;
-                case (CommandStr.CMD_NI_LIGHT_1_2_OFF): SetOutputState(Outputs.NI_LIGHT12_OUT, State.OFF); 
+                case (CommandStr.CMD_NI_LIGHT_1_2_OFF): 
+                    SetOutputState(Outputs.NI_LIGHT12_OUT, State.OFF); 
                     break;
-                case (CommandStr.CMD_NI_LIGHT_2_1_ON): SetOutputState(Outputs.NI_LIGHT21_OUT, State.ON); 
+                case (CommandStr.CMD_NI_LIGHT_2_1_ON): 
+                    SetOutputState(Outputs.NI_LIGHT21_OUT, State.ON); 
                     break;
-                case (CommandStr.CMD_NI_LIGHT_2_1_OFF): SetOutputState(Outputs.NI_LIGHT21_OUT, State.OFF); 
+                case (CommandStr.CMD_NI_LIGHT_2_1_OFF): 
+                    SetOutputState(Outputs.NI_LIGHT21_OUT, State.OFF); 
                     break;
-                case (CommandStr.CMD_NI_LIGHT_2_2_ON): SetOutputState(Outputs.NI_LIGHT22_OUT, State.ON); 
+                case (CommandStr.CMD_NI_LIGHT_2_2_ON): 
+                    SetOutputState(Outputs.NI_LIGHT22_OUT, State.ON); 
                     break;
-                case (CommandStr.CMD_NI_LIGHT_2_2_OFF): SetOutputState(Outputs.NI_LIGHT22_OUT, State.OFF); 
+                case (CommandStr.CMD_NI_LIGHT_2_2_OFF): 
+                    SetOutputState(Outputs.NI_LIGHT22_OUT, State.OFF); 
                     break;
                 default:
                     break;

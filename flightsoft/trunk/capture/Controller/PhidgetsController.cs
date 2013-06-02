@@ -173,6 +173,8 @@ public class PhidgetsController : ReceiverController
         {
             if (outputData.Length > MAX_FILE_LENGTH)
             {
+                //long startTime = GetUTCMillis();
+
                 Buffer<Byte> buffer = BufferPool.PopEmpty();
                 String output = "Phidgets \r\n";
                 output += outputData;
@@ -180,6 +182,8 @@ public class PhidgetsController : ReceiverController
                 buffer.setData(encoding.GetBytes(output), BufferType.UTF8_PHIDGETS);
                 BufferPool.PostFull(buffer);
                 outputData = "";
+                //long time = GetUTCMillis() - startTime;
+
             }
         }
         if (phidgets1018.Attached)
@@ -202,13 +206,17 @@ public class PhidgetsController : ReceiverController
             CheckedStatusBroadcast(ref Status_Temp, new PhidgetsTempStatusMessage(this, Status.STAT_DISC, 
                 ErrStr.PHID_TEMP_STAT_DISC));
         }
+        int ie = 0;
     }
 
+    private static int accumulateCount = 0;
     public override void exAccumulateMessage(Receiver r, Message m)
     {
+        if (accumulateCount++ % 10 != 0) return;
 
         outputData += "\r\n";
         outputData += GetUTCMillis().ToString() + " ";
+        long startTime = GetUTCMillis();
         if (phidgetTemperature.Attached)
         {
             try
@@ -246,9 +254,11 @@ public class PhidgetsController : ReceiverController
             {
                 try
                 {
+                
                 outputData += phidgets1018.sensors[i].RawValue + " ";
                 outputData += phidgets1018.inputs[i] + " ";
                 outputData += phidgets1018.outputs[i] + " ";
+
                 }
                 catch (PhidgetException Uhhh)
                 {
@@ -277,7 +287,10 @@ public class PhidgetsController : ReceiverController
                 outputData += "0 0 0 ";
             }
         }
+        long time = startTime - GetUTCMillis();
+        int ie = 0;
     }
+
 }
 
 
