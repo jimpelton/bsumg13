@@ -255,7 +255,8 @@ namespace uGCapture
                     default:
                         break;
                 }
-                w.dp.BroadcastLog(w, Status.STAT_GOOD, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER), fulbuf.ToString());
+                //w.dp.BroadcastLog(w, Status.STAT_GOOD, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER), fulbuf.ToString());
+                w.dp.Broadcast(new WriterStatusMessage(w,Status.STAT_GOOD));
                 w.BufferPool.PostEmpty(fulbuf);
             }
             catch (Exception e)

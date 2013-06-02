@@ -11,6 +11,7 @@ namespace uGCapture
         {
         }
 
+        private static string output = "UPS ";
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
             bool found = false;
@@ -72,15 +73,16 @@ namespace uGCapture
             {
                 CheckedStatusBroadcast(new UPSStatusMessage(this, Status.STAT_ERR, ErrStr.UPS_ERR_NOT_FOUND));
             }
-
-            Buffer<Byte> buffer = BufferPool.PopEmpty();
-            
-            String output = "UPS \n" + GetUTCMillis().ToString() + " " + stat + " " + 
-                charge + " " + lifeRemaining + " " + chargeStatus;
-
-            UTF8Encoding encoding = new UTF8Encoding();
-            buffer.setData(encoding.GetBytes(output), BufferType.UTF8_UPS);
-            BufferPool.PostFull(buffer);
+               output+= GetUTCMillis().ToString() + " " + stat + " " + 
+                charge + " " + lifeRemaining + " " + chargeStatus + "\n";
+            if (output.Length > MAX_FILE_LENGTH)
+            {
+                Buffer<Byte> buffer = BufferPool.PopEmpty();
+                UTF8Encoding encoding = new UTF8Encoding();
+                buffer.setData(encoding.GetBytes(output), BufferType.UTF8_UPS);
+                BufferPool.PostFull(buffer);
+                output = "UPS ";
+            }
         }
 
         protected override bool init()

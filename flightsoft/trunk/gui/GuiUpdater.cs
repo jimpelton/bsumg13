@@ -171,7 +171,7 @@ namespace gui
             {
                 try
                 {
-                    int bat = int.Parse(UPSdats[4]);
+                    int bat = int.Parse(UPSdats[3]);
                     if (bat < Guimain.CurrentConfig.RedBattery)
                     {
                         CAS.b_Battery_Level.BackColor = Color.Red;
@@ -193,8 +193,8 @@ namespace gui
                         CAS.b_Battery_Com.BackColor = Color.Black;
                     }
 
-                    CAS.b_Battery_Level.Text = "Battery Level (" + UPSdats[4] + ")";
-                    if (int.Parse(UPSdats[6]) > 0)
+                    CAS.b_Battery_Level.Text = "Battery Level (" + UPSdats[3] + ")";
+                    if (int.Parse(UPSdats[3]) > 0)
                     {
                         string batstring = BatteryStatusStrings.GetBatteryStatusStr(int.Parse(UPSdats[6]));
                         if(batstring!=null)
@@ -379,7 +379,7 @@ namespace gui
                     if (pdats.Length > 6)
                     {
                         temp = double.Parse(pdats[6]);
-                        Guimain.ILabel.Text = "" + temp + "C";
+                        Guimain.ILabel.Text = "" + temp + "C\n"+writecount+" Items";
                         if (temp > 2000000000)
                         {
                             CAS.b_Heater_High.BackColor = Color.Salmon;
@@ -747,6 +747,20 @@ namespace gui
             {
                 dp.BroadcastLog(this, "Phidgets Info update handler has encountered a malformed packet", 1);
             }
+        }
+
+        public override void exAccelerometerStatusMessage(Receiver r, Message m)
+        {
+            AccelerometerStatusMessage e = (AccelerometerStatusMessage)m;
+            DataPoint d = new DataPoint();
+            d.accel1rawacceleration[1] = e.accel;
+            Guimain.DataFrames.Add(d);
+        }
+
+        private static int writecount = 0;
+        public override void exWriterStatusMessage(Receiver r, Message m)
+        {
+            writecount++;           
         }
         
         override public void exUPSStatusMessage(Receiver r, Message m) 

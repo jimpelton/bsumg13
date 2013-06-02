@@ -109,7 +109,7 @@ namespace uGCapture
             }
             return found;
         }
-
+        private static String output = "Weatherboard";
         public override void exHeartBeatMessage(Receiver r, Message m)
         {
             if (!Com3Exists())
@@ -135,28 +135,27 @@ namespace uGCapture
                 Console.Error.WriteLine(err.StackTrace);
             }
            
-            String output = "Weatherboard \n";
- 
             lock (outputData)
             {
                 if (hasNewData)
                 {
-                    output += GetUTCMillis().ToString() + " " + outputData;
+                    output += GetUTCMillis().ToString() + " " + outputData+"\n";
                     hasNewData = false;
-                }
-                else
-                {
-                    output = "";
                 }
             }
 
-            //break this out here to minimize the time in the lock.
-            if (output.Length > 0)
+            if (outputData.Length > MAX_FILE_LENGTH)
             {
-                Buffer<Byte> buffer = BufferPool.PopEmpty();
-                UTF8Encoding encoding = new UTF8Encoding();
-                buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
-                BufferPool.PostFull(buffer);
+                //break this out here to minimize the time in the lock.
+                if (output.Length > 0)
+                {
+                    Buffer<Byte> buffer = BufferPool.PopEmpty();
+                    UTF8Encoding encoding = new UTF8Encoding();
+                    buffer.setData(encoding.GetBytes(output), BufferType.UTF8_VCOMM);
+                    BufferPool.PostFull(buffer);
+                    output = "Weatherboard ";
+
+                }
             }
         }
     }

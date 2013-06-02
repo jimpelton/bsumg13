@@ -17,7 +17,7 @@ namespace uGCapture
         private bool m_receiving; 
         private object receivingMutex = new object();
         private object executingMutex = new object();
-        protected const UInt32 MAX_FILE_LENGTH = 1048576; 
+        protected const UInt32 MAX_FILE_LENGTH = 1024*16; //16kb 
 
         protected static DateTime dateTime1970 =
             new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
