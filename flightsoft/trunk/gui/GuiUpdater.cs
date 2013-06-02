@@ -77,20 +77,12 @@ namespace gui
 
         private void updateFrames()
         {
-            if (frames.Count > 100)
+            if (frames.Count > 2)
                 frames.RemoveAt(0);
 
             mainform.chart2.Series.Clear();
 
             if (frames.Count <= 0) return; 
-            if (frames.Count > 99)
-            {
-                //eeeeeee!!!
-                Color col = Color.FromArgb(255, 
-                (int)Math.Min(255, Math.Max(0, ((frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3))), 
-                0, 
-                (int)Math.Min(255, Math.Max(0, ((37 - (frames[99].phidgetTemperature_ProbeTemp - 35)) * (255 / 3)))));
-            }
 
             mainform.chart2.Series.Add("Gravity");
             mainform.chart2.ChartAreas["ChartArea1"].AxisY.Maximum = 2.0;
@@ -124,7 +116,7 @@ namespace gui
             b.Close();
             b.Dispose();
             */
-            /*
+            
             ImageDisplay iee = Guimain.guiImageDisplay;
             if (i405 != null)
             {
@@ -136,7 +128,7 @@ namespace gui
                 iee.pictureBox2.Image = ConvertCapturedRawImage(i485,485);
                 iee.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             }
-             */
+             
         }
 
 
