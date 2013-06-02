@@ -18,6 +18,7 @@ namespace gui
         private ImageDisplay guiImageDisplay = null;
         private BiteCASPanel CAS = null;
         private Label captureStatusLabel = null;
+
         public Form1(String config)
         {
             InitializeComponent();
@@ -49,6 +50,7 @@ namespace gui
             guiMain.guiIP = infoControl;
             guiMain.guiCAS = CAS;
             guiMain.guiImageDisplay = guiimagedisp;
+            guiMain.ILabel = captureStatusLabel;
             guiMain.Startup_Init();
             guiUpdater = guiMain.GuiUpdater;
 
