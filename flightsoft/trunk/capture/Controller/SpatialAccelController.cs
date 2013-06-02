@@ -96,6 +96,8 @@ namespace uGCapture
         {
             if (accel.Attached)
             {
+                dp.Broadcast(new AccelerometerStatusMessage(this, Status.STAT_GOOD, 0, accel.accelerometerAxes[0].Acceleration));
+
                 if (outputData.Length > MAX_FILE_LENGTH)
                 {
                     Buffer<Byte> buffer = BufferPool.PopEmpty();
