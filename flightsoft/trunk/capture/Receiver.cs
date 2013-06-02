@@ -163,7 +163,8 @@ namespace uGCapture
         public virtual void exSpatialStatusMessage(Receiver r, Message m) { ; }
         public virtual void exPhidgetsStatusMessage(Receiver r, Message m) { ; }
         public virtual void exPhidgetsTempStatusMessage(Receiver r, Message m) { ; }
-        
+        public virtual void exWriterStatusMessage(Receiver r, Message m) { ; }
+        public virtual void exAccelerometerStatusMessage(Receiver r, Message m) { ; }
         /// <summary>
         /// Act on CommandMessage.
         /// </summary>
