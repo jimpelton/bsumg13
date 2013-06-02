@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace uGCapture
 {
-    class AccelerometerStatusMessage: StatusMessage
+    public class AccelerometerStatusMessage: StatusMessage
     {
         public float accel = 0;
-        public AccelerometerStatusMessage(Receiver s, Status nstate, ErrStr mes = 0)
+        public AccelerometerStatusMessage(Receiver s, Status nstate, ErrStr mes = 0, int accl=0)
             : base(s, nstate, mes)
         {
+            accel = accl;
         }
 
         public override void execute(Receiver r)
