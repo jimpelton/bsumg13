@@ -223,6 +223,12 @@ public class PhidgetsController : ReceiverController
             {
                 outputData += phidgetTemperature.thermocouples[0].Temperature + " ";// if the THERMOCOUPLE is not connected to the temp sensor this will throw.
                 outputData += phidgetTemperature.ambientSensor.Temperature + " ";// can also happen if the therocouple is plugged in backwards or just loose.
+            
+            
+                if(phidgetTemperature.thermocouples[0].Temperature>40)
+                   dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
+                else if(phidgetTemperature.thermocouples[0].Temperature<34)
+                   dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_ON));
             }
             catch (PhidgetException Uhhh)
             {
