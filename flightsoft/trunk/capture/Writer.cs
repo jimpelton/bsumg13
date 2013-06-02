@@ -255,7 +255,7 @@ namespace uGCapture
                     default:
                         break;
                 }
-                w.dp.BroadcastLog(w, Status.STAT_GOOD, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER), fulbuf.ToString());
+                //w.dp.BroadcastLog(w, Status.STAT_GOOD, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER), fulbuf.ToString());
                 w.BufferPool.PostEmpty(fulbuf);
             }
             catch (Exception e)
@@ -271,13 +271,14 @@ namespace uGCapture
             String filename = String.Format(
                 "{0}_{1}{2}", fnamePfx, index, fnameExt);
 
-            File.WriteAllBytes(filename, buf.Data);
-
-            //FileStream fs = File.Create(filename, buf.CapacityUtilization, FileOptions.None);
+            FileStream fs = File.Create(filename, buf.CapacityUtilization, FileOptions.None);
             //BinaryWriter bw = new BinaryWriter(fs);
             //bw.Write(buf.Data, 0, buf.CapacityUtilization);
             //bw.Close();
             //fs.Close();
+            fs.Write(buf.Data, 0, buf.CapacityUtilization);
+            //fs.Flush();
+            fs.Close();
         }
 
         // similar to WriteOutput, but inserts the buffer's filltime into the filename.
@@ -286,14 +287,14 @@ namespace uGCapture
         {
             String filename = String.Format(
                 "{0}_{1,8:D8}_{2,18:D18}{3}", fnamePfx, index, buf.FillTime, fnameExt);
-            
-            File.WriteAllBytes(filename, buf.Data);
-            
-            //FileStream fs = File.Create(filename, buf.CapacityUtilization, FileOptions.None);
+            FileStream fs = File.Create(filename, buf.CapacityUtilization, FileOptions.None);
             //BinaryWriter bw = new BinaryWriter(fs);
             //bw.Write(buf.Data, 0, buf.CapacityUtilization);
             //bw.Close();
             //fs.Close();
+            fs.Write(buf.Data, 0, buf.CapacityUtilization); fs.Close();
+            //fs.Flush();
+            fs.Close();
         }
 
         //public override void exReceiverCleanUpMessage(Receiver r, Message m)

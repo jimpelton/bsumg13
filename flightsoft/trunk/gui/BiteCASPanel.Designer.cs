@@ -89,7 +89,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Heater_Auto_Shutoff.AutoSize = true;
             this.b_Heater_Auto_Shutoff.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Heater_Auto_Shutoff.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Heater_Auto_Shutoff.BackColor = System.Drawing.Color.Red;
             this.b_Heater_Auto_Shutoff.Enabled = false;
             this.b_Heater_Auto_Shutoff.FlatAppearance.BorderSize = 2;
             this.b_Heater_Auto_Shutoff.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -108,7 +108,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Camera_485.AutoSize = true;
             this.b_Camera_485.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Camera_485.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Camera_485.BackColor = System.Drawing.Color.Red;
             this.b_Camera_485.Enabled = false;
             this.b_Camera_485.FlatAppearance.BorderSize = 2;
             this.b_Camera_485.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -127,7 +127,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Battery_Level.AutoSize = true;
             this.b_Battery_Level.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Battery_Level.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Battery_Level.BackColor = System.Drawing.Color.Red;
             this.b_Battery_Level.Enabled = false;
             this.b_Battery_Level.FlatAppearance.BorderSize = 2;
             this.b_Battery_Level.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -146,7 +146,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Battery_Com.AutoSize = true;
             this.b_Battery_Com.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Battery_Com.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Battery_Com.BackColor = System.Drawing.Color.Red;
             this.b_Battery_Com.Enabled = false;
             this.b_Battery_Com.FlatAppearance.BorderSize = 2;
             this.b_Battery_Com.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -165,7 +165,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Drive_Full.AutoSize = true;
             this.b_Drive_Full.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Drive_Full.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Drive_Full.BackColor = System.Drawing.Color.Red;
             this.b_Drive_Full.Enabled = false;
             this.b_Drive_Full.FlatAppearance.BorderSize = 2;
             this.b_Drive_Full.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -184,7 +184,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Doors.AutoSize = true;
             this.b_Doors.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Doors.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Doors.BackColor = System.Drawing.Color.Red;
             this.b_Doors.Enabled = false;
             this.b_Doors.FlatAppearance.BorderSize = 2;
             this.b_Doors.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -203,7 +203,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Phidgets_1018.AutoSize = true;
             this.b_Phidgets_1018.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Phidgets_1018.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Phidgets_1018.BackColor = System.Drawing.Color.Red;
             this.b_Phidgets_1018.Enabled = false;
             this.b_Phidgets_1018.FlatAppearance.BorderSize = 2;
             this.b_Phidgets_1018.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -222,7 +222,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Accel_Aircraft.AutoSize = true;
             this.b_Accel_Aircraft.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Accel_Aircraft.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Accel_Aircraft.BackColor = System.Drawing.Color.Red;
             this.b_Accel_Aircraft.Enabled = false;
             this.b_Accel_Aircraft.FlatAppearance.BorderSize = 2;
             this.b_Accel_Aircraft.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -241,7 +241,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Accel_2.AutoSize = true;
             this.b_Accel_2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Accel_2.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Accel_2.BackColor = System.Drawing.Color.Red;
             this.b_Accel_2.Enabled = false;
             this.b_Accel_2.FlatAppearance.BorderSize = 2;
             this.b_Accel_2.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -260,7 +260,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Accel_1.AutoSize = true;
             this.b_Accel_1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Accel_1.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Accel_1.BackColor = System.Drawing.Color.Red;
             this.b_Accel_1.Enabled = false;
             this.b_Accel_1.FlatAppearance.BorderSize = 2;
             this.b_Accel_1.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -279,7 +279,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Light_2.AutoSize = true;
             this.b_Light_2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Light_2.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Light_2.BackColor = System.Drawing.Color.Red;
             this.b_Light_2.Enabled = false;
             this.b_Light_2.FlatAppearance.BorderSize = 2;
             this.b_Light_2.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -298,7 +298,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Light_1.AutoSize = true;
             this.b_Light_1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Light_1.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Light_1.BackColor = System.Drawing.Color.Red;
             this.b_Light_1.Enabled = false;
             this.b_Light_1.FlatAppearance.BorderSize = 2;
             this.b_Light_1.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -317,7 +317,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Heater_Low.AutoSize = true;
             this.b_Heater_Low.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Heater_Low.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Heater_Low.BackColor = System.Drawing.Color.Red;
             this.b_Heater_Low.Enabled = false;
             this.b_Heater_Low.FlatAppearance.BorderSize = 2;
             this.b_Heater_Low.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -336,7 +336,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Heater_High.AutoSize = true;
             this.b_Heater_High.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Heater_High.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Heater_High.BackColor = System.Drawing.Color.Red;
             this.b_Heater_High.Enabled = false;
             this.b_Heater_High.FlatAppearance.BorderSize = 2;
             this.b_Heater_High.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
@@ -355,7 +355,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.b_Camera_405.AutoSize = true;
             this.b_Camera_405.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.b_Camera_405.BackColor = System.Drawing.Color.OrangeRed;
+            this.b_Camera_405.BackColor = System.Drawing.Color.Red;
             this.b_Camera_405.Enabled = false;
             this.b_Camera_405.FlatAppearance.BorderSize = 2;
             this.b_Camera_405.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);

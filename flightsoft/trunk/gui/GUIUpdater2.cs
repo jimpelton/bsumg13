@@ -67,10 +67,10 @@ namespace gui
         //            switch (msg.WaveLength)
         //            {
         //                case 405:
-        //                    CAS.b_Camera_405.BackColor = Color.OrangeRed;
+        //                    CAS.b_Camera_405.BackColor = Color.Red;
         //                    break;
         //                case 485:
-        //                    CAS.b_Camera_485.BackColor = Color.OrangeRed;
+        //                    CAS.b_Camera_485.BackColor = Color.Red;
         //                    break;
         //                default:
         //                    break;
@@ -81,10 +81,10 @@ namespace gui
         //            switch (msg.WaveLength)
         //            {
         //                case (405):
-        //                    CAS.b_Camera_405.BackColor = Color.OrangeRed;
+        //                    CAS.b_Camera_405.BackColor = Color.Red;
         //                    break;
         //                case (485):
-        //                    CAS.b_Camera_485.BackColor = Color.OrangeRed;
+        //                    CAS.b_Camera_485.BackColor = Color.Red;
         //                    break;
         //                default:
         //                    break;
@@ -134,11 +134,11 @@ namespace gui
         //        Status status = msg.Stat;
         //        if (status == Status.STAT_FAIL)
         //        {
-        //            CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
+        //            CAS.b_Phidgets_1018.BackColor = Color.Red;
         //        }
         //        else if (status == Status.STAT_DISC)
         //        {
-        //            CAS.b_Phidgets_1018.BackColor = Color.OrangeRed;
+        //            CAS.b_Phidgets_1018.BackColor = Color.Red;
         //        }
         //        else if (status == Status.STAT_ATCH)
         //        {

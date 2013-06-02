@@ -24,7 +24,7 @@ namespace gui
             Color.BlueViolet,  
             Color.Yellow, 
             Color.Red, 
-            Color.OrangeRed   
+            Color.Red   
         };
 
 
