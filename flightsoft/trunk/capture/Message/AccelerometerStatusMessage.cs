@@ -8,7 +8,7 @@ namespace uGCapture
 {
     public class AccelerometerStatusMessage: StatusMessage
     {
-        public float accel = 0;
+        public double accel = 0;
         public AccelerometerStatusMessage(Receiver s, Status nstate, ErrStr mes = 0, double accl=0)
             : base(s, nstate, mes)
         {

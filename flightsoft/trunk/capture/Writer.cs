@@ -256,7 +256,7 @@ namespace uGCapture
                         break;
                 }
                 //w.dp.BroadcastLog(w, Status.STAT_GOOD, Str.GetErrStr(ErrStr.WRITER_OK_WRITE_BUFFER), fulbuf.ToString());
-                w.dp.Broadcast(new WriterStatusMessage(w,Status.STAT_GOOD));
+                
                 w.BufferPool.PostEmpty(fulbuf);
             }
             catch (Exception e)
@@ -296,6 +296,7 @@ namespace uGCapture
             fs.Write(buf.Data, 0, buf.CapacityUtilization); fs.Close();
             //fs.Flush();
             fs.Close();
+            dp.Broadcast(new WriterStatusMessage(this, Status.STAT_GOOD));
         }
 
         //public override void exReceiverCleanUpMessage(Receiver r, Message m)
