@@ -383,15 +383,19 @@ namespace gui
                         {
                             CAS.b_Heater_High.BackColor = Color.Salmon;
                         }
-                        else if (temp > 34)
+                        else if (temp > 40)
                         {
                             CAS.b_Heater_High.BackColor = Color.Red;
                             CAS.b_Heater_Auto_Shutoff.BackColor = Color.Red;
                             dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
                         }
-                        else if (temp > 32)
+                        else if (temp > 39)
                         {
                             CAS.b_Heater_High.BackColor = Color.Red;
+                        }
+                        else if (temp > 38)
+                        {
+                            CAS.b_Heater_High.BackColor = Color.Yellow;
                         }
                         else
                         {
@@ -400,17 +404,13 @@ namespace gui
                             dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_ON));
                         }
 
-                        if (temp < 1)
-                        {
-                            CAS.b_Heater_Low.BackColor = Color.White;
-                        }
-                        else if (temp < 20)
-                        {
-                            CAS.b_Heater_Low.BackColor = Color.LightBlue;
-                        }
-                        else if (temp < 35)
+                        if (temp < 35)
                         {
                             CAS.b_Heater_Low.BackColor = Color.Red;
+                        }
+                        else if (temp < 36)
+                        {
+                            CAS.b_Heater_Low.BackColor = Color.Yellow;
                         }
                         else
                         {
