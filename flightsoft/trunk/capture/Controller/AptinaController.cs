@@ -203,7 +203,7 @@ public class AptinaController : ReceiverController
         IsRunning = false;
         IsExecuting = false;
 
-        CheckedStatusBroadcast(last_status, 
+        CheckedStatusBroadcast(ref last_status, 
             new AptinaStatusMessage(WaveLength, this, Status.STAT_FAIL, ErrStr.APTINA_DISCONNECT));
         dp.BroadcastLog(this, Status.STAT_FAIL, Str.GetErrStr(ErrStr.APTINA_DISCONNECT), WaveLength.ToString());
     }
@@ -325,7 +325,7 @@ public class AptinaController : ReceiverController
             //me.dp.BroadcastLog(me, Status.STAT_ERR, 
             //    "Aptina controller couldn't stop transport.");
 
-            me.CheckedStatusBroadcast(me.last_status, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_ERR, 
+            me.CheckedStatusBroadcast(ref me.last_status, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_ERR, 
                 "Aptina controller couldn't stop transport."));
         }
         else
@@ -333,7 +333,7 @@ public class AptinaController : ReceiverController
             //me.dp.BroadcastLog(me, Status.STAT_FAIL, 
             //    "Aptina controller stopped transport and worker thread is exiting.");
 
-            me.CheckedStatusBroadcast(me.last_status, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_FAIL, 
+            me.CheckedStatusBroadcast(ref me.last_status, new AptinaStatusMessage(me.WaveLength, me, Status.STAT_FAIL, 
                 "Aptina thread exiting."));
         }
     }
@@ -351,7 +351,7 @@ public class AptinaController : ReceiverController
             }
             if (data == null)
             {
-                me.CheckedStatusBroadcast(me.last_status, new AptinaStatusMessage(me.WaveLength, 
+                me.CheckedStatusBroadcast(ref me.last_status, new AptinaStatusMessage(me.WaveLength, 
                     me, Status.STAT_ERR, ErrStr.APTINA_FAIL_CAPTURE_NULLBUFFER));  // Almost salmon.
                 return;
             }
@@ -404,7 +404,7 @@ public class AptinaController : ReceiverController
             MiError = (MiErrorCode)openTransportIdx(camIdx);
             if (MiError == MiErrorCode.MI_CAMERA_SUCCESS)
             {
-                CheckedStatusBroadcast(last_status, new AptinaStatusMessage(WaveLength, this, Status.STAT_ATCH, 
+                CheckedStatusBroadcast(ref last_status, new AptinaStatusMessage(WaveLength, this, Status.STAT_ATCH, 
                     "Camera transport reopened."));
                 break;
             }
