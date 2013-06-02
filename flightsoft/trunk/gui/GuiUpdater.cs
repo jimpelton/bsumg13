@@ -379,6 +379,7 @@ namespace gui
                     if (pdats.Length > 6)
                     {
                         temp = double.Parse(pdats[6]);
+                        Guimain.ILabel.Text = "" + temp + "C";
                         if (temp > 2000000000)
                         {
                             CAS.b_Heater_High.BackColor = Color.Salmon;
@@ -387,7 +388,6 @@ namespace gui
                         {
                             CAS.b_Heater_High.BackColor = Color.Red;
                             CAS.b_Heater_Auto_Shutoff.BackColor = Color.Red;
-                            dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_OFF));
                         }
                         else if (temp > 39)
                         {
@@ -401,7 +401,6 @@ namespace gui
                         {
                             CAS.b_Heater_Auto_Shutoff.BackColor = Color.Black;
                             CAS.b_Heater_High.BackColor = Color.Black;
-                            dp.Broadcast(new CommandMessage(this, CommandStr.CMD_NI_HEATER_ON));
                         }
 
                         if (temp < 35)
@@ -464,7 +463,7 @@ namespace gui
                 updateCASAccel(dat);
                 updateCASPhidgets(dat);
                 updateCASLights(dat);
-                updateInformationPanel(dat);
+               
             }           
         }
 

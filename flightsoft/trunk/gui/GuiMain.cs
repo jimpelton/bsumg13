@@ -42,6 +42,13 @@ namespace gui
         {
             get { return IP; }
             set { IP = value; }
+        }        
+
+        private Label Ilabel;
+        public Label ILabel
+        {
+            get { return Ilabel; }
+            set { Ilabel = value; }
         }
 
         private ImageDisplay ImageDisplay;
