@@ -6,7 +6,7 @@ import numpy as np
 import csv
 
 
-NUM_WELLS = 96
+NUM_WELLS = 192
 
 
 class ugDataReader():
@@ -18,7 +18,13 @@ class ugDataReader():
         dflen = self.df.length()
         self.values405 = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
         self.values485 = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
-        self.valuesgrav = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
+        self.valuesaccel = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
+        self.valuesspat = np.zeros((dflen, NUM_WELLS), dtype=np.float64)
+
+        self.values405_times = np.zeros((dflen, NUM_WELLS), dtype=np.long)
+        self.values485_times = np.zeros((dflen, NUM_WELLS), dtype=np.long)
+        self.valuesgrav_times = np.zeros((dflen, NUM_WELLS), dtype=np.long)
+
         self._layout = dict()
         self._linearLayout = []
 
@@ -53,7 +59,6 @@ class ugDataReader():
         :param: typeString:
         :return: narray
         """
-
         if typeString == "dir405":
             return self.values405
         elif typeString == "dir485":
@@ -70,6 +75,7 @@ class ugDataReader():
             "dirgrav": self._readGravityFiles,
             "dirphid": self._readPhid,
             "dirbaro": self._readBaro,
+            "dirspat": self._readSpat,
             "dirni": self._readNI
         }
 
@@ -83,6 +89,9 @@ class ugDataReader():
         pass
 
     def _readPhid(self, phid_list):
+        pass
+
+    def _readSpat(self, spat_list):
         pass
 
     def _readNI(self, ni_list):
@@ -108,12 +117,12 @@ class ugDataReader():
             lines = thisfile.readlines()
             thisfile.close()
 
-            colIdx = 0 #NUM_WELLS - 1
+            colIdx = NUM_WELLS - 1
             for s in lines:
                 strs = s.split(':')
                 val = int(strs[1].strip())
                 self.values405[timeIdx][colIdx] = val  #add to list backwards
-                colIdx += 1
+                colIdx -= 1
 
             timeIdx += 1
 
@@ -163,13 +172,13 @@ class ugDataReader():
             if timeIdx >= self.valuesgrav.shape[0]:
                 break
 
-            thisfile = open(basedir + f)
-            line = thisfile.readlines()[0]
-            thisfile.close()
-            xyzt = [float(i) for i in line.split(' ')]
-            gMag = sqrt(xyzt[0] * xyzt[0] + xyzt[1] * xyzt[1] + xyzt[2] * xyzt[2])
-            self.valuesgrav[timeIdx] = gMag
-            timeIdx += 1
+            with open(basedir+f) as thisfile:
+                line = thisfile.readlines()[0]
+                thisfile.close()
+                xyzt = [float(i) for i in line.split(' ')]
+                gMag = sqrt(xyzt[0] * xyzt[0] + xyzt[1] * xyzt[1] + xyzt[2] * xyzt[2])
+                self.valuesgrav[timeIdx] = gMag
+                timeIdx += 1
 
         print('{}'.format(timeIdx))
 
