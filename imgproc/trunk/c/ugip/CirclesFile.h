@@ -112,15 +112,29 @@ private:
     int p_WellLoc(string wellIdx, string wellCenter, int lnum);
     int p_ImgInfo(string key, string value, int lnum);
 
+    void group(vector<CenterInfo > & centers,
+                   vector<CenterInfo > & left,
+                   vector<CenterInfo > & right, int middleX);
 
+    void sortPlate(vector<CenterInfo > &group,
+                   vector<vector<CenterInfo > > &groupRows,
+                   int dist_thresh);
 
-    static bool sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs); 
+    static bool sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs);
     static bool sortCenterByX(const CenterInfo &lhs, const CenterInfo &rhs);
 
     // Sort centers into rows, then rows into columns.
-    static void findRows(vector<CenterInfo> &centers, 
-        vector<vector<CenterInfo > > &rows, 
-        int dist_thresh);
+    void findRows(vector<CenterInfo> &centers, vector<vector<CenterInfo > > &rows, 
+            int dist_thresh);
+
+    // write 2d vector of rows into fileText and save to file.
+    int writeRows(vector<vector<CenterInfo > > &rows, std::stringstream &fileText);
+
+    // write 1d vector of center info into fileText and save to file.
+    int writeCirclesVector(vector<CenterInfo > &centers, std::stringstream &fileText);
+
+    //write the file header.
+    void writeHeader(ImageInfo img, int rad, std::stringstream &fileText);
 };
 #endif // CirclesFile_h__
 

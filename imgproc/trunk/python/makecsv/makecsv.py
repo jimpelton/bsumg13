@@ -7,7 +7,7 @@ import ugDataWriter
 import numpy as np
 from ugDataFile import ugDataFile
 
-NUM_WELLS = 96
+NUM_WELLS = 192
 
 def getArgs():
     """
