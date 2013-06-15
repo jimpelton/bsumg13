@@ -17,62 +17,80 @@ using std::string;
 using std::vector;
 using namespace boost::algorithm;
 
-typedef CirclesFile::CenterInfo CenterInfo;
-typedef std::vector<CenterInfo > centerVector;
+typedef std::vector<CirclesFile::CenterInfo > cVec;
+typedef cVec::iterator cVecIt;
+typedef cVec::const_iterator cVecCIt;
 
 
 CirclesFile::CirclesFile()
     : m_filename()
     , m_centers()
     , m_isOpen(false)
+    , m_numCols(8)
+    , m_numRows(12)
 {}
 
-CirclesFile::CirclesFile(string filename)
+CirclesFile::CirclesFile(string filename, int ncols, int nrows)
     : m_filename(filename)
     , m_centers()
     , m_isOpen(false)
+    , m_numCols(ncols)
+    , m_numRows(nrows)
 {}
 
 CirclesFile::~CirclesFile() {}
 
 
-void CirclesFile::group(centerVector &centers,
-                            centerVector &groupLeft,
-                            centerVector &groupRight,
-                            int middle)
+void CirclesFile::group(cVec &centers,
+                        cVec &groupLeft,
+                        cVec &groupRight,
+                        int middle)
 {
-    centerVector::iterator centerIt = centers.begin();
-    centerVector::iterator centerIt_end = centers.end()-1;
+    cVecIt c = centers.begin();
+    cVecIt c_end = centers.end();
 
-    for(; centerIt != centerIt_end; ++centerIt) {
-        if ( (*centerIt).x < middle ) {
-                groupLeft.push_back(*centerIt);
-        }
-        else {
-                groupRight.push_back(*centerIt);
-        }
+    for(; c != c_end; ++c) {
+        if ( (*c).x < middle )
+            groupLeft.push_back(*c);
+        else
+            groupRight.push_back(*c);
     }
 }
 
-void CirclesFile::sortPlate(centerVector &group, vector<centerVector > &groupRows,
-                            int dist_thresh)
+
+void CirclesFile::dumb_sortPlate(cVec &group, vector<cVec> &groupRows)
 {
     std::sort(group.begin(), group.end(), sortCenterByY);
-    centerVector::iterator centerIt = group.begin();
-    //centerVector::iterator centerIt_end = group.end()-1;
-    centerVector::iterator centerIt_end = group.end();
+    int rIdx = 0;
+    for(auto &row : groupRows) {
+        for(int i = 0; i < m_numCols; ++i){
+            row.push_back(group[rIdx*m_numCols + i]);    
+        }
 
+        std::sort(row.begin(), row.end(), sortCenterByX);
+        rIdx += 1;
+    }
+}
+
+void CirclesFile::sortPlate(cVec &group, vector<cVec > &groupRows,
+                            int dist_thresh)
+{
+
+    std::sort(group.begin(), group.end(), sortCenterByY);
+    cVecIt centerIt = group.begin();
+    cVecIt centerIt_end = group.end()-1;
 
     unsigned int curRow = 0;
-    centerVector *aRow;
-    centerVector emptyRow;
+    cVec *aRow;
+    cVec emptyRow;
 
     if (groupRows.size() == 0){ groupRows.push_back(emptyRow); }
     while (centerIt != centerIt_end) {
-        // split into groupRows, and sort each row by X coord.
+        // split into rows, and sort each row by X coord.
         if ( std::abs( (*centerIt).y - (*(centerIt+1)).y ) > dist_thresh) {
             aRow = &groupRows[curRow];
             aRow->push_back(*centerIt);
+
             std::sort(aRow->begin(), aRow->end(), sortCenterByX);
 
             groupRows.push_back(emptyRow);
@@ -88,37 +106,35 @@ void CirclesFile::sortPlate(centerVector &group, vector<centerVector > &groupRow
     std::sort(aRow->begin(), aRow->end(), sortCenterByX);
 }
 
-void CirclesFile::findRows(centerVector &centers, vector<centerVector > &rows, 
+void CirclesFile::findRows(cVec &centers, vector<cVec > &rows,
     int dist_thresh)
 {
-    std::pair<centerVector::iterator, centerVector::iterator> minMaxPair =
+    std::pair<cVecIt, cVecIt> minMaxPair =
             std::minmax_element(centers.begin(), centers.end(), sortCenterByX);
 
     int middleX = (int)((minMaxPair.first->x + minMaxPair.second->x) / 2.0);
 
-    centerVector leftPlate, rightPlate;
-    vector<centerVector > leftPlateRows, rightPlateRows;
-
-    std::sort(centers.begin(), centers.end(), sortCenterByY);
+    cVec leftPlate, rightPlate;
+    vector<cVec > leftPlateRows, rightPlateRows;
 
     group(centers, leftPlate, rightPlate, middleX);
 
-    sortPlate(leftPlate, leftPlateRows, dist_thresh);
-    sortPlate(rightPlate, rightPlateRows, dist_thresh);
+    dumb_sortPlate(leftPlate, leftPlateRows);
+    dumb_sortPlate(rightPlate, rightPlateRows);
 
-    vector<centerVector >::iterator left_it = leftPlateRows.begin();
-    vector<centerVector >::iterator right_it = rightPlateRows.begin();
+//    vector<cVec >::iterator left_it = leftPlateRows.begin();
+//    vector<cVec >::iterator right_it = rightPlateRows.begin();
 
     int i = leftPlateRows.size() > rightPlateRows.size() ?
             leftPlateRows.size() : rightPlateRows.size();
-    int cnt = 0;
 
-    while(cnt < i)
+    int row = 0;
+    while(row < i)
     {
-        centerVector cv(leftPlateRows[cnt].begin(), leftPlateRows[cnt].end());
-        cv.insert(cv.end(), rightPlateRows[cnt].begin(), rightPlateRows[cnt].end());
+        cVec cv(leftPlateRows[row].begin(), leftPlateRows[row].end());
+        cv.insert(cv.end(), rightPlateRows[row].begin(), rightPlateRows[row].end());
         rows.push_back(cv);
-        cnt += 1;
+        row += 1;
     }
 
 
@@ -150,12 +166,12 @@ void CirclesFile::findRows(centerVector &centers, vector<centerVector > &rows,
 
 }
 
-int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
+int CirclesFile::writeCirclesFile(cVec centers, ImageInfo img)
 {
 
     //sort circles file.
-    vector<vector<CenterInfo > > rows;
-    findRows(centers, rows, 30);
+    vector<cVec > rows;
+    //findRows(centers, rows, 30);
 
     std::stringstream fileText; 
     writeHeader(img, centers[0].r, fileText);
@@ -165,7 +181,37 @@ int CirclesFile::writeCirclesFile(vector<CenterInfo> centers, ImageInfo img)
     return rval;
 }
 
-int CirclesFile::writeRows(vector<vector<CenterInfo > > &rows,
+//int CirclesFile::writeRows(vector<cVec > &rows,
+//        std::stringstream &fileText)
+//{
+//    std::ofstream file(m_filename.c_str(), std::ios::out);
+//    if (!file.is_open()) {
+//        std::cerr << m_filename << " never opened for output! Can't write circles file." << std::endl;
+//        return -1;
+//    }
+//
+//    int i=0;
+//    vector<cVec >::const_iterator row = rows.cbegin();
+//    vector<cVec >::const_iterator rowsEnd = rows.cend();
+//    for (row = rows.cbegin(); row!=rowsEnd; ++row)
+//    {
+//        cVecCIt c = row->cbegin();
+//        cVecCIt rowend = row->cend();
+//        for (; c != rowend; ++c )
+//        {
+//            fileText << i << ':' << c->x << ',' << c->y << '\n';
+//            i+=1;
+//        }
+//    }
+//
+//    file << fileText.str();
+//    file.close(); 
+//
+//    return i;
+//
+//}
+
+int CirclesFile::writeCirclesVector(cVec &centers,
         std::stringstream &fileText)
 {
     std::ofstream file(m_filename.c_str(), std::ios::out);
@@ -174,37 +220,8 @@ int CirclesFile::writeRows(vector<vector<CenterInfo > > &rows,
         return -1;
     }
 
-    int i=0;
-    vector<centerVector >::const_iterator rowsEnd = rows.cend();
-    for ( vector<centerVector >::const_iterator row = rows.cbegin(); row!=rowsEnd; ++row )
-    {
-        centerVector::const_iterator rowend = row->cend();
-        for (centerVector::const_iterator c = row->cbegin(); c != rowend; ++c )
-        {
-            fileText <<  i << ':' <<
-                c->x << ',' << c->y << '\n';
-            i+=1;
-        }
-    }
-
-    file << fileText.str();
-    file.close(); 
-
-    return i;
-
-}
-
-int CirclesFile::writeCirclesVector(vector<CenterInfo > &centers, 
-        std::stringstream &fileText)
-{
-    std::ofstream file(m_filename.c_str(), std::ios::out);
-    if (!file.is_open()) {
-        std::cerr << m_filename << " never opened for output! Can't write circles file." << std::endl;
-        return -1;
-    }
-
-    vector<CenterInfo >::const_iterator it = centers.cbegin();
-    vector<CenterInfo >::const_iterator it_end = centers.end();
+    cVecCIt it = centers.cbegin();
+    cVecCIt it_end = centers.end();
 
     int i = 0;
     for(; it != it_end; ++it, ++i)
@@ -250,7 +267,7 @@ int CirclesFile::open()
 
     m_isOpen = true;
 
-   vector<CenterInfo>::iterator it = m_centers.begin();
+    cVecIt it = m_centers.begin();
     for(; it != m_centers.end(); ++it)
     {
         it->r = m_radius;
@@ -270,7 +287,7 @@ int CirclesFile::p_Line(string line, int lnum)
     vector<string> splitVals;
     split(splitVals, line, boost::is_any_of(":"));  //split on ':'
 
-    if (splitVals.size() < 2){
+    if (splitVals.size() < 2) {
 
         printf("Syntax error in circles file. Is this line incomplete? " \
                "\n\t Line: %d: %s",
@@ -350,7 +367,7 @@ int CirclesFile::p_ImgInfo(string key, string value, int lnum)
     return rval;
 }
 
-CenterInfo CirclesFile::getCenter(int idx)
+CirclesFile::CenterInfo CirclesFile::getCenter(int idx)
 {
     if (idx < m_centers.size()) {
         return m_centers[idx];

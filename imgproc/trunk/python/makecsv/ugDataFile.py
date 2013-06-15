@@ -16,7 +16,7 @@ class ugDataFile:
     def __init__(self,
                  layout=None, dir405=None, dir485=None,
                  dirgrav=None, dirbaro=None, dirphid=None,
-                 dirni=None, outdir=None):
+                 dirspat=None, dirni=None, outdir=None):
 
         self._startingIndex = 0
         self._endingIndex = 0
@@ -27,44 +27,61 @@ class ugDataFile:
 
         self._filesDict = dict()
 
+        dir405 = self.sanitize(dir405)
         if dir405 is not None:
-            dir405 = self.sanitize(dir405)
             self._filesDict["dir405"] = (dir405, [])
 
+        dir485 = self.sanitize(dir485)
         if dir485 is not None:
-            dir485 = self.sanitize(dir485)
             self._filesDict["dir485"] = (dir485, [])
 
+        dirgrav = self.sanitize(dirgrav)
         if dirgrav is not None:
-            dirgrav = self.sanitize(dirgrav)
             self._filesDict["dirgrav"] = (dirgrav, [])
 
+        dirbaro = self.sanitize(dirbaro)
         if dirbaro is not None:
-            dirbaro = self.sanitize(dirbaro)
             self._filesDict["dirbaro"] = (dirbaro, [])
 
+        dirphid = self.sanitize(dirphid)
         if dirphid is not None:
-            dirphid = self.sanitize(dirphid)
             self._filesDict["dirphid"] = (dirphid, [])
 
+        dirspat = self.sanitize(dirspat)
+        if dirspat is not None:
+            self._filesDict["dirspat"] = (dirspat, [])
+
+        dirni = self.sanitize(dirni)
         if dirni is not None:
-            dirni = self.sanitize(dirni)
             self._filesDict["dirni"] = (dirni, [])
 
         self._NumReg = re.compile("([0-9]+)")
 
     def sanitize(self, path):
+        if path is None:
+            return None
+
         path = os.path.normpath(path) + os.sep
         if os.path.isdir(path):
             return path
         else:
+            print(path + " is not a directory!")
             return None
 
     def update(self):
         if self._needsUpdate:
             print("DataFile doing update.")
             self._readNames()
-            self._shortest = min([len(v[1]) for v in self._filesDict.values()])
+
+            lseq = [len(v[1]) for v in self._filesDict.values()]
+            if not len(lseq) == 0:
+                self._shortest = min(lseq)
+            else:
+                self._shortest = 0
+
+            if self._startingIndex == 0 and self._endingIndex == 0:
+                self._endingIndex = self._shortest
+
             self._needsUpdate = False
 
     def fileNames(self, typeString):
@@ -94,10 +111,14 @@ class ugDataFile:
         self._endingIndex = eIdx
         self._needsUpdate = True
 
+
     def human_sort(self, s):
         return [int(k) if k.isdigit() else k for k in re.split(self._NumReg, s)]
 
     def _readNames(self):
+        """
+        Populate the files dictionary with filenames for each kind of data
+        """
         for item in self._filesDict.values():
             if not os.path.isdir(item[0]):
                 print("{0} does not appear to be directory.".format(item[0]))
@@ -165,6 +186,12 @@ class ugDataFile:
         """
         return self._filesDict["dirgrav"][0]
 
+    def dirspat(self):
+        """
+        Spatial files directory
+        :return: list of str
+        """
+        return self._filesDict["dirspat"][0]
 
     def dirout(self):
         """

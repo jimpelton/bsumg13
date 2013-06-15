@@ -57,11 +57,15 @@ struct ImageInfo
     size_t ydim;       //< pixels in y dimension
 };
 
+typedef std::vector<CirclesFile::CenterInfo > cVec;
+typedef cVec::iterator cVecIt;
+typedef cVec::const_iterator cVecCIt;
+
 
 /*** CIRCLES FILE IMPLEMENTATION ***************************************** */
 
     CirclesFile();
-    CirclesFile(string fileName);
+    CirclesFile(string fileName, int ncols=8, int nrows=12);
     ~CirclesFile();
     //CirclesFile(const CirclesFile &rhs);
 
@@ -74,7 +78,7 @@ struct ImageInfo
     *
     * \return -1 on error, else the number of circles written.
     */
-    int writeCirclesFile(vector<CenterInfo> centers, ImageInfo img);
+    int writeCirclesFile(cVec centers, ImageInfo img);
 
     /** 
     * \brief Parse the circles file at filename 
@@ -99,12 +103,13 @@ struct ImageInfo
 
 private:
     string m_filename;
-    vector<CenterInfo> m_centers;
+    cVec m_centers;
     ImageInfo m_info;
 
     bool m_isOpen;
 
     int m_radius, m_imgx, m_imgy;
+    int m_numCols, m_numRows;
 
     int parseCirclesFile_helper(int &nCirc);
 
@@ -112,26 +117,34 @@ private:
     int p_WellLoc(string wellIdx, string wellCenter, int lnum);
     int p_ImgInfo(string key, string value, int lnum);
 
-    void group(vector<CenterInfo > & centers,
-                   vector<CenterInfo > & left,
-                   vector<CenterInfo > & right, int middleX);
+    void group(cVec & centers,
+               cVec & left,
+               cVec & right,
+               int middleX);
 
-    void sortPlate(vector<CenterInfo > &group,
-                   vector<vector<CenterInfo > > &groupRows,
+    void sortPlate(cVec &group,
+                   vector<cVec > & groupRows,
                    int dist_thresh);
 
-    static bool sortCenterByY(const CenterInfo &lhs, const CenterInfo &rhs);
-    static bool sortCenterByX(const CenterInfo &lhs, const CenterInfo &rhs);
+    void dumb_sortPlate(cVec & group,
+                        vector<cVec > & groupRows);
+
+    static bool sortCenterByY(const CenterInfo &lhs,
+                              const CenterInfo &rhs);
+
+    static bool sortCenterByX(const CenterInfo &lhs,
+                              const CenterInfo &rhs);
 
     // Sort centers into rows, then rows into columns.
-    void findRows(vector<CenterInfo> &centers, vector<vector<CenterInfo > > &rows, 
-            int dist_thresh);
+    void findRows(cVec & centers,
+                  vector<cVec > & rows,
+                  int dist_thresh);
 
     // write 2d vector of rows into fileText and save to file.
-    int writeRows(vector<vector<CenterInfo > > &rows, std::stringstream &fileText);
+//    int writeRows(vector<cVec > &rows, std::stringstream &fileText);
 
     // write 1d vector of center info into fileText and save to file.
-    int writeCirclesVector(vector<CenterInfo > &centers, std::stringstream &fileText);
+    int writeCirclesVector(cVec &centers, std::stringstream &fileText);
 
     //write the file header.
     void writeHeader(ImageInfo img, int rad, std::stringstream &fileText);

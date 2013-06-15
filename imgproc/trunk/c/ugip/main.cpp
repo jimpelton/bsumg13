@@ -149,12 +149,6 @@ int doCL(int argc, char *argv[])
         ++it; ++i;
     }
     
-    //create Readers
-//    for (int i = 0; i < NUM_READERS; ++i) {
-//        Reader r(readerFilesVec[i], &imgbp); //= new Reader(readerFilesVec[i], &imgbp);
-//        readers.push_back(r);
-//    }
-
     //create Processors
     uG::Imgproc img;
     uG::uGProcVars *vars = img.newProcVars(numcirc);
@@ -169,17 +163,10 @@ int doCL(int argc, char *argv[])
         vars->centers[i] = ugc;
     }
     
+    std::cout << "Starting threads..." << std::endl;
+
     Reader r1(readerFilesVec[0], &imgbp);
     boost::thread th_r1(boost::ref(r1));
-
-//    Reader r2(readerFilesVec[1], &imgbp);
-//    boost::thread th_r2(boost::ref(r2));
-//
-//    Reader r3(readerFilesVec[2], &imgbp);
-//    boost::thread th_r3(boost::ref(r3));
-//
-//    Reader r4(readerFilesVec[3], &imgbp);
-//    boost::thread th_r4(boost::ref(r4));
 
     Processor p1(&imgbp, &datbp, vars);
     boost::thread th_p1(boost::ref(p1));
@@ -187,41 +174,12 @@ int doCL(int argc, char *argv[])
     Writer w1(outpath, &datbp);
     boost::thread th_w1(boost::ref(w1));
 
-//    for (int i = 0; i < NUM_PROCS; ++i) {
-//        Processor *p = new Processor(&imgbp, &datbp, vars);
-//        procs.push_back(p);
-//        boost::thread *t = new boost::thread(boost::ref(p));
-//        workers.push_back(t);
-//    }
-
-    //create Writers
-//    for (int i = 0; i < NUM_WRITE; ++i) {
-//        Writer *w = new Writer(outpath, &datbp);
-//        writers.push_back(w);
-
-//        boost::thread *t = new boost::thread(boost::ref(w));
-//        workers.push_back(t);
-//    }
-
-    std::cout << "Created: " << readers.size() << " reader threads.\n";
-    std::cout << "Created: " << procs.size() << " processor threads.\n";
-    std::cout << "Created: " << writers.size() << " writer threads.\n";
-    std::cout << "Starting threads..." << std::endl;
 
 //    boost::thread th_prog(print_progress);
 
     th_r1.join();
-//    th_r2.join();
-//    th_r3.join();
-//    th_r4.join();
     th_p1.join();
     th_w1.join();
-
-//    vector<boost::thread*>::iterator worker = workers.begin();
-
-//    for(; worker != workers.end(); ++worker) {
-//        (*worker)->start();
-//    }
 
     //TODO: cleanup!! whaaattt?!? I cleanup for no one!  
 
@@ -231,15 +189,20 @@ int doCL(int argc, char *argv[])
 uG::ProcType makePType(string p)
 {
     if (p.compare("debug-circles")     == 0) {
-        std::cout << "debug-circles\n";
+        std::cout << "Using debug-circles processor.\n";
        return uG::DEBUG_CIRCLES; 
-    } else if (p.compare("well-index") == 0) {
-        std::cout << "well-index\n";
+    }
+    /*else if (p.compare("well-index") == 0) {
+        std::cout << "Using well-index processor.\n";
         return uG::WELL_INDEX;    
-    } else if (p.compare("reg-avg")    == 0) {
-        std::cout << "reg-avg\n";
+    }*/
+    else if (p.compare("reg-avg")    == 0) {
+        std::cout << "Using reg-avg processor.\n";
         return uG::REG_AVG;
-    } else { return uG::WELL_INDEX; }
+    } else {
+        std::cout << "Using well-index processor.\n";
+        return uG::WELL_INDEX;
+    }
 }
 
 

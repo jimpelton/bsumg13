@@ -21,7 +21,6 @@ class MyTestCase(unittest.TestCase):
     def test_read(self):
         df = self.setupDataFile()
         df.fromTo(0, 45)
-
         df.update()
         dr = ugDataReader.ugDataReader(df)
         dr.update()

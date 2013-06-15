@@ -63,12 +63,14 @@ bool parseArgs( int argc, char **argv )
         if (vm.count("input-dir")) {
             infile = vm["input-dir"].as<std::string>();
         } else {
+            infile = "-1";
             std::cout << "No input dir given.\n";
         }
 
         if (vm.count("output-dir")) {
             outfile = vm["output-dir"].as<std::string>();
         } else {
+            outfile = "-1";
             std::cout << "No output dir given.\n";
         }
 

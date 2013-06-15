@@ -15,7 +15,6 @@ class SaveShowFrame;
 class InputFrame;
 class InfoWidget;
 
-
 class QString;
 class QImage;
 
@@ -99,12 +98,14 @@ private:
     QString m_outputDir;
     QString m_circlesFileName;
     QStringList m_fileNameList;
-
+    
     QVector<CirclesFile::CenterInfo> m_circlesList;
     CirclesFile m_circlesFile;
 
     QImage m_currentImage;
     QImage m_lastImage;
+
+    int m_numCircles;
 };
 
 #endif // UIGP2_H
