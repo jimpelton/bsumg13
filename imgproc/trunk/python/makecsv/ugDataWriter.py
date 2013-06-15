@@ -2,6 +2,7 @@ __author__ = 'jim'
 
 import csv
 import ugDataFile
+import itertools
 
 
 class ugDataWriter():
@@ -23,15 +24,17 @@ class ugDataWriter():
             f.write('\n')
         f.close()
 
-    def writeGravity(self, filename, gravList):
+    def writeGravity(self, filename, gravArray, timeList):
         """
-
         :param filename:
         :param gravList:
         """
         print('Writing values: {}'.format(filename))
         f = open(filename, 'w')
-        f.write('\n'.join(' '.join(str(cell) for cell in row) for row in gravList))
+        for t, r in itertools.zip_longest(timeList, gravArray):
+            f.write(t + ' ')
+            f.write(' '.join(str(cell) for cell in r))
+            f.write('\n')
         f.close()
 
     def writeCSVGravity(self, filename, gravList):

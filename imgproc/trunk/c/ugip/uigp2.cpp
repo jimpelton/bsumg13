@@ -21,6 +21,7 @@
 
 uigp2::uigp2(QWidget *parent)
     : QMainWindow(parent)
+    , m_numCircles(0)
 {
     setupUi(this);
    
@@ -72,6 +73,8 @@ uigp2::~uigp2() { }
 void uigp2::circleAdded(QSelectableEllipse *eee)
 {
 	//TODO: increment circle count?
+    m_numCircles += 1;
+    qDebug() << "Circle added: " << eee->x() << ", " << eee->y();
 }
 
 void uigp2::addSelectedCircle( QSelectableEllipse* eee ) 
@@ -121,6 +124,8 @@ void uigp2::addScannedFile( QString fname, float percentDone )
     progressBar->setValue(percentDone*100.0f);
 //    qDebug() << fname << ' ' << percentDone;
 }
+
+
 
 void uigp2::startProcessing()
 {
@@ -189,12 +194,16 @@ void uigp2::openCirclesFile()
 {
     if (m_circlesFileName.isEmpty()) {
         qDebug() << "No filename for circles file.";
+
+
         return;
     } 
 
     m_circlesFile = CirclesFile(m_circlesFileName.toStdString());
     int numCirc = m_circlesFile.open();
     if (!m_circlesFile.isOpen()){
+
+
         qDebug() << "openCirclesFile: CirclesFile reported it could not" \
                     " open the given circles file.";
 
@@ -234,6 +243,10 @@ void uigp2::openCirclesFile()
     m_circlePropsFrame->horizontalSlider->setValue(rad);
     m_circlePropsFrame->spinBox->setValue(rad);
     m_saveShowFrame->showGreenCirclesCheckbox->setChecked(true);
+
+    m_numCircles = numCirc;
+
+    qDebug() << "Loaded " << m_numCircles << " circles.";
 }
 
 void uigp2::displayImage( int idx )

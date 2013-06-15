@@ -27,18 +27,20 @@ def main(argv):
                 print(plots_dir + " could not be created.")
 
     data = np.loadtxt(file, dtype=float)
-    t = arange(0.0, float(len(data)), 1, np.float32)
+    t = arange(300000, 350000, 1, np.int32)
 
-    fig = figure(figsize=(32, 18), dpi=200)
-    for i in range(96):
-        plot(t, data[:, i], linewidth=1.0)
-        xlabel('Time (1/2 seconds)')
-        ylabel('Well Intensity')
-        title(plot_title)
-        grid(True)
-        savefig(plots_dir + os.path.basename(file) + "_" + str(i) + ".png")
-        clf()
-        # show()
+
+    # fig = figure(figsize=(32, 18), dpi=200)
+    # for i in range(1):
+    i = 2
+    plot(t, data[300000:350000, 1], linewidth=1.0)
+    xlabel('Time (unix epoch)')
+    ylabel('gravity')
+    title(plot_title)
+    grid(True)
+    savefig(plots_dir + os.path.basename(file) + "_" + str(i) + ".png")
+    #clf()
+    show()
 
 
 if __name__ == '__main__':
