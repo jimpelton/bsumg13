@@ -45,6 +45,12 @@ class MyTestCase(unittest.TestCase):
         print(layout_dict)
 
 
+    # def test_timestamp(self):
+        # df = self.setupDateFile()
+        # df.update()
+        # dr = ugDataReader.ugDataReader(df)
+        # dr.update()
+
 # plate layout from April 28, 2013:
 # '5': [18]
 #  '4': [25]

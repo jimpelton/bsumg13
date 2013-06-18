@@ -7,8 +7,8 @@ INCLUDEPATH +=  ../include/
 QT += core gui widgets
 
 CONFIG += qt 
-#CONFIG += debug
-#CONFIG -= release
+CONFIG += debug
+CONFIG -= release
 
 LIBS += -L../lib \
         -limgproc \
@@ -19,7 +19,7 @@ LIBS += -L../lib \
 
 QMAKE_CXXFLAGS += -std=c++11
 
-#CONFIG(unix){
+CONFIG(unix){
     INCLUDEPATH += /usr/include/boost/ 
              
 
@@ -34,7 +34,7 @@ QMAKE_CXXFLAGS += -std=c++11
         message(Release configuration is not yet defined!!!)
     }
 
-#}
+}
 
 FORMS += \
     uigp2.ui \
