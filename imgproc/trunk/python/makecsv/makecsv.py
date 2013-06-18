@@ -19,6 +19,10 @@ def getArgs():
     parser.add_argument("-d485", "--Directory485", help="485 Data Files Directory")
     parser.add_argument("-d405", "--Directory405", help="405 Data Files Directory")
     parser.add_argument("-gd", "--DirectoryGrav", help="Gravity files directory")
+    parser.add_argument("-sd", "--DirectorySpat", help="Spatial files directory")
+    parser.add_argument("-pd", "--DirectoryPhid", help="Phidgets DAQ files directory")
+    parser.add_argument("-nd", "--DirectoryNI", help="NI6008 DAQ files directory")
+    parser.add_argument("-ud", "--DirectoryUps", help="Ups files directory")
     parser.add_argument("-dout", "--DirectoryOut", help="Output Directory")
     parser.add_argument("-pl", "--PlateLayout", help="Plate layout file as csv file in excel dialect.")
     parser.add_argument("-s", "--Start", type=str, help="Starting index")
@@ -37,6 +41,10 @@ def getArgs():
         "405 Data Files Directory: {}\n"
         "485 Data Files Directory: {}\n"
         "Gravity Directory:        {}\n"
+        "Spatial Directory:        {}\n"
+        "Phidgets Directory:       {}\n"
+        "NI6008 Directory:         {}\n"
+        "UPS Directory:            {}\n"
         "Output Directory:         {}\n"
         "Plate Layout:             {}\n"
         "Starting Index:           {}\n"
@@ -44,7 +52,10 @@ def getArgs():
         .format
             (
             args.Directory405, args.Directory485,
-            args.DirectoryGrav, args.DirectoryOut,
+            args.DirectoryGrav, args.DirectorySpat,
+            args.DirectoryPhid, args.DirectoryNI,
+            args.DirectoryUps,
+            args.DirectoryOut,
             args.PlateLayout,
             args.Start, args.End
         )
@@ -110,15 +121,15 @@ def main():
 
     dataFile = ugDataFile(dir405=basedir405, dir485=basedir485,
                           dirgrav=gravDir,
-                          outdir=outDir, layout=plateLayout)
+                          dirout=outDir, layout=plateLayout)
 
     dataFile.fromTo(int(start), int(end))
     dataFile.update()
     dataReader = ugDataReader.ugDataReader(datafile=dataFile)
     dataReader.update()
-    slice405 = dataReader.valuesList("dir405")
-    slice485 = dataReader.valuesList("dir485")
-    gravlist = dataReader.valuesList("dirgrav")
+    slice405 = dataReader.valuesList("405")
+    slice485 = dataReader.valuesList("485")
+    gravlist = dataReader.valuesList("grav")
 
     # ratios = calculateRatios(slice405, slice485)
     # cars = conc.calculateConcentrations(ratios, slice405, slice485)
@@ -126,19 +137,19 @@ def main():
     # write data files
     dw = ugDataWriter.ugDataWriter(dataFile)
     if slice405 is not None:
-        dw.writeGravity(dataFile.dirout() + 'Data405.dat',
+        dw.writeGravity(dataFile.filesList("405") + 'Data405.dat',
                         slice405,
-                        dataReader.valueTimes("405times"))
+                        dataReader.valueTimes("405"))
 
     if slice485 is not None:
-        dw.writeGravity(dataFile.dirout() + 'Data485.dat',
+        dw.writeGravity(dataFile.filesList("485") + 'Data485.dat',
                         slice485,
-                        dataReader.valueTimes("485times"))
+                        dataReader.valueTimes("485"))
 
     if gravlist is not None:
-        dw.writeGravity(dataFile.dirout() + 'grav.dat',
+        dw.writeGravity(dataFile.filesList("grav") + 'grav.dat',
                         gravlist,
-                        dataReader.valueTimes("gravtimes"))
+                        dataReader.valueTimes("grav"))
 
         # dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
         # dw.writeValues(dataFile.dirout() + 'cars.dat', cars.Concs)

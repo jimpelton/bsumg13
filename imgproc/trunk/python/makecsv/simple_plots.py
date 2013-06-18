@@ -13,8 +13,11 @@ def main(argv):
     """
     :param argv:
     """
-    file = argv[1]
-    plot_title = argv[2]
+    datafile = argv[1]
+    gravfile = argv[2]
+
+    plot_title = argv[3]
+
     plots_dir = os.getcwd() + os.sep + "plots/"
 
     if not os.path.exists(plots_dir):
@@ -26,19 +29,34 @@ def main(argv):
             else:
                 print(plots_dir + " could not be created.")
 
-    data = np.loadtxt(file, dtype=float)
-    t = arange(300000, 350000, 1, np.int32)
+    grav = np.loadtxt(gravfile, dtype=np.float)
 
+    startTime = grav[300000, 0]
+    endTime = grav[350000, 0]
+
+    grav = grav[300000:350000, :]
+
+    data = np.loadtxt(datafile, dtype=np.float32, usecols=(0, 2))
+
+    sel = [x for x in map(lambda v: startTime < v[:,0] < endTime, data)]
+    data_sel = [x for x in np.select([sel], [data]) if x != 0]
+
+    # t = arange(grav[0, 0], grav[-1, 0], 1, np.float32)
 
     # fig = figure(figsize=(32, 18), dpi=200)
     # for i in range(1):
     i = 2
-    plot(t, data[300000:350000, 1], linewidth=1.0)
-    xlabel('Time (unix epoch)')
-    ylabel('gravity')
+    subplot(211)
+    plot(arange(0, len(data_sel)), data_sel, linewidth=1.0)
+    xlabel('Time')
+    ylabel('Well Brightness Average')
+    subplot(212)
+    plot(arange(0,len(grav)), grav, linewidth=1.0)
+    xlabel('Time')
+    ylabel('Acceleration')
     title(plot_title)
     grid(True)
-    savefig(plots_dir + os.path.basename(file) + "_" + str(i) + ".png")
+    savefig(plots_dir + os.path.basename(datafile) + "_" + str(i) + ".png")
     #clf()
     show()
 

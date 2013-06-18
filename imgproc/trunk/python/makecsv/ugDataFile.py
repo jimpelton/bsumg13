@@ -16,44 +16,48 @@ class ugDataFile:
     def __init__(self,
                  layout=None, dir405=None, dir485=None,
                  dirgrav=None, dirbaro=None, dirphid=None,
-                 dirspat=None, dirni=None, outdir=None):
+                 dirspat=None, dirni=None, dirups=None, dirout=None):
 
         self._startingIndex = 0
         self._endingIndex = 0
         self._shortest = 0
         self._needsUpdate = True
         self._layout = layout
-        self._outdir = outdir
+        self._outdir = dirout
 
         self._filesDict = dict()
 
         dir405 = self.sanitize(dir405)
         if dir405 is not None:
-            self._filesDict["dir405"] = (dir405, [])
+            self._filesDict["405"] = (dir405, [])
 
         dir485 = self.sanitize(dir485)
         if dir485 is not None:
-            self._filesDict["dir485"] = (dir485, [])
+            self._filesDict["485"] = (dir485, [])
 
         dirgrav = self.sanitize(dirgrav)
         if dirgrav is not None:
-            self._filesDict["dirgrav"] = (dirgrav, [])
+            self._filesDict["grav"] = (dirgrav, [])
 
         dirbaro = self.sanitize(dirbaro)
         if dirbaro is not None:
-            self._filesDict["dirbaro"] = (dirbaro, [])
+            self._filesDict["baro"] = (dirbaro, [])
 
         dirphid = self.sanitize(dirphid)
         if dirphid is not None:
-            self._filesDict["dirphid"] = (dirphid, [])
+            self._filesDict["phid"] = (dirphid, [])
 
         dirspat = self.sanitize(dirspat)
         if dirspat is not None:
-            self._filesDict["dirspat"] = (dirspat, [])
+            self._filesDict["spat"] = (dirspat, [])
 
         dirni = self.sanitize(dirni)
         if dirni is not None:
-            self._filesDict["dirni"] = (dirni, [])
+            self._filesDict["ni"] = (dirni, [])
+
+        dirups = self.sanitize(dirups)
+        if dirups is not None:
+            self._filesDict["ups"] = (dirups, [])
 
         self._NumReg = re.compile("([0-9]+)")
 
@@ -84,17 +88,7 @@ class ugDataFile:
 
             self._needsUpdate = False
 
-    def fileNames(self, typeString):
-        """
-        Get the file names for the files for the given value type.
-        :param typeString:
-        :return: list
-        """
-        d = self._filesDict.get(typeString)
-        if d is not None:
-            return d[1][self._startingIndex:self._endingIndex + 1]
-        else:
-            return []
+
 
     def fromTo(self, sIdx=0, eIdx=0):
         """
@@ -163,43 +157,32 @@ class ugDataFile:
         return self.eIdx() - self.sIdx()
 
 
-    def dir405(self):
+    def filesList(self, typeString):
         """
-        405 files directory.
-        :return: list of str
+         Get the file names for the files for the given value type for the
+         range set by fromTo()
+        :param typeString: str
+        :return: list
         """
-        return self._filesDict["dir405"][0]
+        d = self._filesDict.get(typeString)  # tuple: (dir name, files list)
+        if d is not None:
+            flist = d[1]
+            return flist[self._startingIndex:self._endingIndex + 1]
+        else:
+            return []
 
-
-    def dir485(self):
+    def filesDir(self, typeString):
         """
-        485 files directory.
-        :return: list of str
+         Get the directory name for the files for the given value type.
+        :param typeString: str
+        :return: list
         """
-        return self._filesDict["dir485"][0]
-
-
-    def dirgrav(self):
-        """
-        Gravity files directory.
-        :return: list of str
-        """
-        return self._filesDict["dirgrav"][0]
-
-    def dirspat(self):
-        """
-        Spatial files directory
-        :return: list of str
-        """
-        return self._filesDict["dirspat"][0]
-
-    def dirout(self):
-        """
-        Output directory (if saving data).
-        :return: str
-        """
-        return self._outdir
-
+        d = self._filesDict.get(typeString)  # tuple: (dir name, files list)
+        if d is not None:
+            fdir = d[0]
+            return fdir
+        else:
+            return []
 
     def plateLayout(self):
         """
@@ -208,9 +191,49 @@ class ugDataFile:
         """
         return self._layout
 
-
     def filesDict(self):
         return self._filesDict
+
+
+    # def dir405(self):
+    #     """
+    #     405 files directory.
+    #     :return: list of str
+    #     """
+    #     return self._filesDict["405"][0]
+    #
+    #
+    # def dir485(self):
+    #     """
+    #     485 files directory.
+    #     :return: list of str
+    #     """
+    #     return self._filesDict["485"][0]
+    #
+    #
+    # def dirgrav(self):
+    #     """
+    #     Gravity files directory.
+    #     :return: list of str
+    #     """
+    #     return self._filesDict["grav"][0]
+    #
+    # def dirspat(self):
+    #     """
+    #     Spatial files directory
+    #     :return: list of str
+    #     """
+    #     return self._filesDict["spat"][0]
+    #
+    # def dirout(self):
+    #     """
+    #     Output directory (if saving data).
+    #     :return: str
+    #     """
+    #     return self._outdir
+
+
+
 
 
 
