@@ -50,6 +50,7 @@ class ugDataReader:
         self._dataFile.update()
         print("DataReader doing update.\n")
         self._readall(self._dataFile)
+        self._updateStartTime(self._timesDict)
 
 
     def layout(self):
@@ -82,11 +83,29 @@ class ugDataReader:
         """
         return self._timesDict.get(typeString)
 
-    def _readall(self, df):
+    def startTimeMillis(self):
+        return self._startMillis
+
+    def timeStringDeltaFromStart(self, millis):
+        delta = (millis-self._startMillis)
+        # hh = delta / (1000*60*60)
+        # mm = (delta % (1000*60*60)) / (1000*60)
+        ss = (delta / 1000)
+        ff = (delta % 1000)
+        # return str(hh) + ":" + str(mm) + ":" + str(ss) + "." + str(ff)
+        return str(ss) + "." + str(ff)
+
+    def _updateStartTime(self, timeDict):
+        for timeList in timeDict.values():
+            if not len(timeList) is 0:
+                self._startMillis = min(self._startMillis, min(timeList))
+
+
+    def _readall(self, dataFile):
         reader = {
-            "405":  self._readCam405,
-            "485":  self._readCam485,
-            "grav": self._readAcc,
+            "405":  self._choose405FormatYear,
+            "485":  self._choose485FormatYear,
+            "grav": self._chooseAccelFormatYear,
             "phid": self._readPhidFiles,
             "baro": self._readBaroFiles,
             "spat": self._readSpatFiles,
@@ -94,15 +113,15 @@ class ugDataReader:
             "ups":  self._readUpsFiles
         }
 
-        fd = self._dataFile.filesDict()
+        fd = dataFile.filesDict()
         dataTypes = fd.keys()
         for t in dataTypes:
-            reader[t](fd[t][0], fd[t][1])
+            reader[t](fd[t][0], fd[t][1])  # (basedir, files_list)
 
         self._readPlateLayout()
 
 
-    def _readCam405(self, basedir, files405_list):
+    def _choose405FormatYear(self, basedir, files405_list):
         print('Reading {0} format 405 files...'.format(self._formatYear))
 
         if self._formatYear == 2013:
@@ -110,7 +129,7 @@ class ugDataReader:
         else:
             self._read405Files_reversed(basedir, files405_list)
 
-    def _readCam485(self, basedir, files485_list):
+    def _choose485FormatYear(self, basedir, files485_list):
         print('Reading {0} format 485 files...'.format(self._formatYear))
 
         if self._formatYear == 2013:
@@ -118,7 +137,7 @@ class ugDataReader:
         else:
             self._read485Files(basedir, files485_list)
 
-    def _readAcc(self, basedir, gravity_list):
+    def _chooseAccelFormatYear(self, basedir, gravity_list):
         print('Reading {0} format gravity files'.format(self._formatYear))
 
         if self._formatYear == 2013:
@@ -151,9 +170,6 @@ class ugDataReader:
                 tempmags.append(gMag)
                 time_list.append(int(txyz[0]))
                 timeIdx += 1
-
-        if (time_list[0] > self._startMillis):
-            self._startMillis = time_list[0]
 
         timeIdx = 0
         self._valuesDict["spat"] = np.zeros((len(tempmags), 1), dtype=np.float64)
@@ -219,7 +235,7 @@ class ugDataReader:
             for s in lines:
                 strs = s.split(':')
                 val = int(strs[1].strip())
-                vals[timeIdx][colIdx] = val  #add to list backwards
+                vals[timeIdx][colIdx] = val  # add to list backwards
                 colIdx -= 1
 
             timeIdx += 1
@@ -235,6 +251,7 @@ class ugDataReader:
         """
         self._valuesDict["485"] = np.zeros((len(files485_list), NUM_WELLS), dtype=np.float64)
         vals = self._valuesDict["485"]
+        time_vals = self._timesDict["485"]
         timeIdx = 0
         for f in files485_list:
             thisfile = open(basedir + f)
@@ -242,7 +259,7 @@ class ugDataReader:
             thisfile.close()
 
             s = re.split(self._NumReg, f)
-            vals.append(int(s[5]))
+            time_vals.append(int(s[5]))
 
             colIdx = 0
             for s in lines:
@@ -389,6 +406,7 @@ class ugDataReader:
         delta = (millis-self._startMillis)*1000  # microseconds
         s = str(datetime.utcfromtimestamp(delta))
         return s
+
 
 
 
