@@ -1,7 +1,6 @@
 __author__ = 'jim'
 
 import sys
-import os
 import numpy as np
 
 
@@ -16,40 +15,36 @@ def main(argv):
 
     gravname = argv[1]
     dataname = argv[2]
-    outname  = argv[3]
+    outname = argv[3]
     # data485name = argv[3]
 
-    gravs = np.loadtxt(gravname, dtype=float, usecols=(1,))
+    gravs = np.loadtxt(gravname, dtype=float, usecols=(0, 1))
     times = np.loadtxt(dataname, dtype=int, usecols=(0,))
 
     grav_avgs = np.zeros((len(times), 2), dtype=float)
+    windowsize = 3
 
+    i = 0
+    for t in times:
+        Gt = gravs[0:-1, 0]
+        idx = np.argmin(np.abs(Gt - t))
 
-    split_grav = np.array_split(gravs, len(times))
-    for i in range(len(split_grav)):
-        grav_avgs[i,0] = times[i]
-        grav_avgs[i,1] = np.average(split_grav[i])
+        wstart = idx - windowsize
+        wend = idx + windowsize
+        if wstart < 0:
+            wstart = 0
+        if wend > len(Gt):
+            wend = len(Gt)
 
-    # callables = { 'float': floatfmt }
-    # np.set_printoptions(formatter=callables)
-    np.savetxt(outname, grav_avgs, delimiter=" ", fmt="%d, %.8f")
+        Gg = gravs[wstart:wend, 1]
+        avg = np.average(Gg)
+        grav_avgs[i, 0] = t
+        grav_avgs[i, 1] = avg
+        i += 1
 
-    # gIdx = 0
-    # lastt = 0
-    # T = np.zeros(1, dtype=np.float)
-    # for i in range(len(data_405)):
-    #     t1 = data_405[i]
-    #     t2 = data_405[i + 1]
-    #     tm = (t1 + t2) / 2.0
-    #     g = data_grav[gIdx:-1, 1]
-    #     condlist = [g > lastt, g < tm]
-    #
-    #     lastt = tm
+    np.savetxt(outname, grav_avgs, delimiter=' ', fmt="%d %.8f")
 
     return
-
-def floatfmt(f):
-    return str(int(f))
 
 if __name__ == '__main__':
     main(sys.argv)

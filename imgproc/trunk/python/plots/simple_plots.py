@@ -51,7 +51,7 @@ def main(argv):
     xlabel('Time')
     ylabel('Well Brightness Average')
     # subplot(212)
-    plot(arange(0,len(grav)), grav[:,1], linewidth=1.0)
+    # plot(arange(0,len(grav)), grav[:,1], linewidth=1.0)
     # xlabel('Time')
     # ylabel('Acceleration')
     title(plot_title)
