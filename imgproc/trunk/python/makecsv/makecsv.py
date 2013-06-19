@@ -137,17 +137,17 @@ def main():
     # write data files
     dw = ugDataWriter.ugDataWriter(dataFile)
     if slice405 is not None:
-        dw.writeGravity(dataFile.filesList("405") + 'Data405.dat',
+        dw.writeTimeSeries(dataFile.filesList("405") + 'Data405.dat',
                         slice405,
                         dataReader.valueTimes("405"))
 
     if slice485 is not None:
-        dw.writeGravity(dataFile.filesList("485") + 'Data485.dat',
+        dw.writeTimeSeries(dataFile.filesList("485") + 'Data485.dat',
                         slice485,
                         dataReader.valueTimes("485"))
 
     if gravlist is not None:
-        dw.writeGravity(dataFile.filesList("grav") + 'grav.dat',
+        dw.writeTimeSeries(dataFile.filesList("grav") + 'grav.dat',
                         gravlist,
                         dataReader.valueTimes("grav"))
 

@@ -1,37 +1,22 @@
 __author__ = 'jim'
 
 import csv
-import ugDataFile
 import itertools
-
+import numpy
 
 class ugDataWriter():
-    def __init__(self, datafile=None):
-        self.df = datafile if datafile is not None else None
+    def __init__(self):
         return
 
-    def writeValues(self, fileName, valuesList):
-        """
-        Write a list of values to fileName
-        :param fileName: file to write to
-        :param valuesList: the values to write.
-        """
-        print('Writing values: {0}'.format(self.df.dirout()))
-        f = open(fileName, 'w')
-
-        for i in range(len(valuesList)):
-            f.write(' '.join(str(x) for x in valuesList[i]))
-            f.write('\n')
-        f.close()
-
-    def writeGravity(self, filename, gravArray, timeList):
+    def writeTimeSeries(self, filename, dataArray: numpy.ndarray, timeList):
         """
         :param filename:
         :param gravList:
+        :param timeList:
         """
         print('Writing values: {}'.format(filename))
         f = open(filename, 'w')
-        for t, r in itertools.zip_longest(timeList, gravArray):
+        for t, r in itertools.zip_longest(timeList, dataArray):
             f.write(t + ' ')
             f.write(' '.join(str(cell) for cell in r))
             f.write('\n')
@@ -62,3 +47,16 @@ class ugDataWriter():
                 cf.writerow(row)
 
 
+    #def writeValues(self, fileName, valuesList):
+        #     """
+        #     Write a list of values to fileName
+        #     :param fileName: file to write to
+        #     :param valuesList: the values to write.
+        #     """
+        #     print('Writing values: {0}'.format(self.df.dirout()))
+        #     f = open(fileName, 'w')
+        #
+        #     for i in range(len(valuesList)):
+        #         f.write(' '.join(str(x) for x in valuesList[i]))
+        #         f.write('\n')
+        #     f.close()

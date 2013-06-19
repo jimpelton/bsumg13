@@ -1,11 +1,13 @@
 __author__ = 'jim'
 
 from math import sqrt
-import numpy as np
 import csv
 import re
 from datetime import *
 from sys import maxsize
+
+import numpy as np
+
 NUM_WELLS = 192
 
 
