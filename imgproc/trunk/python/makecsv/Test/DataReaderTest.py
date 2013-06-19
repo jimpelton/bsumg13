@@ -8,18 +8,16 @@ import ugDataFile
 
 class MyTestCase(unittest.TestCase):
     def setupDataFile(self):
-        df = ugDataFile.ugDataFile(layout='testdata/28April2013_plate_layout_transposed_flipped.csv',
+        return ugDataFile.ugDataFile(layout='testdata/28April2013_plate_layout_transposed_flipped.csv',
                                    dirout="testdata/dirout/",
                                    dir405="testdata/dir405",
                                    dir485="testdata/dir485/",
                                    dirgrav="testdata/dirgrav/")
-        return df
 
     def setupDataFile_2013(self):
-        df = ugDataFile.ugDataFile(dir405="testdata_2013/dir405",
+        return ugDataFile.ugDataFile(dir405="testdata_2013/dir405",
                                    dir485="testdata_2013/dir485",
                                    dirgrav="testdata_2013/dirgrav")
-        return df
 
     def test_read(self):
         df = self.setupDataFile()
@@ -36,34 +34,34 @@ class MyTestCase(unittest.TestCase):
         # self.assertEqual(dr.valuesList("dirgrav"))
 
     def test_timeStamp(self):
-        df = self.setupDataFile_2013()
+        df = ugDataFile.ugDataFile(dir405="testdata_2013/dir405",
+                                   dir485="testdata_2013/dir485")
         df.fromTo(0, 45)
         df.update()
         dr = ugDataReader.ugDataReader(format_year=2013,
                                        datafile=df)
         dr.update()
 
-        # start = dr.valueTimes("405")[0]
         end = dr.valueTimes("405")[-1]
-
-        print(dr.timeStringDeltaFromStart(end))
+        ts = dr.timeStringDeltaFromStart(end)
+        self.assertEqual(ts, "29.354")
 
     def test_csvread(self):
         df = self.setupDataFile()
         df.update()
         dr = ugDataReader.ugDataReader(format_year=2012, datafile=df)
         dr.update()
-        actual_dict = {'200 uL co culture': [44, 45], 'MLO-Y4 on cytopore no dye': [9], '25 uL MLOY4': [19, 20],
+        expected = {'200 uL co culture': [44, 45], 'MLO-Y4 on cytopore no dye': [9], '25 uL MLOY4': [19, 20],
                        '25 uL co culture': [23, 24], '50 uL MC3T3': [28, 29], 'MC3T3 on cytopore no dye': [10],
                        '100 uL MLOY4': [33, 34], '100 uL co culture': [37, 38], '400 uL co culture': [51, 52],
                        '50uL co cilture': [30, 31], 'Co-culture on cytopore no dye': [11], '200 uL MLOY4': [40, 41],
                        '400 uL MC3T3': [49, 50], '50 uL MLOY4': [26, 27], '100 uL MC3T3': [35, 36],
                        '25 uL MC3T3': [21, 22], '400 uL MLOY4': [47, 48], '200 uL MC3T3': [42, 43]}
 
-        layout_dict = dr.layout()
-        self.assertDictEqual(layout_dict, actual_dict)
+        layout = dr.layout()
+        self.assertDictEqual(layout, expected)
 
-        print(layout_dict)
+        print(layout)
 
 
         # def test_timestamp(self):
