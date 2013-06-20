@@ -5,7 +5,7 @@ import numpy as np
 
 
 def usage():
-    print("remove_grav.py <grav-file> <data405-file> <data485-file>")
+    print("remove_grav.py <grav-file> <data405-file> <output-file>")
 
 
 def main(argv):
@@ -18,16 +18,16 @@ def main(argv):
     outname = argv[3]
     # data485name = argv[3]
 
-    gravs = np.loadtxt(gravname, dtype=float, usecols=(0, 1))
-    times = np.loadtxt(dataname, dtype=int, usecols=(0,))
+    gravs = np.loadtxt(gravname, dtype=float, usecols=(0, 2))
+    data = np.loadtxt(dataname, dtype=float, usecols=(0, 1))
 
-    grav_avgs = np.zeros((len(times), 2), dtype=float)
+    grav_avgs = np.zeros((len(data), 3), dtype=float)
     windowsize = 3
 
     i = 0
-    for t in times:
+    for t in data:
         Gt = gravs[0:-1, 0]
-        idx = np.argmin(np.abs(Gt - t))
+        idx = np.argmin(np.abs(Gt - t[0]))
 
         wstart = idx - windowsize
         wend = idx + windowsize
@@ -38,11 +38,12 @@ def main(argv):
 
         Gg = gravs[wstart:wend, 1]
         avg = np.average(Gg)
-        grav_avgs[i, 0] = t
-        grav_avgs[i, 1] = avg
+        grav_avgs[i, 0] = t[0]  # time millis
+        grav_avgs[i, 1] = t[1]  # elapsed seconds
+        grav_avgs[i, 2] = avg   # grav avg
         i += 1
 
-    np.savetxt(outname, grav_avgs, delimiter=' ', fmt="%d %.8f")
+    np.savetxt(outname, grav_avgs, delimiter=' ', fmt="%d %.3f %.8f")
 
     return
 
