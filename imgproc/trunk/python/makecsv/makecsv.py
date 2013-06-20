@@ -114,13 +114,14 @@ def main():
     basedir485 = args.Directory485
     basedir405 = args.Directory405
     gravDir = args.DirectoryGrav
+    spatDir = args.DirectorySpat
     outDir = args.DirectoryOut
     plateLayout = args.PlateLayout
     start = str(args.Start).zfill(5)
     end = str(args.End).zfill(5)
 
     dataFile = ugDataFile(dir405=basedir405, dir485=basedir485,
-                          dirgrav=gravDir,
+                          dirgrav=gravDir, dirspat=spatDir,
                           dirout=outDir, layout=plateLayout)
 
     dataFile.fromTo(int(start), int(end))
@@ -135,19 +136,19 @@ def main():
     # cars = conc.calculateConcentrations(ratios, slice405, slice485)
 
     # write data files
-    dw = ugDataWriter.ugDataWriter(dataFile)
+    dw = ugDataWriter.ugDataWriter(reader=dataReader)
     if slice405 is not None:
-        dw.writeTimeSeries(dataFile.filesList("405") + 'Data405.dat',
+        dw.writeTimeSeries(outDir + '/Data405.dat',
                         slice405,
                         dataReader.valueTimes("405"))
 
     if slice485 is not None:
-        dw.writeTimeSeries(dataFile.filesList("485") + 'Data485.dat',
+        dw.writeTimeSeries(outDir + '/Data485.dat',
                         slice485,
                         dataReader.valueTimes("485"))
 
     if gravlist is not None:
-        dw.writeTimeSeries(dataFile.filesList("grav") + 'grav.dat',
+        dw.writeTimeSeries(outDir + '/grav.dat',
                         gravlist,
                         dataReader.valueTimes("grav"))
 

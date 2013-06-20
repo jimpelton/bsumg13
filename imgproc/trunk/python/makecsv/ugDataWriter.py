@@ -3,9 +3,11 @@ __author__ = 'jim'
 import csv
 import itertools
 import numpy
+import ugDataReader
 
-class ugDataWriter():
-    def __init__(self):
+class ugDataWriter:
+    def __init__(self, reader=None):
+        self._dataReader = reader
         return
 
     def writeTimeSeries(self, filename, dataArray: numpy.ndarray, timeList):
@@ -17,7 +19,8 @@ class ugDataWriter():
         print('Writing values: {}'.format(filename))
         f = open(filename, 'w')
         for t, r in itertools.zip_longest(timeList, dataArray):
-            f.write(t + ' ')
+            ts = self._dataReader.timeStringDeltaFromStart(t)
+            f.write(str(t) + ' ' + ts + ' ')
             f.write(' '.join(str(cell) for cell in r))
             f.write('\n')
         f.close()

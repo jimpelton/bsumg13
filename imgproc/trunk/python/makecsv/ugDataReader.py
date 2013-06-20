@@ -155,6 +155,7 @@ class ugDataReader:
         pass
 
     def _readSpatFiles(self, basedir, spat_list):
+        print("Reading spatial files...")
         timeIdx = 0
         tempmags = []
         time_list = self._timesDict["spat"]
@@ -178,7 +179,7 @@ class ugDataReader:
             spat_array[timeIdx][0] = m
             timeIdx += 1
 
-        print('Read {} gravity files.'.format(timeIdx))
+        print('Read {} Spatial files.'.format(timeIdx))
 
     def _readNIFiles(self, basedir, ni_list):
         pass
