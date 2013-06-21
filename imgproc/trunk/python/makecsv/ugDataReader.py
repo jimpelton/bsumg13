@@ -1,3 +1,5 @@
+from _dbm import open
+
 __author__ = 'jim'
 
 from math import sqrt
@@ -8,35 +10,34 @@ from sys import maxsize
 
 import numpy as np
 
-NUM_WELLS = 192
-
 
 class ugDataReader:
-    def __init__(self, format_year=2013, datafile=None):
+    def __init__(self, format_year=2013, num_wells=192, datafile=None):
         """
         :param datafile: a ugDataFile object.
         """
         self._startMillis = 0
         self._dataFile = datafile
         self._formatYear = format_year
+        self._numWells = num_wells
 
         self._valuesDict = dict()
-        self._valuesDict["405"]  = None
-        self._valuesDict["485"]  = None
+        self._valuesDict["405"] = None
+        self._valuesDict["485"] = None
         self._valuesDict["grav"] = None
         self._valuesDict["spat"] = None
         self._valuesDict["phid"] = None
-        self._valuesDict["ni"]   = None
-        self._valuesDict["ups"]  = None
+        self._valuesDict["ni"] = None
+        self._valuesDict["ups"] = None
 
         self._timesDict = dict()
-        self._timesDict["405"]   = []
-        self._timesDict["485"]   = []
-        self._timesDict["grav"]  = []
-        self._timesDict["spat"]  = []
-        self._timesDict["phid"]  = []
-        self._timesDict["ni"]    = []
-        self._timesDict["ups"]   = []
+        self._timesDict["405"] = []
+        self._timesDict["485"] = []
+        self._timesDict["grav"] = []
+        self._timesDict["spat"] = []
+        self._timesDict["phid"] = []
+        self._timesDict["ni"] = []
+        self._timesDict["ups"] = []
 
         self._layout = dict()
         self._linearLayout = []
@@ -89,7 +90,7 @@ class ugDataReader:
         return self._startMillis
 
     def timeStringDeltaFromStart(self, millis):
-        delta = (millis-self._startMillis)
+        delta = (millis - self._startMillis)
         ss = (delta // 1000)
         ff = (delta % 1000)
         return str(ss) + "." + str(ff)
@@ -99,18 +100,18 @@ class ugDataReader:
         for timeList in timeDict.values():
             if not len(timeList) is 0:
                 lastmin = min(lastmin, min(timeList))
-        self._startMillis=lastmin
+        self._startMillis = lastmin
 
     def _readall(self, dataFile):
         reader = {
-            "405":  self._choose405FormatYear,
-            "485":  self._choose485FormatYear,
+            "405": self._choose405FormatYear,
+            "485": self._choose485FormatYear,
             "grav": self._chooseAccelFormatYear,
             "phid": self._readPhidFiles,
             "baro": self._readBaroFiles,
             "spat": self._readSpatFiles,
-            "ni":   self._readNIFiles,
-            "ups":  self._readUpsFiles
+            "ni": self._readNIFiles,
+            "ups": self._readUpsFiles
         }
 
         fd = dataFile.filesDict()
@@ -146,17 +147,35 @@ class ugDataReader:
             self._readGravFiles(basedir, gravity_list)
 
 
-
-
     def _readBaroFiles(self, basedir, baro_list):
         pass
 
     def _readPhidFiles(self, basedir, phid_list):
-        pass
+        print("Reading phidgets DAQ files...")
+
+        time_list = self._timesDict["phid"]
+        tempparts = []
+        for f in phid_list:
+            with open(basedir+f) as file:
+                for line in file.readlines():
+                    line.strip()
+                    lineparts = [p for p in line.split(' ') if p is not "False"]
+                    time_list.append(lineparts[0])
+                    tempparts.append(lineparts[1:])
+
+        self._valuesDict["phid"] = np.zeros((len(tempparts), max([len(x) for x in tempparts])), dtype=float)
+        v = self._valuesDict["phid"]
+        idx = 0
+        for line in tempparts:
+            for i in range(len(line)-1):
+                v[idx][i] = line[i+1]
+                idx += 1
+
+        print("Read {} phidgits records.".format(idx))
+
 
     def _readSpatFiles(self, basedir, spat_list):
         print("Reading spatial files...")
-        timeIdx = 0
         tempmags = []
         time_list = self._timesDict["spat"]
 
@@ -170,7 +189,6 @@ class ugDataReader:
                 gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
                 tempmags.append(gMag)
                 time_list.append(int(txyz[0]))
-                timeIdx += 1
 
         timeIdx = 0
         self._valuesDict["spat"] = np.zeros((len(tempmags), 1), dtype=np.float64)
@@ -193,7 +211,7 @@ class ugDataReader:
         tries to parse the new file name, which has a millisecond timestamp in it.
         :param files405_list:
         """
-        self._valuesDict["405"] = np.zeros((len(files405_list), NUM_WELLS), dtype=np.float64)
+        self._valuesDict["405"] = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
         vals = self._valuesDict["405"]
         time_vals = self._timesDict["405"]
         timeIdx = 0
@@ -206,7 +224,7 @@ class ugDataReader:
             t = int(s[5].lstrip("0"))
             time_vals.append(t)
 
-            colIdx = NUM_WELLS - 1
+            colIdx = self._numWells - 1
             for s in lines:
                 strs = s.split(':')
                 val = int(strs[1].strip())
@@ -225,7 +243,7 @@ class ugDataReader:
             well patterns match that of the 485 well values.
         :param dir405: Path to 405 data files (expected to be sorted).
         """
-        self._valuesDict["405"] = np.zeros((len(files405_list), NUM_WELLS), dtype=np.float64)
+        self._valuesDict["405"] = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
         vals = self._valuesDict["405"]
         timeIdx = 0
         for f in files405_list:
@@ -233,7 +251,7 @@ class ugDataReader:
             lines = thisfile.readlines()
             thisfile.close()
 
-            colIdx = NUM_WELLS - 1
+            colIdx = self._numWells - 1
             for s in lines:
                 strs = s.split(':')
                 val = int(strs[1].strip())
@@ -251,7 +269,7 @@ class ugDataReader:
         tries to parse the new file name, which has a millisecond timestamp in it.
         :param files485_list:
         """
-        self._valuesDict["485"] = np.zeros((len(files485_list), NUM_WELLS), dtype=np.float64)
+        self._valuesDict["485"] = np.zeros((len(files485_list), self._numWells), dtype=np.float64)
         vals = self._valuesDict["485"]
         time_vals = self._timesDict["485"]
         timeIdx = 0
@@ -281,7 +299,7 @@ class ugDataReader:
         Each file contains lines formatted as: "well#:val".
         :param dir485:
         """
-        self._valuesDict["485"] = np.zeros((len(files485_list), NUM_WELLS), dtype=np.float64)
+        self._valuesDict["485"] = np.zeros((len(files485_list), self._numWells), dtype=np.float64)
         vals = self._valuesDict["485"]
         timeIdx = 0
         for f in files485_list:
@@ -345,9 +363,10 @@ class ugDataReader:
                 timeIdx += 1
 
         timeIdx = 0
-        self.valuesaccel = np.zeros(len(tempmags), dtype=np.float64)
+        self._valuesDict["grav"] = np.zeros(len(tempmags), dtype=np.float64)
+        accel_array = self._valuesDict["grav"]
         for m in tempmags:
-            self.valuesaccel[timeIdx] = m
+            accel_array[timeIdx] = m
             timeIdx += 1
 
         print('Read {} gravity files.'.format(timeIdx))
@@ -407,7 +426,7 @@ class ugDataReader:
         return
 
     def makeTimeStamp(self, millis):
-        delta = (millis-self._startMillis)*1000  # microseconds
+        delta = (millis - self._startMillis) * 1000  # microseconds
         s = str(datetime.utcfromtimestamp(delta))
         return s
 
