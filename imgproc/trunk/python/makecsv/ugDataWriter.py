@@ -16,6 +16,16 @@ class ugDataWriter:
         :param gravList:
         :param timeList:
         """
+        if dataArray is None:
+            print("writeTimeSeries failed: dataArray is None.")
+            return
+        if timeList is None:
+            print("writeTimeSeries failed: timeList is None.")
+            return
+        if filename is None:
+            print("writeTimeSeries failed: filename is None.")
+            return
+
         print('Writing values: {}'.format(filename))
         f = open(filename, 'w')
         for t, r in itertools.zip_longest(timeList, dataArray):

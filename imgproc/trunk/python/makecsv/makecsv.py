@@ -115,6 +115,7 @@ def main():
     basedir405 = args.Directory405
     gravDir = args.DirectoryGrav
     spatDir = args.DirectorySpat
+    phidDir = args.DirectoryPhid
     outDir = args.DirectoryOut
     plateLayout = args.PlateLayout
     start = str(args.Start).zfill(5)
@@ -122,47 +123,60 @@ def main():
 
     dataFile = ugDataFile(dir405=basedir405, dir485=basedir485,
                           dirgrav=gravDir, dirspat=spatDir,
+                          dirphid=phidDir,
                           dirout=outDir, layout=plateLayout)
 
     dataFile.fromTo(int(start), int(end))
     dataFile.update()
     dataReader = ugDataReader.ugDataReader(datafile=dataFile)
     dataReader.update()
-    slice405 = dataReader.valuesList("405")
-    slice485 = dataReader.valuesList("485")
-    gravlist = dataReader.valuesList("grav")
+    # slice405 = dataReader.valuesList("405")
+    # slice485 = dataReader.valuesList("485")
+    # gravlist = dataReader.valuesList("grav")
+
 
     # ratios = calculateRatios(slice405, slice485)
     # cars = conc.calculateConcentrations(ratios, slice405, slice485)
 
     # write data files
     dw = ugDataWriter.ugDataWriter(reader=dataReader)
-    if slice405 is not None:
+    if basedir405 is not None:
         dw.writeTimeSeries(outDir + '/Data405.dat',
-                        slice405,
-                        dataReader.valueTimes("405"))
+                           dataReader.valuesList("405"),
+                           dataReader.valueTimes("405"))
 
-    if slice485 is not None:
+    if basedir485 is not None:
         dw.writeTimeSeries(outDir + '/Data485.dat',
-                        slice485,
-                        dataReader.valueTimes("485"))
+                           dataReader.valuesList("485"),
+                           dataReader.valueTimes("485"))
 
-    if gravlist is not None:
+    if gravDir is not None:
         dw.writeTimeSeries(outDir + '/grav.dat',
-                        gravlist,
-                        dataReader.valueTimes("grav"))
+                           dataReader.valuesList("grav"),
+                           dataReader.valueTimes("grav"))
 
-        # dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
-        # dw.writeValues(dataFile.dirout() + 'cars.dat', cars.Concs)
-        # dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', cars.F485MaxVals)
-        # dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', cars.F405MaxVals)
-        # dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', cars.F485MinVals)
-        # dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', cars.F405MinVals)
-        # dw.writeValues(dataFile.dirout() + 'QVals.dat', cars.QVals)
-        # dw.writeValues(dataFile.dirout() + 'RminVals.dat', cars.RminVals)
-        # dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', cars.RmaxVals)
-        # dw.writeValues(dataFile.dirout() + 'NumVals.dat', cars.NumVals)
-        # dw.writeValues(dataFile.dirout() + 'DenVals.dat', cars.DenVals)
+    if spatDir is not None:
+        dw.writeTimeSeries(outDir + '/spat.dat',
+                           dataReader.valuesList("spat"),
+                           dataReader.valueTimes("spat"))
+
+    if phidDir is not None:
+        dw.writeTimeSeries(outDir + '/phid.dat',
+                           dataReader.valuesList("phid"),
+                           dataReader.valueTimes("phid"))
+
+
+    # dw.writeGravity(dataFile.dirout() + 'grav.dat', dataReader.valuesgrav)
+    # dw.writeValues(dataFile.dirout() + 'cars.dat', cars.Concs)
+    # dw.writeValues(dataFile.dirout() + 'F485MaxValues.dat', cars.F485MaxVals)
+    # dw.writeValues(dataFile.dirout() + 'F405MaxValues.dat', cars.F405MaxVals)
+    # dw.writeValues(dataFile.dirout() + 'F485MinValues.dat', cars.F485MinVals)
+    # dw.writeValues(dataFile.dirout() + 'F405MinValues.dat', cars.F405MinVals)
+    # dw.writeValues(dataFile.dirout() + 'QVals.dat', cars.QVals)
+    # dw.writeValues(dataFile.dirout() + 'RminVals.dat', cars.RminVals)
+    # dw.writeValues(dataFile.dirout() + 'RmaxVals.dat', cars.RmaxVals)
+    # dw.writeValues(dataFile.dirout() + 'NumVals.dat', cars.NumVals)
+    # dw.writeValues(dataFile.dirout() + 'DenVals.dat', cars.DenVals)
 
 
 if __name__ == '__main__':
