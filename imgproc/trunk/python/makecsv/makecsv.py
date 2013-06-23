@@ -7,9 +7,6 @@ import ugDataWriter
 import numpy as np
 from ugDataFile import ugDataFile
 
-NUM_WELLS = 192
-
-
 def getArgs():
     """
     Get command line arguments.
@@ -25,16 +22,23 @@ def getArgs():
     parser.add_argument("-ud", "--DirectoryUps", help="Ups files directory")
     parser.add_argument("-dout", "--DirectoryOut", help="Output Directory")
     parser.add_argument("-pl", "--PlateLayout", help="Plate layout file as csv file in excel dialect.")
-    parser.add_argument("-s", "--Start", type=str, help="Starting index")
-    parser.add_argument("-e", "--End", type=str, help="Ending index")
+    parser.add_argument("-s", "--Start", type=int, default=0, help="Starting index.")
+    parser.add_argument("-e", "--End", type=int, default=0, help="Ending index (default: all files in directory).")
+    parser.add_argument("-nw", "--NumWells", type=int, default=192, help="Number of wells that are present in well plate files (max 192) (default: %(default)s).")
+    parser.add_argument("-fy", "--FormatYear", type=int, default=2013, choices=(2012,2013), help="Format of the data, depending on uG year (default: %(default)s).")
+
 
     args = parser.parse_args()
 
-    if args.Start is None:
-        args.Start = 0
-
-    if args.End is None:
-        args.End = 0
+#    if args.Start is None:
+#        args.Start = 0
+#
+#    if args.End is None:
+#        args.End = 0
+#
+#    if args.NumWells is None:
+#        args.NumWells = 192
+    
 
     print("\n ***Check to make sure the following is correct!***\n")
     print(
@@ -48,7 +52,9 @@ def getArgs():
         "Output Directory:         {}\n"
         "Plate Layout:             {}\n"
         "Starting Index:           {}\n"
-        "Ending Index:             {}"
+        "Ending Index:             {}\n"
+        "Well Count:               {}\n"
+        "Format Year:              {}"
         .format
             (
             args.Directory405, args.Directory485,
@@ -57,7 +63,8 @@ def getArgs():
             args.DirectoryUps,
             args.DirectoryOut,
             args.PlateLayout,
-            args.Start, args.End
+            args.Start, args.End, 
+            args.NumWells, args.FormatYear
         )
     )
 
@@ -69,17 +76,17 @@ def getArgs():
         return None
 
 
-def ccSlice(source):
-    """
-    Returns the co-culture values in a values array arranged as
-    one row of 96 columns
-    :param source: numpy array of 96 well values.
-    :return: one row of 20 columns of the values for the cc wells.
-    """
-    w = range(NUM_WELLS)
-    ccvals = source[w[0:4], w[12:16], w[24:28], w[36:40],
-                    w[48:52], w[60:64], w[72:76]]
-    return ccvals
+#def ccSlice(source):
+#    """
+#    Returns the co-culture values in a values array arranged as
+#    one row of 96 columns
+#    :param source: numpy array of 96 well values.
+#    :return: one row of 20 columns of the values for the cc wells.
+#    """
+#    w = range(NUM_WELLS)
+#    ccvals = source[w[0:4], w[12:16], w[24:28], w[36:40],
+#                    w[48:52], w[60:64], w[72:76]]
+#    return ccvals
 
 # def mcSlice(source):
 #     """
@@ -88,22 +95,22 @@ def ccSlice(source):
 #     w = range(96)
 #
 
-def calculateRatios(values405, values485):
-    """
-    Calculate the ratios of elements in values405 and values485.
-            ratios = values405/values485
-    :param values405: numpy array of 405 values
-    :param values485: numpy array of 485 values
-    :rtype : list
-    :return: An python list of rows of 96 wells for each time in values405 and values485.
-    """
-    print("Calculating Ratios...")
-    shortest = min(len(values405), len(values485))
-    rats = np.zeros((shortest, NUM_WELLS), dtype=np.float64)
-    for row in range(shortest):
-        for col in range(NUM_WELLS):
-            rats[row][col] = values405[row][col] / values485[row][col]
-    return rats
+#def calculateRatios(values405, values485):
+#    """
+#    Calculate the ratios of elements in values405 and values485.
+#            ratios = values405/values485
+#    :param values405: numpy array of 405 values
+#    :param values485: numpy array of 485 values
+#    :rtype : list
+#    :return: An python list of rows of 96 wells for each time in values405 and values485.
+#    """
+#    print("Calculating Ratios...")
+#    shortest = min(len(values405), len(values485))
+#    rats = np.zeros((shortest, NUM_WELLS), dtype=np.float64)
+#    for row in range(shortest):
+#        for col in range(NUM_WELLS):
+#            rats[row][col] = values405[row][col] / values485[row][col]
+#    return rats
 
 
 def main():
@@ -120,6 +127,8 @@ def main():
     plateLayout = args.PlateLayout
     start = str(args.Start).zfill(5)
     end = str(args.End).zfill(5)
+    numwells = args.NumWells
+    formatYear = args.FormatYear
 
     dataFile = ugDataFile(dir405=basedir405, dir485=basedir485,
                           dirgrav=gravDir, dirspat=spatDir,
@@ -128,7 +137,9 @@ def main():
 
     dataFile.fromTo(int(start), int(end))
     dataFile.update()
-    dataReader = ugDataReader.ugDataReader(datafile=dataFile)
+    dataReader = ugDataReader.ugDataReader(datafile=dataFile, 
+                                           num_wells=numwells, 
+                                           format_year=formatYear)
     dataReader.update()
     # slice405 = dataReader.valuesList("405")
     # slice485 = dataReader.valuesList("485")
