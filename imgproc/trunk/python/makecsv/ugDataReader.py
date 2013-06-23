@@ -1,4 +1,5 @@
 from _dbm import open
+import io
 
 __author__ = 'jim'
 
@@ -7,6 +8,8 @@ import csv
 import re
 from datetime import *
 from sys import maxsize
+import os
+
 
 import numpy as np
 
@@ -90,7 +93,7 @@ class ugDataReader:
         return self._startMillis
 
     def timeStringDeltaFromStart(self, millis):
-        delta = (millis - self._startMillis)
+        delta = (int(millis) - self._startMillis)
         ss = (delta // 1000)
         ff = (delta % 1000)
         return str(ss) + "." + str(ff)
@@ -156,20 +159,25 @@ class ugDataReader:
         time_list = self._timesDict["phid"]
         tempparts = []
         for f in phid_list:
-            with open(basedir+f) as file:
-                for line in file.readlines():
-                    line.strip()
-                    lineparts = [p for p in line.split(' ') if p is not "False"]
-                    time_list.append(lineparts[0])
-                    tempparts.append(lineparts[1:])
+            thisfile = io.open(os.path.join(basedir, f))
+            lines = thisfile.readlines()
+            thisfile.close()
+            #with open(basedir+f) as file:
+            for line in lines[1:]:
+                if line == "\n":
+                    continue
+                line = line.strip()
+                lineparts = [int(p) for p in line.split(' ') if not p == "False"]
+                time_list.append(lineparts[0])
+                tempparts.append(lineparts[1:])
 
         self._valuesDict["phid"] = np.zeros((len(tempparts), max([len(x) for x in tempparts])), dtype=float)
         v = self._valuesDict["phid"]
         idx = 0
         for line in tempparts:
-            for i in range(len(line)-1):
-                v[idx][i] = line[i+1]
-                idx += 1
+            for i in range(len(line)):
+                v[idx][i] = line[i]
+            idx += 1
 
         print("Read {} phidgits records.".format(idx))
 
@@ -180,7 +188,7 @@ class ugDataReader:
         time_list = self._timesDict["spat"]
 
         for f in spat_list:
-            thisfile = open(basedir + f)
+            thisfile = io.open(os.path.join(basedir, f))
             lines = thisfile.readlines()
             thisfile.close()
             for line in lines[1:]:
@@ -216,7 +224,7 @@ class ugDataReader:
         time_vals = self._timesDict["405"]
         timeIdx = 0
         for f in files405_list:
-            thisfile = open(basedir + f)
+            thisfile = io.open(os.path.join(basedir, f))
             lines = thisfile.readlines()
             thisfile.close()
 
@@ -247,7 +255,7 @@ class ugDataReader:
         vals = self._valuesDict["405"]
         timeIdx = 0
         for f in files405_list:
-            thisfile = open(basedir + f)
+            thisfile = io.open(os.path.join(basedir, f))
             lines = thisfile.readlines()
             thisfile.close()
 
@@ -274,7 +282,7 @@ class ugDataReader:
         time_vals = self._timesDict["485"]
         timeIdx = 0
         for f in files485_list:
-            thisfile = open(basedir + f)
+            thisfile = io.open(os.path.join(basedir,f))
             lines = thisfile.readlines()
             thisfile.close()
 
@@ -303,7 +311,7 @@ class ugDataReader:
         vals = self._valuesDict["485"]
         timeIdx = 0
         for f in files485_list:
-            thisfile = open(basedir + f)
+            thisfile = io.open(os.path.join(basedir, f))
             lines = thisfile.readlines()
             thisfile.close()
             colIdx = 0
@@ -321,7 +329,7 @@ class ugDataReader:
 
         mags = []
         for f in gravityfiles_list:
-            thisfile = open(basedir + f)
+            thisfile = io.open(os.path.join(basedir, f))
             lines = thisfile.readlines()
             thisfile.close()
             for line in lines[1:]:
@@ -354,7 +362,7 @@ class ugDataReader:
             # if timeIdx >= self.valuesaccel.shape[0]:
             #     break
 
-            with open(basedir + f) as thisfile:
+            with io.open(os.path.join(basedir, f)) as thisfile:
                 line = thisfile.readlines()[0]
                 thisfile.close()
                 txyz = [float(i) for i in line.split(' ')]
