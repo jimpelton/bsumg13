@@ -24,7 +24,7 @@ def getArgs():
     parser.add_argument("-pl", "--PlateLayout", help="Plate layout file as csv file in excel dialect.")
     parser.add_argument("-s", "--Start", type=int, default=0, help="Starting index.")
     parser.add_argument("-e", "--End", type=int, default=0, help="Ending index (default: all files in directory).")
-    parser.add_argument("-nw", "--NumWells", type=int, default=192, help="Number of wells that are present in well plate files (max 192) (default: %(default)s).")
+    parser.add_argument("-nw", "--NumWells", type=int, default=192, choices=(96,192), help="Number of wells that are present in well plate files (max 192) (default: %(default)s).")
     parser.add_argument("-fy", "--FormatYear", type=int, default=2013, choices=(2012,2013), help="Format of the data, depending on uG year (default: %(default)s).")
 
 
