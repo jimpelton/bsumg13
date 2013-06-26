@@ -24,7 +24,8 @@ class MyTestCase(unittest.TestCase):
         df.fromTo(0, 45)
         df.update()
         dr = ugDataReader.ugDataReader(format_year=2012,
-                                       datafile=df)
+                                       datafile=df,
+                                       num_wells=96)
         dr.update()
 
         #the df loaded 46 files, each with 96 well values.
@@ -49,7 +50,7 @@ class MyTestCase(unittest.TestCase):
     def test_csvread(self):
         df = self.setupDataFile()
         df.update()
-        dr = ugDataReader.ugDataReader(format_year=2012, datafile=df)
+        dr = ugDataReader.ugDataReader(format_year=2012, datafile=df, num_wells=96)
         dr.update()
         expected = {'200 uL co culture': [44, 45], 'MLO-Y4 on cytopore no dye': [9], '25 uL MLOY4': [19, 20],
                        '25 uL co culture': [23, 24], '50 uL MC3T3': [28, 29], 'MC3T3 on cytopore no dye': [10],
