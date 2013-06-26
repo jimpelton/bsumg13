@@ -44,6 +44,7 @@ def doavgs(timedata, data):
         # find index of closest matching time
         Dt = data[0:-1, 0]
         idx = np.argmin(np.abs(Dt - t[0]))
+        
         wstart = idx - WINDOW_SIZE
         wend = idx + WINDOW_SIZE
         if wstart < 0:
@@ -56,7 +57,7 @@ def doavgs(timedata, data):
 
         avgs[r, 0] = t[0]  # time millis
         avgs[r, 1] = t[1]  # elapsed seconds
-        for col, ci in zipl(cols, range(2, datacols-1)):
+        for col, ci in zipl(cols, range(2, datacols)):
             avg = np.average(col)
             avgs[r, ci] = avg
 
