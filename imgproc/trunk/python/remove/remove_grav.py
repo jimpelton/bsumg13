@@ -3,9 +3,10 @@ __author__ = 'jim'
 import sys
 import numpy as np
 
-
 def usage():
-    print("remove_grav.py <grav-file> <data405-file> <output-file>")
+    print("remove_grav.py <data-file> <timedata-file> <output-file>")
+    print("<data-file>: 3 columns: millis difference data")
+    print("<timedata-file> 2+ columns: millis difference")
 
 
 def main(argv):
@@ -13,39 +14,53 @@ def main(argv):
         usage()
         return
 
-    gravname = argv[1]
-    dataname = argv[2]
+    data_name = argv[1]
+    timedata_name = argv[2]
     outname = argv[3]
-    # data485name = argv[3]
 
-    gravs = np.loadtxt(gravname, dtype=float, usecols=(0, 2))
-    data = np.loadtxt(dataname, dtype=float, usecols=(0, 1))
+    # data to truncate
+    data = np.loadtxt(data_name, dtype=float)  # time, time offset, values...
+    # times to truncate around
+    timedata = np.loadtxt(timedata_name, dtype=float, usecols=(0, 1))   # time, time offset [, values...]
 
-    grav_avgs = np.zeros((len(data), 3), dtype=float)
-    windowsize = 3
+    avgs = doavgs(timedata, data)
 
-    i = 0
-    for t in data:
-        Gt = gravs[0:-1, 0]
-        idx = np.argmin(np.abs(Gt - t[0]))
+    fstr="%d %.3f"
+    for i in range(avgs.shape[1]-2):
+        fstr += " %.8f"
 
-        wstart = idx - windowsize
-        wend = idx + windowsize
+    np.savetxt(outname, avgs, delimiter=' ', fmt=fstr)
+
+
+def doavgs(timedata, data):
+    WINDOW_SIZE = 3
+    timerows = timedata.shape[0]
+    datacols = data.shape[1]
+    avgs = np.zeros((timerows, datacols), dtype=float)
+
+    # get time column from data
+    from itertools import zip_longest as zipl
+    for t, r  in zipl(timedata, range(timerows)):
+        # find index of closest matching time
+        Dt = data[0:-1, 0]
+        idx = np.argmin(np.abs(Dt - t[0]))
+        wstart = idx - WINDOW_SIZE
+        wend = idx + WINDOW_SIZE
         if wstart < 0:
             wstart = 0
-        if wend > len(Gt):
-            wend = len(Gt)
+        if wend > len(Dt):
+            wend = len(Dt)-1
 
-        Gg = gravs[wstart:wend, 1]
-        avg = np.average(Gg)
-        grav_avgs[i, 0] = t[0]  # time millis
-        grav_avgs[i, 1] = t[1]  # elapsed seconds
-        grav_avgs[i, 2] = avg   # grav avg
-        i += 1
+        rows = data[wstart:wend, 2:]
+        cols = np.transpose(rows)
 
-    np.savetxt(outname, grav_avgs, delimiter=' ', fmt="%d %.3f %.8f")
+        avgs[r, 0] = t[0]  # time millis
+        avgs[r, 1] = t[1]  # elapsed seconds
+        for col, ci in zipl(cols, range(2, datacols-1)):
+            avg = np.average(col)
+            avgs[r, ci] = avg
 
-    return
+    return avgs
 
 if __name__ == '__main__':
     main(sys.argv)

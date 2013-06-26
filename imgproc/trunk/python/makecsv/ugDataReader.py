@@ -191,7 +191,10 @@ class ugDataReader:
             thisfile = io.open(os.path.join(basedir, f))
             lines = thisfile.readlines()
             thisfile.close()
+
             for line in lines[1:]:
+                if line == "\n" or line == "":
+                    continue
                 line = line.strip()
                 txyz = [float(i) for i in line.split(' ')]
                 gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
@@ -325,6 +328,9 @@ class ugDataReader:
         print('{}'.format(timeIdx))
 
     def _readGravFiles_2013(self, basedir, gravityfiles_list):
+        """
+        Read in gravity files (Accel.txt).
+        """
         time_list = self._timesDict["grav"]
 
         mags = []
@@ -395,7 +401,7 @@ class ugDataReader:
         rowCnt = 0
         colCnt = 0
 
-        with open(self._dataFile.plateLayout(), 'r', newline='') as csvfile:
+        with io.open(self._dataFile.plateLayout(), 'r') as csvfile:
             reader = csv.reader(csvfile, dialect='excel', delimiter=',')
             for row in reader:
                 rowCnt += 1
@@ -432,12 +438,3 @@ class ugDataReader:
             i += 1
 
         return
-
-    def makeTimeStamp(self, millis):
-        delta = (millis - self._startMillis) * 1000  # microseconds
-        s = str(datetime.utcfromtimestamp(delta))
-        return s
-
-
-
-
