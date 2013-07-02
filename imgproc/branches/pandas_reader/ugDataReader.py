@@ -4,19 +4,20 @@ import io
 __author__ = 'jim'
 
 from math import sqrt
-import csv
 import re
-from datetime import *
-from sys import maxsize
 import os
-
-
+from sys import maxsize
 import numpy as np
-
+from pandas import DataFrame
 
 class ugDataReader:
+    """
+    Reads and parses the files provided by the given ugDataFile into memory.
+    """
     def __init__(self, format_year=2013, num_wells=192, datafile=None):
         """
+        :param format_year: year of data, either 2012 or 2013.
+        :param num_wells: number of wells to expect.
         :param datafile: a ugDataFile object.
         """
         self._startMillis = 0
@@ -122,7 +123,7 @@ class ugDataReader:
         for t in dataTypes:
             reader[t](fd[t][0], fd[t][1])  # (basedir, files_list)
 
-        self._readPlateLayout()
+        # self._readPlateLayout()
 
 
     def _choose405FormatYear(self, basedir, files405_list):
@@ -222,8 +223,7 @@ class ugDataReader:
         tries to parse the new file name, which has a millisecond timestamp in it.
         :param files405_list:
         """
-        self._valuesDict["405"] = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
-        vals = self._valuesDict["405"]
+        vals = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
         time_vals = self._timesDict["405"]
         timeIdx = 0
         for f in files405_list:
@@ -243,6 +243,8 @@ class ugDataReader:
                 colIdx -= 1
 
             timeIdx += 1
+
+        df = DataFrame(data=vals, index=time_vals)
 
         print('{} files read.'.format(timeIdx))
 
@@ -332,21 +334,19 @@ class ugDataReader:
         Read in gravity files (Accel.txt).
         """
         time_list = self._timesDict["grav"]
-
         mags = []
         for f in gravityfiles_list:
-            thisfile = io.open(os.path.join(basedir, f))
-            lines = thisfile.readlines()
-            thisfile.close()
-            for line in lines[1:]:
-                line = line.strip()
+            with io.open(os.path.join(basedir, f)) as thisfile:
+                lines = thisfile.readlines()
+                for line in lines[1:]:
+                    line = line.strip()
 
-                txyz = [float(i) for i in line.split(' ')]
+                    txyz = [float(i) for i in line.split(' ')]
 
-                time_list.append(int(txyz[0]))
+                    time_list.append(int(txyz[0]))
 
-                gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
-                mags.append(gMag)
+                    gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
+                    mags.append(gMag)
 
         timeIdx = 0
         self._valuesDict["grav"] = np.zeros((len(mags), 1), dtype=np.float64)
@@ -362,19 +362,14 @@ class ugDataReader:
         Read the gravity files and generate magnitudes of the gravity vectors.
         :param gravityFiles: list of files
         """
-        timeIdx = 0
         tempmags = []
         for f in gravityFiles:
-            # if timeIdx >= self.valuesaccel.shape[0]:
-            #     break
-
             with io.open(os.path.join(basedir, f)) as thisfile:
                 line = thisfile.readlines()[0]
                 thisfile.close()
                 txyz = [float(i) for i in line.split(' ')]
                 gMag = sqrt(txyz[0] * txyz[0] + txyz[1] * txyz[1] + txyz[2] * txyz[2])
                 tempmags.append(gMag)
-                timeIdx += 1
 
         timeIdx = 0
         self._valuesDict["grav"] = np.zeros(len(tempmags), dtype=np.float64)
@@ -386,55 +381,55 @@ class ugDataReader:
         print('Read {} gravity files.'.format(timeIdx))
 
 
-    def _readPlateLayout(self):
-        """
-        Collect the well plate layout into the "layout" dictionary of this
-        instance of ugDataReader.
-
-        The values in the dictionary are the list of well plate indexes
-        that each type of well can be found in.
-        """
-        if self._dataFile.plateLayout() is None:
-            return
-
-        totalCells = 0
-        rowCnt = 0
-        colCnt = 0
-
-        with io.open(self._dataFile.plateLayout(), 'r') as csvfile:
-            reader = csv.reader(csvfile, dialect='excel', delimiter=',')
-            for row in reader:
-                rowCnt += 1
-                for cell in row:
-                    totalCells += 1
-                    self._linearLayout.append(cell)
-
-        try:
-            colCnt = int(totalCells / rowCnt)
-        except ZeroDivisionError as e:
-            print(e)
-
-        # indexes for first row, and first column.
-        firstRow = self._linearLayout[0:colCnt]
-
-        firstCol = []
-        firstColIdxs = [x for x in range(totalCells)[0:totalCells:colCnt]]
-        for x in firstColIdxs:
-            firstCol.append(self._linearLayout[x])
-
-        i = 0
-        for cell in self._linearLayout:
-            if cell is '':
-                continue
-
-            if cell in firstRow or cell in firstCol:
-                continue
-
-            if cell in self._layout:
-                self._layout[cell].append(i)
-            else:
-                self._layout[cell] = []
-                self._layout[cell].append(i)
-            i += 1
-
-        return
+    # def _readPlateLayout(self):
+    #     """
+    #     Collect the well plate layout into the "layout" dictionary of this
+    #     instance of ugDataReader.
+    #
+    #     The values in the dictionary are the list of well plate indexes
+    #     that each type of well can be found in.
+    #     """
+    #     if self._dataFile.plateLayout() is None:
+    #         return
+    #
+    #     totalCells = 0
+    #     rowCnt = 0
+    #     colCnt = 0
+    #
+    #     with io.open(self._dataFile.plateLayout(), 'r') as csvfile:
+    #         reader = csv.reader(csvfile, dialect='excel', delimiter=',')
+    #         for row in reader:
+    #             rowCnt += 1
+    #             for cell in row:
+    #                 totalCells += 1
+    #                 self._linearLayout.append(cell)
+    #
+    #     try:
+    #         colCnt = int(totalCells / rowCnt)
+    #     except ZeroDivisionError as e:
+    #         print(e)
+    #
+    #     # indexes for first row, and first column.
+    #     firstRow = self._linearLayout[0:colCnt]
+    #
+    #     firstCol = []
+    #     firstColIdxs = [x for x in range(totalCells)[0:totalCells:colCnt]]
+    #     for x in firstColIdxs:
+    #         firstCol.append(self._linearLayout[x])
+    #
+    #     i = 0
+    #     for cell in self._linearLayout:
+    #         if cell is '':
+    #             continue
+    #
+    #         if cell in firstRow or cell in firstCol:
+    #             continue
+    #
+    #         if cell in self._layout:
+    #             self._layout[cell].append(i)
+    #         else:
+    #             self._layout[cell] = []
+    #             self._layout[cell].append(i)
+    #         i += 1
+    #
+    #     return

@@ -10,7 +10,7 @@ class ugDataWriter:
         self._dataReader = reader
         return
 
-    def writeTimeSeries(self, filename, dataArray: numpy.ndarray, timeList):
+    def writeTimeSeries(self, filename, dataArray: numpy.ndarray, timeList: list):
         """
         :param filename:
         :param gravList:
