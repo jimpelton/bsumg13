@@ -34,6 +34,21 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(dr.valuesList("485").size, 46 * 96)
         # self.assertEqual(dr.valuesList("dirgrav"))
 
+    def test_read_405_2013(self):
+        df = ugDataFile.ugDataFile(dir405="testdata_2013/dir405/")
+        df.fromTo(0, 45)
+        df.update()
+        dr = ugDataReader.ugDataReader(format_year=2013,
+                                       datafile=df,
+                                       num_wells=192)
+        dr.update()
+
+        #the df loaded 46 files, each with 96 well values.
+        #(see df.fromTo(0, 45) line above)
+        self.assertEqual(dr.valuesList("405").size, 46 * 192)
+        # self.assertEqual(dr.valuesList("485").size, 46 * 96)
+        # self.assertEqual(dr.valuesList("dirgrav"))
+
     def test_timeStamp(self):
         df = ugDataFile.ugDataFile(dir405="testdata_2013/dir405",
                                    dir485="testdata_2013/dir485")
