@@ -69,7 +69,7 @@ class ugDataFile:
         if os.path.isdir(path):
             return path
         else:
-            print(path + " is not a directory!")
+            print("{} is not a directory!".format(path))
             return None
 
     def update(self):
@@ -154,7 +154,7 @@ class ugDataFile:
         Number of elements in the data file.
         :return: int
         """
-        return self.eIdx() - self.sIdx()
+        return (self.eIdx() - self.sIdx())+1
 
 
     def filesList(self, typeString):
@@ -162,6 +162,7 @@ class ugDataFile:
          Get the file names for the files for the given value type for the
          range set by fromTo()
         :param typeString: str
+        :raises Exception
         :return: list
         """
         d = self._filesDict.get(typeString)  # tuple: (dir name, files list)
@@ -169,7 +170,7 @@ class ugDataFile:
             flist = d[1]
             return flist[self._startingIndex:self._endingIndex + 1]
         else:
-            return []
+            raise Exception(typeString+" is not a valid data type.")
 
     def filesDir(self, typeString):
         """
@@ -177,12 +178,15 @@ class ugDataFile:
         :param typeString: str
         :return: list
         """
+        if typeString == "out":
+            return self._outdir
+
         d = self._filesDict.get(typeString)  # tuple: (dir name, files list)
         if d is not None:
             fdir = d[0]
             return fdir
         else:
-            return []
+            raise Exception("{} is not a valid data type.".format(typeString))
 
     def plateLayout(self):
         """
