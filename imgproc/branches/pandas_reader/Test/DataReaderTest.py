@@ -1,7 +1,8 @@
 __author__ = 'jim'
 
 import unittest
-
+import pandas as pd
+import numpy as np
 import ugDataReader
 import ugDataFile
 
@@ -43,9 +44,23 @@ class MyTestCase(unittest.TestCase):
                                        num_wells=192)
         dr.update()
 
-        #the df loaded 46 files, each with 96 well values.
+        #the df loaded 46 files, each with 192 well values.
         #(see df.fromTo(0, 45) line above)
-        self.assertEqual(dr.valuesList("405").size, 46 * 192)
+        dataFrame = dr.valuesList("405")
+        self.assertIsInstance(dataFrame, pd.DataFrame)
+
+        index = dataFrame.index
+        self.assertEqual(len(index), 46)
+
+        self.assertEqual(np.prod(dataFrame.shape), 46*192)
+        with open("testdata_2013/dir405/time_values.txt", 'r') as tf:
+            lines = tf.readlines()
+            intLines = [int(x) for x in lines]
+            self.assertEquals(index, intLines)
+
+
+
+        # self.assertEqual(, 46 * 192)
         # self.assertEqual(dr.valuesList("485").size, 46 * 96)
         # self.assertEqual(dr.valuesList("dirgrav"))
 

@@ -47,7 +47,8 @@ class ugDataReader:
         self._linearLayout = []
 
         self._NumReg = re.compile("([0-9]+)")
-
+        self._fNameReg = \
+            re.compile("^DataCamera(405|485)_[0-9]{8}_[0-9]{18}.raw.txt$")
 
     def update(self):
         """
@@ -58,7 +59,6 @@ class ugDataReader:
         print("DataReader doing update.\n")
         self._readall(self._dataFile)
         self._updateStartTime(self._timesDict)
-
 
     def layout(self):
         """
@@ -217,34 +217,43 @@ class ugDataReader:
     def _readUpsFiles(self, basedir, ups_list):
         pass
 
+    def _isFile(strings):
+        return [x for x in strings if self._fNameReg.match(x)]
+
     def _read405Files_reversed_2013(self, basedir, files405_list):
         """
         Reads the camera 405 files as in the normal _read405Files_reversed, but
         tries to parse the new file name, which has a millisecond timestamp in it.
         :param files405_list:
         """
-        vals = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
-        time_vals = self._timesDict["405"]
-        timeIdx = 0
-        for f in files405_list:
-            thisfile = io.open(os.path.join(basedir, f))
-            lines = thisfile.readlines()
-            thisfile.close()
-
-            s = re.split(self._NumReg, f)
-            t = int(s[5].lstrip("0"))
-            time_vals.append(t)
-
+        def __parseLines(lines, timeIdx):
             colIdx = self._numWells - 1
             for s in lines:
+                # s is "wellIdx:wellAvg"
                 strs = s.split(':')
                 val = int(strs[1].strip())
                 vals[timeIdx][colIdx] = val  #add to array backwards
                 colIdx -= 1
 
-            timeIdx += 1
+
+
+        vals = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
+        time_vals = []
+        timeIdx = 0
+        for f in self._isFile(files405_list):
+            with io.open(os.path.join(basedir, f)) as data:
+                lines = data.readlines()
+                s = re.split(self._NumReg, f)
+                try:
+                    t = int(s[5].lstrip("0"))
+                    time_vals.append(t)
+                    __parseLines(lines, timeIdx)
+                    timeIdx += 1
+                except IndexError:
+                    print("The filename {} seemed to be invalid, skipping.".format(f))
 
         df = DataFrame(data=vals, index=time_vals)
+        self._valuesDict["405"] = df
 
         print('{} files read.'.format(timeIdx))
 
