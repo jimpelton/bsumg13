@@ -13,7 +13,7 @@ class ugDataFile:
     in the list.
     """
 
-    def __init__(self,
+    def __init__(self, format_year=2012,
                  layout=None, dir405=None, dir485=None,
                  dirgrav=None, dirbaro=None, dirphid=None,
                  dirspat=None, dirni=None, dirups=None, dirout=None):
@@ -22,6 +22,7 @@ class ugDataFile:
         self._endingIndex = 0
         self._shortest = 0
         self._needsUpdate = True
+        self._dataYear = format_year
         self._layout = layout
         self._outdir = dirout
 
@@ -106,7 +107,7 @@ class ugDataFile:
         self._needsUpdate = True
 
 
-    def human_sort(self, s):
+    def _humanSort(self, s):
         return [int(k) if k.isdigit() else k for k in re.split(self._NumReg, s)]
 
     def _readNames(self):
@@ -117,9 +118,10 @@ class ugDataFile:
             if not os.path.isdir(item[0]):
                 print("{0} does not appear to be directory.".format(item[0]))
                 continue
+
             for x in os.listdir(item[0]):
                 item[1].append(x)
-            item[1].sort(key=self.human_sort)
+            item[1].sort(key=self._humanSort)
 
             # if self._startingIndex == self._endingIndex:
             #      self._findStartingIndex()

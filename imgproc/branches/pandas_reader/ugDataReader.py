@@ -1,19 +1,25 @@
-from _dbm import open
-import io
 
 __author__ = 'jim'
 
-from math import sqrt
 import re
 import os
-from sys import maxsize
+import io
+
 import numpy as np
+
+from math import sqrt
 from pandas import DataFrame
+from pandas import Index
+from sys import maxsize
+
 
 class ugDataReader:
     """
     Reads and parses the files provided by the given ugDataFile into memory.
+
+    :TODO: 2012 file list filtering
     """
+
     def __init__(self, format_year=2013, num_wells=192, datafile=None):
         """
         :param format_year: year of data, either 2012 or 2013.
@@ -47,13 +53,14 @@ class ugDataReader:
         self._linearLayout = []
 
         self._NumReg = re.compile("([0-9]+)")
-        self._fNameReg = \
+        self._imgFileRegEx_2013 = \
             re.compile("^DataCamera(405|485)_[0-9]{8}_[0-9]{18}.raw.txt$")
 
     def update(self):
         """
         Update this data reader and read the files provided by the
         ugDataFile object.
+        Will update the DataFile object if necessary.
         """
         self._dataFile.update()
         print("DataReader doing update.\n")
@@ -78,26 +85,44 @@ class ugDataReader:
         """
         Get the numpy ndarray for the given type (405, 485, grav, spat, etc).
         :param: typeString: str
-        :return: ndarray or None
+        :return: DataFrame or None
         """
         return self._valuesDict.get(typeString)
-
 
     def valueTimes(self, typeString):
         """
         return list of time strings for typeString or None if
         typeString is not a valid data type
         """
-        return self._timesDict.get(typeString)
+        return self._valuesDict.get(typeString).index
 
     def startTimeMillis(self):
+        """
+        Get the smallest time found in the data set.
+        :return: int
+        """
         return self._startMillis
 
     def timeStringDeltaFromStart(self, millis):
+        """
+        Get the difference millis-startTimeMillis() as a time stamp
+        formatted as "Seconds.Milliseconds"
+        :param millis: time in millis
+        :type millis: int
+        :return: string
+        """
         delta = (int(millis) - self._startMillis)
         ss = (delta // 1000)
         ff = (delta % 1000)
         return str(ss) + "." + str(ff)
+
+    def _isFile(self, strings):
+        """
+        Get files from list of strings that match fNameReg regular expression.
+        :param strings:
+        :return:
+        """
+        return [x for x in strings if self._imgFileRegEx_2013.match(x) is not None]
 
     def _updateStartTime(self, timeDict):
         lastmin = maxsize
@@ -111,20 +136,17 @@ class ugDataReader:
             "405": self._choose405FormatYear,
             "485": self._choose485FormatYear,
             "grav": self._chooseAccelFormatYear,
-            "phid": self._readPhidFiles,
-            "baro": self._readBaroFiles,
-            "spat": self._readSpatFiles,
-            "ni": self._readNIFiles,
-            "ups": self._readUpsFiles
+            "phid": self._readPhidFiles_2013,
+            "baro": self._readBaroFiles_2013,
+            "spat": self._readSpatFiles_2013,
+            "ni": self._readNIFiles_2013,
+            "ups": self._readUpsFiles_2013
         }
 
         fd = dataFile.filesDict()
         dataTypes = fd.keys()
         for t in dataTypes:
             reader[t](fd[t][0], fd[t][1])  # (basedir, files_list)
-
-        # self._readPlateLayout()
-
 
     def _choose405FormatYear(self, basedir, files405_list):
         print('Reading {0} format 405 files...'.format(self._formatYear))
@@ -150,84 +172,77 @@ class ugDataReader:
         else:
             self._readGravFiles(basedir, gravity_list)
 
-
-    def _readBaroFiles(self, basedir, baro_list):
+    def _readBaroFiles_2013(self, basedir, baro_list):
         pass
 
-    def _readPhidFiles(self, basedir, phid_list):
+    def _readPhidFiles_2013(self, basedir, phid_list):
         print("Reading phidgets DAQ files...")
 
-        time_list = self._timesDict["phid"]
-        tempparts = []
-        for f in phid_list:
-            thisfile = io.open(os.path.join(basedir, f))
-            lines = thisfile.readlines()
-            thisfile.close()
-            #with open(basedir+f) as file:
+        def __parseLines(lines, times, data):
             for line in lines[1:]:
                 if line == "\n":
                     continue
                 line = line.strip()
                 lineparts = [int(p) for p in line.split(' ') if not p == "False"]
-                time_list.append(lineparts[0])
-                tempparts.append(lineparts[1:])
+                times.append(lineparts[0])
+                data.append(lineparts[1:])
 
-        self._valuesDict["phid"] = np.zeros((len(tempparts), max([len(x) for x in tempparts])), dtype=float)
-        v = self._valuesDict["phid"]
-        idx = 0
-        for line in tempparts:
-            for i in range(len(line)):
-                v[idx][i] = line[i]
-            idx += 1
+        time_list = [] # self._timesDict["phid"]
+        data_list = []
+        for f in phid_list:
+            with io.open(os.path.join(basedir,f)) as file:
+                lines = file.readlines()
+                __parseLines(lines, time_list, data_list)
 
-        print("Read {} phidgits records.".format(idx))
+        col = ["HBLK Temp", "HBLK Ambi", "HBLK UV", "ES1 UV", "ES2 UV", "Pres Diff", "N/A" , "N/A", "N/A", "N/A"]
+        df = DataFrame(data=data_list, index=Index(time_list, name="Time"), columns=col)
+        self._valuesDict["phid"] = df
 
+        print("Read {} phidgits records.".format(len(df.index)))
 
-    def _readSpatFiles(self, basedir, spat_list):
-        print("Reading spatial files...")
-        tempmags = []
-        time_list = self._timesDict["spat"]
-
+    def _readSpatFiles_2013(self, basedir, spat_list):
+        time_list = []
+        mags = []
         for f in spat_list:
-            thisfile = io.open(os.path.join(basedir, f))
-            lines = thisfile.readlines()
-            thisfile.close()
+            with io.open(os.path.join(basedir, f)) as thisfile:
+                lines = thisfile.readlines()
+                for line in lines[1:]:
+                    line = line.strip()
+                    txyz = [float(i) for i in line.split(' ')]
+                    time_list.append(int(txyz[0]))
+                    gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
+                    mags.append( [gMag, txyz[1], txyz[2], txyz[3]] )
 
-            for line in lines[1:]:
-                if line == "\n" or line == "":
-                    continue
-                line = line.strip()
-                txyz = [float(i) for i in line.split(' ')]
-                gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
-                tempmags.append(gMag)
-                time_list.append(int(txyz[0]))
+        columns = ['Mag', 'X', 'Y', 'Z']
+        df = DataFrame(data=mags, index=Index(time_list, name="Time"), columns=columns)
+        self._valuesDict["spat"] = df
 
-        timeIdx = 0
-        self._valuesDict["spat"] = np.zeros((len(tempmags), 1), dtype=np.float64)
-        spat_array = self._valuesDict["spat"]
-        for m in tempmags:
-            spat_array[timeIdx][0] = m
-            timeIdx += 1
+        print('Read {} Spatial files.'.format(len(df.index)))
 
-        print('Read {} Spatial files.'.format(timeIdx))
-
-    def _readNIFiles(self, basedir, ni_list):
+    def _readNIFiles_2013(self, basedir, ni_list):
         pass
 
-    def _readUpsFiles(self, basedir, ups_list):
+    def _readUpsFiles_2013(self, basedir, ups_list):
         pass
-
-    def _isFile(strings):
-        return [x for x in strings if self._fNameReg.match(x)]
+    
+    def _makeWellColumnTitles(self):
+        alpha = [chr(c) for c in range(65,73)]
+        cols = []
+        for i in range(1,13):
+            for w in range(0,2):
+                for c in alpha:
+                    cols.append(str(c)+str(i))
+        return cols
 
     def _read405Files_reversed_2013(self, basedir, files405_list):
         """
         Reads the camera 405 files as in the normal _read405Files_reversed, but
         tries to parse the new file name, which has a millisecond timestamp in it.
-        :param files405_list:
+        :param files405_list: list of file name strings (relative path names)
         """
-        def __parseLines(lines, timeIdx):
-            colIdx = self._numWells - 1
+
+        def __parseLines(lines, timeIdx, numwells):
+            colIdx = numwells - 1
             for s in lines:
                 # s is "wellIdx:wellAvg"
                 strs = s.split(':')
@@ -235,14 +250,83 @@ class ugDataReader:
                 vals[timeIdx][colIdx] = val  #add to array backwards
                 colIdx -= 1
 
-
-
+        files405_list = self._isFile(files405_list)
         vals = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
         time_vals = []
         timeIdx = 0
-        for f in self._isFile(files405_list):
+        for f in files405_list:
             with io.open(os.path.join(basedir, f)) as data:
                 lines = data.readlines()
+                s = re.split(self._NumReg, f)
+                try:
+                    t = int(s[5].lstrip("0"))
+                    time_vals.append(t)
+                    __parseLines(lines, timeIdx, self._numWells)
+                    timeIdx += 1
+                except IndexError:
+                    print("The filename {} seemed to be invalid, skipping.".format(f))
+
+        cols = self._makeWellColumnTitles()
+        df = DataFrame(data=vals, index=Index(time_vals,name="Time"), columns=cols)
+        self._valuesDict["405"] = df
+
+        print('{} files read.'.format(len(df.index)))
+
+
+    def _read405Files_reversed(self, basedir, files405_list):
+        """
+        Read 405 files. Each file contains lines formatted as: "well#:val".
+        Note: adds to the row backwards, having a reversing effect, so that the
+            well patterns match that of the 485 well values.
+
+        :param dir405: Path to 405 data files (expected to be sorted).
+        """
+
+        def __parseLines(lines, timeIdx, numwells):
+            colIdx = numwells - 1
+            for s in lines:
+                # s is "wellIdx:wellAvg"
+                strs = s.split(':')
+                val = int(strs[1].strip())
+                vals[timeIdx][colIdx] = val  #add to array backwards
+                colIdx -= 1
+
+        vals = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
+        timeIdx = 0
+        for f in files405_list:
+            with io.open(os.path.join(basedir, f)) as thisfile:
+                lines = thisfile.readlines()
+                __parseLines(lines, timeIdx, self._numWells)
+                timeIdx += 1
+        
+        df = DataFrame(data=vals, index=np.arange(timeIdx))
+        self._valuesDict["405"] = df
+
+        print('{} files read.'.format(len(df.index)))
+
+
+    def _read485Files_2013(self, basedir, files485_list):
+        """
+        Reads the camera 485 files as in the normal _read485Files, but
+        tries to parse the new file name, which has a millisecond timestamp in it.
+        :param files485_list:
+        """
+
+        def __parseLines(lines, timeIdx):
+            colIdx = 0
+            for s in lines:
+                strs = s.split(':')
+                v = int(strs[1].strip())
+                vals[timeIdx][colIdx] = v
+                colIdx += 1
+
+        files485_list = self._isFile(files485_list)
+        vals = np.zeros((len(files485_list), self._numWells), dtype=np.float64)
+        time_vals = []
+        timeIdx = 0
+        for f in files485_list:
+            with io.open(os.path.join(basedir, f)) as thisfile:
+                lines = thisfile.readlines()
                 s = re.split(self._NumReg, f)
                 try:
                     t = int(s[5].lstrip("0"))
@@ -252,124 +336,68 @@ class ugDataReader:
                 except IndexError:
                     print("The filename {} seemed to be invalid, skipping.".format(f))
 
-        df = DataFrame(data=vals, index=time_vals)
-        self._valuesDict["405"] = df
-
-        print('{} files read.'.format(timeIdx))
-
-
-    def _read405Files_reversed(self, basedir, files405_list):
-        """
-        Read 405 files. Each file contains lines formatted as: "well#:val".
-        Note: adds to the row backwards, having a reversing effect, so that the
-            well patterns match that of the 485 well values.
-        :param dir405: Path to 405 data files (expected to be sorted).
-        """
-        self._valuesDict["405"] = np.zeros((len(files405_list), self._numWells), dtype=np.float64)
-        vals = self._valuesDict["405"]
-        timeIdx = 0
-        for f in files405_list:
-            thisfile = io.open(os.path.join(basedir, f))
-            lines = thisfile.readlines()
-            thisfile.close()
-
-            colIdx = self._numWells - 1
-            for s in lines:
-                strs = s.split(':')
-                val = int(strs[1].strip())
-                vals[timeIdx][colIdx] = val  # add to list backwards
-                colIdx -= 1
-
-            timeIdx += 1
-
-        print('{} files read.'.format(timeIdx))
-
-
-    def _read485Files_2013(self, basedir, files485_list):
-        """
-        Reads the camera 485 files as in the normal _read485Files, but
-        tries to parse the new file name, which has a millisecond timestamp in it.
-        :param files485_list:
-        """
-        self._valuesDict["485"] = np.zeros((len(files485_list), self._numWells), dtype=np.float64)
-        vals = self._valuesDict["485"]
-        time_vals = self._timesDict["485"]
-        timeIdx = 0
-        for f in files485_list:
-            thisfile = io.open(os.path.join(basedir,f))
-            lines = thisfile.readlines()
-            thisfile.close()
-
-            s = re.split(self._NumReg, f)
-            t = int(s[5].lstrip("0"))
-            time_vals.append(t)
-
-            colIdx = 0
-            for s in lines:
-                strs = s.split(':')
-                v = int(strs[1].strip())
-                vals[timeIdx][colIdx] = v
-                colIdx += 1
-            timeIdx += 1
-
-        print('{} files read.'.format(timeIdx))
-
+        cols = self._makeWellColumnTitles()
+        df = DataFrame(data=vals, index=Index(time_vals,name="Time"), columns=cols)
+        self._valuesDict["485"] = df
+        print('{} 2013 485 files read.'.format(len(df.index)))
 
     def _read485Files(self, basedir, files485_list):
         """
         Read in them 485 data files.
         Each file contains lines formatted as: "well#:val".
         :param dir485:
+        TODO: convert to pandas.
+        TODO: add 0.5 increments in Index column
         """
-        self._valuesDict["485"] = np.zeros((len(files485_list), self._numWells), dtype=np.float64)
-        vals = self._valuesDict["485"]
-        timeIdx = 0
-        for f in files485_list:
-            thisfile = io.open(os.path.join(basedir, f))
-            lines = thisfile.readlines()
-            thisfile.close()
+
+        def __parseLines(lines, timeIdx):
             colIdx = 0
             for s in lines:
                 strs = s.split(':')
                 v = int(strs[1].strip())
                 vals[timeIdx][colIdx] = v
                 colIdx += 1
-            timeIdx += 1
 
-        print('{}'.format(timeIdx))
+        vals = np.zeros((len(files485_list), self._numWells), dtype=np.float64)
+        timeIdx = 0
+        for f in files485_list:
+            with io.open(os.path.join(basedir, f)) as thisfile:
+                lines = thisfile.readlines()
+                __parseLines(lines, timeIdx)
+                timeIdx += 1
+
+        df = DataFrame(data=vals, index=np.arange(timeIdx))
+        self._valuesDict["485"] = df
+        print('{} 2012 485 files read.'.format(len(df.index)))
 
     def _readGravFiles_2013(self, basedir, gravityfiles_list):
         """
         Read in gravity files (Accel.txt).
         """
-        time_list = self._timesDict["grav"]
+        time_list = []
         mags = []
         for f in gravityfiles_list:
             with io.open(os.path.join(basedir, f)) as thisfile:
                 lines = thisfile.readlines()
                 for line in lines[1:]:
                     line = line.strip()
-
                     txyz = [float(i) for i in line.split(' ')]
-
                     time_list.append(int(txyz[0]))
-
                     gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
                     mags.append(gMag)
 
-        timeIdx = 0
-        self._valuesDict["grav"] = np.zeros((len(mags), 1), dtype=np.float64)
-        accel_array = self._valuesDict["grav"]
-        for m in mags:
-            accel_array[timeIdx][0] = m
-            timeIdx += 1
-
-        print('Read {} gravity files.'.format(timeIdx))
+        cols = ["Mag", "X", "Y", "Z"]
+        df = DataFrame(data=mags, index=Index(time_list, name="Time"), columns=cols)
+        self._valuesDict["grav"] = df
+        print('Read {} 2013 gravity files.'.format(len(df.index)))
 
     def _readGravFiles(self, basedir, gravityFiles):
         """
         Read the gravity files and generate magnitudes of the gravity vectors.
         :param gravityFiles: list of files
+
+        TODO: convert to pandas
+        TODO: add 0.5 increments to Index offset.
         """
         tempmags = []
         for f in gravityFiles:
@@ -390,55 +418,55 @@ class ugDataReader:
         print('Read {} gravity files.'.format(timeIdx))
 
 
-    # def _readPlateLayout(self):
-    #     """
-    #     Collect the well plate layout into the "layout" dictionary of this
-    #     instance of ugDataReader.
-    #
-    #     The values in the dictionary are the list of well plate indexes
-    #     that each type of well can be found in.
-    #     """
-    #     if self._dataFile.plateLayout() is None:
-    #         return
-    #
-    #     totalCells = 0
-    #     rowCnt = 0
-    #     colCnt = 0
-    #
-    #     with io.open(self._dataFile.plateLayout(), 'r') as csvfile:
-    #         reader = csv.reader(csvfile, dialect='excel', delimiter=',')
-    #         for row in reader:
-    #             rowCnt += 1
-    #             for cell in row:
-    #                 totalCells += 1
-    #                 self._linearLayout.append(cell)
-    #
-    #     try:
-    #         colCnt = int(totalCells / rowCnt)
-    #     except ZeroDivisionError as e:
-    #         print(e)
-    #
-    #     # indexes for first row, and first column.
-    #     firstRow = self._linearLayout[0:colCnt]
-    #
-    #     firstCol = []
-    #     firstColIdxs = [x for x in range(totalCells)[0:totalCells:colCnt]]
-    #     for x in firstColIdxs:
-    #         firstCol.append(self._linearLayout[x])
-    #
-    #     i = 0
-    #     for cell in self._linearLayout:
-    #         if cell is '':
-    #             continue
-    #
-    #         if cell in firstRow or cell in firstCol:
-    #             continue
-    #
-    #         if cell in self._layout:
-    #             self._layout[cell].append(i)
-    #         else:
-    #             self._layout[cell] = []
-    #             self._layout[cell].append(i)
-    #         i += 1
-    #
-    #     return
+        # def _readPlateLayout(self):
+        #     """
+        #     Collect the well plate layout into the "layout" dictionary of this
+        #     instance of ugDataReader.
+        #
+        #     The values in the dictionary are the list of well plate indexes
+        #     that each type of well can be found in.
+        #     """
+        #     if self._dataFile.plateLayout() is None:
+        #         return
+        #
+        #     totalCells = 0
+        #     rowCnt = 0
+        #     colCnt = 0
+        #
+        #     with io.open(self._dataFile.plateLayout(), 'r') as csvfile:
+        #         reader = csv.reader(csvfile, dialect='excel', delimiter=',')
+        #         for row in reader:
+        #             rowCnt += 1
+        #             for cell in row:
+        #                 totalCells += 1
+        #                 self._linearLayout.append(cell)
+        #
+        #     try:
+        #         colCnt = int(totalCells / rowCnt)
+        #     except ZeroDivisionError as e:
+        #         print(e)
+        #
+        #     # indexes for first row, and first column.
+        #     firstRow = self._linearLayout[0:colCnt]
+        #
+        #     firstCol = []
+        #     firstColIdxs = [x for x in range(totalCells)[0:totalCells:colCnt]]
+        #     for x in firstColIdxs:
+        #         firstCol.append(self._linearLayout[x])
+        #
+        #     i = 0
+        #     for cell in self._linearLayout:
+        #         if cell is '':
+        #             continue
+        #
+        #         if cell in firstRow or cell in firstCol:
+        #             continue
+        #
+        #         if cell in self._layout:
+        #             self._layout[cell].append(i)
+        #         else:
+        #             self._layout[cell] = []
+        #             self._layout[cell].append(i)
+        #         i += 1
+        #
+        #     return
