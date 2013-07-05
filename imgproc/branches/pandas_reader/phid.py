@@ -68,7 +68,7 @@ def readPhidDir(basedir):
 #     f.close()
 
 #
-# def _readPhidFiles(self, basedir, phid_list):
+# def _readPhidFiles_2013(self, basedir, phid_list):
 #         print("Reading phidgets DAQ files...")
 #
 #         time_list = self._timesDict["phid"]

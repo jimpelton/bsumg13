@@ -3,6 +3,7 @@ __author__ = 'jim'
 import csv
 import itertools
 import numpy
+import pandas
 import ugDataReader
 
 class ugDataWriter:
@@ -34,6 +35,11 @@ class ugDataWriter:
             f.write(' '.join(str(cell) for cell in r))
             f.write('\n')
         f.close()
+
+    def writeDataFrame(self, df=None, filename=None):
+        if df is None:
+            return
+        df.to_csv(filename, sep=" ") 
 
     def writeCSVGravity(self, filename, gravList):
         """
