@@ -8,12 +8,13 @@ from math import sqrt
 
 import numpy as np
 import pandas
-from pandas import DataFrame, Series
+from pandas import DataFrame
 
 
 class ugDataReader:
     """
     Reads and parses the files provided by the given ugDataFile into memory.
+    Reads data into Pandas DataFrame objects which can be written to disc later.
 
     :TODO: 2012 file list filtering
     """
@@ -38,15 +39,6 @@ class ugDataReader:
         self._valuesDict["phid"] = None
         self._valuesDict["ni"] = None
         self._valuesDict["ups"] = None
-
-        self._timesDict = dict()
-        self._timesDict["405"] = []
-        self._timesDict["485"] = []
-        self._timesDict["grav"] = []
-        self._timesDict["spat"] = []
-        self._timesDict["phid"] = []
-        self._timesDict["ni"] = []
-        self._timesDict["ups"] = []
 
         self._layout = dict()
         self._linearLayout = []
@@ -104,7 +96,7 @@ class ugDataReader:
         """
         return self._startMillis
 
-    def timeStringDeltaFromStart(self, millis):
+    def timeStringDeltaFromStart(self, millis: int):
         """
         Get the difference millis-startTimeMillis() as a time stamp
         formatted as "Seconds.Milliseconds"
@@ -264,7 +256,7 @@ class ugDataReader:
                     gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
                     mags.append([gMag, txyz[1], txyz[2], txyz[3]])
 
-        cols = ["mag", "x", "x", "z"]
+        cols = ["mag", "x", "y", "z"]
         dti = self._makeDateTimeIndex(time_vals)
         df = DataFrame(data=mags, index=dti, columns=cols)
         self._valuesDict["grav"] = df
@@ -417,7 +409,7 @@ class ugDataReader:
         Read in them 485 data files.
         Each file contains lines formatted as: "well#:val".
         :param dir485:
-        TODO: convert to pandas.
+
         TODO: add 0.5 increments in Index column
         """
 
@@ -447,7 +439,6 @@ class ugDataReader:
         Read the gravity files and generate magnitudes of the gravity vectors.
         :param gravityFiles: list of files
 
-        TODO: convert to pandas
         TODO: add 0.5 increments to Index offset.
         """
         tempmags = []
