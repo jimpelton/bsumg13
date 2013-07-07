@@ -1,17 +1,14 @@
+
 __author__ = 'jim'
 
 import re
 import os
 import io
+from math import sqrt
 
 import numpy as np
-
-from math import sqrt
-from pandas import DataFrame
-from pandas import DatetimeIndex
 import pandas
-
-from sys import maxsize
+from pandas import DataFrame, Series
 
 
 class ugDataReader:
@@ -28,6 +25,7 @@ class ugDataReader:
         :param datafile: a ugDataFile object.
         """
         self._startMillis = 0
+        self._startDateTime = pandas.datetime(2020, 1, 1)
         self._dataFile = datafile
         self._formatYear = format_year
         self._numWells = num_wells
@@ -66,7 +64,9 @@ class ugDataReader:
         self._dataFile.update()
         print("DataReader doing update.\n")
         self._readall(self._dataFile)
-        self._updateStartTime(self._timesDict)
+        # self._updateStartTime(self._timesDict)
+        self._makeElapsedColumn(self._valuesDict)
+
 
     def layout(self):
         """
@@ -129,7 +129,6 @@ class ugDataReader:
         alpha = [chr(c) for c in range(65, 73)]  # 'A' through 'H'
         cols = []
         lr = ["L", "R"]
-
         for i in range(1, 13):
             for w in range(0, 2):
                 p = lr[w]
@@ -137,17 +136,33 @@ class ugDataReader:
                     cols.append(p + str(c) + str(i))
         return cols
 
-    def _createDateTimeIndex(self, timeList, name="TIME"):
+    def _makeDateTimeIndex(self, timeList, name="Time"):
         dti = pandas.DatetimeIndex(data=timeList, name=name, tz="UTC")
         dti.name = name
         return dti
 
-    def _updateStartTime(self, timeDict: dict):
-        lastmin = maxsize
-        for timeList in timeDict.values():
-            if not len(timeList) is 0:
-                lastmin = min(lastmin, min(timeList))
-        self._startMillis = lastmin
+    def _makeElapsedColumn(self, valuesDict: dict, name="Elapsed"):
+        dtMin = self._updateStartTime(valuesDict)
+        for frame in valuesDict.values():
+            if frame is None:
+                continue
+
+            frame.insert(loc=0, column=name,
+                         value=frame.index.map(lambda x: x-dtMin))
+
+    def _updateStartTime(self, valuesDict: dict):
+        from pytz import timezone as tz
+        from pandas import datetime
+
+        dtMin = datetime(2020, 1, 1, tzinfo=tz("UTC"))
+        for frame in valuesDict.values():
+            if frame is None:
+                continue
+            m = frame.index.min()
+            if m < dtMin:
+                dtMin = m
+        self._startDateTime = dtMin
+        return dtMin
 
     def _readall(self, dataFile):
         reader = {
@@ -222,8 +237,8 @@ class ugDataReader:
                 lines = file.readlines()
                 __parseLines(lines, time_list, data_list)
 
-        col = ["HBLK Temp", "HBLK Ambi", "HBLK UV", "ES1 UV", "ES2 UV", "Pres Diff", "N/A", "N/A", "N/A", "N/A"]
-        dti = self._createDateTimeIndex(time_list)
+        col = ["temp_hblk", "temp_ambi", "uv_hblk", "uv_es1", "uv_es2", "pdiff", "N/A7", "N/A8", "N/A9", "N/A10"]
+        dti = self._makeDateTimeIndex(time_list)
         df = DataFrame(data=data_list, index=dti, columns=col)
         self._valuesDict["phid"] = df
 
@@ -249,8 +264,8 @@ class ugDataReader:
                     gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
                     mags.append([gMag, txyz[1], txyz[2], txyz[3]])
 
-        cols = ["MAG", "X", "Y", "Z"]
-        dti = self._createDateTimeIndex(time_vals)
+        cols = ["mag", "x", "x", "z"]
+        dti = self._makeDateTimeIndex(time_vals)
         df = DataFrame(data=mags, index=dti, columns=cols)
         self._valuesDict["grav"] = df
         print('Read {} 2013 gravity files.'.format(len(df.index)))
@@ -274,8 +289,8 @@ class ugDataReader:
                     gMag = sqrt(txyz[1] * txyz[1] + txyz[2] * txyz[2] + txyz[3] * txyz[3])
                     mags.append([gMag, txyz[1], txyz[2], txyz[3]])
 
-        columns = ['Mag', 'X', 'Y', 'Z']
-        dti = self._createDateTimeIndex(time_list)
+        columns = ['mag', 'x', 'y', 'z']
+        dti = self._makeDateTimeIndex(time_list)
         df = DataFrame(data=mags, index=dti, columns=columns)
         self._valuesDict["spat"] = df
 
@@ -319,7 +334,7 @@ class ugDataReader:
                     print("The filename {} seemed to be invalid, skipping.".format(f))
 
         cols = self._makeWellColumnTitles()
-        dti = self._createDateTimeIndex(time_vals)
+        dti = self._makeDateTimeIndex(time_vals)
         df = DataFrame(data=vals, index=dti, columns=cols)
         self._valuesDict["405"] = df
 
@@ -357,7 +372,7 @@ class ugDataReader:
                     print("The filename {} seemed to be invalid, skipping.".format(f))
 
         cols = self._makeWellColumnTitles()
-        dti = self._createDateTimeIndex(time_vals)
+        dti = self._makeDateTimeIndex(time_vals)
         df = DataFrame(data=vals, index=dti, columns=cols)
         self._valuesDict["485"] = df
         print('{} 2013 485 files read.'.format(len(df.index)))
