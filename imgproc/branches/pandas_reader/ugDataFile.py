@@ -11,9 +11,10 @@ class ugDataFile:
     Encapsulates a directory of raw data files which were created by ugip.
     Reads directories and stores a list of the filenames for each file
     in the list.
+    TODO: pass in ugDataReader
     """
 
-    def __init__(self, format_year=2012,
+    def __init__(self, format_year=2013,
                  layout=None, dir405=None, dir485=None,
                  dirgrav=None, dirbaro=None, dirphid=None,
                  dirspat=None, dirni=None, dirups=None, dirout=None):
