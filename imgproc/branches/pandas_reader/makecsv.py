@@ -1,3 +1,5 @@
+import os
+
 __author__ = 'jim'
 
 import argparse
@@ -84,11 +86,11 @@ def main():
     if not args:
         exit()
 
-    basedir485 = args.Directory485
-    basedir405 = args.Directory405
-    gravDir = args.DirectoryGrav
-    spatDir = args.DirectorySpat
-    phidDir = args.DirectoryPhid
+    dir485 = args.Directory485
+    dir405 = args.Directory405
+    dirGrav = args.DirectoryGrav
+    dirSpat = args.DirectorySpat
+    dirPhid = args.DirectoryPhid
     outDir = args.DirectoryOut
     plateLayout = args.PlateLayout
     start = str(args.Start).zfill(5)
@@ -96,9 +98,9 @@ def main():
     numwells = args.NumWells
     formatYear = args.FormatYear
 
-    dataFile = ugDataFile(dir405=basedir405, dir485=basedir485,
-                          dirgrav=gravDir, dirspat=spatDir,
-                          dirphid=phidDir,
+    dataFile = ugDataFile(dir405=dir405, dir485=dir485,
+                          dirgrav=dirGrav, dirspat=dirSpat,
+                          dirphid=dirPhid,
                           dirout=outDir, layout=plateLayout)
 
     dataFile.fromTo(int(start), int(end))
@@ -117,30 +119,40 @@ def main():
 
     # write data files
     dw = ugDataWriter.ugDataWriter(reader=dataReader)
-    if basedir405 is not None:
-        dw.writeTimeSeries(outDir + '/Data405.dat',
-                           dataReader.valuesList("405"),
-                           dataReader.valueTimes("405"))
+    if dir405 is not None:
+        dw.writeDataFrame(dataReader.valuesList("405"),
+                           os.path.join(outDir, 'Data405.dat'))
+        # dw.writeTimeSeries(outDir + '/Data405.dat',
+        #                    dataReader.valuesList("405"),
+        #                    dataReader.valueTimes("405"))
 
-    if basedir485 is not None:
-        dw.writeTimeSeries(outDir + '/Data485.dat',
-                           dataReader.valuesList("485"),
-                           dataReader.valueTimes("485"))
+    if dir485 is not None:
+        dw.writeDataFrame(dataReader.valuesList("485"),
+                          os.path.join(outDir, 'Data485.dat'))
+        # dw.writeTimeSeries(outDir + '/Data485.dat',
+        #                    dataReader.valuesList("485"),
+        #                    dataReader.valueTimes("485"))
 
-    if gravDir is not None:
-        dw.writeTimeSeries(outDir + '/grav.dat',
-                           dataReader.valuesList("grav"),
-                           dataReader.valueTimes("grav"))
+    if dirGrav is not None:
+        dw.writeDataFrame(dataReader.valuesList("grav"),
+                          os.path.join(outDir, 'grav.dat'))
+        # dw.writeTimeSeries(outDir + '/grav.dat',
+        #                    dataReader.valuesList("grav"),
+        #                    dataReader.valueTimes("grav"))
 
-    if spatDir is not None:
-        dw.writeTimeSeries(outDir + '/spat.dat',
-                           dataReader.valuesList("spat"),
-                           dataReader.valueTimes("spat"))
+    if dirSpat is not None:
+        dw.writeDataFrame(dataReader.valuesList("spat"),
+                           os.path.join(outDir, 'spat.dat'))
+        # dw.writeTimeSeries(outDir + '/spat.dat',
+        #                    dataReader.valuesList("spat"),
+        #                    dataReader.valueTimes("spat"))
 
-    if phidDir is not None:
-        dw.writeTimeSeries(outDir + '/phid.dat',
-                           dataReader.valuesList("phid"),
-                           dataReader.valueTimes("phid"))
+    if dirPhid is not None:
+        dw.writeDataFrame(dataReader.valuesList("phid"),
+                          os.path.join(outDir, 'phid.dat'))
+        # dw.writeTimeSeries(outDir + '/phid.dat',
+        #                    dataReader.valuesList("phid"),
+        #                    dataReader.valueTimes("phid"))
 
 
 if __name__ == '__main__':
