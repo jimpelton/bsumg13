@@ -8,6 +8,11 @@ df485_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/Data485.
 dfgrav_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/grav.dat'
 dfphid_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/phid.dat'
 
+
+dfgrav_colnames = ["Elapsed", "mag"]
+dfphid_colnames = ["Elapsed", "temp_hblk", "temp_ambi", "uv_hblk", "uv_es1", "uv_es2", "pdiff", 
+                   "N/A7", "N/A8", "N/A9", "N/A10"]
+
 def elaptime_from_hmsf(time_str):
     try:
         et = pd.datetime.strptime(time_str, "%H:%M:%S.%f")
@@ -65,12 +70,15 @@ def load_df_raw(path_str,
                 sep=' ', 
                 index_col=0, 
                 parse_dates=True,
-                converters=None):
+                converters=None,
+                colnames=None):
 
     if not converters: converters = {'Elapsed' : elaptime_from_seconds}
-
-    cols = ['Elapsed']
-    cols = cols.extend(makeWellColumnTitles())
+    if not colnames:
+        tits = makeWellColumnTitles()
+        colsnames = ['Elapsed']
+        for title in tits:
+            colnames.append(title)
 
     return pd.read_csv(path_str,
                        sep=sep,
@@ -78,7 +86,7 @@ def load_df_raw(path_str,
                        parse_dates=parse_dates,
                        converters=converters,
                        header=None,
-                       names=cols)
+                       names=colnames)
                        
 
 def find_closest_times(search, times):
@@ -155,3 +163,9 @@ def findStartTime(valuesDict: dict):
 #
 #     dti = pd.DatetimeIndex(Tavgs)
 #     return pd.DataFrame(data=Gavgs, index=dti, columns=cols)
+
+
+
+
+def test_load():
+    df405=load_df_raw('/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/Data405.dat')
