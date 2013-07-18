@@ -10,7 +10,8 @@ dfphid_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/phid.da
 
 
 dfgrav_colnames = ["Elapsed", "mag"]
-dfphid_colnames = ["Elapsed", "temp_hblk", "temp_ambi", "uv_hblk", "uv_es1", "uv_es2", "pdiff", 
+dfphid_colnames = ["Elapsed", "temp_hblk", "temp_ambi", 
+                   "uv_hblk", "uv_es1", "uv_es2", "pdiff", 
                    "N/A7", "N/A8", "N/A9", "N/A10"]
 
 def elaptime_from_hmsf(time_str):
@@ -71,14 +72,18 @@ def load_df_raw(path_str,
                 index_col=0, 
                 parse_dates=True,
                 converters=None,
-                colnames=None):
+                colnames=None,
+                wellindex=None):
 
     if not converters: converters = {'Elapsed' : elaptime_from_seconds}
+
     if not colnames:
-        tits = makeWellColumnTitles()
-        colsnames = ['Elapsed']
-        for title in tits:
-            colnames.append(title)
+        cols, types = makeWellColumnTitles()
+        colnames = ['Elapsed']
+        for c in cols:
+            colnames.append(c)
+        idxNames = ['Well Index', 'Well Type'] 
+        index = pd.Index(np.array(colnames, types))
 
     return pd.read_csv(path_str,
                        sep=sep,
@@ -86,7 +91,7 @@ def load_df_raw(path_str,
                        parse_dates=parse_dates,
                        converters=converters,
                        header=None,
-                       names=colnames)
+                       )
                        
 
 def find_closest_times(search, times):
@@ -100,15 +105,117 @@ def find_closest_times(search, times):
     return pd.Series([search.index.asof(dt) for dt in times.index])
 
 def makeWellColumnTitles():
+    wellColumnNames = {
+        "A1":"Empty",
+        "A2":"MC3T3 w/ teri",
+        "A3":"MC3T3 w/ teri",
+        "A4":"MC3T3 w/o teri",
+        "A5":"MC3T3 w/o teri",
+        "A6":"MC3T3 w/ teri",
+        "A7":"MC3T3 w/ teri",
+        "A8":"MLOY4 w/ teri",
+        "A9":"MLOY4 w/ teri",
+        "A10":"MLOY4 w/o Teri",
+        "A11":"MLOY4 w/o Teri",
+        "A12":"MC3T3 Iono",
+        "B1":"S W/O CELLS W/ DYE",
+        "B2":"MC3T3 w/ teri",
+        "B3":"MC3T3 w/ teri",
+        "B4":"MC3T3 w/o teri",
+        "B5":"MC3T3 w/o teri",
+        "B6":"MC3T3 w/ teri",
+        "B7":"MC3T3 w/ teri",
+        "B8":"MLOY4 w/ teri",
+        "B9":"MLOY4 w/ teri",
+        "B10":"MLOY4 w/o Teri",
+        "B11":"MLOY4 w/o Teri",
+        "B12":"MC3T3 Iono",
+        "C1":"S W/O CELLS W/ DYE",
+        "C2":"MC3T3 w/o teri",
+        "C3":"MC3T3 w/o teri",
+        "C4":"COCO w/o Teri",
+        "C5":"COCO w/o Teri",
+        "C6":"MLOY4 w/ teri",
+        "C7":"MLOY4 w/ teri",
+        "C8":"MC3T3 w/o teri",
+        "C9":"MC3T3 w/o teri",
+        "C10":"COCO w/o Teri",
+        "C11":"COCO w/o Teri",
+        "C12":"Co-Co EGTA",
+        "D1":"S W/O CELLS W/ DYE",
+        "D2":"MC3T3 w/o teri",
+        "D3":"MC3T3 w/o teri",
+        "D4":"COCO w/o Teri",
+        "D5":"COCO w/o Teri",
+        "D6":"MLOY4 w/ teri",
+        "D7":"MLOY4 w/ teri",
+        "D8":"MC3T3 w/o teri",
+        "D9":"MC3T3 w/o teri",
+        "D10":"COCO w/o Teri",
+        "D11":"COCO w/o Teri",
+        "D12":"Co-Co EGTA",
+        "E1":"S W/O CELLS W/O DYE",
+        "E2":"MLOY4 w/o Teri",
+        "E3":"MLOY4 w/o Teri",
+        "E4":"MLOY4 w/o Teri",
+        "E5":"MLOY4 w/o Teri",
+        "E6":"COCO w/ teri",
+        "E7":"COCO w/ teri",
+        "E8":"COCO w/o Teri",
+        "E9":"COCO w/o Teri",
+        "E10":"MC3T3 EGTA",
+        "E11":"MC3T3 EGTA",
+        "E12":"Co-Co Iono",
+        "F1":"S W/O CELLS W/O DYE",
+        "F2":"MLOY4 w/o Teri",
+        "F3":"MLOY4 w/o Teri",
+        "F4":"MLOY4 w/o Teri",
+        "F5":"MLOY4 w/o Teri",
+        "F6":"COCO w/ teri",
+        "F7":"COCO w/ teri",
+        "F8":"COCO w/o Teri",
+        "F9":"COCO w/o Teri",
+        "F10":"MLOY4 Iono",
+        "F11":"MLOY4 Iono",
+        "F12":"Co-Co Iono",
+        "G1":"S W/O CELLS W/O DYE",
+        "G2":"COCO w/ teri",
+        "G3":"COCO w/ teri",
+        "G4":"MLOY4 w/ teri",
+        "G5":"MLOY4 w/ teri",
+        "G6":"MLOY4 w/ teri",
+        "G7":"MLOY4 w/ teri",
+        "G8":"COCO w/ teri",
+        "G9":"COCO w/ teri",
+        "G10":"Cytopore w/ cells w/o dye",
+        "G11":"Cytopore w/ cells w/o dye",
+        "G12":"MLOY4 EGTA",
+        "H1":"AG W/O DYE",
+        "H2":"COCO w/ teri",
+        "H3":"COCO w/ teri",
+        "H4":"MLOY4 w/ teri",
+        "H5":"MLOY4 w/ teri",
+        "H6":"MC3T3 w/ teri",
+        "H7":"MC3T3 w/ teri",
+        "H8":"COCO w/ teri",
+        "H9":"COCO w/ teri",
+        "H10":"Cytopore w/ cells w/o dye",
+        "H11":"Ag w/ dye",
+        "H12":"MLOY4 EGTA"}
+
     alpha = [chr(c) for c in range(65, 73)]  # 'A' through 'H'
     cols = []
+    types = []
     lr = ["L", "R"]
     for i in range(1, 13):
         for w in range(0, 2):
             p = lr[w]
             for c in alpha:
-                cols.append(p + str(c) + str(i))
-    return cols
+                ci = str(c)+str(i)
+                cols.append(p + ci)
+                types.append(wellColumnNames[ci])
+
+    return cols,types
 
 def makeDateTimeIndex(timeList, name="Time"):
     dti = pandas.DatetimeIndex(data=timeList, name=name, tz="UTC")
@@ -136,36 +243,4 @@ def findStartTime(valuesDict: dict):
             dtMin = m
     return dtMin
 
-# def truncate(data_frame, times, skipcol=1, cols=None):
-#     """
-#
-#     :param data_frame:
-#     :param times:
-#     :param skipcol:
-#     :param cols:
-#     :return:
-#     """
-#     Gavgs = []
-#     Tavgs = []
-#     for ts in times:
-#         idx = data_frame.index.searchsorted(ts)
-#         idxLow = idx-3
-#         idxHigh = idx+3
-#         if idxLow < 0:
-#             idxLow = 0
-#         if idxHigh > len(data_frame.index):
-#             idxHigh = len(data_frame.index)
-#
-#         Gs = data_frame.ix[idxLow:idxHigh,:]
-#         Gavg = Gs.ix[:,skipcol:].mean()
-#         Tavgs.append(ts)
-#         Gavgs.append([data_frame['Elapsed'].ix[idx], Gavg])
-#
-#     dti = pd.DatetimeIndex(Tavgs)
-#     return pd.DataFrame(data=Gavgs, index=dti, columns=cols)
 
-
-
-
-def test_load():
-    df405=load_df_raw('/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/Data405.dat')
