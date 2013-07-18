@@ -2,7 +2,6 @@ import pandas as pd
 import pylab as pl
 import numpy as np
 
-
 df405_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/Data405.dat'
 df485_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/Data485.dat'
 dfgrav_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/grav.dat'
@@ -54,6 +53,21 @@ def groupPlates(string):
         return ""
 
 
+def load_all_df():
+    dfphid_trunc = \
+        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/phid_trunc.dat", 
+                          colnames=dfphid_colnames)
+    dfgrav_trunc = \
+        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/grav_trunc.dat", 
+                          colnames=dfgrav_colnames)
+    dfspat_trunc = \
+        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/spat_trunc.dat", 
+                          colnames=dfspat_colnames)
+    df405 = \
+        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/Data405.dat")
+    df485 = \
+        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/Data485.dat")
+
 def load_df(path_str, 
             sep=' ', 
             index_col=0,
@@ -79,20 +93,22 @@ def load_df_raw(path_str,
 
     if not colnames:
         cols, types = makeWellColumnTitles()
-        colnames = ['Elapsed']
-        for c in cols:
-            colnames.append(c)
-        idxNames = ['Well Index', 'Well Type'] 
-        index = pd.Index(np.array(colnames, types))
+        cols.insert(0,'Elapsed')
+        types.insert(0,'Elapsed')
+        idxNames = ['Well Type', 'Well Index'] 
+        arrays = [types,cols]
+        index = pd.MultiIndex.from_arrays(arrays, names=idxNames)
+    else:
+        index = pd.Index(colnames)
 
-    return pd.read_csv(path_str,
+    df = pd.read_csv(path_str,
                        sep=sep,
                        index_col=index_col,
                        parse_dates=parse_dates,
                        converters=converters,
-                       header=None,
-                       )
-                       
+                       header=None)
+    df.columns = index                       
+    return df
 
 def find_closest_times(search, times):
     """
