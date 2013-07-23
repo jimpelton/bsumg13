@@ -2,13 +2,14 @@ import pandas as pd
 import pylab as pl
 import numpy as np
 
-df405_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/Data405.dat'
-df485_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/Data485.dat'
-dfgrav_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/grav.dat'
-dfphid_filepath = '/home/jim/z/microgravity/2013/ug_data/2013_06_04_0840/phid.dat'
+df405_06_04_filepath = '/home/jim/z/microgravity/2013/ug_data/test_2013_06_04_0840/Data405.dat'
+df485_06_04_filepath = '/home/jim/z/microgravity/2013/ug_data/test_2013_06_04_0840/Data485.dat'
+dfgrav_06_04_filepath = '/home/jim/z/microgravity/2013/ug_data/test_2013_06_04_0840/grav.dat'
+dfphid_06_04_filepath = '/home/jim/z/microgravity/2013/ug_data/test_2013_06_04_0840/phid.dat'
 
 
 dfgrav_colnames = ["Elapsed", "mag"]
+dfspat_colnames = ["Elapsed", "mag"]
 dfphid_colnames = ["Elapsed", "temp_hblk", "temp_ambi", 
                    "uv_hblk", "uv_es1", "uv_es2", "pdiff", 
                    "N/A7", "N/A8", "N/A9", "N/A10"]
@@ -36,37 +37,32 @@ def elaptime_from_seconds(time_str):
     from datetime import datetime, timedelta
     return timedelta(hours=hours, minutes=minutes, seconds=seconds, microseconds=micro)
 
-#    string = '{0}:{1}:{2}.{3}'.format(hours,minutes,seconds,millis)
-#     
-#    et = pd.datetime.strptime(time_str, "%S.%f")
-#        et = pd.datetime.strptime("0", "%S")
-#        print("couldn't do that time! {} Returning time 0".format(time_str))
-#
-#    return et - pd.datetime.strptime("0", "%S")
-
 def groupPlates(string):
-    if string.startswith("L"):
-        return "Left"
-    elif string.startswith("R"):
-        return "Right"
-    else:
+    try:
+        if string.startswith("L"):
+            return "Left"
+        elif string.startswith("R"):
+            return "Right"
+        else:
+            return ""
+    except AttributeError:
         return ""
 
 
-def load_all_df():
+def load_all_df(dir):
+    from os import path
     dfphid_trunc = \
-        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/phid_trunc.dat", 
-                          colnames=dfphid_colnames)
+        load_df_raw(path.join(dir,"phid_trunc.dat"), colnames=dfphid_colnames)
     dfgrav_trunc = \
-        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/grav_trunc.dat", 
-                          colnames=dfgrav_colnames)
+        load_df_raw(path.join(dir,"grav_trunc.dat"), colnames=dfgrav_colnames)
     dfspat_trunc = \
-        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/spat_trunc.dat", 
-                          colnames=dfspat_colnames)
+        load_df_raw(path.join(dir,"spat_trunc.dat"), colnames=dfspat_colnames)
     df405 = \
-        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/Data405.dat")
+        load_df_raw(path.join(dir,"Data405.dat"))
     df485 = \
-        setup.load_df_raw("/home/jim/z/microgravity/2013/ug_data/test_06_04_0840/Data485.dat")
+        load_df_raw(path.join(dir,"Data485.dat"))
+
+    return dfphid_trunc, dfgrav_trunc, dfspat_trunc, df405, df485
 
 def load_df(path_str, 
             sep=' ', 
