@@ -14,7 +14,23 @@ dfphid_colnames = ["Elapsed", "temp_hblk", "temp_ambi",
                    "uv_hblk", "uv_es1", "uv_es2", "pdiff", 
                    "N/A7", "N/A8", "N/A9", "N/A10"]
 
+dfphid_trunc = None
+dfgrav_trunc = None
+dfspat_trunc = None
+df405 = None
+df485 = None
+
+def seconds_from_millis(time):
+    """
+    Returns floating point value SS.f from the time passed in.
+    """
+    return time/1000.0
+
+
 def elaptime_from_hmsf(time_str):
+    """
+    Returns the datetime representing the HMS.f string passed in.
+    """
     try:
         et = pd.datetime.strptime(time_str, "%H:%M:%S.%f")
     except ValueError:
@@ -49,7 +65,14 @@ def groupPlates(string):
         return ""
 
 
+def moving_average(a, n=3) :
+    ret = np.cumsum(a, dtype=float)
+    return (ret[n - 1:] - ret[:1 - n]) / n
+
+
 def load_all_df(dir):
+    global dfphid_trunc, dfgrav_trunc, dfspat_trunc, df405, df485
+
     from os import path
     dfphid_trunc = \
         load_df_raw(path.join(dir,"phid_trunc.dat"), colnames=dfphid_colnames)
