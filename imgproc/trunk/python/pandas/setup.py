@@ -65,9 +65,12 @@ def groupPlates(string):
         return ""
 
 
-def moving_average(a, n=3) :
-    ret = np.cumsum(a, dtype=float)
-    return (ret[n - 1:] - ret[:1 - n]) / n
+def moving_average(a, n=3, axis=None) :
+    if axis is None:
+        axis = 0
+
+    rval = np.cumsum(a, axis=axis)
+    return (rval[n - 1:,:] - rval[:1 - n,:]) / n
 
 
 def load_all_df(dir):
