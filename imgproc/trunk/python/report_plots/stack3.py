@@ -53,6 +53,7 @@ nprat_coco_w_teri_wells = ax0_wells_405 / ax0_wells_485
 nprat_coco_wo_teri_wells = ax1_wells_405 / ax1_wells_485
 
 # moving average of ratios.
+
 nprat_coco_w_teri_wells_ma = setup.moving_average(nprat_coco_w_teri_wells,n=10,axis=0)
 nprat_coco_wo_teri_wells_ma = setup.moving_average(nprat_coco_wo_teri_wells,n=10,axis=0)
 
