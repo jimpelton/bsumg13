@@ -47,13 +47,14 @@ namespace uGCapture
         private AccelerometerPhidgetsController accelControler;
         private SpatialAccelController spatialController;
         private Writer writer;
-        private AptinaController ac1;
-        private AptinaController ac2;
+        //private AptinaController ac1;
+        //private AptinaController ac2;
         private VCommController weatherboard;
         private NIController ni6008;
         private UPSController UPS;
         private Logger logger;
         private BITE BITEController;
+        private MockController mock;
         private Thread acThread1;
         private Thread acThread2;
         private Thread wrtThread;
@@ -78,14 +79,14 @@ namespace uGCapture
             //initBITE();
             initLogger();   
             initWriter();
-            initAptina();
+            //initAptina();
             initPhidgets();
             initAccelController();
             initSpatialController();
             initWeatherBoard();
             initNI6008Controller();
             initUPSController();
-            
+            initMockController();
 
             StartCapture();
             boolCapturing = true;
@@ -109,7 +110,7 @@ namespace uGCapture
             dp.Register(writer);
         }
 
-        //Aptina cameras.
+        /*/Aptina cameras.
         private void initAptina()
         {
             ac1 = new AptinaController(bufferPool, Str.GetIdStr(IdStr.ID_APTINA_ONE))
@@ -148,7 +149,7 @@ namespace uGCapture
             if (ac2.IsInit) acThread2.Start();
 
 
-        }
+        }*/
 
         // 1018 DAQ and Temperature
         private void initPhidgets()
@@ -271,7 +272,25 @@ namespace uGCapture
             dp.Register(UPS);
 
         }
-	
+        // Mock
+        private void initMockController()
+        {
+            mock = new MockController(bufferPool, Str.GetIdStr(IdStr.ID_MOCK));
+
+            if (mock.Initialize())
+            {
+                string s = Str.GetErrStr(ErrStr.INIT_OK_MOCK);
+                dp.BroadcastLog(this, Status.STAT_GOOD, s);
+                //Console.Error.WriteLine(s);
+            }
+            else
+            {
+                string s = Str.GetErrStr(ErrStr.INIT_FAIL_MOCK);
+                dp.BroadcastLog(this, Status.STAT_FAIL, s);
+                //Console.Error.WriteLine(s);
+            }
+            dp.Register(mock);
+        }
 	    public void initLogger()
 	    {
 	        logger = new Logger(Str.GetIdStr(IdStr.ID_LOGGER));
@@ -338,7 +357,7 @@ namespace uGCapture
             Dispatch.Instance().CleanUpMessageThreads();
             logger.FlushLogMessage();
             
-            ac1.stop();
+            /*/ac1.stop();
             ac2.stop();
             writer.stop();
             try
@@ -364,6 +383,7 @@ namespace uGCapture
                 Console.Error.WriteLine(e.Message);
                 dp.BroadcastLog(this, e.Message, Status.STAT_ERR);
             }
+             * */
             
         }
 

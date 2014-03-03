@@ -43,42 +43,42 @@ namespace uGCapture
         CMD_NI_LIGHT_2_2_OFF
     }
 
-    public enum ErrStr 
+    public enum ErrStr
     {
         ERR_NONE = 0,
         // INIT FAIL 
         INIT_FAIL_PHID_1018,
         INIT_FAIL_PHID_SPTL,
         INIT_FAIL_PHID_ACCEL,
-	    INIT_FAIL_PHID_TEMP,
+        INIT_FAIL_PHID_TEMP,
         INIT_FAIL_NI_6008,
-        
+
         INIT_FAIL_APTINA,
-        INIT_FAIL_APTINA_INITMIDLIB,    
-        INIT_FAIL_APTINA_OPENTRANSPORT,  
+        INIT_FAIL_APTINA_INITMIDLIB,
+        INIT_FAIL_APTINA_OPENTRANSPORT,
         INIT_FAIL_APTINA_ZERO_SIZE,
         INIT_FAIL_APTINA_FUSE_ERROR,
         INIT_FAIL_APTINA_KEY_NOT_SUPPORTED,
         INIT_FAIL_APTINA_INI_LOAD_ERROR,
         INIT_FAIL_APTINA_INI_POLLREG_TIMEOUT,
-         
+
 
         INIT_FAIL_VCOMM,
         INIT_FAIL_VCOMM_COULD_NOT_OPEN,
         INIT_FAIL_WRITER,
         INIT_FAIL_UPS,
-	    INIT_FAIL_LOGGER,
-        
+        INIT_FAIL_LOGGER,
+
         // INIT SUCCESS 
         INIT_OK_PHID_1018,
         INIT_OK_PHID_SPTL,
         INIT_OK_PHID_ACCEL,
-	    INIT_OK_PHID_TEMP,  //unused
+        INIT_OK_PHID_TEMP,  //unused
         INIT_OK_NI_6008,
         INIT_OK_APTINA,
         INIT_OK_VCOMM,
         INIT_OK_UPS,
-	    INIT_OK_LOGGER,
+        INIT_OK_LOGGER,
 
         // APTINA
         APTINA_DISCONNECT,
@@ -91,7 +91,7 @@ namespace uGCapture
         PHID_1018_STAT_DISC,
         PHID_1018_STAT_ATCH,
         PHID_1018_STAT_ERR,
-        
+
         //PHID TEMP
         PHID_TEMP_STAT_OK,
         PHID_TEMP_STAT_DISC,
@@ -103,8 +103,8 @@ namespace uGCapture
         PHID_SPTL_STAT_DISC,
         PHID_SPTL_STAT_ATCH,
         PHID_SPTL_STAT_ERR,
-        
-        PHID_ACCL_STAT_OK, 
+
+        PHID_ACCL_STAT_OK,
         PHID_ACCL_STAT_DISC,
         PHID_ACCL_STAT_ATCH,
         PHID_ACCL_STAT_ERR,
@@ -112,7 +112,7 @@ namespace uGCapture
         NI6008_STAT_FAIL,
         NI6008_STAT_OK,
         NI6008_STAT_DISC,
-        
+
         UPS_ERR_NOT_FOUND,
         UPS_ERR_STATUS_PROPERTY_NOT_FOUND,
         UPS_STAT_GOOD,
@@ -126,6 +126,8 @@ namespace uGCapture
         WRITER_OK_CREATE_DIRS,
         WRITER_OK_WRITE_BUFFER,
         WRITER_OK_EXIT_LOOP,
+        INIT_OK_MOCK,
+        INIT_FAIL_MOCK,
     }
 
 
@@ -135,17 +137,18 @@ namespace uGCapture
     /// </summary>
     public enum IdStr
     {
-        ID_WRITER=0,          
-        ID_APTINA_ONE,      
-        ID_APTINA_TWO,      
-        ID_PHIDGETS_1018,    
-        ID_PHIDGETS_ACCEL,  
+        ID_WRITER = 0,
+        ID_APTINA_ONE,
+        ID_APTINA_TWO,
+        ID_PHIDGETS_1018,
+        ID_PHIDGETS_ACCEL,
         ID_PHIDGETS_SPATIAL,
-        ID_VCOMM,    
+        ID_VCOMM,
         ID_NI_DAQ,
         ID_UPS,
         ID_BITE,
-	    ID_LOGGER
+        ID_LOGGER,
+        ID_MOCK
     }
     
     public enum DirStr

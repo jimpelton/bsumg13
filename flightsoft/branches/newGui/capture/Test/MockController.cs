@@ -17,7 +17,7 @@ namespace uGCapture
         private int m_maxDataBytes;
         private Random m_rand;
         private byte[] lastData;
-
+        private String outputData;
         /// <summary>
         /// Instantiate a MockController with a default simulated work time of
         /// between 5ms and 500ms. Set SleepMin and SleepMax to change this.
@@ -90,6 +90,17 @@ namespace uGCapture
             byte[] rval = new byte[size];
             m_rand.NextBytes(rval);
             return rval;
+        }
+        public override void exHeartBeatMessage(Receiver r, Message m)
+        {
+            dp.BroadcastLog(this, Status.STAT_NONE, "thump, thump");
+        }
+        public override void exAccumulateMessage(Receiver r, Message m)
+        {
+//                    outputData += GetUTCMillis().ToString() + " ";
+//                    for (int i = 0; i < 3; i++)
+//                        outputData += accel.axes[i].Acceleration + " ";
+//                    outputData += "\n";
         }
     }
 }
