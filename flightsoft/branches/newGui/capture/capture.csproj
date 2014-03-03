@@ -129,6 +129,7 @@
     <Compile Include="CirclesFile.cs" />
     <Compile Include="Controller\AccelerometerPhidgetsController.cs" />
     <Compile Include="Controller\AptinaController.cs" />
+    <Compile Include="Message\AccelerometerStatusMessage.cs" />
     <Compile Include="Message\EmptyCycleMessage.cs" />
     <Compile Include="Message\PhidgetsTempStatusMessage.cs" />
     <Compile Include="Controller\SpatialAccelController.cs" />
@@ -151,6 +152,7 @@
     </Compile>
     <Compile Include="Message\UPSStatusMessage.cs" />
     <Compile Include="Message\VcommStatusMessage.cs" />
+    <Compile Include="Message\WriterStatusMessage.cs" />
     <Compile Include="ReceiverController.cs" />
     <Compile Include="Dispatch.cs" />
     <Compile Include="Message\BiteTestMessage.cs" />
