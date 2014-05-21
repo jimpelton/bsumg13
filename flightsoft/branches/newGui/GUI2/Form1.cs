@@ -10,36 +10,50 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 using uGCapture;
+
 namespace GUI2 
 {
-    public delegate void UpdateTextCallback(string text);
     public partial class Form1 : Form
     {
+        public delegate void UpdateComponent(Queue<String> myQ);
+        public UpdateComponent [] updaters = new UpdateComponent[6];
+        public int LOGGER = 0;
+        //1 = status
+        //2 = notify
+        //3 = graph
+        //4 = map
+        //5 = values
         GuiDriver gd;
-        bool active = true;
-        public Form1()
+        bool active = false;
+        Thread oThread;
+        GuiReceiver loggerComp;
+        public Form1(String config)
         {
-            gd = new GuiDriver("gd", true);
+            gd = new GuiDriver(this, "gd", config, true);
             InitializeComponent();
-            gd.init();
-            button1.Name = "Stop Capture";
-            Thread oThread = new Thread(new ThreadStart(updateLogBox));
+            gd.Startup_Init();
+            button1.Text = "Start Capture";
+            //oThread = new Thread(new ThreadStart(updateLogBox));
             this.FormClosing += Form1_FormClosing;
-            // Start the thread
-            oThread.Start();
+            updaters[0] = new UpdateComponent(UpdateLogger);
+            loggerComp = new GuiReceiver(this, 0, "gd", true);
+            loggerComp.Start();
+        }
+
+        private void UpdateLogger(Queue<string> myQ)
+        {
+            textBox1.AppendText(myQ.Dequeue());
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             if (active)
             {
-                gd.stopCapture();
-                active = false;
-                button1.Text = "Start Capture";
+                    //Application.Exit();
             }
             else
             {
-                gd.startCapture();
+                gd.ToggleCapture();
                 active = true;
                 button1.Text = "Stop Capture";
             }
@@ -47,10 +61,11 @@ namespace GUI2
         private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
                 // Display a MsgBox asking the user to save changes or abort. 
-            if (MessageBox.Show("Do you really want to kill this application?", "Data Capture",
+            if (MessageBox.Show("Do you really want to halt the data capture?", "Data Capture",
                MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                gd.kill();
+                oThread.Abort();
+                gd.Shutdown();
             }
             else
             {
@@ -67,13 +82,14 @@ namespace GUI2
         {
             while (true)
             {
+                
                 if (gd.myQ.Count != 0)
                 {
                     textBox1.Invoke((Action)delegate
                     {
                         lock (gd.myQ)
                         {
-                            textBox1.AppendText(gd.myQ.Dequeue());
+                            textBox1.Text = gd.myQ.Dequeue();
                         }
 
                     });
@@ -82,56 +98,7 @@ namespace GUI2
 
         }
     }
-    class GuiDriver : Receiver
-    {
-        private CaptureClass cls;
-        TextBox t;
-        public Queue<String> myQ = new Queue<String>();
-        
 
-      // Creates a synchronized wrapper around the Queue.
-      
-        //private CaptureClass cc = new CaptureClass();
-        public GuiDriver(string id, bool receiving = true)
-            : base(id, receiving)
-        {
-        }
-        public void setOutputBox(TextBox t){
-            this.t = t;
-        }
-        public void init()
-        {
-            dp.Register(this);
-            cls = new CaptureClass("CaptureClass")
-            {
-                StorageDir = @"C:\Data\"
-            };
-            cls.init();
-        }
-        public void startCapture()
-        {
-            cls.StartCapture();
-        }
-        public void kill()
-        {
-            cls.StopCapture();
-            cls.Shutdown();
-        }
-        public void stopCapture()
-        {
-            cls.StopCapture();
-        }
-
-        public override void exLogMessage(Receiver r, uGCapture.Message m)
-        {
-            LogMessage mes = m as LogMessage;
-            if (mes == null) return;
-            lock (myQ)
-            {
-                myQ.Enqueue(mes.ToString());
-            }
-        }
-    }
 
 
 }
