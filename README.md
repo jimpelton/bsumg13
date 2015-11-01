@@ -78,3 +78,14 @@ The two projects used during the experiment are:
 |-----imgproc 
 |-----ugip
 ```
+
+## Capture software dataflow pipeline 
+The dataflow of the capture software is shown in the following diagram.
+![capture dataflow pipeline](https://raw.githubusercontent.com/jimpelton/bsumg13/master/doc/capture.jpg)
+
+## Imgproc software dataflow pipeline
+The dataflow of the imgproc post processing software is shown in the following diagram.
+![imgproc dataflow pipeline](https://raw.githubusercontent.com/jimpelton/bsumg13/master/doc/average.png)
+
+
+
