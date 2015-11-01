@@ -1,7 +1,21 @@
 # bsumg13
 Automatically exported from code.google.com/p/bsumg13
 
-TL;DR: WARNING: DRAGONS IN THIS!
+OBLIGATORY DRAGONS AHEAD WARNING FOLLOWS: WARNING: DRAGONS AHEAD! 
+
+This code is reasearch quality software! It was written to provide an extensible framework for
+interfacing with an arbitrary number of sensors and recording data from them. Efforts were
+made to keep the flightsoft code matintainable and extensible so that future uG projects
+could reuse the framework for any set of sensors that provided C#/.NET SDKs. 
+But, as all research projects go, there is never enough time to refine anything except your writing, 
+and even then that may not happen!
+
+## A note to future uG teams:
+To future uG teams: Feel free to use this code and improve it--it could be so much better, if only we had
+known what we know now!
+
+Good luck, and may a trip to Houston be in your future!
+
 
 ## Contents
 bsumg13 contains the in-flight capture and post-flight data processing
@@ -24,8 +38,9 @@ on June 2, 2013.
 ## Structure
 capture and circle_finder were abandoned early on during the project.
 The two projects used during the experiment are:
-1. flightsoft: in-flight software used during both flight days.
-2. imgproc: post-flight data processing.
+
+  1. flightsoft: in-flight software used during both flight days.
+  2. imgproc: post-flight data processing.
 
 ### flightsoft directory structure
 ```
