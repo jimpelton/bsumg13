@@ -20,7 +20,7 @@ Good luck, and may a trip to Houston be in your future!
 ## Contents
 bsumg13 contains the in-flight capture and post-flight data processing
 software used by the 2013 BSU Microgravity team. 
-This repository that can be found at: 
+This repository can be found at: 
 
     http://github.com/jimpelton/bsumg13
 
